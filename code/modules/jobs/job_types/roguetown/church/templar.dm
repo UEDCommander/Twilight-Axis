@@ -185,70 +185,141 @@
 	cloak = /obj/item/clothing/cloak/tabard/crusader/tief
 	id = /obj/item/clothing/ring/silver
 	backl = /obj/item/storage/backpack/rogue/satchel
-	backpack_contents = list(
-		/obj/item/ritechalk = 1,
-		)
+	switch(H.patron?.type)
+		if(/datum/patron/divine/xylix)
+			backpack_contents = list(
+			/obj/item/ritechalk = 1,
+			/obj/item/storage/keyring/churchie,
+			/obj/item/rogueweapon/huntingknife/idagger/steel/holysee,
+			/obj/item/rogueweapon/huntingknife/idagger/steel/holysee,
+			)
+		else
+			backpack_contents = list(
+			/obj/item/ritechalk = 1,
+			/obj/item/storage/keyring/churchie,
+			)
 	H.cmode_music = 'sound/music/combat_holy.ogg'
 	switch(H.patron?.type)
 		if(/datum/patron/divine/astrata)
 			wrists = /obj/item/clothing/neck/roguetown/psicross/astrata
 			head = /obj/item/clothing/head/roguetown/helmet/heavy/astratan
 			cloak = /obj/item/clothing/cloak/templar/astratan
+			backr = /obj/item/rogueweapon/shield/tower/metal
+			neck = /obj/item/clothing/neck/roguetown/chaincoif
+			pants = /obj/item/clothing/under/roguetown/chainlegs
+			shirt = /obj/item/clothing/suit/roguetown/armor/chainmail/hauberk
+			shoes = /obj/item/clothing/shoes/roguetown/boots/armor
+			armor = /obj/item/clothing/suit/roguetown/armor/plate
 		if(/datum/patron/divine/abyssor)
 			wrists = /obj/item/clothing/neck/roguetown/psicross/abyssor
 			head = /obj/item/clothing/head/roguetown/helmet/heavy/abyssorgreathelm
 			cloak = /obj/item/clothing/cloak/abyssortabard
+			backr = /obj/item/rogueweapon/shield/tower/metal
+			neck = /obj/item/clothing/neck/roguetown/chaincoif
+			pants = /obj/item/clothing/under/roguetown/chainlegs
+			shirt = /obj/item/clothing/suit/roguetown/armor/chainmail/hauberk
+			shoes = /obj/item/clothing/shoes/roguetown/boots/armor
+			armor = /obj/item/clothing/suit/roguetown/armor/plate
 		if(/datum/patron/divine/xylix)
+			wrists = /obj/item/clothing/neck/roguetown/psicross/xylix
 			cloak = /obj/item/clothing/cloak/templar/xylixian
 			head = /obj/item/clothing/head/roguetown/helmet/heavy/xylixhelm
+			beltr = /obj/item/quiver/arrows
+			backr = /obj/item/gun/ballistic/revolver/grenadelauncher/bow/recurve
+			neck = /obj/item/clothing/neck/roguetown/leather
+			pants = /obj/item/clothing/under/roguetown/heavy_leather_pants/black
+			shirt = /obj/item/clothing/suit/roguetown/armor/gambeson/heavy/black
+			shoes = /obj/item/clothing/shoes/roguetown/boots/armor
+			armor = /obj/item/clothing/suit/roguetown/armor/leather/heavy/coat/black
 			H.cmode_music = 'sound/music/combat_jester.ogg'
 		if(/datum/patron/divine/dendor)
 			wrists = /obj/item/clothing/neck/roguetown/psicross/dendor
 			head = /obj/item/clothing/head/roguetown/helmet/heavy/dendorhelm
 			cloak = /obj/item/clothing/cloak/tabard/crusader/dendor
+			backr = /obj/item/rogueweapon/shield/tower/metal
+			neck = /obj/item/clothing/neck/roguetown/chaincoif
+			pants = /obj/item/clothing/under/roguetown/chainlegs
+			shirt = /obj/item/clothing/suit/roguetown/armor/chainmail/hauberk
+			shoes = /obj/item/clothing/shoes/roguetown/boots/armor
+			armor = /obj/item/clothing/suit/roguetown/armor/plate
 			H.cmode_music = 'sound/music/combat_druid.ogg'
 		if(/datum/patron/divine/necra)
 			wrists = /obj/item/clothing/neck/roguetown/psicross/necra
 			head = /obj/item/clothing/head/roguetown/helmet/heavy/necran
 			cloak = /obj/item/clothing/cloak/templar/necran
+			backr = /obj/item/rogueweapon/shield/tower/metal
+			neck = /obj/item/clothing/neck/roguetown/chaincoif
+			pants = /obj/item/clothing/under/roguetown/chainlegs
+			shirt = /obj/item/clothing/suit/roguetown/armor/chainmail/hauberk
+			shoes = /obj/item/clothing/shoes/roguetown/boots/armor
+			armor = /obj/item/clothing/suit/roguetown/armor/plate
 		if(/datum/patron/divine/pestra)
 			wrists = /obj/item/clothing/neck/roguetown/psicross/pestra
 			head = /obj/item/clothing/head/roguetown/helmet/heavy/pestran
 			cloak = /obj/item/clothing/cloak/templar/pestran
+			backr = /obj/item/rogueweapon/shield/tower/metal
+			neck = /obj/item/clothing/neck/roguetown/chaincoif
+			pants = /obj/item/clothing/under/roguetown/chainlegs
+			shirt = /obj/item/clothing/suit/roguetown/armor/chainmail/hauberk
+			shoes = /obj/item/clothing/shoes/roguetown/boots/armor
+			armor = /obj/item/clothing/suit/roguetown/armor/plate
 		if(/datum/patron/divine/eora) //Eora content from stonekeep
 			wrists = /obj/item/clothing/neck/roguetown/psicross/eora
 			head = /obj/item/clothing/head/roguetown/helmet/heavy/eoran
 			cloak = /obj/item/clothing/cloak/templar/eoran
+			backr = /obj/item/rogueweapon/shield/tower/metal
+			neck = /obj/item/clothing/neck/roguetown/chaincoif
+			pants = /obj/item/clothing/under/roguetown/chainlegs
+			shirt = /obj/item/clothing/suit/roguetown/armor/chainmail/hauberk
+			shoes = /obj/item/clothing/shoes/roguetown/boots/armor
+			armor = /obj/item/clothing/suit/roguetown/armor/plate
 		if(/datum/patron/divine/noc)
 			wrists = /obj/item/clothing/neck/roguetown/psicross/noc
 			head = /obj/item/clothing/head/roguetown/helmet/heavy/nochelm
 			cloak = /obj/item/clothing/cloak/tabard/crusader/noc
+			backr = /obj/item/rogueweapon/shield/tower/metal
+			neck = /obj/item/clothing/neck/roguetown/chaincoif
+			pants = /obj/item/clothing/under/roguetown/chainlegs
+			shirt = /obj/item/clothing/suit/roguetown/armor/chainmail/hauberk
+			shoes = /obj/item/clothing/shoes/roguetown/boots/armor
+			armor = /obj/item/clothing/suit/roguetown/armor/plate
 		if(/datum/patron/divine/ravox)
 			wrists = /obj/item/clothing/neck/roguetown/psicross/ravox
 			head = /obj/item/clothing/head/roguetown/helmet/heavy/ravoxhelm
 			cloak = /obj/item/clothing/cloak/templar/ravox
 			mask = /obj/item/clothing/head/roguetown/roguehood/ravoxgorget
+			backr = /obj/item/rogueweapon/shield/tower/metal
+			neck = /obj/item/clothing/neck/roguetown/chaincoif
+			pants = /obj/item/clothing/under/roguetown/chainlegs
+			shirt = /obj/item/clothing/suit/roguetown/armor/chainmail/hauberk
+			shoes = /obj/item/clothing/shoes/roguetown/boots/armor
+			armor = /obj/item/clothing/suit/roguetown/armor/plate
 		if(/datum/patron/divine/malum)
 			wrists = /obj/item/clothing/neck/roguetown/psicross/malum
 			cloak = /obj/item/clothing/cloak/templar/malumite
 			head = /obj/item/clothing/head/roguetown/helmet/heavy/malum
+			backr = /obj/item/rogueweapon/shield/tower/metal
+			neck = /obj/item/clothing/neck/roguetown/chaincoif
+			pants = /obj/item/clothing/under/roguetown/chainlegs
+			shirt = /obj/item/clothing/suit/roguetown/armor/chainmail/hauberk
+			shoes = /obj/item/clothing/shoes/roguetown/boots/armor
+			armor = /obj/item/clothing/suit/roguetown/armor/plate
 		if(/datum/patron/old_god)
 			wrists = /obj/item/clothing/neck/roguetown/psicross
 			cloak = /obj/item/clothing/cloak/tabard/crusader/psydon
-	backr = /obj/item/rogueweapon/shield/tower/metal
+			backr = /obj/item/rogueweapon/shield/tower/metal
+			neck = /obj/item/clothing/neck/roguetown/chaincoif
+			pants = /obj/item/clothing/under/roguetown/chainlegs
+			shirt = /obj/item/clothing/suit/roguetown/armor/chainmail/hauberk
+			shoes = /obj/item/clothing/shoes/roguetown/boots/armor
+			armor = /obj/item/clothing/suit/roguetown/armor/plate
 	gloves = /obj/item/clothing/gloves/roguetown/chain
-	neck = /obj/item/clothing/neck/roguetown/chaincoif
-	pants = /obj/item/clothing/under/roguetown/chainlegs
-	shirt = /obj/item/clothing/suit/roguetown/armor/chainmail/hauberk
 	belt = /obj/item/storage/belt/rogue/leather/black
 	beltl = /obj/item/storage/belt/rogue/pouch/coins/mid
-	beltr = /obj/item/storage/keyring/churchie
-	shoes = /obj/item/clothing/shoes/roguetown/boots/armor
-	armor = /obj/item/clothing/suit/roguetown/armor/plate	///Half-Plate not fullplate
-	H.adjust_skillrank(/datum/skill/combat/swords, 3, TRUE)
-	H.adjust_skillrank(/datum/skill/combat/maces, 3, TRUE)
+	H.adjust_skillrank(/datum/skill/combat/swords, 1, TRUE)
+	H.adjust_skillrank(/datum/skill/combat/maces, 1, TRUE)
 	H.adjust_skillrank(/datum/skill/combat/whipsflails, 3, TRUE)
-	H.adjust_skillrank(/datum/skill/combat/axes, 3, TRUE)
+	H.adjust_skillrank(/datum/skill/combat/axes, 1, TRUE)
 	H.adjust_skillrank(/datum/skill/combat/crossbows, 2, TRUE)
 	H.adjust_skillrank(/datum/skill/combat/bows, 2, TRUE)
 	H.adjust_skillrank(/datum/skill/combat/wrestling, 3, TRUE)
@@ -290,17 +361,34 @@
 	if(H.patron?.type == /datum/patron/divine/ravox)
 		H.adjust_skillrank(/datum/skill/misc/athletics, 1, TRUE)
 	if(H.patron?.type == /datum/patron/divine/xylix)
+		H.adjust_skillrank(/datum/skill/combat/knives, 4, TRUE)
+		H.adjust_skillrank(/datum/skill/combat/crossbows, 2, TRUE)
+		H.adjust_skillrank(/datum/skill/combat/bows, 2, TRUE)
 		H.adjust_skillrank(/datum/skill/misc/climbing, 1, TRUE)
-		H.adjust_skillrank(/datum/skill/misc/lockpicking, 1, TRUE)
-		H.adjust_skillrank(/datum/skill/misc/music, 1, TRUE)
+		H.adjust_skillrank(/datum/skill/misc/athletics, 1, TRUE)
+		H.adjust_skillrank(/datum/skill/misc/lockpicking, 3, TRUE)
+		H.adjust_skillrank(/datum/skill/misc/stealing, 3, TRUE)
+		H.adjust_skillrank(/datum/skill/misc/sneaking, 3, TRUE)
+		H.change_stat("strength", -1)
+		H.change_stat("perception", 3)
+		H.change_stat("constitution", -2)
+		H.change_stat("endurance", 3)
+		H.change_stat("speed", 3)
+		H.change_stat("fortune", 2)
+		ADD_TRAIT(H, TRAIT_DODGEEXPERT, TRAIT_GENERIC)
+	else
+		H.adjust_skillrank(/datum/skill/combat/polearms, 2, TRUE)
+		H.adjust_skillrank(/datum/skill/combat/maces, 2, TRUE)
+		H.adjust_skillrank(/datum/skill/combat/swords, 2, TRUE)
+		H.adjust_skillrank(/datum/skill/combat/axes, 2, TRUE)
+		H.adjust_skillrank(/datum/skill/combat/knives, 2, TRUE)
+		H.change_stat("strength", 2)
+		H.change_stat("constitution", 2)
+		H.change_stat("endurance", 3)
+		ADD_TRAIT(H, TRAIT_HEAVYARMOR, TRAIT_GENERIC)
 	// -- End of section for god specific bonuses --
 	ADD_TRAIT(H, TRAIT_RITUALIST, TRAIT_GENERIC)
-	ADD_TRAIT(H, TRAIT_HEAVYARMOR, TRAIT_GENERIC)
 	ADD_TRAIT(H, TRAIT_STEELHEARTED, TRAIT_GENERIC)
-	H.change_stat("strength", 2)
-	H.change_stat("constitution", 2)
-	H.change_stat("endurance", 3)
-
 	H.dna.species.soundpack_m = new /datum/voicepack/male/knight()
 	var/datum/devotion/C = new /datum/devotion(H, H.patron)
 	C.grant_miracles(H, cleric_tier = CLERIC_T2, passive_gain = CLERIC_REGEN_MINOR, devotion_limit = CLERIC_REQ_2)	//Capped to T2 miracles.
@@ -322,6 +410,7 @@
 		if(/datum/patron/divine/dendor)
 			weapons += "Summer Scythe"
 		if(/datum/patron/divine/xylix)
+			weapons -= list("Longsword", "Flail", "Mace", "Battle Axe")
 			weapons += "Cackle Lash"
 		if(/datum/patron/divine/ravox)
 			weapons += "Duel Settler"
@@ -369,3 +458,13 @@
 		if("The Heartstring")
 			H.put_in_hands(new /obj/item/rogueweapon/sword/rapier/eora(H), TRUE)
 			H.adjust_skillrank(/datum/skill/combat/swords, 1, TRUE)
+
+/obj/item/clothing/suit/roguetown/armor/gambeson/heavy/black
+	color = "#2b292e"
+
+/obj/item/clothing/suit/roguetown/armor/leather/heavy/coat/black
+	color = "#2b292e"
+
+/obj/item/clothing/under/roguetown/heavy_leather_pants/black
+	color = "#2b292e"
+
