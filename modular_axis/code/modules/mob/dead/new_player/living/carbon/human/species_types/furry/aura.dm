@@ -88,6 +88,11 @@
 		/datum/descriptor_choice/prominent_four_wild,
 	)
 
+	languages = list(
+		/datum/language/common,
+		/datum/language/kazengunese
+	)
+
 /datum/species/aura/check_roundstart_eligible()
 	return TRUE
 
