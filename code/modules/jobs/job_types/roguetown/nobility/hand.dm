@@ -19,6 +19,7 @@
 	max_pq = null
 	round_contrib_points = 3
 	cmode_music = 'sound/music/combat_noble.ogg'
+	same_job_respawn_delay = 1 HOURS
 
 /*
 /datum/job/roguetown/hand/special_job_check(mob/dead/new_player/player)
