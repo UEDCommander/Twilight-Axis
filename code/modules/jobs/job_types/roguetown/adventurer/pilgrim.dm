@@ -24,7 +24,7 @@
 	wanderer_examine = TRUE
 	advjob_examine = TRUE
 	always_show_on_latechoices = FALSE
-	same_job_respawn_delay = 0
+	same_job_respawn_delay = 20 MINUTES
 
 /datum/job/roguetown/pilgrim/after_spawn(mob/living/L, mob/M, latejoin = TRUE)
 	..()
