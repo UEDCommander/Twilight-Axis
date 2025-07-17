@@ -1,8 +1,8 @@
 //Does the line end in any EOL char that isn't appropriate punctuation OR does it end in a chat-formatted markdown sequence (+bold+, etc) without a period?
-GLOBAL_DATUM_INIT(needs_eol_autopunctuation, /regex, regex(@"([a-zA-Z\d]|[^.?!~-][+|_])$"))
+GLOBAL_DATUM_INIT(needs_eol_autopunctuation, /regex, regex(@"([a-zA-Z\dа-яА-ЯёЁ]|[^.?!~-][+|_])$"))
 
 //All non-capitalized 'i' surrounded with whitespace (aka, 'hello >i< am a cat')
-GLOBAL_DATUM_INIT(noncapital_i, /regex, regex(@"\b[i]\b", "g"))
+GLOBAL_DATUM_INIT(noncapital_i, /regex, regex(@"\b[и]\b", "g"))
 
 /// Ensures sentences end in appropriate punctuation (a period if none exist) and that all whitespace-bounded 'i' characters are capitalized.
 /// If the sentence ends in chat-flavored markdown for bolds, italics or underscores and does not have a preceding period, exclamation mark or other flavored sentence terminator, add a period.
