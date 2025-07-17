@@ -30,6 +30,7 @@
 
 /atom/movable/screen/ghost/orbit/rogue/Click(location, control, params)
 	var/mob/dead/observer/G = usr
+	var/paramslist = params2list(params)
 	if(G.client)
 		if(istype(G, /mob/dead/observer/rogue/arcaneeye))
 			return
