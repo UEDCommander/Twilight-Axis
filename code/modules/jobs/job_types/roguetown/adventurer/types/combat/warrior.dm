@@ -44,6 +44,7 @@
 				if("Longsword")
 					H.adjust_skillrank(/datum/skill/combat/swords, 2, TRUE)
 					backr = /obj/item/rogueweapon/sword/long
+					beltr = /obj/item/rogueweapon/scabbard/sword
 				if("Mace")
 					H.adjust_skillrank(/datum/skill/combat/maces, 2, TRUE)
 					beltr = /obj/item/rogueweapon/mace
@@ -58,9 +59,11 @@
 					H.adjust_skillrank(/datum/skill/combat/swords, 2, TRUE)
 					H.adjust_skillrank(/datum/skill/combat/shields, 1, TRUE)
 					backr = /obj/item/rogueweapon/shield/iron
-					beltr = /obj/item/rogueweapon/sword/iron/short
+					beltr = /obj/item/rogueweapon/scabbard/sword
+					r_hand = /obj/item/rogueweapon/sword/iron/short
 				if("Iron Saber & Wood Shield")
-					beltr = /obj/item/rogueweapon/sword/iron/saber
+					r_hand = /obj/item/rogueweapon/sword/iron/saber
+					beltr = /obj/item/rogueweapon/scabbard/sword
 					backr = /obj/item/rogueweapon/shield/wood
 			var/armors = list("Chainmaille Set","Iron Breastplate","Gambeson & Helmet","Light Naledian Armor")
 			var/armor_choice = input("Choose your armor.", "TAKE UP ARMOR") as anything in armors
@@ -97,6 +100,7 @@
 				/obj/item/flashlight/flare/torch = 1,
 				/obj/item/rogueweapon/huntingknife = 1,
 				/obj/item/recipe_book/survival = 1,
+				/obj/item/rogueweapon/scabbard/sheath = 1
 				)
 
 		if("Duelist")
@@ -119,10 +123,12 @@
 			switch(weapon_choice)
 				if("Rapier")
 					H.adjust_skillrank(/datum/skill/combat/swords, 2, TRUE)
-					beltr = /obj/item/rogueweapon/sword/rapier
+					l_hand = /obj/item/rogueweapon/sword/rapier
+					beltl = /obj/item/rogueweapon/scabbard/sword
 				if("Dagger")
 					H.adjust_skillrank(/datum/skill/combat/knives, 2, TRUE)
-					beltr = /obj/item/rogueweapon/huntingknife/idagger/steel
+					r_hand = /obj/item/rogueweapon/huntingknife/idagger/steel
+					beltr = /obj/item/rogueweapon/scabbard/sheath
 			H.change_stat("strength", 1)
 			H.change_stat("endurance", 1)
 			H.change_stat("intelligence", 2)
@@ -145,6 +151,7 @@
 				/obj/item/flashlight/flare/torch = 1,
 				/obj/item/rogueweapon/huntingknife/idagger/steel/parrying = 1,
 				/obj/item/recipe_book/survival = 1,
+				/obj/item/rogueweapon/scabbard/sheath = 1
 				)
 
 		if("Barbarian")
@@ -230,7 +237,8 @@
 			H.change_stat("endurance", 1)
 			H.change_stat("constitution", 1)
 			H.change_stat("intelligence", 1)
-			beltr = /obj/item/rogueweapon/sword/silver
+			beltr = /obj/item/rogueweapon/scabbard/sheath
+			r_hand = /obj/item/rogueweapon/sword/silver
 			backr = /obj/item/rogueweapon/sword
 			backl = /obj/item/storage/backpack/rogue/satchel/black
 			wrists = /obj/item/clothing/neck/roguetown/psicross/silver

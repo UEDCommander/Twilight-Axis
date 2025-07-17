@@ -66,10 +66,12 @@
 			switch(weapon_choice)
 				if("Rapier")
 					H.adjust_skillrank(/datum/skill/combat/swords, 1, TRUE)
-					beltl = /obj/item/rogueweapon/sword/rapier
+					beltl = /obj/item/rogueweapon/scabbard/sword
+					l_hand = /obj/item/rogueweapon/sword/rapier
 				if("Dagger")
 					H.adjust_skillrank(/datum/skill/combat/knives, 1, TRUE)
-					beltl = /obj/item/rogueweapon/huntingknife/idagger/steel/special // Why were they spawning with an elven dagger in the first place??? Please LMK.
+					beltl = /obj/item/rogueweapon/scabbard/sheath
+					l_hand = /obj/item/rogueweapon/huntingknife/idagger/steel/special // Why were they spawning with an elven dagger in the first place??? Please LMK.
 				if ("Whip")
 					H.adjust_skillrank(/datum/skill/combat/whipsflails, 1, TRUE)
 					beltl = /obj/item/rogueweapon/whip
@@ -124,7 +126,8 @@
 					backr = /obj/item/rogueweapon/shield/iron
 				if("Dagger + Crossbow")
 					H.adjust_skillrank(/datum/skill/combat/knives, 1, TRUE)
-					beltl = /obj/item/rogueweapon/huntingknife/idagger/steel 
+					beltl = /obj/item/rogueweapon/scabbard/sheath
+					l_hand = /obj/item/rogueweapon/huntingknife/idagger/steel
 					backr = /obj/item/gun/ballistic/revolver/grenadelauncher/crossbow
 					beltr = /obj/item/quiver/bolts
 				if ("Militia Warpick + Heater Shield")

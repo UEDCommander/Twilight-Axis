@@ -172,6 +172,7 @@
 						beltr = /obj/item/rogueweapon/sword/long/oldpsysword
 					else
 						beltr = /obj/item/rogueweapon/sword/long
+					r_hand = /obj/item/rogueweapon/scabbard/sword
 					H.adjust_skillrank(/datum/skill/combat/swords, 1, TRUE)
 				if("Mace")
 					H.adjust_skillrank(/datum/skill/combat/maces, 1, TRUE)
@@ -203,7 +204,8 @@
 			backpack_contents = list(
 				/obj/item/flashlight/flare/torch = 1,
 				/obj/item/recipe_book/survival = 1,
-			)
+				/obj/item/rogueweapon/scabbard/sheath = 1
+				)
 			H.adjust_skillrank(/datum/skill/misc/music, 4, TRUE)
 			H.adjust_skillrank(/datum/skill/magic/holy, 2, TRUE)
 			H.adjust_skillrank(/datum/skill/combat/knives, 3, TRUE)

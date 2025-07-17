@@ -33,6 +33,7 @@
 						/obj/item/rogueore/iron=2,
 						/obj/item/rogueore/silver=1,
 						/obj/item/flashlight/flare/torch = 1,
+						/obj/item/rogueweapon/scabbard/sheath = 1
 						)
 	ADD_TRAIT(H, TRAIT_TRAINED_SMITH, TRAIT_GENERIC)
 	H.adjust_skillrank(/datum/skill/combat/maces, 2, TRUE)

@@ -782,6 +782,9 @@
 /obj/structure/fluff/statue/gargoyle
 	icon_state = "gargoyle"
 
+/obj/structure/fluff/statue/aasimar
+	icon_state = "aasimar"
+
 /obj/structure/fluff/statue/gargoyle/candles
 	icon_state = "gargoyle_candles"
 

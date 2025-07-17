@@ -453,6 +453,7 @@
 	belt = /obj/item/storage/belt/rogue/leather/plaquegold
 	beltr = /obj/item/storage/keyring/priest
 	beltl = /obj/item/storage/belt/rogue/pouch/coins/rich
+	r_hand = /obj/item/rogueweapon/scabbard/sword
 	backr = /obj/item/storage/backpack/rogue/satchel
 	gloves = /obj/item/clothing/gloves/roguetown/chain
 	wrists = /obj/item/clothing/wrists/roguetown/bracers
@@ -462,7 +463,10 @@
 	pants = /obj/item/clothing/under/roguetown/platelegs/holysee
 	cloak = /obj/item/clothing/cloak/holysee
 	head = /obj/item/clothing/head/roguetown/helmet/heavy/holysee
-	backpack_contents = list(/obj/item/rogueweapon/huntingknife/idagger/silver = 1)
+	backpack_contents = list(
+		/obj/item/rogueweapon/huntingknife/idagger/silver = 1,
+		/obj/item/rogueweapon/scabbard/sheath = 1
+		)
 
 	//No, they don't get any miracles. Their miracle is being able to use their weapon at all.
 	H.adjust_skillrank(/datum/skill/combat/swords, 4, TRUE)

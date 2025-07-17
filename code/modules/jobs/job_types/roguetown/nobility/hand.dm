@@ -21,22 +21,13 @@
 	cmode_music = 'sound/music/combat_noble.ogg'
 	same_job_respawn_delay = 1 HOURS
 
-/*
-/datum/job/roguetown/hand/special_job_check(mob/dead/new_player/player)
-	if(!player)
-		return
-	if(!player.ckey)
-		return
-	for(var/mob/dead/new_player/Lord in GLOB.player_list)
-		if(Lord.mind.assigned_role == "King")
-			if(Lord.brohand == player.ckey)
-				return TRUE
-*/
-
 /datum/outfit/job/roguetown/hand
 	shoes = /obj/item/clothing/shoes/roguetown/boots
 	belt = /obj/item/storage/belt/rogue/leather/steel
-	beltr = /obj/item/rogueweapon/sword/rapier/dec
+	beltr = /obj/item/rogueweapon/scabbard/sword
+	r_hand = /obj/item/rogueweapon/sword/rapier/dec
+	beltl = /obj/item/rogueweapon/scabbard/sheath
+	l_hand = /obj/item/rogueweapon/huntingknife/idagger/dtace
 	job_bitflag = BITFLAG_ROYALTY
 
 /datum/job/roguetown/hand/after_spawn(mob/living/L, mob/M, latejoin = TRUE)
@@ -71,8 +62,7 @@
 	shirt = /obj/item/clothing/suit/roguetown/shirt/undershirt/guard
 	backr = /obj/item/storage/backpack/rogue/satchel/black
 	backpack_contents = list(
-		/obj/item/rogueweapon/huntingknife/idagger/dtace = 1,
-		/obj/item/storage/keyring/hand = 1,
+		/obj/item/storage/keyring/hand = 1
 		)
 	armor = /obj/item/clothing/suit/roguetown/armor/leather/vest/hand
 	pants = /obj/item/clothing/under/roguetown/tights/black
@@ -107,9 +97,8 @@
 /datum/outfit/job/roguetown/hand/spymaster/pre_equip(mob/living/carbon/human/H)
 	backr = /obj/item/storage/backpack/rogue/satchel/black
 	backpack_contents = list(
-		/obj/item/rogueweapon/huntingknife/idagger/dtace = 1,
 		/obj/item/storage/keyring/hand = 1,
-		/obj/item/lockpickring/mundane = 1,
+		/obj/item/lockpickring/mundane = 1
 		)
 	if(H.dna.species.type in NON_DWARVEN_RACE_TYPES)
 		shirt = /obj/item/clothing/suit/roguetown/armor/gambeson/shadowrobe
@@ -163,9 +152,8 @@
 	shirt = /obj/item/clothing/suit/roguetown/shirt/undershirt/guard
 	backr = /obj/item/storage/backpack/rogue/satchel/black
 	backpack_contents = list(
-		/obj/item/rogueweapon/huntingknife/idagger/dtace = 1,
 		/obj/item/storage/keyring/hand = 1,
-		/obj/item/reagent_containers/glass/bottle/rogue/poison = 1, //starts with a vial of poison, like all wizened evil advisors do!
+		/obj/item/reagent_containers/glass/bottle/rogue/poison = 1 //starts with a vial of poison, like all wizened evil advisors do!
 		)
 	armor = /obj/item/clothing/suit/roguetown/armor/leather/vest/hand
 	pants = /obj/item/clothing/under/roguetown/tights/black
