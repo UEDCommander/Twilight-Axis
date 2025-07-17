@@ -1,5 +1,5 @@
 /datum/skill/combat/twilight_firearms
-	name = "Огнестрельное оружие"
+	name = "Firearms"
 	dreams = list(
 		"..."
 	)

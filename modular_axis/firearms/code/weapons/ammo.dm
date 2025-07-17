@@ -2,18 +2,6 @@
  * Special runelock ammo
  * Meant to be LIMITED, but reusable
  */
-/obj/item/ammo_casing/caseless/twilight_runelock
-	name = "руническая сфера"
-	desc = "Небольшой, идеально круглый металлический шар, покрытый псайдонитскими рунами. Смертоносен на высокой скорости."
-	projectile_type = /obj/projectile/bullet/reusable/twilight_runelock
-	caliber = "runed_sphere"
-	icon = 'modular_axis/firearms/icons/ammo.dmi'
-	icon_state = "musketball"
-	possible_item_intents = list(/datum/intent/use)
-	max_integrity = 0
-	w_class = WEIGHT_CLASS_TINY
-	smeltresult = /obj/item/rogueore/iron
-
 
 /obj/projectile/bullet/reusable/twilight_runelock
 	name = "runed sphere"
@@ -98,7 +86,7 @@
 	explosion(T, light_impact_range = 1, flame_range = 1, smoke = TRUE, soundin = pick('sound/misc/explode/bottlebomb (1).ogg','sound/misc/explode/bottlebomb (2).ogg'))
 
 /obj/item/ammo_casing/caseless/twilight_lead
-	name = "свинцовая пуля"
+	name = "lead sphere"
 	desc = "Небольшая свинцовая сфера. Хорошо сочетается с порохом."
 	projectile_type = /obj/projectile/bullet/twilight_lead
 	caliber = "lead_sphere"
@@ -107,8 +95,20 @@
 	dropshrink = 0.5
 	max_integrity = 0.1
 
+/obj/item/ammo_casing/caseless/twilight_lead/runelock
+	name = "runed sphere"
+	desc = "Небольшой, идеально круглый металлический шар, покрытый псайдонитскими рунами. Смертоносен на высокой скорости."
+	projectile_type = /obj/projectile/bullet/reusable/twilight_runelock
+	caliber = "runed_sphere"
+	icon = 'modular_axis/firearms/icons/ammo.dmi'
+	icon_state = "musketball"
+	possible_item_intents = list(/datum/intent/use)
+	max_integrity = 0
+	w_class = WEIGHT_CLASS_TINY
+	smeltresult = /obj/item/rogueore/iron
+
 /obj/item/ammo_casing/caseless/twilight_cannonball
-	name = "свинцовое ядро"
+	name = "lead cannonball"
 	desc = "Крупная свинцовая сфера. Важен не размер ствола, а размер отверстия, что он делает в вашем противнике."
 	projectile_type = /obj/projectile/bullet/twilight_cannonball
 	caliber = "cannonball"
@@ -119,8 +119,8 @@
 	grid_width = 32
 	grid_height = 64
 
-/obj/item/ammo_casing/caseless/twilight_grapeshot
-	name = "картечь"
+/obj/item/ammo_casing/caseless/twilight_cannonball/grapeshot
+	name = "grapeshot"
 	desc = "Плотно упакованный в бумагу набор небольших металлических шариков. Хорошо сочетается с порохом."
 	projectile_type = /obj/projectile/bullet/twilight_grapeshot
 	caliber = "cannonball"
@@ -130,5 +130,3 @@
 	max_integrity = 0.1
 	pellets = 6
 	variance = 30
-	grid_width = 32
-	grid_height = 64

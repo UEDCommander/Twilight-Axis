@@ -5,4 +5,4 @@
 	backpack_contents += /obj/item/storage/belt/rogue/pouch/coins/rich
 	backpack_contents += /obj/item/twilight_powderflask
 	beltl = /obj/item/gun/ballistic/twilight_firearm/arquebus_pistol
-	beltr = /obj/item/ammo_holder/twilight_bullet/lead
+	beltr = /obj/item/quiver/twilight_bullet/lead

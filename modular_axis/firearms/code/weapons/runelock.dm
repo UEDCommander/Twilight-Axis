@@ -1,5 +1,5 @@
 /obj/item/gun/ballistic/revolver/grenadelauncher/twilight_runelock
-	name = "рунический пистоль"
+	name = "runelock pistol"
 	desc = "Крайне смертоностное оружие. Использует руническую магию вместо пороха."
 	icon = 'modular_axis/firearms/icons/32.dmi'
 	icon_state = "pistol2"
@@ -15,8 +15,8 @@
 	force = 10
 	var/cocked = FALSE
 	cartridge_wording = "musketball"
-	load_sound = 'sound/foley/musketload.ogg'
-	fire_sound = 'sound/combat/Ranged/musketfire2.ogg'
+	load_sound = 'modular_axis/firearms/sound/musketload.ogg'
+	fire_sound = 'modular_axis/firearms/sound/musketfire2.ogg'
 	vary_fire_sound = TRUE
 	fire_sound_volume = 200
 	anvilrepair = /datum/skill/craft/engineering
@@ -25,7 +25,6 @@
 	var/misfire_chance = 0
 	/// Reload time, in SECONDS
 	var/reload_time = 10
-	weapon_embed_chance = 100 //this was here to make a weaker version of the gun, didn't do it, still keeping this here to be used
 	damfactor = 5
 
 /obj/item/gun/ballistic/revolver/grenadelauncher/twilight_runelock/getonmobprop(tag)

@@ -106,7 +106,7 @@
 		var/newtime = chargetime
 		//skill block
 		newtime = newtime + 95
-		newtime = newtime - (mastermob.mind.get_skill_level(/datum/skill/combat/twilight_firearms) * 20)
+		newtime = newtime - (mastermob.get_skill_level(/datum/skill/combat/twilight_firearms) * 20)
 		//per block
 		newtime = newtime + 20
 		newtime = newtime - ((mastermob.STAPER)*1.5)
@@ -135,7 +135,7 @@
 		var/newtime = chargetime
 		//skill block
 		newtime = newtime + 90
-		newtime = newtime - (mastermob.mind.get_skill_level(/datum/skill/combat/twilight_firearms) * 20)
+		newtime = newtime - (mastermob.get_skill_level(/datum/skill/combat/twilight_firearms) * 20)
 		//per block
 		newtime = newtime + 20
 		newtime = newtime - ((mastermob.STAPER)*1.5)
@@ -163,8 +163,8 @@
 
 /obj/item/gun/ballistic/twilight_firearm/attackby(obj/item/A, mob/user, params)
 	user.stop_sound_channel(gunchannel)
-	var/firearm_skill = (user?.mind ? user.mind.get_skill_level(/datum/skill/combat/twilight_firearms) : 1)
-	var/load_time_skill = load_time - (firearm_skill*2)
+	var/firearm_skill = (user?.mind ? user.get_skill_level(/datum/skill/combat/twilight_firearms) : 1)
+	var/load_time_skill = load_time - (firearm_skill*5)
 	//gunchannel = SSsounds.random_available_channel()
 
 	if(istype(A, /obj/item/ammo_box) || istype(A, /obj/item/ammo_casing))
@@ -219,7 +219,7 @@
 /obj/item/gun/ballistic/twilight_firearm/process_fire(atom/target, mob/living/user, message = TRUE, params = null, zone_override = "", bonus_spread = 0)
 
 	var/accident_chance = 0
-	var/firearm_skill = (user?.mind ? user.mind.get_skill_level(/datum/skill/combat/twilight_firearms) : 1)
+	var/firearm_skill = (user?.mind ? user.get_skill_level(/datum/skill/combat/twilight_firearms) : 1)
 	var/turf/knockback = get_ranged_target_turf(user, turn(user.dir, 180), rand(1,2))
 	spread = (spread_num - firearm_skill)
 	if(firearm_skill < 1)
@@ -296,14 +296,14 @@
 	start_empty = TRUE
 
 /obj/item/gun/ballistic/twilight_firearm/arquebus
-	name = "аркебуза"
+	name = "arquebus rifle"
 	desc = "Пороховое оружие, стреляющее бронебойными свинцовыми пулями."
 	icon = 'modular_axis/firearms/icons/arquebus.dmi'
 	icon_state = "arquebus"
 	item_state = "arquebus"
 
 /obj/item/gun/ballistic/twilight_firearm/arquebus_pistol
-	name = "пистоль"
+	name = "arquebus pistol"
 	desc = "Небольшое пороховое оружие, стреляющее бронебойными свинцовыми пулями. Меньшая длина ствола негативно сказывается на огневой мощи, но дизайн пистоля более компактный, и его можно носить на бедре."
 	icon = 'modular_axis/firearms/icons/32.dmi'
 	icon_state = "pistol"
@@ -330,7 +330,7 @@
 				return list("shrink" = 0.3,"sx" = -2,"sy" = -5,"nx" = 4,"ny" = -5,"wx" = 0,"wy" = -5,"ex" = 2,"ey" = -5,"nturn" = 0,"sturn" = 0,"wturn" = 0,"eturn" = 0,"nflip" = 0,"sflip" = 0,"wflip" = 0,"eflip" = 0,"northabove" = 0,"southabove" = 1,"eastabove" = 1,"westabove" = 0)
 
 /obj/item/gun/ballistic/twilight_firearm/handgonne
-	name = "кулеврина"
+	name = "culverin"
 	desc = "Тяжелое пороховое оружие, стреляющее крупными свинцовыми ядрами. Для поджига пороха используется длинный фитиль, из-за которого орудие стреляет с задержкой."
 	icon = 'modular_axis/firearms/icons/handgonne.dmi'
 	icon_state = "handgonne"
@@ -348,7 +348,7 @@
 
 /obj/item/gun/ballistic/twilight_firearm/handgonne/process_fire(atom/target, mob/living/user, message = TRUE, params = null, zone_override = "", bonus_spread = 0)
 	var/accident_chance = 0
-	var/firearm_skill = (user?.mind ? user.mind.get_skill_level(/datum/skill/combat/twilight_firearms) : 1)
+	var/firearm_skill = (user?.mind ? user.get_skill_level(/datum/skill/combat/twilight_firearms) : 1)
 	var/turf/knockback = get_ranged_target_turf(user, turn(user.dir, 180), rand(1,2))
 	spread = (spread_num - firearm_skill)
 	if(firearm_skill < 1)
@@ -407,7 +407,7 @@
 				user.Immobilize(30)
 
 /obj/item/gun/ballistic/twilight_firearm/flintgonne
-	name = "пищаль"
+	name = "flintgonne"
 	desc = "Устаревшее пороховое оружие, стреляющее бронебойными свинцовыми пулями."
 	icon = 'modular_axis/firearms/icons/flintgonne.dmi'
 	icon_state = "flintgonne"
@@ -418,7 +418,7 @@
 	if(mastermob && chargetime)
 		var/newtime = chargetime
 		newtime = newtime + 105
-		newtime = newtime - (mastermob.mind.get_skill_level(/datum/skill/combat/twilight_firearms) * 20)
+		newtime = newtime - (mastermob.get_skill_level(/datum/skill/combat/twilight_firearms) * 20)
 		newtime = newtime + 20
 		newtime = newtime - ((mastermob.STAPER)*1.5)
 		if(newtime > 0)
@@ -431,7 +431,7 @@
 	if(mastermob && chargetime)
 		var/newtime = chargetime
 		newtime = newtime + 100
-		newtime = newtime - (mastermob.mind.get_skill_level(/datum/skill/combat/twilight_firearms) * 20)
+		newtime = newtime - (mastermob.get_skill_level(/datum/skill/combat/twilight_firearms) * 20)
 		newtime = newtime + 20
 		newtime = newtime - ((mastermob.STAPER)*1.5)
 		if(newtime > 0)
