@@ -68,7 +68,7 @@
 		/datum/migrant_role/pilgrim = 1,
 	)
 	greet_text = "Fleeing from misfortune and hardship, you and a handful of survivors get closer to Twilight Axis, looking for refuge and work, finally almost being there, almost..."
-
+/*
 /datum/migrant_wave/adventurer
 	name = "Adventure Party"
 	downgrade_wave = /datum/migrant_wave/adventurer_down_one
@@ -102,7 +102,7 @@
 		/datum/migrant_role/adventurer = 1,
 	)
 	greet_text = "Together with a party of trusted friends we decided to venture out, seeking thrills, glory and treasure, ending up in the misty and damp bog underneath Twilight Axis, perhaps getting ourselves into more than what we bargained for."
-
+*/
 /datum/migrant_wave/bandit
 	name = "Bandit Raid"
 	downgrade_wave = /datum/migrant_wave/bandit_down_one
