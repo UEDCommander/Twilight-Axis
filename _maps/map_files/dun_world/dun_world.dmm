@@ -61848,10 +61848,6 @@
 /obj/structure/closet/crate/chest/wicker,
 /turf/open/floor/rogue/cobble,
 /area/rogue/outdoors/beach)
-"tEO" = (
-/obj/effect/landmark/quest_spawner/easy,
-/turf/open/floor/rogue/hexstone,
-/area/rogue/indoors/town/dwarfin)
 "tES" = (
 /obj/structure/roguemachine/mail{
 	mailtag = "Archivist"
@@ -154378,7 +154374,7 @@ vGa
 vGa
 vGa
 vGa
-tEO
+vGa
 smL
 ogs
 ogs
