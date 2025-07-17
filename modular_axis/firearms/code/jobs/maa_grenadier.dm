@@ -40,8 +40,12 @@
 	switch(weapon_choice)
 		if("Аркебуза и свинцовые пули")
 			beltr = /obj/item/ammo_holder/twilight_bullet/lead
+			beltl = /obj/item/rogueweapon/scabbard/sword
+			r_hand = /obj/item/rogueweapon/sword/sabre
 			backl = /obj/item/gun/ballistic/twilight_firearm/arquebus
 		if("Кулеврина и картечь") 
+			beltl = /obj/item/rogueweapon/scabbard/sword
+			r_hand = /obj/item/rogueweapon/sword/sabre
 			beltr = /obj/item/ammo_holder/twilight_bullet/cannonball/grapeshot
 			backl = /obj/item/gun/ballistic/twilight_firearm/handgonne
 
