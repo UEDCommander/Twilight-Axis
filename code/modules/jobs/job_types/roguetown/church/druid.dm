@@ -19,7 +19,7 @@
 	max_pq = null
 	round_contrib_points = 2
 	cmode_music = 'sound/music/combat_druid.ogg'
-	same_job_respawn_delay = 1 HOURS
+	same_job_respawn_delay = 30 MINUTES
 
 	//You're.. not REALLY a full-on church member, but being a druid implies you became a clergy-man of some sort; even if it's non-organized. So, still shouldn't be noble.
 	virtue_restrictions = list(/datum/virtue/utility/noble)

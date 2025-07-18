@@ -23,7 +23,7 @@
 	min_pq = 0
 	max_pq = null
 	round_contrib_points = 2
-	same_job_respawn_delay = 1 HOURS
+	same_job_respawn_delay = 30 MINUTES
 
 	cmode_music = 'sound/music/combat_warden.ogg'
 
