@@ -12,7 +12,7 @@
 		to_chat(user, span_warning("My [src.name] is full!"))
 		return
 	to_chat(user, span_notice("I begin to gather the ammunition..."))
-	for(ammo_type in T.contents)
+	for(var/obj/item/ammo_casing/caseless/twilight_lead/arrow in T.contents)
 		if(do_after(user, 5))
 			if(!eatarrow(arrow))
 				break
@@ -33,7 +33,7 @@
 	if (!arrows.len)
 		return
 	to_chat(user, span_warning("I begin to take out the ammo from [src], one by one..."))
-	for(ammo_type in arrows)
+	for(var/obj/item/ammo_casing/caseless/arrow in arrows)
 		if(!do_after(user, 0.5 SECONDS))
 			return
 		arrow.forceMove(user.loc)
@@ -75,6 +75,16 @@
 	desc = "Небольшой мешочек, в котором можно хранить выстрелы для кулеврины."
 	max_storage = 20
 	ammo_type = /obj/item/ammo_casing/caseless/twilight_cannonball
+
+/obj/item/quiver/twilight_bullet/cannonball/attack_turf(turf/T, mob/living/user)
+	if(arrows.len >= max_storage)
+		to_chat(user, span_warning("My [src.name] is full!"))
+		return
+	to_chat(user, span_notice("I begin to gather the ammunition..."))
+	for(var/obj/item/ammo_casing/caseless/twilight_cannonball/arrow in T.contents)
+		if(do_after(user, 5))
+			if(!eatarrow(arrow))
+				break
 
 /obj/item/quiver/twilight_bullet/cannonball/lead/Initialize()
 	. = ..()

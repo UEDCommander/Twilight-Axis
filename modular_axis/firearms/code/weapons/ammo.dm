@@ -11,8 +11,7 @@
 	damage_type = BRUTE
 	icon = 'modular_axis/firearms/icons/ammo.dmi'
 	icon_state = "musketball"
-	ammo_type = /obj/item/ammo_casing/caseless/twilight_runelock
-	smeltresult = /obj/item/rogueore/iron
+	ammo_type = /obj/item/ammo_casing/caseless/twilight_lead/runelock
 	range = 30
 	hitsound = 'sound/combat/hits/hi_bolt (2).ogg'
 	embedchance = 100
@@ -83,7 +82,7 @@
 /obj/projectile/bullet/twilight_cannonball/on_hit(atom/target, blocked = FALSE)
 	. = ..()
 	var/turf/T = get_turf(target)
-	explosion(T, light_impact_range = 1, flame_range = 1, smoke = TRUE, soundin = pick('sound/misc/explode/bottlebomb (1).ogg','sound/misc/explode/bottlebomb (2).ogg'))
+	explosion(T, light_impact_range = 1, smoke = TRUE, soundin = pick('sound/misc/explode/bottlebomb (1).ogg','sound/misc/explode/bottlebomb (2).ogg'))
 
 /obj/item/ammo_casing/caseless/twilight_lead
 	name = "lead sphere"

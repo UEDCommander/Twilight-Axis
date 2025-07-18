@@ -16,6 +16,22 @@
 	slot_flags = SLOT_BELT_L | SLOT_BELT_R | ITEM_SLOT_NECK | ITEM_SLOT_HIP
 	w_class = WEIGHT_CLASS_SMALL
 
+/obj/effect/particle_effect/smoke/arquebus
+	name = "smoke"
+	icon = 'icons/effects/96x96.dmi'
+	icon_state = "smoke"
+	pixel_x = -32
+	pixel_y = -32
+	opacity = FALSE
+	layer = FLY_LAYER
+	plane = GAME_PLANE_UPPER
+	anchored = TRUE
+	mouse_opacity = MOUSE_OPACITY_TRANSPARENT
+	animate_movement = 0
+	amount = 4
+	lifetime = 4
+	opaque = FALSE
+
 /obj/item/gun/ballistic/twilight_firearm
 	name = "Gunpowder weapon"
 	desc = "IF YOU ARE SEEING THIS. REPORT THIS TO A DEV. "
@@ -55,7 +71,7 @@
 	//pickup_sound = 'sound/sheath_sounds/draw_from_holster.ogg'
 	//sheathe_sound = 'sound/sheath_sounds/put_back_to_holster.ogg'
 	var/spread_num = 10
-	damfactor = 2
+	var/damfactor = 2
 	var/reloaded = FALSE
 	var/load_time = 50
 	var/gunpowder = FALSE
@@ -146,7 +162,7 @@
 	return chargetime
 
 /obj/item/gun/ballistic/twilight_firearm/shoot_with_empty_chamber()
-	playsound(src.loc, 'sound/foley/musketcock.ogg', 100, FALSE)
+	playsound(src.loc, 'modular_axis/firearms/sound/musketcock.ogg', 100, FALSE)
 	update_icon()
 
 /obj/item/gun/ballistic/twilight_firearm/attack_self(mob/living/user)
@@ -242,8 +258,6 @@
 	for(var/obj/item/ammo_casing/CB in get_ammo_list(FALSE, TRUE))
 		var/obj/projectile/BB = CB.BB
 		BB.damage = BB.damage * damfactor
-		if(HAS_TRAIT(user, TRAIT_TINY))
-			BB.damage = (BB.damage * 0.3)
 	gunpowder = FALSE
 	reloaded = FALSE
 	spark_act()
@@ -335,12 +349,12 @@
 	icon = 'modular_axis/firearms/icons/handgonne.dmi'
 	icon_state = "handgonne"
 	item_state = "handgonne"
-	mag_type = /obj/item/ammo_box/magazine/internal/firearm/handgonne
+	mag_type = /obj/item/ammo_box/magazine/internal/twilight_firearm/handgonne
 	cartridge_wording = "пушечный выстрел"
 
 /obj/item/ammo_box/magazine/internal/twilight_firearm/handgonne
 	name = "handgonne internal magazine"
-	ammo_type = /obj/item/ammo_casing/caseless/cannonball
+	ammo_type = /obj/item/ammo_casing/caseless/twilight_cannonball
 	caliber = "cannonball"
 	max_ammo = 1
 	start_empty = TRUE
@@ -371,8 +385,6 @@
 	for(var/obj/item/ammo_casing/CB in get_ammo_list(FALSE, TRUE))
 		var/obj/projectile/BB = CB.BB
 		BB.damage = BB.damage * damfactor
-		if(HAS_TRAIT(user, TRAIT_TINY))
-			BB.damage = (BB.damage * 0.3)
 	gunpowder = FALSE
 	reloaded = FALSE
 	spark_act()
