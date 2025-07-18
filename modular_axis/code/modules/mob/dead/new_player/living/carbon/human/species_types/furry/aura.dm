@@ -53,6 +53,7 @@
 		/datum/customizer/bodypart_feature/hair/facial/humanoid,
 		/datum/customizer/bodypart_feature/accessory,
 		/datum/customizer/bodypart_feature/face_detail,
+		/datum/customizer/bodypart_feature/underwear,
 		/datum/customizer/organ/horns/humanoid/aura,
 		/datum/customizer/organ/tail/aura,
 		/datum/customizer/organ/testicles/human,
@@ -86,6 +87,11 @@
 		/datum/descriptor_choice/prominent_two_wild,
 		/datum/descriptor_choice/prominent_three_wild,
 		/datum/descriptor_choice/prominent_four_wild,
+	)
+
+	languages = list(
+		/datum/language/common,
+		/datum/language/kazengunese
 	)
 
 /datum/species/aura/check_roundstart_eligible()

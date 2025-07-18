@@ -17,7 +17,7 @@
 	min_pq = 5 //Should...probably actually be a veteran of at least a few weeks before trying to teach others
 	max_pq = null
 	round_contrib_points = 2
-	same_job_respawn_delay = 1 HOURS
+	same_job_respawn_delay = 30 MINUTES
 
 	cmode_music = 'sound/music/combat_veteran.ogg'
 

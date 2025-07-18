@@ -19,7 +19,7 @@
 	wanderer_examine = FALSE
 	advjob_examine = TRUE
 	give_bank_account = 15
-	same_job_respawn_delay = 1 HOURS
+	same_job_respawn_delay = 30 MINUTES
 
 /datum/job/roguetown/orthodoxist/after_spawn(mob/living/L, mob/M, latejoin = TRUE)
 	..()

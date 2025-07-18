@@ -22,7 +22,7 @@
 	min_pq = 6
 	max_pq = null
 	cmode_music = 'sound/music/combat_ManAtArms.ogg'
-	same_job_respawn_delay = 1 HOURS
+	same_job_respawn_delay = 30 MINUTES
 
 /datum/outfit/job/roguetown/sergeant
 	job_bitflag = BITFLAG_GARRISON

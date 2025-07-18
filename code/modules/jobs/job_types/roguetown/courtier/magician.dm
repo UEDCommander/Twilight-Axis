@@ -21,7 +21,7 @@
 	max_pq = null
 	round_contrib_points = 2
 	cmode_music = 'sound/music/combat_bandit_mage.ogg'
-	same_job_respawn_delay = 1 HOURS
+	same_job_respawn_delay = 30 MINUTES
 
 	// Can't get very far as a magician if you can't chant spells now can you?
 	vice_restrictions = list(/datum/charflaw/mute)

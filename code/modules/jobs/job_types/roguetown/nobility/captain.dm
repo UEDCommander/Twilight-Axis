@@ -24,7 +24,7 @@
 	max_pq = null
 	round_contrib_points = 3
 	cmode_music = 'sound/music/combat_knight.ogg'
-	same_job_respawn_delay = 1 HOURS
+	same_job_respawn_delay = 30 MINUTES
 
 /datum/outfit/job/roguetown/captain
 	head = /obj/item/clothing/head/roguetown/helmet/heavy/knight/captain
