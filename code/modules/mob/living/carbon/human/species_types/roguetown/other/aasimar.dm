@@ -91,6 +91,7 @@
 
 /datum/species/aasimar/get_skin_list()
 	return list(
+		"Archon" = SKIN_COLOR_ARCHON,
 		"Cultor" = SKIN_COLOR_CULTOR,
 		"Spiritus" = SKIN_COLOR_SPIRITUS,
 		"Planetar" = SKIN_COLOR_PLANETAR,
