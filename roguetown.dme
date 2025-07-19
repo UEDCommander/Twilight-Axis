@@ -2402,6 +2402,7 @@
 #include "modular_axis\code\modules\client\customizer\customizers\organ\wings.dm"
 #include "modular_axis\code\modules\clothing\rogueclothes\cloaks.dm"
 #include "modular_axis\code\modules\clothing\rogueclothes\shirts.dm"
+#include "modular_axis\code\modules\clothing\rogueclothes\mask.dm"
 #include "modular_axis\code\modules\clothing\rogueclothes\armor\gambeson.dm"
 #include "modular_axis\code\modules\clothing\rogueclothes\armor\leather.dm"
 #include "modular_axis\code\modules\clothing\rogueclothes\armor\plate.dm"
