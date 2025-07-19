@@ -90,7 +90,7 @@
 	gloves = /obj/item/clothing/gloves/roguetown/otavan/inqgloves
 	wrists = /obj/item/clothing/neck/roguetown/psicross/silver
 	beltl = /obj/item/rogueweapon/scabbard/sword
-	l_hand = /obj/item/rogueweapon/sword/rapier
+	l_hand = /obj/item/rogueweapon/sword/rapier/psyrapier
 	armor = /obj/item/clothing/suit/roguetown/armor/plate/scale/inqcoat
 	backpack_contents = list(
 		/obj/item/storage/keyring/puritan = 1,
