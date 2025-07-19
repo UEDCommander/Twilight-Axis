@@ -1,3 +1,6 @@
+/obj/projectile/bullet
+	var/silver = FALSE
+
 /**
  * Special runelock ammo
  * Meant to be LIMITED, but reusable
@@ -5,25 +8,35 @@
 
 /obj/projectile/bullet/reusable/twilight_runelock
 	name = "runed sphere"
+	desc = "Небольшой, идеально круглый металлический шар, покрытый псайдонитскими рунами. Смертоносен на высокой скорости."
 	damage = 40
 	armor_penetration = 50
 	speed = 0.6
 	damage_type = BRUTE
 	icon = 'modular_axis/firearms/icons/ammo.dmi'
-	icon_state = "musketball"
+	icon_state = "musketball_runed"
 	ammo_type = /obj/item/ammo_casing/caseless/twilight_lead/runelock
-	range = 30
+	range = 20
 	hitsound = 'sound/combat/hits/hi_bolt (2).ogg'
 	embedchance = 100
 	woundclass = BCLASS_STAB
-	flag = "bullet"
+	flag = "piercing"
+
+/obj/projectile/bullet/reusable/twilight_runelock/blessed
+	name = "blessed sphere"
+	desc = "Небольшой, идеально круглый шар, изготовленный из чистого серебра. Такие боеприпасы создаются лучшими из отавианских кузнецов и освящяются лично Великим Магистром. Смертоностны против нежити, но весьма эффективны и против других еретиков."
+	damage = 40
+	armor_penetration = 40
+	ammo_type = /obj/item/ammo_casing/caseless/twilight_lead/runelock/blessed
+	icon_state = "musketball_blessed"
+	silver = TRUE
 
 /**
  * Generic ammo used by handgonnes and arquebuses
  */
-
 /obj/projectile/bullet/twilight_lead
 	name = "lead sphere"
+	desc = "Небольшая свинцовая сфера. Хорошо сочетается с порохом."
 	damage = 75	//higher damage than crossbow
 	damage_type = BRUTE
 	icon = 'modular_axis/firearms/icons/ammo.dmi'
@@ -33,39 +46,89 @@
 	hitsound = 'sound/combat/hits/hi_arrow2.ogg'
 	embedchance = 100
 	woundclass = BCLASS_STAB
-	flag = "bullet"
+	flag = "piercing"
 	armor_penetration = 75 
-	speed = 0.1		
+	speed = 0.1
+
+/obj/projectile/bullet/twilight_lead/silver
+	name = "silver sphere"
+	desc = "Небольшая серебряная сфера. Мягче, чем свинцовая пуля, но крайне эффективна против нежити."
+	ammo_type = /obj/item/ammo_casing/caseless/twilight_lead/silver
+	damage = 60
+	armor_penetration = 60
+	silver = TRUE
 
 /obj/projectile/bullet/twilight_cannonball
 	name = "cannonball"
+	desc = "Крупная свинцовая сфера. Важен не размер ствола, а размер отверстия, что он делает в вашем противнике."
 	damage = 30
 	damage_type = BRUTE
 	icon = 'modular_axis/firearms/icons/ammo.dmi'
 	icon_state = "musketball_proj"
-	ammo_type = /obj/item/ammo_casing/caseless/twilight_lead
+	ammo_type = /obj/item/ammo_casing/caseless/twilight_cannonball
 	range = 25		
 	hitsound = 'sound/combat/hits/hi_arrow2.ogg'
 	embedchance = 0
 	woundclass = BCLASS_STAB
-	flag = "bullet"
+	flag = "piercing"
 	armor_penetration = 75 
 	speed = 0.1		
 
 /obj/projectile/bullet/twilight_grapeshot
 	name = "grapeshot"
+	desc = "Плотно упакованный в бумагу набор небольших металлических шариков. Хорошо сочетается с порохом."
 	damage = 15
 	damage_type = BRUTE
 	icon = 'modular_axis/firearms/icons/ammo.dmi'
 	icon_state = "musketball_proj"
-	ammo_type = /obj/item/ammo_casing/caseless/twilight_lead
+	ammo_type = /obj/item/ammo_casing/caseless/twilight_cannonball/grapeshot
 	range = 15
 	hitsound = 'sound/combat/hits/hi_arrow2.ogg'
 	embedchance = 100
 	woundclass = BCLASS_STAB
-	flag = "bullet"
+	flag = "piercing"
 	armor_penetration = 75 
 	speed = 0.1		
+
+/obj/projectile/bullet/on_hit(atom/target, blocked = FALSE)
+	. = ..()
+	if(isliving(firer) && isgun(fired_from))
+		var/mob/living/M = firer
+		var/obj/item/gun/G = fired_from
+		var/skill = (M?.mind ? M.get_skill_level(G.associated_skill) : 1)
+		if(isliving(target))
+			var/mob/living/T = target
+			if(skill >= 1)
+				if(isanimal(T) && (T.stat != DEAD || (T.stat == DEAD && T.timeofdeath == world.time)))
+					adjust_experience(M, G.associated_skill, M.STAINT * 3)
+				else if(ishuman(T) && (T.stat != DEAD || (T.stat == DEAD && T.timeofdeath == world.time)))
+					adjust_experience(M, G.associated_skill, M.STAINT * 6)
+			if(silver)
+				if(T.mind)
+					var/datum/antagonist/werewolf/W = T.mind.has_antag_datum(/datum/antagonist/werewolf/)
+					var/datum/antagonist/vampirelord/lesser/V = T.mind.has_antag_datum(/datum/antagonist/vampirelord/lesser)
+					var/datum/antagonist/vampirelord/V_lord = T.mind.has_antag_datum(/datum/antagonist/vampirelord/)
+					if(V)
+						if(V.disguised)
+							T.visible_message("<font color='white'>The silver weapon weakens the curse temporarily!</font>")
+							to_chat(T, span_userdanger("I'm hit by my BANE!"))
+							T.apply_status_effect(/datum/status_effect/debuff/silver_curse)
+						else
+							T.visible_message("<font color='white'>The silver weapon weakens the curse temporarily!</font>")
+							to_chat(T, span_userdanger("I'm hit by my BANE!"))
+							T.apply_status_effect(/datum/status_effect/debuff/silver_curse)
+					if(V_lord)
+						if(V_lord.vamplevel < 4 && !V)
+							T.visible_message("<font color='white'>The silver weapon weakens the curse temporarily!</font>")
+							to_chat(T, span_userdanger("I'm hit by my BANE!"))
+							T.apply_status_effect(/datum/status_effect/debuff/silver_curse)
+						if(V_lord.vamplevel == 4 && !V)
+							to_chat(T, "<font color='red'> The silver weapon fails!</font>")
+							T.visible_message(T, span_userdanger("This feeble metal can't hurt me, I AM ANCIENT!"))
+					if(W && W.transformed == TRUE)
+						T.visible_message("<font color='white'>The silver weapon weakens the curse temporarily!</font>")
+						to_chat(T, span_userdanger("I'm hit by my BANE!"))
+						T.apply_status_effect(/datum/status_effect/debuff/silver_curse)
 
 /obj/projectile/bullet/twilight_lead/on_hit(atom/target, blocked = FALSE)
 	. = ..()
@@ -100,11 +163,25 @@
 	projectile_type = /obj/projectile/bullet/reusable/twilight_runelock
 	caliber = "runed_sphere"
 	icon = 'modular_axis/firearms/icons/ammo.dmi'
-	icon_state = "musketball"
+	icon_state = "musketball_runed"
 	possible_item_intents = list(/datum/intent/use)
 	max_integrity = 0
 	w_class = WEIGHT_CLASS_TINY
 	smeltresult = /obj/item/rogueore/iron
+
+/obj/item/ammo_casing/caseless/twilight_lead/silver
+	name = "silver sphere"
+	desc = "Небольшая серебряная сфера. Мягче, чем свинцовая пуля, но крайне эффективна против нежити."
+	projectile_type = /obj/projectile/bullet/twilight_lead/silver
+
+/obj/item/ammo_casing/caseless/twilight_lead/runelock/blessed
+	name = "blessed sphere"
+	desc = "Небольшой, идеально круглый шар, изготовленный из чистого серебра. Такие боеприпасы создаются лучшими из отавианских кузнецов и освящяются лично Великим Магистром. Смертоностны против нежити, но весьма эффективны и против других еретиков."
+	projectile_type = /obj/projectile/bullet/reusable/twilight_runelock/blessed
+	caliber = "runed_sphere_blessed"
+	icon_state = "musketball_blessed"
+	w_class = WEIGHT_CLASS_TINY
+	smeltresult = /obj/item/rogueore/silver
 
 /obj/item/ammo_casing/caseless/twilight_cannonball
 	name = "lead cannonball"
@@ -112,7 +189,7 @@
 	projectile_type = /obj/projectile/bullet/twilight_cannonball
 	caliber = "cannonball"
 	icon = 'modular_axis/firearms/icons/ammo.dmi'
-	icon_state = "musketball"
+	icon_state = "cball"
 	dropshrink = 0.5
 	max_integrity = 0.1
 	grid_width = 32

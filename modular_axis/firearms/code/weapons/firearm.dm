@@ -316,6 +316,17 @@
 	icon_state = "arquebus"
 	item_state = "arquebus"
 
+/obj/item/gun/ballistic/twilight_firearm/arquebus/bayonet
+	name = "arquebus rifle"
+	desc = "Пороховое оружие, стреляющее бронебойными свинцовыми пулями. Оснащена штыком для использования в ближнем бою."
+	icon = 'modular_axis/firearms/icons/arquebusbaoynet.dmi'
+	gripped_intents = list(/datum/intent/shoot/twilight_firearm, /datum/intent/arc/twilight_firearm, INTENT_GENERIC, /datum/intent/spear/thrust/militia)
+
+/obj/item/gun/ballistic/twilight_firearm/arquebus/decorated
+	name = "decorated arquebus rifle"
+	desc = "Настоящее произведение искусства в обличии огнестрельного оружия. Приклад и цевье аркебузы украшены золотыми пластинами и инкрустированным рубином, а на стволе выбита надпись: «Взгляните на мои деянья и дрожите»."
+	icon = 'modular_axis/firearms/icons/decorated_arquebus.dmi'
+
 /obj/item/gun/ballistic/twilight_firearm/arquebus_pistol
 	name = "arquebus pistol"
 	desc = "Небольшое пороховое оружие, стреляющее бронебойными свинцовыми пулями. Меньшая длина ствола негативно сказывается на огневой мощи, но дизайн пистоля более компактный, и его можно носить на бедре."
@@ -332,7 +343,7 @@
 	bigboy = FALSE
 	gripsprite = FALSE
 	cartridge_wording = "свинцовая пуля"
-	damfactor = 1.7
+	damfactor = 1.5
 
 /obj/item/gun/ballistic/twilight_firearm/arquebus_pistol/getonmobprop(tag)
 	. = ..()
@@ -425,6 +436,7 @@
 	icon_state = "flintgonne"
 	item_state = "flintgonne"
 	gripped_intents = list(/datum/intent/shoot/twilight_firearm/flintgonne, /datum/intent/arc/twilight_firearm/flintgonne, INTENT_GENERIC)
+	damfactor = 1.5
 
 /datum/intent/shoot/twilight_firearm/flintgonne/get_chargetime()
 	if(mastermob && chargetime)

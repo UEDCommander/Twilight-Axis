@@ -1,11 +1,18 @@
 /obj/item/quiver/twilight_bullet
 	name = "ammo bag"
 	desc = "Небольшой мешочек, в котором можно хранить пули для огнестрельного оружия."
-	icon_state = "pouch0"
-	item_state = "pouch"
+	icon = 'modular_axis/firearms/icons/ammo.dmi'
+	icon_state = "pouch1"
+	item_state = "pouch1"
 	slot_flags = ITEM_SLOT_HIP|ITEM_SLOT_NECK
 	max_storage = 30
 	var/ammo_type = /obj/item/ammo_casing/caseless/twilight_lead
+
+/obj/item/quiver/twilight_bullet/update_icon()
+	if(arrows.len)
+		icon_state = "pouch1"
+	else
+		icon_state = "pouch0"
 
 /obj/item/quiver/twilight_bullet/attack_turf(turf/T, mob/living/user)
 	if(arrows.len >= max_storage)
@@ -18,7 +25,7 @@
 				break
 
 /obj/item/quiver/twilight_bullet/eatarrow(obj/A)
-	if(A.type in subtypesof(ammo_type))
+	if(A.type in typesof(ammo_type))
 		if(arrows.len < max_storage)
 			A.forceMove(src)
 			arrows += A
@@ -42,7 +49,7 @@
 	update_icon()
 
 /obj/item/quiver/twilight_bullet/attackby(obj/A, loc, params)
-	if(A.type in subtypesof(ammo_type))
+	if(A.type in typesof(ammo_type))
 		if(arrows.len < max_storage)
 			if(ismob(loc))
 				var/mob/M = loc
@@ -58,8 +65,15 @@
 
 /obj/item/quiver/twilight_bullet/runed/Initialize()
 	. = ..()
-	for(var/i in 1 to max_storage)
+	for(var/i in 1 to 6)
 		var/obj/item/ammo_casing/caseless/twilight_lead/runelock/R = new()
+		arrows += R
+	update_icon()
+
+/obj/item/quiver/twilight_bullet/blessed/Initialize()
+	. = ..()
+	for(var/i in 1 to 4)
+		var/obj/item/ammo_casing/caseless/twilight_lead/runelock/blessed/R = new()
 		arrows += R
 	update_icon()
 

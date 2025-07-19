@@ -2,7 +2,7 @@
 	name = "Grenadier"
 	tutorial = "Вы — опытный солдат герцогства, повидавший немало сражений. За ваши заслуги вам довелось стать одним из тех немногих, кому было доверено новейшее пороховое оружие. Используйте его с умом и защитите державу от врагов внешних и внутренних."
 	outfit = /datum/outfit/job/roguetown/manorguard/twilight_grenadier
-
+	maximum_possible_slots = 2
 	category_tags = list(CTAG_MENATARMS)
 
 /datum/outfit/job/roguetown/manorguard/twilight_grenadier/pre_equip(mob/living/carbon/human/H)
@@ -34,7 +34,7 @@
 	pants = /obj/item/clothing/under/roguetown/trou/leather
 
 	H.adjust_blindness(-3)
-	var/weapons = list("Аркебуза и свинцовые пули","Кулеврина и картечь")
+	var/weapons = list("Аркебуза со штыком","Кулеврина и картечь")
 	var/weapon_choice = input("Выберите свое оружие.", "К ОРУЖИЮ") as anything in weapons
 	H.set_blindness(0)
 	switch(weapon_choice)
@@ -42,7 +42,7 @@
 			beltr = /obj/item/quiver/twilight_bullet/lead
 			beltl = /obj/item/rogueweapon/scabbard/sword
 			r_hand = /obj/item/rogueweapon/sword/sabre
-			backl = /obj/item/gun/ballistic/twilight_firearm/arquebus
+			backl = /obj/item/gun/ballistic/twilight_firearm/arquebus/bayonet
 		if("Кулеврина и картечь") 
 			beltl = /obj/item/rogueweapon/scabbard/sword
 			r_hand = /obj/item/rogueweapon/sword/sabre
