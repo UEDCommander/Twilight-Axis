@@ -16,7 +16,6 @@
 	min_pq = 3
 	max_pq = null
 	round_contrib_points = 3
-	same_job_respawn_delay = 30 MINUTES
 
 /datum/job/roguetown/butler/after_spawn(mob/living/L, mob/M, latejoin = TRUE)
 	. = ..()

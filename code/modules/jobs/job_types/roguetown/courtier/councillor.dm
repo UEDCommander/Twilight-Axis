@@ -19,7 +19,6 @@
 	max_pq = null
 	round_contrib_points = 2
 	cmode_music = 'sound/music/combat_noble.ogg'
-	same_job_respawn_delay = 30 MINUTES
 
 /datum/outfit/job/roguetown/councillor
 	job_bitflag = BITFLAG_ROYALTY
