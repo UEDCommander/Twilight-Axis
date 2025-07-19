@@ -41,7 +41,7 @@
 	H.adjust_skillrank(/datum/skill/craft/tanning, 2, TRUE)
 	H.adjust_skillrank(/datum/skill/craft/cooking, 1, TRUE)
 	H.adjust_skillrank(/datum/skill/labor/butchering, 1, TRUE)
-	H.cmode_music = 'sound/music/combat_berserker.ogg'
+	H.cmode_music = 'sound/music/cmode/antag/combat_darkstar.ogg'
 	H.dna.species.soundpack_m = new /datum/voicepack/male/warrior()
 	var/weapons = list("Katar","Steel Knuckles","MY BARE HANDS!!!","Battle Axe","Mace","Sword")
 	var/weapon_choice = input("Choose your weapon.", "TAKE UP ARMS") as anything in weapons
