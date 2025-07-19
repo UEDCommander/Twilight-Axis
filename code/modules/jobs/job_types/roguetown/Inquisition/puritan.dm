@@ -20,6 +20,7 @@
 	min_pq = 10
 	max_pq = null
 	round_contrib_points = 2
+	same_job_respawn_delay = 30 MINUTES
 
 /datum/outfit/job/roguetown/puritan
 	name = "Inquisitor"
