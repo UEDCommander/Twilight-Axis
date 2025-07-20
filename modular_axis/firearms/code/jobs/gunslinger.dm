@@ -3,7 +3,7 @@
 	tutorial = "A lone wolf - that's exactly how you can characterize the life you're used to. You never liked to rely on \
 	anyone but your pistol and saber. Traveling through Grimoria, you earned your food and lodging by collecting bounties \
 	and fulfilling contracts abundantly provided by the rulers and commoners of many different lands. Working for the \
-	Guild in Enigma is a novelty for you, but perhaps this is where you'll find a camaraderie you've never known?"
+	Guild is a novelty for you, but perhaps this is where you'll find a camaraderie you've never known?"
 	allowed_sexes = list(MALE, FEMALE)
 	allowed_races = RACES_ALL_KINDS
 	outfit = /datum/outfit/job/roguetown/mercenary/twilight_gunslinger
