@@ -6076,6 +6076,10 @@
 /obj/machinery/light/rogue/torchholder/l,
 /turf/open/floor/rogue/wood,
 /area/rogue/indoors/town)
+"bUo" = (
+/obj/structure/roguemachine/goldface/public/smith,
+/turf/closed/wall/mineral/rogue/stone,
+/area/rogue/outdoors/town)
 "bUr" = (
 /obj/effect/decal/cobbleedge{
 	dir = 6
@@ -22639,6 +22643,10 @@
 /obj/structure/wild_plant/nospread/manabloom,
 /turf/open/floor/rogue/dirt/road,
 /area/rogue/indoors/town/magician)
+"hld" = (
+/obj/structure/roguemachine/goldface/public/tailor,
+/turf/closed/wall/mineral/rogue/wooddark,
+/area/rogue/indoors/town)
 "hlg" = (
 /obj/structure/fluff/railing/border{
 	dir = 8
@@ -266949,7 +266957,7 @@ xfp
 xfp
 exD
 wRJ
-cDX
+hld
 uBc
 bKS
 hDX
@@ -270097,8 +270105,8 @@ eMe
 smL
 smL
 vgn
-qKs
-eBq
+bUo
+sns
 sns
 sns
 cDX

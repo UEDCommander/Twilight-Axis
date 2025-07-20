@@ -21,7 +21,6 @@
 	min_pq = 3 //Please don't kill the duke by operating on strong intent. Play apothecary until you're deserving of the great white beak of doom
 	max_pq = null
 	round_contrib_points = 3
-	same_job_respawn_delay = 30 MINUTES
 
 	cmode_music = 'sound/music/combat_physician.ogg'
 

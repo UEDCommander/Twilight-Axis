@@ -5,7 +5,6 @@
 /datum/supply_pack/rogue/potions
 	group = "Potions"
 	crate_name = "merchant guild's crate"
-	mandated_public_profit = 0.5 // 50% Mandatory Profit Margin on top. Let's not make it too expensive for lowpop.
 	crate_type = /obj/structure/closet/crate/chest/merchant
 
 //Only two since that's 4 uses total; two sips each. You only need one sip for cure.

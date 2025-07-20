@@ -71,7 +71,18 @@
 		else
 			to_chat(src, "You will now hear animal sound emotes.")
 
-/client/verb/toggle_ERP() // Alters if other people can use the ERP panel ON you.
+/client/verb/autoconsume()
+	set category = "Options"
+	set name = "Toggle AutoConsume"
+	if(prefs)
+		prefs.autoconsume = !prefs.autoconsume
+		prefs.save_preferences()
+		if(prefs.autoconsume)
+			to_chat(src, "You will now try to repeatedly consume/feed food/drinks")
+		else
+			to_chat(src, "You will no longer try to repeatedly consume/feed food/drinks")
+
+/*/client/verb/toggle_ERP() // Alters if other people can use the ERP panel ON you.
 	set category = "Options"
 	set name = "Toggle ERP Panel"
 	if(prefs)
@@ -80,7 +91,7 @@
 		if(prefs.sexable)
 			to_chat(src, "Others can play with you.")
 		else
-			to_chat(src, "Others can't touch you.")
+			to_chat(src, "Others can't touch you.")*/
 
 /client/verb/toggle_compliance_notifs() // The messages need to be on-by-default while this is in its early stages.
 	set category = "Options"
