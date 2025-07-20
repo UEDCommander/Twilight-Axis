@@ -6,65 +6,36 @@
 /datum/anvil_recipe/engineering/twilight_ammunition/musket
 	name = "Lead bullets 8x "
 	req_bar = /obj/item/ingot/tin		//more uses for tin, and historically some musketballs were lead-tin alloys.
-	created_item = list(/obj/item/ammo_casing/caseless/twilight_lead,
-						/obj/item/ammo_casing/caseless/twilight_lead,
-						/obj/item/ammo_casing/caseless/twilight_lead,
-						/obj/item/ammo_casing/caseless/twilight_lead,
-						/obj/item/ammo_casing/caseless/twilight_lead,
-						/obj/item/ammo_casing/caseless/twilight_lead,
-						/obj/item/ammo_casing/caseless/twilight_lead,
-						/obj/item/ammo_casing/caseless/twilight_lead
-					)
+	created_item = /obj/item/ammo_casing/caseless/twilight_lead
+	createditem_num = 8
 	craftdiff = 2
 
 /datum/anvil_recipe/engineering/twilight_ammunition/silver_musket
 	name = "Silver bullets 8x "
 	req_bar = /obj/item/ingot/silver
-	created_item = list(/obj/item/ammo_casing/caseless/twilight_lead/silver,
-						/obj/item/ammo_casing/caseless/twilight_lead/silver,
-						/obj/item/ammo_casing/caseless/twilight_lead/silver,
-						/obj/item/ammo_casing/caseless/twilight_lead/silver,
-						/obj/item/ammo_casing/caseless/twilight_lead/silver,
-						/obj/item/ammo_casing/caseless/twilight_lead/silver,
-						/obj/item/ammo_casing/caseless/twilight_lead/silver,
-						/obj/item/ammo_casing/caseless/twilight_lead/silver
-					)
-	craftdiff = 3
+	created_item = /obj/item/ammo_casing/caseless/twilight_lead/silver
+	createditem_num = 6
+	craftdiff = 5
 
 /datum/anvil_recipe/engineering/twilight_ammunition/runelock
 	name = "Runed spheres 6x "
 	req_bar = /obj/item/ingot/blacksteel
-	created_item = list(/obj/item/ammo_casing/caseless/twilight_lead/runelock,
-						/obj/item/ammo_casing/caseless/twilight_lead/runelock,
-						/obj/item/ammo_casing/caseless/twilight_lead/runelock,
-						/obj/item/ammo_casing/caseless/twilight_lead/runelock,
-						/obj/item/ammo_casing/caseless/twilight_lead/runelock,
-						/obj/item/ammo_casing/caseless/twilight_lead/runelock
-					)
+	created_item = /obj/item/ammo_casing/caseless/twilight_lead/runelock
+	createditem_num = 6
 	craftdiff = 5
 
 /datum/anvil_recipe/engineering/twilight_ammunition/cannonball
 	name = "Lead cannonballs 6x "
 	req_bar = /obj/item/ingot/tin
-	created_item = list(/obj/item/ammo_casing/caseless/twilight_cannonball,
-						/obj/item/ammo_casing/caseless/twilight_cannonball,
-						/obj/item/ammo_casing/caseless/twilight_cannonball,
-						/obj/item/ammo_casing/caseless/twilight_cannonball,
-						/obj/item/ammo_casing/caseless/twilight_cannonball,
-						/obj/item/ammo_casing/caseless/twilight_cannonball
-					)
+	created_item = /obj/item/ammo_casing/caseless/twilight_cannonball
+	createditem_num = 6
 	craftdiff = 2
 
 /datum/anvil_recipe/engineering/twilight_ammunition/grapeshot
 	name = "Grapeshot 6x "
 	req_bar = /obj/item/ingot/tin
-	created_item = list(/obj/item/ammo_casing/caseless/twilight_cannonball/grapeshot,
-						/obj/item/ammo_casing/caseless/twilight_cannonball/grapeshot,
-						/obj/item/ammo_casing/caseless/twilight_cannonball/grapeshot,
-						/obj/item/ammo_casing/caseless/twilight_cannonball/grapeshot,
-						/obj/item/ammo_casing/caseless/twilight_cannonball/grapeshot,
-						/obj/item/ammo_casing/caseless/twilight_cannonball/grapeshot
-					)
+	created_item = /obj/item/ammo_casing/caseless/twilight_cannonball/grapeshot
+	createditem_num = 6
 	craftdiff = 2
 
 /datum/anvil_recipe/weapons/twilight_ammunition
@@ -73,65 +44,36 @@
 /datum/anvil_recipe/weapons/twilight_ammunition/musket
 	name = "Lead bullets 8x "
 	req_bar = /obj/item/ingot/tin		//more uses for tin, and historically some musketballs were lead-tin alloys.
-	created_item = list(/obj/item/ammo_casing/caseless/twilight_lead,
-						/obj/item/ammo_casing/caseless/twilight_lead,
-						/obj/item/ammo_casing/caseless/twilight_lead,
-						/obj/item/ammo_casing/caseless/twilight_lead,
-						/obj/item/ammo_casing/caseless/twilight_lead,
-						/obj/item/ammo_casing/caseless/twilight_lead,
-						/obj/item/ammo_casing/caseless/twilight_lead,
-						/obj/item/ammo_casing/caseless/twilight_lead
-					)
+	created_item = /obj/item/ammo_casing/caseless/twilight_lead
+	createditem_num = 8
 	craftdiff = 2
 
 /datum/anvil_recipe/weapons/twilight_ammunition/silver_musket
 	name = "Silver bullets 8x "
 	req_bar = /obj/item/ingot/silver
-	created_item = list(/obj/item/ammo_casing/caseless/twilight_lead/silver,
-						/obj/item/ammo_casing/caseless/twilight_lead/silver,
-						/obj/item/ammo_casing/caseless/twilight_lead/silver,
-						/obj/item/ammo_casing/caseless/twilight_lead/silver,
-						/obj/item/ammo_casing/caseless/twilight_lead/silver,
-						/obj/item/ammo_casing/caseless/twilight_lead/silver,
-						/obj/item/ammo_casing/caseless/twilight_lead/silver,
-						/obj/item/ammo_casing/caseless/twilight_lead/silver
-					)
-	craftdiff = 3
+	created_item = /obj/item/ammo_casing/caseless/twilight_lead/silver
+	createditem_num = 6
+	craftdiff = 5
 
 /datum/anvil_recipe/weapons/twilight_ammunition/runelock
 	name = "Runed spheres 6x "
 	req_bar = /obj/item/ingot/blacksteel
-	created_item = list(/obj/item/ammo_casing/caseless/twilight_lead/runelock,
-						/obj/item/ammo_casing/caseless/twilight_lead/runelock,
-						/obj/item/ammo_casing/caseless/twilight_lead/runelock,
-						/obj/item/ammo_casing/caseless/twilight_lead/runelock,
-						/obj/item/ammo_casing/caseless/twilight_lead/runelock,
-						/obj/item/ammo_casing/caseless/twilight_lead/runelock
-					)
+	created_item = /obj/item/ammo_casing/caseless/twilight_lead/runelock
+	createditem_num = 6
 	craftdiff = 5
 
 /datum/anvil_recipe/weapons/twilight_ammunition/cannonball
 	name = "Lead cannonballs 6x "
 	req_bar = /obj/item/ingot/tin
-	created_item = list(/obj/item/ammo_casing/caseless/twilight_cannonball,
-						/obj/item/ammo_casing/caseless/twilight_cannonball,
-						/obj/item/ammo_casing/caseless/twilight_cannonball,
-						/obj/item/ammo_casing/caseless/twilight_cannonball,
-						/obj/item/ammo_casing/caseless/twilight_cannonball,
-						/obj/item/ammo_casing/caseless/twilight_cannonball
-					)
+	created_item = /obj/item/ammo_casing/caseless/twilight_cannonball
+	createditem_num = 6
 	craftdiff = 2
 
 /datum/anvil_recipe/weapons/twilight_ammunition/grapeshot
 	name = "Grapeshot 6x "
 	req_bar = /obj/item/ingot/tin
-	created_item = list(/obj/item/ammo_casing/caseless/twilight_cannonball/grapeshot,
-						/obj/item/ammo_casing/caseless/twilight_cannonball/grapeshot,
-						/obj/item/ammo_casing/caseless/twilight_cannonball/grapeshot,
-						/obj/item/ammo_casing/caseless/twilight_cannonball/grapeshot,
-						/obj/item/ammo_casing/caseless/twilight_cannonball/grapeshot,
-						/obj/item/ammo_casing/caseless/twilight_cannonball/grapeshot
-					)
+	created_item = /obj/item/ammo_casing/caseless/twilight_cannonball/grapeshot
+	createditem_num = 6
 	craftdiff = 2
 
 // --------- GUNS -----------
@@ -187,7 +129,7 @@
 	additional_items = list(/obj/item/twilight_gunlock = 1,
 							/obj/item/twilight_gunstock = 1,
 							/obj/item/twilight_gunbarrel = 1)
-	created_item = list(/obj/item/gun/ballistic/twilight_firearm/arquebus)
+	created_item = /obj/item/gun/ballistic/twilight_firearm/arquebus
 	craftdiff = 4
 
 /datum/anvil_recipe/engineering/twilight_guns/handgonne
@@ -196,7 +138,7 @@
 	additional_items = list(/obj/item/twilight_gunlock = 1,
 							/obj/item/twilight_gunstock = 1,
 							/obj/item/twilight_gunbarrel = 1)
-	created_item = list(/obj/item/gun/ballistic/twilight_firearm/handgonne)
+	created_item = /obj/item/gun/ballistic/twilight_firearm/handgonne
 	craftdiff = 4
 
 /datum/anvil_recipe/engineering/twilight_guns/flintgonne
@@ -205,7 +147,7 @@
 	additional_items = list(/obj/item/twilight_gunlock = 1,
 							/obj/item/twilight_gunstock = 1,
 							/obj/item/twilight_gunbarrel = 1)
-	created_item = list(/obj/item/gun/ballistic/twilight_firearm/flintgonne)
+	created_item = /obj/item/gun/ballistic/twilight_firearm/flintgonne
 	craftdiff = 3
 
 /datum/anvil_recipe/engineering/twilight_guns/arquebus_pistol
@@ -214,7 +156,7 @@
 	additional_items = list(/obj/item/twilight_gunlock = 1,
 							/obj/item/twilight_gunstock = 1,
 							/obj/item/twilight_gunbarrel = 1)
-	created_item = list(/obj/item/gun/ballistic/twilight_firearm/arquebus_pistol)
+	created_item = /obj/item/gun/ballistic/twilight_firearm/arquebus_pistol
 	craftdiff = 4
 
 /datum/anvil_recipe/engineering/twilight_guns/arquebus_decorated
@@ -224,18 +166,18 @@
 							/obj/item/twilight_gunstock = 1,
 							/obj/item/twilight_gunbarrel = 1,
 							/obj/item/ingot/gold = 1)
-	created_item = list(/obj/item/gun/ballistic/twilight_firearm/arquebus/decorated)
+	created_item = /obj/item/gun/ballistic/twilight_firearm/arquebus/decorated
 	craftdiff = 4
 
 /datum/anvil_recipe/weapons/twilight_arquebus_decorated
 	name = "Decorated Arquebus (+1 Arquebus Rifle)"
 	req_bar = /obj/item/ingot/gold
 	additional_items = list(/obj/item/gun/ballistic/twilight_firearm/arquebus)
-	created_item = list(/obj/item/gun/ballistic/twilight_firearm/arquebus/decorated)
+	created_item = /obj/item/gun/ballistic/twilight_firearm/arquebus/decorated
 	craftdiff = 2
 
 /datum/anvil_recipe/weapons/twilight_ramrod
 	name = "Ramrod"
 	req_bar = /obj/item/ingot/steel
-	created_item = list(/obj/item/twilight_ramrod)
+	created_item = /obj/item/twilight_ramrod
 	craftdiff = 1
