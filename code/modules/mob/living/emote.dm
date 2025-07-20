@@ -485,6 +485,12 @@
 				message_param = "kisses %t on the brow."
 			else if(H.zone_selected == BODY_ZONE_PRECISE_SKULL)
 				message_param = "kisses %t on the forehead."
+			else if(H.zone_selected == BODY_ZONE_PRECISE_GROIN)
+				message_param = "kisses %t between the legs."
+				var/mob/living/carbon/human/L = target
+				if(iself(L) || ishalfelf(L) || isdarkelf(L))
+					if(!L.cmode)
+						to_chat(target, span_love("It somewhat stimulating..."))
 			else
 				message_param = "kisses %t on \the [parse_zone(H.zone_selected)]."
 	playsound(target.loc, pick('sound/vo/kiss (1).ogg','sound/vo/kiss (2).ogg'), 100, FALSE, -1)
@@ -601,6 +607,8 @@
 			message_param = "slaps %t's head!"
 		else if(H.zone_selected == BODY_ZONE_PRECISE_L_HAND || H.zone_selected == BODY_ZONE_PRECISE_R_HAND)
 			message_param = "slaps %t's hand!"
+		else if(H.zone_selected == BODY_ZONE_CHEST)
+			message_param = "slaps %t's chest!"
 	..()
 
 /mob/living/carbon/human/verb/emote_slap()
