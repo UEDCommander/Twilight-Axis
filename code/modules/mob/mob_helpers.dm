@@ -597,7 +597,7 @@
 /mob
 	var/last_aimhchange = 0
 	var/aimheight = 11
-	var/cmode_music = list('sound/music/combat_old.ogg') //This should minimize the lag it creates by picking from multiple ones
+	var/cmode_music = list('sound/music/cmode/towner/combat_towner.ogg') //This should minimize the lag it creates by picking from multiple ones
 
 /mob/proc/aimheight_change(input)
 	var/old_zone = zone_selected

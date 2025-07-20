@@ -22,7 +22,7 @@
 	round_contrib_points = 2
 	same_job_respawn_delay = 30 MINUTES
 
-	cmode_music = 'sound/music/combat_guard.ogg'
+	cmode_music = 'sound/music/combat_ManAtArms.ogg'
 
 /datum/outfit/job/roguetown/guardsman
 	job_bitflag = BITFLAG_GARRISON
