@@ -298,6 +298,9 @@
 		REMOVE_TRAIT(parent, TRAIT_NODROP, TRAIT_GENERIC)	//The weapon can be moved by the Priest again (or used, I suppose)
 	is_active = FALSE
 	I.damtype = BRUTE
+	I.possible_item_intents = list(/datum/intent/sword/cut, /datum/intent/sword/thrust, /datum/intent/sword/strike)
+	I.gripped_intents = list(/datum/intent/sword/cut, /datum/intent/sword/thrust, /datum/intent/sword/strike, /datum/intent/sword/chop)
+	current_holder.update_a_intents()
 	I.force = initial(I.force)
 	I.force_wielded = initial(I.force_wielded)
 	I.max_integrity = initial(I.max_integrity)
@@ -360,6 +363,9 @@
 		flash_lightning(user)
 		var/obj/item/I = parent
 		I.damtype = BURN	//Changes weapon damage type to fire
+		I.possible_item_intents = list(/datum/intent/sword/cut/martyr, /datum/intent/sword/thrust/martyr, /datum/intent/sword/strike/martyr)
+		I.gripped_intents = list(/datum/intent/sword/cut/martyr, /datum/intent/sword/thrust/martyr, /datum/intent/sword/strike/martyr, /datum/intent/sword/chop/martyr)
+		user.update_a_intents()
 		I.slot_flags = null	//Can't sheathe a burning sword
 
 		ADD_TRAIT(parent, TRAIT_NODROP, TRAIT_GENERIC)	//You're committed, now.
@@ -528,6 +534,20 @@
 	toggle_state = null
 	is_important = TRUE
 
+/datum/intent/sword/cut/martyr
+		item_d_type = "fire"
+		blade_class = BCLASS_CUT
+/datum/intent/sword/thrust/martyr
+		item_d_type = "fire"
+		blade_class = BCLASS_PICK // so our armor-piercing attacks in ult mode can do crits(against most armors, not having crit)
+/datum/intent/sword/strike/martyr
+		item_d_type = "fire"
+		blade_class = BCLASS_SMASH
+/datum/intent/sword/chop/martyr
+		item_d_type = "fire"
+		blade_class = BCLASS_CHOP
+
+
 /obj/item/rogueweapon/sword/long/martyr/Initialize()
 	AddComponent(/datum/component/martyrweapon)
 	..()
@@ -622,6 +642,7 @@
 	desc = "Branded by the Holy See, these helms are worn by it's chosen warriors. A bastion of hope in the dark nite."
 	icon = 'icons/roguetown/clothing/special/martyr.dmi'
 	mob_overlay_icon = 'icons/roguetown/clothing/special/onmob/martyrbascinet.dmi'
+	bloody_icon = 'icons/effects/blood64.dmi'
 	adjustable = CAN_CADJUST
 	emote_environment = 3
 	flags_inv = HIDEEARS|HIDEFACE|HIDEHAIR|HIDESNOUT

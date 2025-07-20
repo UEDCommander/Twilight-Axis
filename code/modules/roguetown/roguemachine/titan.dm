@@ -2,6 +2,7 @@ GLOBAL_LIST_EMPTY(outlawed_players)
 GLOBAL_LIST_EMPTY(lord_decrees)
 GLOBAL_LIST_EMPTY(court_agents)
 GLOBAL_LIST_INIT(laws_of_the_land, initialize_laws_of_the_land())
+GLOBAL_VAR_INIT(last_crown_announcement_time, -1000)
 
 /proc/initialize_laws_of_the_land()
 	var/list/laws = strings("laws_of_the_land.json", "lawsets")
@@ -149,6 +150,9 @@ GLOBAL_LIST_INIT(laws_of_the_land, initialize_laws_of_the_land())
 				if(nocrown)
 					say("You need the crown.")
 					playsound(src, 'sound/misc/machineno.ogg', 100, FALSE, -1)
+					return
+				if (world.time < GLOB.last_crown_announcement_time + 5 MINUTES)
+					say(("My throat is sore."))
 					return
 				if(!SScommunications.can_announce(H))
 					say("I must gather my strength!")
@@ -313,6 +317,7 @@ GLOBAL_LIST_INIT(laws_of_the_land, initialize_laws_of_the_land())
 	try_make_rebel_decree(user)
 
 	SScommunications.make_announcement(user, FALSE, raw_message)
+	GLOB.last_crown_announcement_time = world.time 
 
 /obj/structure/roguemachine/titan/proc/try_make_rebel_decree(mob/living/user)
 	if(!SScommunications.can_announce(user))
