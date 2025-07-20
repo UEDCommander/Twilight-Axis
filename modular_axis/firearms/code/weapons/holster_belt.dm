@@ -55,3 +55,20 @@
 		. += span_notice("Пистоль внутри.")
 	else
 		. += span_notice("Кобура пустая.")
+
+/obj/item/storage/belt/rogue/leather/twilight_holsterbelt/lord
+	name = "plaque holster belt"
+	desc = "Пояс с позолоченными металлическими вставками, демонстрирующими богатство и статус. Оснащен кобурой для удобного размещения пистоля."
+	sellprice = 50
+	sewrepair = FALSE
+	anvilrepair = /datum/skill/craft/armorsmithing
+	icon = 'modular_axis/firearms/icons/obj_belts_royal.dmi'
+	mob_overlay_icon = 'modular_axis/firearms/icons/onmob_belts_royal.dmi'
+
+/obj/item/storage/belt/rogue/leather/twilight_holsterbelt/lord/New()
+	. = ..()
+	for(var/i in 1 to max_storage)
+		var/obj/item/gun/ballistic/twilight_firearm/arquebus_pistol/A = new()
+		pistol += A
+	icon_state = "holsterbelt_full"
+	update_icon()
