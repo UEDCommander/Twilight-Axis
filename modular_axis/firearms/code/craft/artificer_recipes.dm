@@ -1,7 +1,7 @@
 // --------- AMMUNITION -----------
 
 /datum/anvil_recipe/engineering/twilight_ammunition
-	i_type = "Ammo"
+	i_type = "Ammo (Engineering)"
 
 /datum/anvil_recipe/engineering/twilight_ammunition/musket
 	name = "Lead bullets 8x "
@@ -14,7 +14,7 @@
 	name = "Silver bullets 8x "
 	req_bar = /obj/item/ingot/silver
 	created_item = /obj/item/ammo_casing/caseless/twilight_lead/silver
-	createditem_num = 6
+	createditem_num = 8
 	craftdiff = 5
 
 /datum/anvil_recipe/engineering/twilight_ammunition/runelock
@@ -39,7 +39,7 @@
 	craftdiff = 2
 
 /datum/anvil_recipe/weapons/twilight_ammunition
-	i_type = "Ammo"
+	i_type = "Ammo (Smithing)"
 
 /datum/anvil_recipe/weapons/twilight_ammunition/musket
 	name = "Lead bullets 8x "
@@ -52,7 +52,7 @@
 	name = "Silver bullets 8x "
 	req_bar = /obj/item/ingot/silver
 	created_item = /obj/item/ammo_casing/caseless/twilight_lead/silver
-	createditem_num = 6
+	createditem_num = 8
 	craftdiff = 5
 
 /datum/anvil_recipe/weapons/twilight_ammunition/runelock
