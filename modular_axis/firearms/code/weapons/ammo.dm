@@ -61,7 +61,7 @@
 /obj/projectile/bullet/twilight_cannonball
 	name = "cannonball"
 	desc = "Крупная свинцовая сфера. Важен не размер ствола, а размер отверстия, что он делает в вашем противнике."
-	damage = 30
+	damage = 45
 	damage_type = BRUTE
 	icon = 'modular_axis/firearms/icons/ammo.dmi'
 	icon_state = "musketball_proj"
@@ -71,7 +71,7 @@
 	embedchance = 0
 	woundclass = BCLASS_STAB
 	flag = "piercing"
-	armor_penetration = 75 
+	armor_penetration = 95
 	speed = 0.1		
 
 /obj/projectile/bullet/twilight_grapeshot
@@ -145,7 +145,7 @@
 /obj/projectile/bullet/twilight_cannonball/on_hit(atom/target, blocked = FALSE)
 	. = ..()
 	var/turf/T = get_turf(target)
-	explosion(T, light_impact_range = 1, smoke = TRUE, soundin = pick('sound/misc/explode/bottlebomb (1).ogg','sound/misc/explode/bottlebomb (2).ogg'))
+	explosion(T, devastation_range = 0, heavy_impact_range = 0, light_impact_range = 1, smoke = TRUE, soundin = pick('sound/misc/explode/bottlebomb (1).ogg','sound/misc/explode/bottlebomb (2).ogg'))
 
 /obj/item/ammo_casing/caseless/twilight_lead
 	name = "lead sphere"

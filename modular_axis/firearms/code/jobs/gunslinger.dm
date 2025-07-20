@@ -23,7 +23,7 @@
 	shirt = /obj/item/clothing/suit/roguetown/armor/gambeson
 	head = /obj/item/clothing/head/roguetown/bardhat/gunslinger
 	armor = /obj/item/clothing/suit/roguetown/armor/plate/half
-	pants = /obj/item/clothing/under/roguetown/tights
+	pants = /obj/item/clothing/under/roguetown/heavy_leather_pants
 	shoes = /obj/item/clothing/shoes/roguetown/grenzelhoft/gunslinger
 	gloves = /obj/item/clothing/gloves/roguetown/leather
 	backr = /obj/item/rogueweapon/scabbard/sword

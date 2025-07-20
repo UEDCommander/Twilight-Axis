@@ -233,3 +233,9 @@
 	additional_items = list(/obj/item/gun/ballistic/twilight_firearm/arquebus)
 	created_item = list(/obj/item/gun/ballistic/twilight_firearm/arquebus/decorated)
 	craftdiff = 2
+
+/datum/anvil_recipe/weapons/twilight_ramrod
+	name = "Ramrod"
+	req_bar = /obj/item/ingot/steel
+	created_item = list(/obj/item/twilight_ramrod)
+	craftdiff = 1

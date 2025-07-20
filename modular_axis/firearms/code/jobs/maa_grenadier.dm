@@ -1,6 +1,6 @@
 /datum/advclass/manorguard/twilight_grenadier
 	name = "Grenadier"
-	tutorial = "Вы — опытный солдат герцогства, повидавший немало сражений. За ваши заслуги вам довелось стать одним из тех немногих, кому было доверено новейшее пороховое оружие. Используйте его с умом и защитите державу от врагов внешних и внутренних."
+	tutorial = "You are a professional soldier of the realm, specializing in revolutionary gunpowder weaponry. There are many men who can block a blade, but you're yet to find one who can block a bullet."
 	outfit = /datum/outfit/job/roguetown/manorguard/twilight_grenadier
 	maximum_possible_slots = 2
 	category_tags = list(CTAG_MENATARMS)
@@ -9,6 +9,7 @@
 	..()
 	H.adjust_skillrank(/datum/skill/combat/swords, 3, TRUE)
 	H.adjust_skillrank(/datum/skill/combat/knives, 4, TRUE)
+	H.adjust_skillrank(/datum/skill/combat/maces, 2, TRUE) 		// Still have a cugel.
 	H.adjust_skillrank(/datum/skill/combat/twilight_firearms, 4, TRUE)	
 	H.adjust_skillrank(/datum/skill/misc/climbing, 4, TRUE)
 	H.adjust_skillrank(/datum/skill/misc/sneaking, 3, TRUE)
@@ -38,14 +39,10 @@
 	var/weapon_choice = input("Выберите свое оружие.", "К ОРУЖИЮ") as anything in weapons
 	H.set_blindness(0)
 	switch(weapon_choice)
-		if("Аркебуза и свинцовые пули")
+		if("Аркебуза со штыком")
 			beltr = /obj/item/quiver/twilight_bullet/lead
-			beltl = /obj/item/rogueweapon/scabbard/sword
-			r_hand = /obj/item/rogueweapon/sword/sabre
 			backl = /obj/item/gun/ballistic/twilight_firearm/arquebus/bayonet
 		if("Кулеврина и картечь") 
-			beltl = /obj/item/rogueweapon/scabbard/sword
-			r_hand = /obj/item/rogueweapon/sword/sabre
 			beltr = /obj/item/quiver/twilight_bullet/cannonball/grapeshot
 			backl = /obj/item/gun/ballistic/twilight_firearm/handgonne
 

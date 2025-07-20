@@ -60,7 +60,7 @@
 	minstr = 6
 	walking_stick = TRUE
 	experimental_onback = TRUE
-	cartridge_wording = "musketball"
+	cartridge_wording = "bullet"
 	load_sound = 'modular_axis/firearms/sound/musketload.ogg'
 	fire_sound = 'modular_axis/firearms/sound/arquefire.ogg'
 	anvilrepair = /datum/skill/craft/blacksmithing
@@ -76,7 +76,6 @@
 	var/load_time = 50
 	var/gunpowder = FALSE
 	var/obj/item/twilight_ramrod/myrod = null
-	var/gunchannel
 
 /obj/item/gun/ballistic/twilight_firearm/getonmobprop(tag)
 	. = ..()
@@ -104,7 +103,7 @@
 		return
 	else
 		if(myrod)
-			playsound(src, "sound/items/sharpen_short1.ogg",  100)
+			playsound(src, "sound/items/sharpen_short1.ogg",  100, FALSE)
 			to_chat(user, "<span class='warning'>I draw the ramrod from the [src]!</span>")
 			var/obj/item/twilight_ramrod/AM
 			for(AM in src)
@@ -178,10 +177,8 @@
 	update_icon()
 
 /obj/item/gun/ballistic/twilight_firearm/attackby(obj/item/A, mob/user, params)
-	user.stop_sound_channel(gunchannel)
 	var/firearm_skill = (user?.mind ? user.get_skill_level(/datum/skill/combat/twilight_firearms) : 1)
 	var/load_time_skill = load_time - (firearm_skill*5)
-	//gunchannel = SSsounds.random_available_channel()
 
 	if(istype(A, /obj/item/ammo_box) || istype(A, /obj/item/ammo_casing))
 		if(chambered)
@@ -192,7 +189,7 @@
 			return
 		if((loc == user) && (user.get_inactive_held_item() != src))
 			return
-		playsound(src, "modular_axis/firearms/sound/insert.ogg",  100)
+		playsound(src, "modular_axis/firearms/sound/insert.ogg",  100, FALSE)
 		user.visible_message("<span class='notice'>[user] forces a [A] down the barrel of the [src].</span>")
 		..()
 
@@ -201,18 +198,17 @@
 			user.visible_message("<span class='notice'>The [src] is already filled with gunpowder!</span>")
 			return
 		else
-			playsound(src, "modular_axis/firearms/sound/pour_powder.ogg",  100)
+			playsound(src, "modular_axis/firearms/sound/pour_powder.ogg",  100, FALSE)
 			if(do_after(user, load_time_skill, src))
 				user.visible_message("<span class='notice'>[user] fills the [src] with gunpowder.</span>")
 				gunpowder = TRUE
 			return
-		user.stop_sound_channel(gunchannel)
 	if(istype(A, /obj/item/twilight_ramrod))
 		var/obj/item/twilight_ramrod/R=A
 		if(!reloaded)
 			if(chambered)
 				user.visible_message("<span class='notice'>[user] begins ramming the [R.name] down the barrel of the [src] .</span>")
-				playsound(src, "modular_axis/firearms/sound/ramrod.ogg",  100)
+				playsound(src, "modular_axis/firearms/sound/ramrod.ogg",  100, FALSE)
 				if(do_after(user, load_time_skill, src))
 					user.visible_message("<span class='notice'>[user] has finished reloading the [src].</span>")
 					reloaded = TRUE
@@ -220,17 +216,16 @@
 		if(reloaded && !myrod)
 			user.transferItemToLoc(R, src)
 			myrod = R
-			playsound(src, "modular_axis/firearms/sound/musketload.ogg",  100)
+			playsound(src, "modular_axis/firearms/sound/musketload.ogg",  100, FALSE)
 			user.visible_message("<span class='notice'>[user] stows the [R.name] under the barrel of the [src].</span>")
 		if(!chambered && !myrod)
 			user.transferItemToLoc(R, src)
 			myrod = R
-			playsound(src, "modular_axis/firearms/sound/musketload.ogg",  100)
+			playsound(src, "modular_axis/firearms/sound/musketload.ogg",  100, FALSE)
 			user.visible_message("<span class='notice'>[user] stows the [R.name] under the barrel of the [src] without chambering it.</span>")
 		if(!myrod == null)
 			to_chat(user, span_warning("There's already a [R.name] inside of the [name]."))
 			return
-		user.stop_sound_channel(gunchannel)
 
 /obj/item/gun/ballistic/twilight_firearm/process_fire(atom/target, mob/living/user, message = TRUE, params = null, zone_override = "", bonus_spread = 0)
 
@@ -342,7 +337,7 @@
 	walking_stick = FALSE
 	bigboy = FALSE
 	gripsprite = FALSE
-	cartridge_wording = "свинцовая пуля"
+	cartridge_wording = "bullet"
 	damfactor = 1.5
 
 /obj/item/gun/ballistic/twilight_firearm/arquebus_pistol/getonmobprop(tag)
@@ -356,12 +351,12 @@
 
 /obj/item/gun/ballistic/twilight_firearm/handgonne
 	name = "culverin"
-	desc = "Тяжелое пороховое оружие, стреляющее крупными свинцовыми ядрами. Для поджига пороха используется длинный фитиль, из-за которого орудие стреляет с задержкой."
+	desc = "Тяжелое пороховое оружие, стреляющее крупными свинцовыми ядрами. Для поджига пороха используется длинный фитиль, из-за которого орудие стреляет с задержкой. Важен не размер ствола, а размер отверстия, что он делает в вашем противнике."
 	icon = 'modular_axis/firearms/icons/handgonne.dmi'
 	icon_state = "handgonne"
 	item_state = "handgonne"
 	mag_type = /obj/item/ammo_box/magazine/internal/twilight_firearm/handgonne
-	cartridge_wording = "пушечный выстрел"
+	cartridge_wording = "cannonball"
 
 /obj/item/ammo_box/magazine/internal/twilight_firearm/handgonne
 	name = "handgonne internal magazine"
@@ -400,7 +395,7 @@
 	reloaded = FALSE
 	spark_act()
 
-	playsound(src, "modular_axis/firearms/sound/fuse.ogg", 100)
+	playsound(src, "modular_axis/firearms/sound/fuse.ogg", 100, FALSE)
 	spawn(rand(10,20))
 		..()
 		spawn (1)
