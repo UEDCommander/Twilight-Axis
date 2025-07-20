@@ -8,7 +8,7 @@
 	allowed_races = RACES_ALL_KINDS
 	outfit = /datum/outfit/job/roguetown/mercenary/twilight_gunslinger
 	min_pq = 10
-	cmode_music = 'sound/music/combat_bandit.ogg'
+	cmode_music = 'modular_axis/firearms/sound/music/combat_gunslinger.ogg'
 	category_tags = list(CTAG_MERCENARY)
 	traits_applied = list(TRAIT_OUTLANDER)
 
