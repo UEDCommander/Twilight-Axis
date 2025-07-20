@@ -342,6 +342,7 @@
 //wip
 /obj/item/scomstone/attack_right(mob/living/carbon/human/user)
 	user.changeNext_move(CLICK_CD_INTENTCAP)
+	visible_message(span_notice ("[user] presses their ring against their mouth."))
 	var/input_text = input(user, "Enter your message:", "Message")
 	if(!input_text)
 		return
@@ -728,6 +729,7 @@
 
 /obj/item/scomstone/garrison/attack_right(mob/living/carbon/human/user)
 	user.changeNext_move(CLICK_CD_INTENTCAP)
+	visible_message(span_notice ("[user] presses their ring against their mouth."))
 	var/input_text = input(user, "Enter your message:", "Message")
 	if(!input_text)
 		return
