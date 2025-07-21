@@ -18,7 +18,7 @@
 /datum/virtue/combat/devotee
 	name = "Devotee"
 	desc = "Though not officially of the Church, my relationship with my chosen Patron is strong enough to grant me the most minor of their blessings. I've also kept a psycross of my deity."
-	custom_text = "Combat classes receive a weaker version of this virtue -- they do not get the first tier of miracles."
+	custom_text = "You gain access to T0 miracles of your patron. If you already have access to Miracles, you get slightly increased passive devotion gain."
 	added_skills = list(list(/datum/skill/magic/holy, 1, 6))
 
 /datum/virtue/combat/devotee/apply_to_human(mob/living/carbon/human/recipient)
