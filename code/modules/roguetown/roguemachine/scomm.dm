@@ -9,7 +9,6 @@
 	blade_dulling = DULLING_BASH
 	max_integrity = 0
 	pixel_y = 32
-	flags_1 = HEAR_1
 	anchored = TRUE
 	var/next_decree = 0
 	var/listening = TRUE
@@ -20,6 +19,14 @@
 	var/obj/structure/roguemachine/scomm/called_by = null
 	var/spawned_rat = FALSE
 	var/garrisonline = FALSE
+
+/obj/structure/roguemachine/scomm/Initialize()
+	. = ..()
+	become_hearing_sensitive()
+
+/obj/structure/roguemachine/scomm/Destroy()
+	lose_hearing_sensitivity()
+	return ..()
 
 /obj/structure/roguemachine/scomm/OnCrafted(dirin, mob/user)
 	. = ..()
@@ -329,7 +336,6 @@
 	icon = 'icons/roguetown/items/misc.dmi'
 	w_class = WEIGHT_CLASS_SMALL
 	experimental_inhand = FALSE
-	flags_1 = HEAR_1
 	muteinmouth = TRUE
 	var/listening = TRUE
 	var/speaking = TRUE
@@ -372,10 +378,12 @@
 
 /obj/item/scomstone/Destroy()
 	SSroguemachine.scomm_machines -= src
+	lose_hearing_sensitivity()
 	return ..()
 
 /obj/item/scomstone/Initialize()
 	. = ..()
+	become_hearing_sensitive()
 	update_icon()
 	SSroguemachine.scomm_machines += src
 
@@ -431,7 +439,6 @@
 	icon = 'icons/roguetown/clothing/neck.dmi'
 	w_class = WEIGHT_CLASS_SMALL
 	experimental_inhand = FALSE
-	flags_1 = HEAR_1
 	muteinmouth = TRUE
 	var/listening = TRUE
 	var/speaking = TRUE
@@ -501,7 +508,6 @@
 	icon = 'icons/roguetown/items/misc.dmi'
 	w_class = WEIGHT_CLASS_SMALL
 	experimental_inhand = FALSE
-	flags_1 = HEAR_1
 	muteinmouth = TRUE
 	var/listening = TRUE
 	var/speaking = TRUE
@@ -509,8 +515,11 @@
 	grid_width = 32
 	grid_height = 32
 
-/obj/item/mattcoin/New(loc, ...)
+/obj/item/mattcoin/Initialize()
 	. = ..()
+	become_hearing_sensitive()
+	update_icon()
+	SSroguemachine.scomm_machines += src
 	name = pick("rontz ring", "gold ring")
 
 /obj/item/mattcoin/pickup(mob/living/user)
@@ -552,13 +561,9 @@
 	update_icon()
 
 /obj/item/mattcoin/Destroy()
+	lose_hearing_sensitivity()
 	SSroguemachine.scomm_machines -= src
 	return ..()
-
-/obj/item/mattcoin/Initialize()
-	. = ..()
-	update_icon()
-	SSroguemachine.scomm_machines += src
 
 /obj/item/mattcoin/proc/repeat_message(message, atom/A, tcolor, message_language)
 	if(A == src)
@@ -669,7 +674,6 @@
 	grid_width = 32
 	grid_height = 32
 
-
 /obj/item/listeningdevice/attack_self(mob/living/user)
 	var/turf/step_turf = get_step(get_turf(user), user.dir)
 	to_chat(user, span_tinynotice("I begin planting the listen-stone..."))
@@ -688,10 +692,16 @@
 	var/listening = TRUE
 	density = FALSE
 	anchored = TRUE
-	flags_1 = HEAR_1
 	alpha = 0
 	layer = PROJECTILE_HIT_THRESHHOLD_LAYER
 
+/obj/structure/listeningdeviceactive/Initialize()
+	. = ..()
+	become_hearing_sensitive()
+
+/obj/structure/listeningdeviceactive/Destroy()
+	lose_hearing_sensitivity()
+	return ..()
 
 /obj/structure/listeningdeviceactive/attack_right(mob/user)
 	to_chat(user, span_info("I begin dismounting the listen-stone..."))

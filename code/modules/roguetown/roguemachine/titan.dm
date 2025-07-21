@@ -22,10 +22,8 @@ GLOBAL_VAR_INIT(last_crown_announcement_time, -1000)
 	blade_dulling = DULLING_BASH
 	integrity_failure = 0.5
 	max_integrity = 0
-	flags_1 = HEAR_1
 	anchored = TRUE
 	var/mode = 0
-
 
 /obj/structure/roguemachine/titan/obj_break(damage_flag)
 	..()
@@ -35,12 +33,14 @@ GLOBAL_VAR_INIT(last_crown_announcement_time, -1000)
 	return
 
 /obj/structure/roguemachine/titan/Destroy()
+	lose_hearing_sensitivity()
 	set_light(0)
-	..()
+	return ..()
 
 /obj/structure/roguemachine/titan/Initialize()
 	. = ..()
 	icon_state = null
+	become_hearing_sensitive()
 //	var/mutable_appearance/eye_lights = mutable_appearance(icon, "titan-eyes")
 //	eye_lights.plane = ABOVE_LIGHTING_PLANE //glowy eyes
 //	eye_lights.layer = ABOVE_LIGHTING_LAYER

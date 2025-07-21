@@ -18,22 +18,22 @@
 
 /datum/supply_pack/rogue/potions/healthpot
 	name = "Healing Potion"
-	cost = 35
+	cost = 25
 	contains = list(/obj/item/reagent_containers/glass/bottle/rogue/healthpot)
 
 /datum/supply_pack/rogue/potions/manapot
 	name = "Mana Potion"
-	cost = 35
+	cost = 25
 	contains = list(/obj/item/reagent_containers/glass/bottle/rogue/manapot)
 
 /datum/supply_pack/rogue/potions/stamina
 	name = "Stamina Potion"
-	cost = 35
+	cost = 25
 	contains = list(/obj/item/reagent_containers/glass/bottle/rogue/stampot)
 
 /datum/supply_pack/rogue/potions/antidote
 	name = "Poison Antidote"
-	cost = 35
+	cost = 25
 	contains = list(/obj/item/reagent_containers/glass/bottle/rogue/antidote)
 
 /datum/supply_pack/rogue/potions/strpot
