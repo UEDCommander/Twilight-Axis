@@ -14,9 +14,8 @@
 	whitelist_req = FALSE
 	cmode_music = 'sound/music/cmode/church/combat_astrata.ogg'
 
-	spells = list(/obj/effect/proc_holder/spell/invoked/cure_rot, /obj/effect/proc_holder/spell/self/convertrole/templar, /obj/effect/proc_holder/spell/self/convertrole/monk)
+	spells = list(/obj/effect/proc_holder/spell/invoked/cure_rot, /obj/effect/proc_holder/spell/self/convertrole/templar, /obj/effect/proc_holder/spell/self/convertrole/monk, /obj/effect/proc_holder/spell/invoked/projectile/divineblast)
 	outfit = /datum/outfit/job/roguetown/priest
-
 	display_order = JDO_PRIEST
 	give_bank_account = 115
 	min_pq = 5 // You should know the basics of things if you're going to lead the town's entire religious sector
@@ -65,6 +64,7 @@
 	H.adjust_skillrank(/datum/skill/labor/farming, 2, TRUE)
 	H.adjust_skillrank(/datum/skill/magic/holy, 5, TRUE)
 	H.adjust_skillrank(/datum/skill/craft/alchemy, 3, TRUE)
+	H.grant_language(/datum/language/grenzelhoftian)
 	if(H.age == AGE_OLD)
 		H.adjust_skillrank(/datum/skill/magic/holy, 1, TRUE)
 	H.change_stat("strength", -1)
@@ -114,6 +114,7 @@
 	mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/cure_rot) 
 	mind.AddSpell(new /obj/effect/proc_holder/spell/self/convertrole/monk) 
 	mind.AddSpell(new /obj/effect/proc_holder/spell/self/convertrole/templar)
+	mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/projectile/divineblast)
 
 /mob/living/carbon/human/proc/coronate_lord()
 	set name = "Coronate"
