@@ -9,7 +9,7 @@ datum/supply_pack/rogue/ranged_weapons/twilight_flintgonne
 	name = "Lead bullets (30)"
 	cost = 60
 	contains = list(
-					/obj/item/quiver/twilight_bullet,
+					/obj/item/quiver/twilight_bullet/lead,
 				)
 
 /datum/supply_pack/rogue/ranged_weapons/twilight_powderflask
