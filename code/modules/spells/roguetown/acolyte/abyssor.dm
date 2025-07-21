@@ -35,6 +35,39 @@
 	revert_cast()
 	return FALSE
 
+/obj/effect/proc_holder/spell/invoked/abyssor_undertow // t1 offbalance someone for 5 seconds if on land, on water, knock them down.
+	name = "Undertow"
+	overlay_state = "thebends"
+	releasedrain = 15
+	chargedrain = 0
+	chargetime = 1 SECONDS
+	range = 15
+	movement_interrupt = FALSE
+	chargedloop = null
+	sound = 'sound/misc/undertow.ogg'
+	invocation = "Strangling waters, pull!"
+	invocation_type = "shout"
+	associated_skill = /datum/skill/magic/holy
+	antimagic_allowed = TRUE
+	recharge_time = 20 SECONDS
+	miracle = TRUE
+	devotion_cost = 15
+
+/obj/effect/proc_holder/spell/invoked/abyssor_undertow/cast(list/targets, mob/user = usr)
+	. = ..()
+	if(isliving(targets[1]))
+		var/mob/living/target = targets[1]
+		user.visible_message("<font color='yellow'>[user] raises a hand towards [target]!</font>")
+		var/turf/targettile = get_turf(target)
+		if(istype(targettile, /turf/open/water))
+			target.Knockdown(10)
+		else
+			target.OffBalance(50)
+		return TRUE
+	revert_cast()
+	return FALSE
+
+
 //T0. Stands the character up, if they can stand.
 /obj/effect/proc_holder/spell/self/abyssor_wind
 	name = "Second Wind"
