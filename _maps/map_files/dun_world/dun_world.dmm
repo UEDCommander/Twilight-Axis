@@ -17376,7 +17376,7 @@
 	},
 /obj/structure/mineral_door/wood/deadbolt{
 	dir = 8;
-	locked = 1
+	icon_state = "wooddir"
 	},
 /turf/open/floor/rogue/naturalstone,
 /area/rogue/outdoors/beach)
@@ -397621,7 +397621,7 @@ mth
 cDX
 nFd
 kRg
-lZd
+kaz
 xWk
 xWk
 pCT

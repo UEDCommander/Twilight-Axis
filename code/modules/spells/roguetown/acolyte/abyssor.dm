@@ -127,6 +127,7 @@
 	//Horrendous carry-over from fishing code
 	var/frwt = list(/turf/open/water/river, /turf/open/water/cleanshallow, /turf/open/water/pond)
 	var/salwt = list(/turf/open/water/ocean, /turf/open/water/ocean/deep)
+	var/mud = list(/turf/open/water/swamp, /turf/open/water/swamp/deep)
 	var/list/freshfishloot = list(
 		/obj/item/reagent_containers/food/snacks/fish/carp = 225,
 		/obj/item/reagent_containers/food/snacks/fish/sunny = 325,
@@ -149,20 +150,25 @@
 		/mob/living/simple_animal/hostile/rogue/deepone = 3,
 		/mob/living/simple_animal/hostile/rogue/deepone/spit = 3,			
 	)
+	var/list/mudfishloot = list(
+		/obj/item/reagent_containers/food/snacks/fish/mudskipper = 200,
+		/obj/item/natural/worms/leech = 50,
+		/obj/item/reagent_containers/food/snacks/smallrat = 1, //even funnier the third time
+		/mob/living/simple_animal/hostile/retaliate/rogue/mudcrab = 25,				
+	)	
 
 /obj/effect/proc_holder/spell/invoked/aquatic_compulsion/cast(list/targets, mob/user = usr)
 	. = ..()
 	if(isturf(targets[1]))
 		var/turf/T = targets[1]
-		var/success
 		var/A
 		if(T.type in frwt)
 			A = pickweight(freshfishloot)
-			success = TRUE
-		if(T.type in salwt)
+		else if(T.type in salwt)
 			A = pickweight(seafishloot)
-			success = TRUE
-		if(success)
+		else if(T.type in mud)
+			A = pickweight(mudfishloot)
+		if(A)
 			var/atom/movable/AF = new A(T)
 			AF.throw_at(get_turf(user), 5, 1, null)
 			record_featured_stat(FEATURED_STATS_FISHERS, user)
