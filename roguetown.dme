@@ -2408,6 +2408,7 @@
 #include "modular_axis\code\game\objects\items\painting\paint_palette.dm"
 #include "modular_axis\code\game\objects\items\rogueweapons\melee\swords.dm"
 #include "modular_axis\code\modules\roguetown\roguejobs\alchemist\container.dm"
+#include "modular_axis\code\modules\hairstyles\module.dm"
 #include "modular_axis\code\modules\cargo\packsrogue\alcohols.dm"
 #include "modular_axis\code\modules\cargo\packsrogue\luxury.dm"
 #include "modular_axis\code\modules\client\customizer\customizers\organ\horns.dm"
