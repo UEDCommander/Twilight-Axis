@@ -175,15 +175,17 @@
 	craftdiff = 3
 
 /datum/anvil_recipe/armor/aalloy/chaingaunts
-	name = "Decrepit Alloy Chain Gauntlets"
+	name = "Decrepit Alloy Chain Gauntlets, 2x"
 	req_bar = /obj/item/ingot/aalloy
 	created_item = /obj/item/clothing/gloves/roguetown/chain/aalloy
+	createditem_num = 2
 	craftdiff = 1
 
 /datum/anvil_recipe/armor/paalloy/chaingaunts
-	name = "Purified Alloy Chain Gauntlets"
+	name = "Purified Alloy Chain Gauntlets, 2x"
 	req_bar = /obj/item/ingot/purifiedaalloy
 	created_item = /obj/item/clothing/gloves/roguetown/chain/paalloy
+	createditem_num = 2
 	craftdiff = 3
 
 /datum/anvil_recipe/armor/aalloy/plategaunts
