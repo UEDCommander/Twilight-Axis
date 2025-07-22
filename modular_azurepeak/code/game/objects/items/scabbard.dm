@@ -146,7 +146,7 @@
 		icon_state = "[initial(icon_state)]_[sheathed.sheathe_icon]"
 	else
 		icon_state = "[initial(icon_state)]"
-	
+
 	if(user)
 		user.update_inv_hands()
 		user.update_inv_belt()
@@ -208,7 +208,7 @@
 					"eastabove" = 0,
 					"westabove" = 0
 				)
-			if("onbelt") 
+			if("onbelt")
 				return list(
 					"shrink" = 0.5,
 					"sx" = -2,
@@ -315,7 +315,7 @@
 					"wflip" = 8,
 					"eflip" = 0
 				)
-			if("onbelt") 
+			if("onbelt")
 				return list(
 					"shrink" = 0.5,
 					"sx" = -2,
@@ -362,8 +362,8 @@
 
 
 /obj/item/rogueweapon/scabbard/kazengun //Empty scabbard.
-	name = "simple kazengun scabbard"
-	desc = "A piece of steel lined with wood. Great for batting away blows."
+	name = "simple kazengun saya"
+	desc = "The Saya is a lacquered wooden sheath used to carry a 'koto' style Kazengun blade, adorned with a brass ring around the opening and a black, woven cord. It can be used to parry incoming blows."
 	icon_state = "kazscab"
 	item_state = "kazscab"
 	valid_sword = /obj/item/rogueweapon/sword/sabre/mulyeog
@@ -375,15 +375,15 @@
 
 
 /obj/item/rogueweapon/scabbard/kazengun/steel
-	name = "lenticular scabbard"
-	desc = "A cloud-patterned scabbard with a cloth sash. Used for blocking."
+	name = "kazengun saya"
+	desc = "The Saya is a lacquered wooden sheath used to carry a 'koto' style Kazengun blade, adorned with a brass ring around the opening and a black, woven cord. This one carries cloud patterns of the Hasikobe Clan It can be used to parry incoming blows."
 	icon_state = "kazscab_steel"
 	item_state = "kazscab_steel"
 	valid_sword = /obj/item/rogueweapon/sword/sabre/mulyeog/rumahench
 
 
 /obj/item/rogueweapon/scabbard/kazengun/gold
-	name = "gold-stained kazengun scabbard"
+	name = "gold-stained kazengun saya"
 	desc = "An ornate, wooden scabbard with a sash. Great for parrying."
 	icon_state = "kazscab_gold"
 	item_state = "kazscab_gold"

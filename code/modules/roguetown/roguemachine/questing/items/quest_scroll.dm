@@ -1,12 +1,15 @@
+#define WHISPER_COOLDOWN 10 SECONDS
 /obj/item/paper/scroll/quest
 	name = "enchanted quest scroll"
-	desc = "A weathered scroll enchanted to list the active quests from the Adventurers' Guild. The magical protections make it resistant to damage and tampering."
+	desc = "A weathered scroll oft known as a \"whispering scroll\". Enchanted with magicks to make it whisper to its bearer when opened the location of its target.\n\
+	The magical protections make it resistant to damage and tampering. It will only whisper when carried on the person of the quest bearer."
 	icon = 'code/modules/roguetown/roguemachine/questing/questing.dmi'
 	icon_state = "scroll_quest"
 	var/base_icon_state = "scroll_quest"
 	var/datum/quest/assigned_quest
 	var/last_compass_direction = ""
 	var/last_z_level_hint = ""
+	var/last_whisper = 0 // Last time the scroll whispered to the user
 	resistance_flags = FIRE_PROOF | LAVA_PROOF | INDESTRUCTIBLE | UNACIDABLE
 	max_integrity = 1000
 	armor = list("blunt" = 100, "slash" = 100, "stab" = 100, "piercing" = 100, "fire" = 100, "acid" = 100)
@@ -16,6 +19,7 @@
 	if(assigned_quest)
 		assigned_quest.quest_scroll = src 
 	update_quest_text()
+	START_PROCESSING(SSprocessing, src)
 
 /obj/item/paper/scroll/quest/Destroy()
 	if(assigned_quest)
@@ -41,7 +45,7 @@
 		// Clean up the quest
 		qdel(assigned_quest)
 		assigned_quest = null
-	
+	STOP_PROCESSING(SSprocessing, src)
 	return ..()
 
 /obj/item/paper/scroll/quest/update_icon_state()
@@ -49,6 +53,35 @@
 		icon_state = info ? "[base_icon_state]_info" : "[base_icon_state]"
 	else
 		icon_state = "[base_icon_state]_closed"
+	
+
+/obj/item/paper/scroll/quest/process()
+	if(world.time > last_whisper + WHISPER_COOLDOWN)
+		last_whisper = world.time
+		target_whisper()
+
+/obj/item/paper/scroll/quest/proc/target_whisper()
+	if(!assigned_quest || assigned_quest.complete || !assigned_quest.quest_receiver_reference)
+		return
+	var/obj/itemloc = src.loc
+	var/mob/quest_bearer = assigned_quest.quest_receiver_reference?.resolve()
+	// I should refactor this out at some point
+	if(!istype(itemloc, /mob/living))
+		while(!istype(itemloc, /mob/living))
+			if(isnull(itemloc))
+				return
+			itemloc = itemloc.loc
+			if(istype(itemloc, /turf))
+				return
+	if(itemloc != quest_bearer)
+		return
+	if(open && quest_bearer)
+		update_compass(quest_bearer)
+		var/message = ""
+		message = "[last_compass_direction]"
+		if(last_z_level_hint)
+			message += " ([last_z_level_hint])"
+		to_chat(quest_bearer, span_info("The scroll whispers to you, the target is [message]"))
 
 /obj/item/paper/scroll/quest/examine(mob/user)
 	. = ..()
@@ -119,7 +152,7 @@
 	scroll_text += "<b>Difficulty:</b> [assigned_quest.quest_difficulty].<br><br>"
 
 	if(last_compass_direction)
-		scroll_text += "<b>Direction:</b> [last_compass_direction]. "
+		scroll_text += "<b>Direction:</b> The target is [last_compass_direction]. "
 		if(last_z_level_hint)
 			scroll_text += " ([last_z_level_hint])"
 	scroll_text += "<br>"
@@ -196,18 +229,18 @@
 			min_distance = dist
 
 	if(!target || !(target_turf = get_turf(target)))
-		last_compass_direction = "Target location unknown"
+		last_compass_direction = "location unknown"
 		last_z_level_hint = ""
 		return
 
-	// Handle Z-level differences first
+	// We want the target to know z level differences but verticality exists
+	// We don't want to frustrate player by forcing them to track on the same z level
+	// Especially cuz of how many transitions exist
 	if(target_turf.z != user_turf.z)
 		var/z_diff = abs(target_turf.z - user_turf.z)
-		last_compass_direction = "Target is on another level"
 		last_z_level_hint = target_turf.z > user_turf.z ? \
 			"[z_diff] level\s above you" : \
 			"[z_diff] level\s below you"
-		return
 
 	// Calculate direction from user to target
 	var/dx = target_turf.x - user_turf.x  // EAST direction
@@ -216,7 +249,7 @@
 
 	// If very close, don't show direction
 	if(distance <= 7)
-		last_compass_direction = "Target is nearby"
+		last_compass_direction = "is nearby"
 		last_z_level_hint = ""
 		return
 
@@ -240,8 +273,9 @@
 		if(101 to INFINITY)
 			distance_text = "far away"
 
-	last_compass_direction = "Target is [distance_text] to the [direction_text]"
-	last_z_level_hint = "on this level"
+	last_compass_direction = "[distance_text] to the [direction_text]"
+	if(!last_z_level_hint)
+		last_z_level_hint = "on this level"
 
 /obj/item/paper/scroll/quest/proc/get_precise_direction_from_angle(angle)
 	// ATAN2 gives angle from positive x-axis (east) to the vector
@@ -291,118 +325,4 @@
 		if(326.25 to 348.75)
 			return "north-northwest"
 
-/obj/item/parcel
-	name = "parcel wrapping paper"
-	desc = "A sturdy piece of paper used to wrap items for secure delivery. The final size of the parcel depends on the size of the original item."
-	icon = 'modular/Neu_Food/icons/cookware/ration.dmi'
-	icon_state = "ration_wrapper"
-	w_class = WEIGHT_CLASS_TINY
-	grid_height = 32
-	grid_width = 32
-	dropshrink = 0.6
-	var/obj/item/contained_item = null
-	var/list/allowed_jobs = list()
-	var/delivery_area_type
-
-/obj/item/parcel/Initialize(mapload)
-	. = ..()
-	var/datum/component/quest_object/courier_quest = GetComponent(/datum/component/quest_object)
-	if(courier_quest)
-		var/datum/quest/quest = courier_quest.quest_ref?.resolve()
-		if(quest && quest.quest_type == QUEST_COURIER && quest.target_delivery_location)
-			delivery_area_type = quest.target_delivery_location
-			allowed_jobs = get_area_jobs(delivery_area_type)
-			RegisterSignal(courier_quest, COMSIG_PARENT_QDELETING, PROC_REF(on_quest_component_deleted))
-
-	invisibility = INVISIBILITY_OBSERVER
-	proximity_monitor = new(src, 7)
-
-/obj/item/parcel/HasProximity(mob/nearby)
-	if(!istype(nearby))
-		return
-
-	var/datum/component/quest_object/quest_component = GetComponent(/datum/component/quest_object)
-	if(!istype(quest_component))
-		return
-
-	var/datum/quest/quest = quest_component.quest_ref?.resolve()
-	if(!istype(quest))
-		return
-
-	if(get_dist(get_turf(src), get_turf(quest.quest_scroll_ref?.resolve())) > 7)
-		return
-
-	var/image/I = image(icon = 'icons/effects/effects.dmi', loc = get_turf(src), icon_state = "hidden", layer = 18)
-	I.layer = 18
-	I.plane = 18
-	if(!I)
-		return
-	I.mouse_opacity = MOUSE_OPACITY_TRANSPARENT
-	flick_overlay_view(I, 5 SECONDS)
-	invisibility = initial(invisibility)
-	QDEL_NULL(proximity_monitor)
-
-/obj/item/parcel/proc/get_area_jobs(area_type)
-	var/static/list/area_jobs = list(
-		/area/rogue/indoors/town/tavern = list("Innkeeper", "Tapster", "Cook"),
-		/area/rogue/indoors/town/bath = list("Bathhouse Attendant", "Bathmaster"),
-		/area/rogue/indoors/town/church = list("Priest", "Acolyte", "Templar", "Churchling"),
-		/area/rogue/indoors/town/dwarfin = list("Guildmaster", "Guildsman"),
-		/area/rogue/indoors/town/shop = list("Merchant", "Shophand"),
-		/area/rogue/indoors/town/manor = list("Councillor", "Nobleman", "Hand", "Knight Captain", "Marshal", "Steward", "Clerk", "Head Mage", "Duke"),
-		/area/rogue/indoors/town/magician = list("Court Magician", "Magicians Associate"),
-		/area/rogue/indoors/town = list("Guild Handler")
-	)
-	return area_jobs[area_type] || list("Town Elder", "Steward", "Merchant")
-
-/obj/item/parcel/proc/on_quest_component_deleted(datum/source)
-	SIGNAL_HANDLER
-	return
-
-/obj/item/parcel/attackby(obj/item/I, mob/user)
-	if(istype(I, /obj/item/parcel) || I.w_class > WEIGHT_CLASS_BULKY || contained_item)
-		to_chat(user, span_warning("You can't wrap this in [src]."))
-		return
-
-	if(do_after(user, 2 SECONDS, target = src))
-		user.transferItemToLoc(I, src)
-		contained_item = I
-		name = "parcel ([I.name])"
-		desc = "A securely wrapped parcel containing [I.name]."
-		icon_state = I.w_class >= WEIGHT_CLASS_NORMAL ? "ration_large" : "ration_small"
-		dropshrink = 1
-		update_icon()
-		playsound(get_turf(user), 'sound/foley/dropsound/food_drop.ogg', 40, TRUE, -1)
-		to_chat(user, span_notice("You wrap [I] in the parcel wrapper."))
-
-/obj/item/parcel/attack_self(mob/user)
-	if(!contained_item)
-		return
-
-	if(delivery_area_type)
-		var/area/quest_area = delivery_area_type
-		if(ispath(quest_area, /area) && !(user.job in allowed_jobs))
-			to_chat(user, span_warning("This parcel is sealed for delivery to [initial(quest_area.name)] and can only be opened by: [english_list(allowed_jobs)]!"))
-			return FALSE
-
-	if(do_after(user, 2 SECONDS, target = src))
-		to_chat(user, span_notice("You unwrap [contained_item] from the parcel."))
-		playsound(get_turf(user), 'sound/foley/dropsound/food_drop.ogg', 40, TRUE, -1)
-		user.put_in_hands(contained_item)
-		contained_item.update_icon()
-		contained_item = null
-		qdel(src)
-
-/obj/item/parcel/examine(mob/user)
-	. = ..()
-	if(!delivery_area_type)
-		return
-
-	var/area/delivery_area = delivery_area_type
-	if(!ispath(delivery_area, /area))
-		return
-
-	. += span_info("This parcel is addressed to [initial(delivery_area.name)].")
-	. += (user.job in allowed_jobs) ? \
-		span_notice("As [user.job], you're authorized to open this.") : \
-		span_warning("It's sealed with an official guild mark - only authorized personnel should open this!")
+#undef WHISPER_COOLDOWN

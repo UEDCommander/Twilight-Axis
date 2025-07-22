@@ -906,14 +906,14 @@
 /proc/get_blade_dulling_text(obj/item/rogueweapon/I, verbose = FALSE)
 	switch(I.blade_dulling)
 		if(DULLING_SHAFT_WOOD)
-			return "[verbose ? "Wooden shaft" : "(W. shaft)"]"
+			return "[verbose ? "Wooden" : "(W. shaft)"]"
 		if(DULLING_SHAFT_REINFORCED)
-			return "[verbose ? "Reinforced shaft" : "(R. shaft)"]"
+			return "[verbose ? "Reinforced" : "(R. shaft)"]"
 		if(DULLING_SHAFT_METAL)
-			return "[verbose ? "Metal shaft" : "(M. shaft)"]"
+			return "[verbose ? "Metal" : "(M. shaft)"]"
 		if(DULLING_SHAFT_GRAND)
-			return "[verbose ? "Grand shaft" : "(G. shaft)"]"
+			return "[verbose ? "Grand" : "(G. shaft)"]"
 		if(DULLING_SHAFT_CONJURED)
-			return "[verbose ? "Conjured shaft" : "(C. shaft)"]"
+			return "[verbose ? "Conjured" : "(C. shaft)"]"
 		else
 			return null
