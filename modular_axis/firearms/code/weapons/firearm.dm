@@ -63,7 +63,7 @@
 	cartridge_wording = "bullet"
 	load_sound = 'modular_axis/firearms/sound/musketload.ogg'
 	fire_sound = 'modular_axis/firearms/sound/arquefire.ogg'
-	anvilrepair = /datum/skill/craft/blacksmithing
+	anvilrepair = /datum/skill/craft/engineering
 	smeltresult = /obj/item/ingot/steel
 	bolt_type = BOLT_TYPE_NO_BOLT
 	casing_ejector = FALSE
@@ -225,6 +225,51 @@
 			user.visible_message("<span class='notice'>[user] stows the [R.name] under the barrel of the [src] without chambering it.</span>")
 		if(!myrod == null)
 			to_chat(user, span_warning("There's already a [R.name] inside of the [name]."))
+			return
+	if(istype(A, /obj/item/rogueweapon/hammer))
+		var/repair_percent = 0.025 // 2.5% Repairing per hammer smack
+		if(locate(/obj/machinery/anvil) in src.loc)
+			repair_percent *= 2 // Double the repair amount if we're using an anvil
+		var/exp_gained = 0
+		var/repair_skill = (user?.mind ? user.get_skill_level(anvilrepair) : 1)
+		if(!anvilrepair || (obj_integrity >= max_integrity) || !isturf(src.loc))
+			return
+
+		if(!src.ontable())
+			to_chat(user, span_warning("I should put this on a table or an anvil first."))
+			return
+
+		if(repair_skill <= 0)
+			if(HAS_TRAIT(user, TRAIT_SQUIRE_REPAIR))
+				if(locate(/obj/machinery/anvil) in src.loc)
+					repair_percent = 0.035
+				//Squires can repair on tables, but less efficiently
+				else if(src.ontable())
+					repair_percent = 0.015
+			else if(prob(30))
+				repair_percent = 0.01
+			else
+				repair_percent = 0
+		else
+			repair_percent *= repair_skill
+
+		playsound(src,'modular_axis/firearms/sound/arq_repair.ogg', 40, FALSE)
+		if(repair_percent)
+			repair_percent *= max_integrity
+			exp_gained = min(obj_integrity + repair_percent, max_integrity) - obj_integrity
+			obj_integrity = min(obj_integrity + repair_percent, max_integrity)
+			if(repair_percent == 0.01) // If an inexperienced repair attempt has been successful
+				to_chat(user, span_warning("You fumble your way into slightly repairing [src]."))
+			else
+				user.visible_message(span_info("[user] repairs [src]!"))
+			if(obj_broken && obj_integrity == max_integrity)
+				src.obj_fix()
+			adjust_experience(user, anvilrepair, exp_gained/2) //We gain as much exp as we fix divided by 2
+			return
+		else
+			user.visible_message(span_warning("[user] fumbles trying to repair [src]!"))
+			if(do_after(user, CLICK_CD_MELEE, target = src))
+				attack_obj(src, user)
 			return
 
 /obj/item/gun/ballistic/twilight_firearm/process_fire(atom/target, mob/living/user, message = TRUE, params = null, zone_override = "", bonus_spread = 0)
