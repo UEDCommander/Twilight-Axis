@@ -485,10 +485,12 @@
 				message_param = "kisses %t on the brow."
 			else if(H.zone_selected == BODY_ZONE_PRECISE_SKULL)
 				message_param = "kisses %t on the forehead."
+			else if(H.zone_selected == BODY_ZONE_HEAD)
+				message_param = "kisses %t on the cheek."
 			else if(H.zone_selected == BODY_ZONE_PRECISE_GROIN)
 				message_param = "kisses %t between the legs."
 				var/mob/living/carbon/human/L = target
-				if(iself(L) || ishalfelf(L) || isdarkelf(L))
+				if(isliving(L))
 					if(!L.cmode)
 						to_chat(target, span_love("It somewhat stimulating..."))
 			else
