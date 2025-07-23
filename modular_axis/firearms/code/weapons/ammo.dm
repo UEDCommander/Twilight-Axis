@@ -10,7 +10,7 @@
 	name = "runed sphere"
 	desc = "Небольшой, идеально круглый металлический шар, покрытый псайдонитскими рунами. Смертоносен на высокой скорости."
 	damage = 40
-	armor_penetration = 50
+	armor_penetration = 60
 	speed = 0.6
 	damage_type = BRUTE
 	icon = 'modular_axis/firearms/icons/ammo.dmi'
@@ -26,10 +26,22 @@
 	name = "blessed sphere"
 	desc = "Небольшой, идеально круглый шар, изготовленный из чистого серебра. Такие боеприпасы создаются лучшими из отавианских кузнецов и освящяются лично Великим Магистром. Смертоностны против нежити, но весьма эффективны и против других еретиков."
 	damage = 40
-	armor_penetration = 40
+	armor_penetration = 50
 	ammo_type = /obj/item/ammo_casing/caseless/twilight_lead/runelock/blessed
 	icon_state = "musketball_blessed"
 	silver = TRUE
+
+/obj/projectile/bullet/reusable/twilight_runelock/on_hit(atom/target, blocked = FALSE)
+	. = ..()
+	if(istype(target, /mob/living/carbon/human))
+		var/mob/living/carbon/human/M = target
+		var/list/screams = list("painscream", "paincrit")
+		var/check = rand(1, 20)
+		if(isliving(target))
+			if(check > M.STACON)
+				M.emote(screams)
+				M.Knockdown(rand(15,30))
+				M.Immobilize(rand(30,60))
 
 /**
  * Generic ammo used by handgonnes and arquebuses
@@ -47,7 +59,7 @@
 	embedchance = 100
 	woundclass = BCLASS_STAB
 	flag = "piercing"
-	armor_penetration = 75 
+	armor_penetration = 85
 	speed = 0.1
 
 /obj/projectile/bullet/twilight_lead/silver
@@ -87,7 +99,7 @@
 	embedchance = 100
 	woundclass = BCLASS_STAB
 	flag = "piercing"
-	armor_penetration = 75 
+	armor_penetration = 85
 	speed = 0.1		
 
 /obj/projectile/bullet/on_hit(atom/target, blocked = FALSE)
@@ -178,7 +190,6 @@
 	name = "blessed sphere"
 	desc = "Небольшой, идеально круглый шар, изготовленный из чистого серебра. Такие боеприпасы создаются лучшими из отавианских кузнецов и освящяются лично Великим Магистром. Смертоностны против нежити, но весьма эффективны и против других еретиков."
 	projectile_type = /obj/projectile/bullet/reusable/twilight_runelock/blessed
-	caliber = "runed_sphere_blessed"
 	icon_state = "musketball_blessed"
 	w_class = WEIGHT_CLASS_TINY
 	smeltresult = /obj/item/rogueore/silver

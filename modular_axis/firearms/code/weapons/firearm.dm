@@ -330,6 +330,10 @@
 			user.dropItemToGround(src)
 			user.Knockdown(rand(15,30))
 			user.Immobilize(30)
+		if(firearm_skill <= 2 && prob(50))
+			var/def_zone = "[(user.active_hand_index == 2) ? "r" : "l" ]_arm"
+			var/obj/item/bodypart/BP = user.get_bodypart(def_zone)
+			BP.add_wound(/datum/wound/dislocation)
 
 /obj/item/gun/ballistic/twilight_firearm/afterattack(atom/target, mob/living/user, flag, params)
 	. = ..()
@@ -468,6 +472,10 @@
 				user.dropItemToGround(src)
 				user.Knockdown(rand(15,30))
 				user.Immobilize(30)
+				if(firearm_skill <= 2 && prob(50))
+					var/def_zone = "[(user.active_hand_index == 2) ? "r" : "l" ]_arm"
+					var/obj/item/bodypart/BP = user.get_bodypart(def_zone)
+					BP.add_wound(/datum/wound/dislocation)
 
 /obj/item/gun/ballistic/twilight_firearm/flintgonne
 	name = "flintgonne"

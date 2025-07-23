@@ -142,7 +142,6 @@
 	force_wielded = 15
 	possible_item_intents = list(/datum/intent/mace/strike/wood)
 	gripped_intents = list(/datum/intent/shoot/twilight_runelock, /datum/intent/arc/twilight_runelock, INTENT_GENERIC)
-	mag_type = /obj/item/ammo_box/magazine/internal/shot/twilight_runelock/rifle
 	pixel_y = -16
 	pixel_x = -16
 	inhand_x_dimension = 64
@@ -156,9 +155,6 @@
 	speedfactor = 1.5
 	rangefactor = 2
 	reload_time = 12
-
-/obj/item/ammo_box/magazine/internal/shot/twilight_runelock/rifle
-	caliber = "runed_sphere_blessed"
 
 /obj/item/gun/ballistic/revolver/grenadelauncher/twilight_runelock/rifle/getonmobprop(tag)
 	. = ..()
