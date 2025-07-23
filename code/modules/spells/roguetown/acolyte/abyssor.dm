@@ -170,7 +170,12 @@
 			A = pickweight(mudfishloot)
 		if(A)
 			var/atom/movable/AF = new A(T)
-			AF.throw_at(get_turf(user), 5, 1, null)
+			if(istype(AF, /obj/item/reagent_containers/food/snacks/fish))
+				var/obj/item/reagent_containers/food/snacks/fish/F = AF
+				F.sinkable = FALSE
+				F.throw_at(get_turf(user), 5, 1, null)
+			else
+				AF.throw_at(get_turf(user), 5, 1, null)
 			record_featured_stat(FEATURED_STATS_FISHERS, user)
 			GLOB.azure_round_stats[STATS_FISH_CAUGHT]++
 			playsound(T, 'sound/foley/footsteps/FTWAT_1.ogg', 100)
