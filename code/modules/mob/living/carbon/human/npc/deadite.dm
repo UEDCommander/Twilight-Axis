@@ -8,6 +8,7 @@
 	flee_in_pain = FALSE
 	ambushable = FALSE
 	wander = TRUE
+	infected = TRUE
 
 /mob/living/carbon/human/species/npc/deadite/Initialize()
 	. = ..()
@@ -166,6 +167,7 @@
 	to_chat(src, span_danger("I feel horrible... REALLY horrible..."))
 	mob_timers["puke"] = world.time
 	vomit(1, blood = TRUE, stun = FALSE)
+	src.infected = TRUE //Is this in use? Just in case it is
 	addtimer(CALLBACK(src, PROC_REF(wake_zombie)), 1 MINUTES)
 	return zombie_antag
 

@@ -6,8 +6,8 @@
 	outfit = /datum/outfit/job/roguetown/adventurer/mage
 	category_tags = list(CTAG_ADVENTURER, CTAG_COURTAGENT)
 	traits_applied = list(TRAIT_OUTLANDER)
-	classes = list("Sorcerer" = "You are a learned mage and a scholar, having spent your life studying the arcane and its ways.",
-					"Spellblade" = "You are skilled in both the arcyne art and swordsmanship. But you are not a master of either nor could you channel your magick in armor.",
+	classes = list("Sorcerer" = "You are a learned mage and a scholar, having spent your life studying the arcane and its ways.", 
+					"Spellblade" = "You are skilled in both the arcyne art and swordsmanship. But you are not a master of either nor could you channel your magick in armor.",			
 					"Spellsinger" = "You belong to a school of bards renowned for their study of both the arcane and the arts.")
 
 /datum/outfit/job/roguetown/adventurer/mage/pre_equip(mob/living/carbon/human/H)
@@ -17,7 +17,7 @@
 	var/classchoice = input("Choose your archetypes", "Available archetypes") as anything in classes
 
 	switch(classchoice)
-
+	
 		if("Sorcerer")
 			to_chat(H, span_warning("You are a learned mage and a scholar, having spent your life studying the arcane and its ways."))
 			head = /obj/item/clothing/head/roguetown/roguehood/mage
@@ -118,7 +118,7 @@
 					r_hand = /obj/item/rogueweapon/sword/iron/messer
 					armor = /obj/item/clothing/suit/roguetown/armor/leather/heavy/coat
 					H.adjust_skillrank(/datum/skill/combat/shields, 1, TRUE)
-				if("Koto blade")
+				if("Foreign Straight Sword")
 					r_hand = /obj/item/rogueweapon/sword/sabre/mulyeog // Meant to not have the special foreign scabbards.
 					beltr = /obj/item/rogueweapon/scabbard/sword
 					armor = /obj/item/clothing/suit/roguetown/armor/basiceast
