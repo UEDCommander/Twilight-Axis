@@ -131,7 +131,7 @@
 				if("Rapier")
 					H.adjust_skillrank(/datum/skill/combat/swords, 2, TRUE)
 					l_hand = /obj/item/rogueweapon/sword/rapier
-					beltl = /obj/item/rogueweapon/scabbard/sword
+					r_hand = /obj/item/rogueweapon/scabbard/sword
 				if("Dagger")
 					H.adjust_skillrank(/datum/skill/combat/knives, 2, TRUE)
 					r_hand = /obj/item/rogueweapon/huntingknife/idagger/steel
