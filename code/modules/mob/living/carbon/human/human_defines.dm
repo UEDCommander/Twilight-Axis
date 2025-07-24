@@ -136,6 +136,3 @@
 
 	/// Whether our FOV cone is overridden to be hidden. Simple bool.
 	var/viewcone_override
-
-	/// Whether our job title is adaptive to our skills.
-	var/adaptive_name

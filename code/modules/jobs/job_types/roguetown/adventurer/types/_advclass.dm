@@ -25,9 +25,6 @@
 	//What categories we are going to sort it in
 	var/list/category_tags = list(CTAG_DISABLED)
 
-	/// Whether this class will apply the adaptive name to the job it belongs to.
-	var/adaptive_name = FALSE
-
 /datum/advclass/proc/equipme(mob/living/carbon/human/H)
 	// input sleeps....
 	set waitfor = FALSE
@@ -51,9 +48,6 @@
 
 	if(noble_income)
 		SStreasury.noble_incomes[H] = noble_income
-
-	if(adaptive_name)
-		H.adaptive_name = TRUE
 
 
 	// After the end of adv class equipping, apply a SPECIAL trait if able
