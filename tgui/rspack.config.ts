@@ -125,7 +125,6 @@ export default defineConfig({
       'tgui-panel': path.resolve(dirname, './packages/tgui-panel'),
       'tgui-say': path.resolve(dirname, './packages/tgui-say'),
       'tgui-dev-server': path.resolve(dirname, './packages/tgui-dev-server'),
-      'roguefont': path.resolve(dirname, "../interface/fonts"),
     },
   },
   stats: createStats(true),

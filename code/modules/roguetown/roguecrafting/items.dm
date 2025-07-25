@@ -359,7 +359,7 @@
 
 /datum/crafting_recipe/roguetown/survival/dye_brush
 	name = "dye brush"
-	result = /obj/item/dye_brush
+	result = /obj/item/needle
 	reqs = list(
 		/obj/item/grown/log/tree/stick = 2,
 		/obj/item/natural/fur = 1

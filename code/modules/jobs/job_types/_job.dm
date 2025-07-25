@@ -133,9 +133,6 @@
 	///Jobs that are hidden from actor screen
 	var/hidden_job = FALSE
 
-	///Jobs that change their advclass examine as the user levels up.
-	var/adaptive_name = FALSE
-
 
 /*
 	How this works, its CTAG_DEFINE = amount_to_attempt_to_role
@@ -209,7 +206,7 @@
 		var/used_title = title
 		if((H.pronouns == SHE_HER || H.pronouns == THEY_THEM_F) && f_title)
 			used_title = f_title
-		scom_announce("[H.real_name] the [used_title] arrives to Azure Peak.")
+		scom_announce("[H.real_name] the [used_title] arrives to Twilight Axis.")
 
 	if(give_bank_account)
 		if(give_bank_account > 1)

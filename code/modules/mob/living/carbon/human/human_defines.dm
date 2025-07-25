@@ -116,6 +116,8 @@
 	var/is_legacy = FALSE
 	var/received_resident_key = FALSE
 
+	var/nsfw_headshot_link = null //TA edit
+
 	var/has_confessed = FALSE // Used to track if they have confessed it was written onto a confession paper
 
 	possible_rmb_intents = list(/datum/rmb_intent/feint,\
@@ -134,6 +136,3 @@
 
 	/// Whether our FOV cone is overridden to be hidden. Simple bool.
 	var/viewcone_override
-
-	/// Whether our job title is adaptive to our skills.
-	var/adaptive_name
