@@ -2425,7 +2425,7 @@
 #include "modular_axis\code\game\objects\items\rogueweapons\melee\swords.dm"
 #include "modular_axis\code\game\objects\items\rogueitems\instruments.dm"
 #include "modular_axis\code\modules\roguetown\roguejobs\alchemist\container.dm"
-#include "modular_axis\code\modules\roguetown\roguemachine\alchemist\hoardmaster.dm"
+#include "modular_axis\code\modules\roguetown\roguemachine\hoardmaster.dm"
 #include "modular_axis\code\modules\hairstyles\module.dm"
 #include "modular_axis\code\modules\cargo\packsrogue\alcohols.dm"
 #include "modular_axis\code\modules\cargo\packsrogue\luxury.dm"
