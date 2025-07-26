@@ -152,6 +152,7 @@
 
 /obj/effect/proc_holder/spell/invoked/order/movemovemove
 	name = "Move! Move! Move!"
+	desc = "Orders your underlings to move faster. +5 Speed."
 	overlay_state = "movemovemove"
 
 /obj/effect/proc_holder/spell/invoked/order/movemovemove/cast(list/targets, mob/living/user)
@@ -199,6 +200,7 @@
 
 /obj/effect/proc_holder/spell/invoked/order/takeaim
 	name = "Take aim!"
+	desc = "Orders your underlings to be more precise. +5 Perception."
 	overlay_state = "takeaim"
 
 /datum/status_effect/buff/order/takeaim
@@ -245,6 +247,7 @@
 
 /obj/effect/proc_holder/spell/invoked/order/onfeet
 	name = "On your feet!"
+	desc = "Orders your underlings to stand up."
 	overlay_state = "onfeet"
 
 /obj/effect/proc_holder/spell/invoked/order/onfeet/cast(list/targets, mob/living/user)
@@ -302,6 +305,7 @@
 
 /obj/effect/proc_holder/spell/invoked/order/hold
 	name = "Hold!"
+	desc = "Orders your underlings to Endure. +2 Endurance and Constitution."
 	overlay_state = "hold"
 
 
@@ -350,6 +354,7 @@
 
 /obj/effect/proc_holder/spell/invoked/order/focustarget
 	name = "Focus target!"
+	desc = "Tells your underlings to target a vulnerable spot on the enemy. Applies Crit vulnerability on enemy and gives them -2 Fortune."
 	overlay_state = "focustarget"
 
 

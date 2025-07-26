@@ -15,6 +15,7 @@
 					/obj/effect/proc_holder/spell/invoked/projectile/lightningbolt/sacred_flame_rogue	= CLERIC_T1,
 					/obj/effect/proc_holder/spell/invoked/heal					= CLERIC_T2,
 					/obj/effect/proc_holder/spell/invoked/revive				= CLERIC_T3,
+					/obj/effect/proc_holder/spell/invoked/immolation			= CLERIC_T4,
 	)
 	confess_lines = list(
 		"ASTRATA IS MY LIGHT!",
@@ -105,6 +106,7 @@
 					/obj/effect/proc_holder/spell/invoked/lesser_heal 			= CLERIC_T1,
 					/obj/effect/proc_holder/spell/self/divine_strike			= CLERIC_T1,
 					/obj/effect/proc_holder/spell/self/call_to_arms				= CLERIC_T2,
+					/obj/effect/proc_holder/spell/invoked/challenge				= CLERIC_T2,
 					/obj/effect/proc_holder/spell/invoked/persistence			= CLERIC_T3,
 					/obj/effect/proc_holder/spell/invoked/resurrect/ravox		= CLERIC_T4,
 	)

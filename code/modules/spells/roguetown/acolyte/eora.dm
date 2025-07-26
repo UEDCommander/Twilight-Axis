@@ -36,7 +36,7 @@
 
 /obj/effect/proc_holder/spell/invoked/bud
 	name = "Eoran Bloom"
-	desc = ""
+	desc = "Tries to grow an Eoran bud on the target tile or on the targets head, forcing their thoughts away from violence until removed."
 	clothes_req = FALSE
 	range = 7
 	overlay_state = "love"
@@ -74,6 +74,7 @@
 
 /obj/effect/proc_holder/spell/invoked/eoracurse
 	name = "Eora's Curse"
+	desc = "Makes the target both high and drunk."
 	overlay_state = "curse2"
 	releasedrain = 50
 	chargetime = 30
@@ -174,7 +175,7 @@
 			BP.add_wound(/datum/wound/bite/small)
 
 /datum/component/eora_bond/proc/on_heal(datum/source, healing_on_tick, healing_datum)
-	if( !isliving(parent) || source != parent || istype(healing_datum, /datum/status_effect/buff/healing/eora))
+	if( !isliving(parent) || source != parent || istype(healing_datum, /datum/status_effect/buff/healing/eora) || HAS_TRAIT(parent, TRAIT_PSYDONITE))
 		return
 
 	healing_on_tick = healing_on_tick * heal_share
@@ -251,13 +252,6 @@
 		to_chat(user, span_warning("The bond requires focused concentration!"))
 		revert_cast()
 		return FALSE
-
-	if(HAS_TRAIT(target, TRAIT_PSYDONITE))
-		target.visible_message(span_info("[target] stirs for a moment, the miracle dissipates."), span_notice("A dull warmth swells in your heart, only to fade as quickly as it arrived."))
-		playsound(target, 'sound/magic/PSY.ogg', 100, FALSE, -1)
-		user.playsound_local(user, 'sound/magic/PSY.ogg', 100, FALSE, -1)
-		return FALSE
-
 
 	var/consent = alert(target, "[user] offers a lifebond. Accept?", "Heartweave", "Yes", "No")
 	if(consent != "Yes" || QDELETED(target))
@@ -376,7 +370,7 @@
 /obj/effect/proc_holder/spell/invoked/pomegranate
 	name = "Amaranth Sanctuary"
 	invocation = "Eora, provide sanctuary for your beauty!"
-	desc = "Grow a cool tree."
+	desc = "Grow a pomegrenate tree that when tended to grows Aurils with variety of effects. Additionally heals beatiful people and HEAVILY debuffs both STR and PER for everyone in visible range."
 	sound = 'sound/magic/magnet.ogg'
 	req_items = list(/obj/item/clothing/neck/roguetown/psicross/eora)
 	devotion_cost = 500
@@ -1147,7 +1141,6 @@
 //Remove their ability to feel bad, restore a small amount of hunger / thirst if they're already starving.
 /obj/effect/proc_holder/spell/invoked/eora_blessing
 	name = "Eora's Blessing"
-	invocation = "Eora, may their sorrows wither."
 	desc = "Bestow a person with Eora's calm, if only for a little while."
 	sound = 'sound/magic/eora_bless.ogg'
 	devotion_cost = 80
