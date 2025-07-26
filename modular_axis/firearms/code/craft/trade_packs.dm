@@ -277,9 +277,9 @@ datum/supply_pack/rogue/ranged_weapons/twilight_flintgonne
 					/obj/item/twilight_powderflask,
 				)
 
-/datum/supply_pack/rogue/Afreet/twilight_lead
+/datum/supply_pack/rogue/Afreet/twilight_silver
 	name = "Silver bullet"
-	cost = 8
+	cost = 10
 	contains = list(/obj/item/ammo_casing/caseless/twilight_lead/silver)
 
 /////////////
