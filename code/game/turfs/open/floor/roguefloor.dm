@@ -144,6 +144,16 @@
 	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
 	tiled_dirt = FALSE
 
+/turf/open/floor/rogue/rooftop/north
+	dir = 1
+
+/turf/open/floor/rogue/rooftop/east
+	dir = 4
+
+/turf/open/floor/rogue/rooftop/west
+	dir = 8
+
+
 /turf/open/floor/rogue/rooftop/Initialize()
 	. = ..()
 	icon_state = "roof"
@@ -155,12 +165,46 @@
 	. = ..()
 	icon_state = "roofg"
 
+/turf/open/floor/rogue/rooftop/green/north
+	dir = 1
+
+/turf/open/floor/rogue/rooftop/green/east
+	dir = 4
+
+/turf/open/floor/rogue/rooftop/green/west
+	dir = 8
+
 /turf/open/floor/rogue/rooftop/green/corner1
 	icon_state = "roofgc1-arw"
 
 /turf/open/floor/rogue/rooftop/green/corner1/Initialize()
 	. = ..()
 	icon_state = "roofgc1"
+
+/turf/open/floor/rogue/rooftop/green/corner1/dirone
+	dir = 1
+
+/turf/open/floor/rogue/rooftop/green/corner1/dirfour
+	dir = 4
+
+
+/turf/open/floor/rogue/rooftop/green/corner1/direight
+	dir = 8
+
+
+/turf/open/floor/rogue/rooftop/green/corner1/dirfive
+	dir = 5
+
+/turf/open/floor/rogue/rooftop/green/corner1/dirnine
+	dir = 9
+
+/turf/open/floor/rogue/rooftop/green/corner1/dirsix
+	dir = 6
+
+
+/turf/open/floor/rogue/rooftop/green/corner1/dirten
+	dir = 10
+
 
 /turf/open/floor/rogue/AzureSand
 	name = "sand"
@@ -451,7 +495,7 @@
 		var/mob/living/carbon/human/H = O
 		if(H.shoes && !HAS_TRAIT(H, TRAIT_LIGHT_STEP))
 			var/obj/item/clothing/shoes/S = H.shoes
-			if(!S.can_be_bloody)
+			if(!istype(S) || !S.can_be_bloody)
 				return
 			var/add_blood = 0
 			if(bloodiness >= BLOOD_GAIN_PER_STEP)

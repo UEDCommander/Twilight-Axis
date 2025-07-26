@@ -48,3 +48,8 @@
 	name = "athletic leotard"
 	icon_state = "athletic_leotard"
 	covers_breasts = TRUE
+
+/obj/item/undies/braies
+	name = "braies"
+	desc = "A pair of linen underpants; Psydonia's most common."
+	icon_state = "braies"

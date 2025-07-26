@@ -35,6 +35,39 @@
 	revert_cast()
 	return FALSE
 
+/obj/effect/proc_holder/spell/invoked/abyssor_undertow // t1 offbalance someone for 5 seconds if on land, on water, knock them down.
+	name = "Undertow"
+	overlay_state = "thebends"
+	releasedrain = 15
+	chargedrain = 0
+	chargetime = 1 SECONDS
+	range = 15
+	movement_interrupt = FALSE
+	chargedloop = null
+	sound = 'sound/misc/undertow.ogg'
+	invocation = "Strangling waters, pull!"
+	invocation_type = "shout"
+	associated_skill = /datum/skill/magic/holy
+	antimagic_allowed = TRUE
+	recharge_time = 20 SECONDS
+	miracle = TRUE
+	devotion_cost = 15
+
+/obj/effect/proc_holder/spell/invoked/abyssor_undertow/cast(list/targets, mob/user = usr)
+	. = ..()
+	if(isliving(targets[1]))
+		var/mob/living/target = targets[1]
+		user.visible_message("<font color='yellow'>[user] raises a hand towards [target]!</font>")
+		var/turf/targettile = get_turf(target)
+		if(istype(targettile, /turf/open/water))
+			target.Knockdown(10)
+		else
+			target.OffBalance(50)
+		return TRUE
+	revert_cast()
+	return FALSE
+
+
 //T0. Stands the character up, if they can stand.
 /obj/effect/proc_holder/spell/self/abyssor_wind
 	name = "Second Wind"
@@ -94,6 +127,7 @@
 	//Horrendous carry-over from fishing code
 	var/frwt = list(/turf/open/water/river, /turf/open/water/cleanshallow, /turf/open/water/pond)
 	var/salwt = list(/turf/open/water/ocean, /turf/open/water/ocean/deep)
+	var/mud = list(/turf/open/water/swamp, /turf/open/water/swamp/deep)
 	var/list/freshfishloot = list(
 		/obj/item/reagent_containers/food/snacks/fish/carp = 225,
 		/obj/item/reagent_containers/food/snacks/fish/sunny = 325,
@@ -116,22 +150,32 @@
 		/mob/living/simple_animal/hostile/rogue/deepone = 3,
 		/mob/living/simple_animal/hostile/rogue/deepone/spit = 3,			
 	)
+	var/list/mudfishloot = list(
+		/obj/item/reagent_containers/food/snacks/fish/mudskipper = 200,
+		/obj/item/natural/worms/leech = 50,
+		/obj/item/reagent_containers/food/snacks/smallrat = 1, //even funnier the third time
+		/mob/living/simple_animal/hostile/retaliate/rogue/mudcrab = 25,				
+	)	
 
 /obj/effect/proc_holder/spell/invoked/aquatic_compulsion/cast(list/targets, mob/user = usr)
 	. = ..()
 	if(isturf(targets[1]))
 		var/turf/T = targets[1]
-		var/success
 		var/A
 		if(T.type in frwt)
 			A = pickweight(freshfishloot)
-			success = TRUE
-		if(T.type in salwt)
+		else if(T.type in salwt)
 			A = pickweight(seafishloot)
-			success = TRUE
-		if(success)
+		else if(T.type in mud)
+			A = pickweight(mudfishloot)
+		if(A)
 			var/atom/movable/AF = new A(T)
-			AF.throw_at(get_turf(user), 5, 1, null)
+			if(istype(AF, /obj/item/reagent_containers/food/snacks/fish))
+				var/obj/item/reagent_containers/food/snacks/fish/F = AF
+				F.sinkable = FALSE
+				F.throw_at(get_turf(user), 5, 1, null)
+			else
+				AF.throw_at(get_turf(user), 5, 1, null)
 			record_featured_stat(FEATURED_STATS_FISHERS, user)
 			GLOB.azure_round_stats[STATS_FISH_CAUGHT]++
 			playsound(T, 'sound/foley/footsteps/FTWAT_1.ogg', 100)

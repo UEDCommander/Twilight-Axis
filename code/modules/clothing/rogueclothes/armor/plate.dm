@@ -25,8 +25,9 @@
 /obj/item/clothing/suit/roguetown/armor/plate/iron
 	name = "iron half-plate"
 	desc = "A basic half-plate of iron, protective and moderately durable."
-	icon_state = "ihalfplate"
-	item_state = "ihalfplate"
+	icon_state = "ironplate"
+	item_state = "ironplate"
+	boobed = FALSE	//the armor just looks better with this, makes sense and is 8 sprites less
 	max_integrity = ARMOR_INT_CHEST_PLATE_IRON
 	smeltresult = /obj/item/ingot/iron
 
@@ -83,11 +84,12 @@
 
 /obj/item/clothing/suit/roguetown/armor/plate/fluted/ornate/equipped(mob/living/user, slot)
 	. = ..()
-	user.apply_status_effect(/datum/status_effect/buff/psydonic_endurance)
+	if(slot == SLOT_ARMOR)
+		user.apply_status_effect(/datum/status_effect/buff/psydonic_endurance)
 
-/obj/item/clothing/suit/roguetown/armor/plate/full/fluted/ornate/dropped(mob/living/carbon/human/user)
+/obj/item/clothing/suit/roguetown/armor/plate/fluted/ornate/dropped(mob/living/carbon/human/user)
 	. = ..()
-	if(istype(user) && user.wear_armor == src)
+	if(istype(user) && user?.wear_armor == src)
 		user.remove_status_effect(/datum/status_effect/buff/psydonic_endurance)
 
 // Full plate armor
@@ -129,26 +131,14 @@
 	var/traited = FALSE
 
 /obj/item/clothing/suit/roguetown/armor/plate/full/fluted/ornate/equipped(mob/living/user, slot)
-	..()
-	if(slot != SLOT_ARMOR)
-		return
-	user.change_stat("endurance", 1)
-	user.change_stat("constitution", 1)
-	to_chat(user, span_notice("Endure til' inevitability."))
-	if (!HAS_TRAIT(user, TRAIT_MEDIUMARMOR))
-		return
-	if (HAS_TRAIT(user, TRAIT_HEAVYARMOR))
-		traited = TRUE
-		return
-	ADD_TRAIT(user, TRAIT_HEAVYARMOR, TRAIT_GENERIC)
+	. = ..()
+	if(slot == SLOT_ARMOR)
+		user.apply_status_effect(/datum/status_effect/buff/psydonic_endurance)
 
-/obj/item/clothing/suit/roguetown/armor/plate/full/fluted/ornate/dropped(mob/living/user)
-	..()
-	user.change_stat("endurance", -1)
-	user.change_stat("constitution", -1)
-	to_chat(user, span_notice("Trust in thyself."))
-	if (!traited)
-		REMOVE_TRAIT(user, TRAIT_HEAVYARMOR, TRAIT_GENERIC)
+/obj/item/clothing/suit/roguetown/armor/plate/full/fluted/ornate/dropped(mob/living/carbon/human/user)
+	. = ..()
+	if(istype(user) && user?.wear_armor == src)
+		user.remove_status_effect(/datum/status_effect/buff/psydonic_endurance)
 
 /obj/item/clothing/suit/roguetown/armor/plate/full/matthios
 	name = "gilded fullplate"
@@ -354,6 +344,7 @@
 	name = "iron breastplate"
 	desc = "A basic cuirass of iron, protective and moderately durable."
 	icon_state = "ibreastplate"
+	boobed = FALSE	//the armor just looks better with this, makes sense and is 8 sprites less
 	max_integrity = ARMOR_INT_CHEST_MEDIUM_IRON
 	smeltresult = /obj/item/ingot/iron
 	smelt_bar_num = 2

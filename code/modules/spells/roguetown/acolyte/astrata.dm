@@ -58,7 +58,7 @@
 	miracle = TRUE
 	devotion_cost = 10
 
-/obj/effect/proc_holder/spell/invoked/sacred_flame_rogue/cast(list/targets, mob/user = usr)
+/obj/effect/proc_holder/spell/invoked/ignition/cast(list/targets, mob/user = usr)
 	..()
 	// Spell interaction with ignitable objects (burn wooden things, light torches up)
 	if(isobj(targets[1]))
