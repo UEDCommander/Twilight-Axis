@@ -52,11 +52,10 @@
 	shoes = /obj/item/clothing/shoes/roguetown/boots/leather/reinforced
 	belt = /obj/item/storage/belt/rogue/leather/black
 	wrists = /obj/item/clothing/wrists/roguetown/bracers
-	gloves = /obj/item/clothing/gloves/roguetown/fingerless_leather
+	gloves = /obj/item/clothing/gloves/roguetown/plate/iron
 	backr = /obj/item/storage/backpack/rogue/satchel/black
-	shirt = /obj/item/clothing/suit/roguetown/armor/gambeson
-	armor = /obj/item/clothing/suit/roguetown/armor/plate/scale	
 	head = /obj/item/clothing/head/roguetown/helmet/sallet/visored
+	shirt = /obj/item/clothing/suit/roguetown/armor/gambeson/heavy
 	id = /obj/item/scomstone/garrison
 
 //Rare-ish anti-armor two hander sword. Kinda alternative of a bastard sword type. Could be cool.
@@ -129,6 +128,14 @@
 			backl = /obj/item/gun/ballistic/revolver/grenadelauncher/crossbow
 			r_hand = /obj/item/rogueweapon/sword/sabre
 			l_hand = /obj/item/rogueweapon/scabbard/sword
+
+	var/armors = list(
+		"Lightweight Brigandine"		= /obj/item/clothing/suit/roguetown/armor/brigandine/light,
+		"Steel Cuirass"		= /obj/item/clothing/suit/roguetown/armor/plate/half,
+		"Scalemail"	= /obj/item/clothing/suit/roguetown/armor/plate/scale,
+	)
+	var/armorchoice = input("Choose your armor.", "TAKE UP ARMOR") as anything in armors
+	armor = armors[armorchoice]
 
 /obj/effect/proc_holder/spell/invoked/order
 	name = ""

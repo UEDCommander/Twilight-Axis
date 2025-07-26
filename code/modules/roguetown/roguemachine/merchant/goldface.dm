@@ -97,7 +97,7 @@
 
 /obj/structure/roguemachine/goldface/public/smith/examine()
 	. = ..()
-	. += span_info("This can be locked by a Guild's key")
+	. += span_info("This can be locked by a guild's key")
 
 /obj/structure/roguemachine/goldface/public/tailor
 	name = "Tailor's SILVERFACE"
@@ -111,7 +111,19 @@
 
 /obj/structure/roguemachine/goldface/public/tailor/examine()
 	. = ..()
-	. += span_info("This can be locked by a Tailor's key")
+	. += span_info("This can be locked by a tailor's key")
+
+/obj/structure/roguemachine/goldface/public/apothecary
+	name = "Apothecary's SILVERFACE"
+	lockid = "physician"
+	categories = list(
+		"Potions",
+	)
+	categories_gamer = list()
+
+/obj/structure/roguemachine/goldface/public/tailor/examine()
+	. = ..()
+	. += span_info("This can be locked by a physician's key")
 
 /obj/structure/roguemachine/goldface/Initialize()
 	. = ..()
@@ -137,14 +149,18 @@
 		else
 			to_chat(user, span_warning("Wrong key."))
 			return
-	if(istype(P, /obj/item/storage/keyring))
-		var/obj/item/storage/keyring/K = P
-		for(var/obj/item/roguekey/KE in K.keys)
+	else if(istype(P, /obj/item/storage/keyring))
+		var/right_key = FALSE
+		for(var/obj/item/roguekey/KE in P.contents)
 			if(KE.lockid == lockid)
+				right_key = TRUE
 				locked = !locked
 				playsound(loc, 'sound/misc/gold_misc.ogg', 100, FALSE, -1)
 				update_icon()
 				return attack_hand(user)
+		if(!right_key)
+			to_chat(user, span_warning("Wrong key."))
+			return
 	if(istype(P, /obj/item/roguecoin))
 		budget += P.get_real_price()
 		qdel(P)
