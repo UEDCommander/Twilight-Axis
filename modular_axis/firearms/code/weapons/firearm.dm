@@ -71,10 +71,11 @@
 	//pickup_sound = 'sound/sheath_sounds/draw_from_holster.ogg'
 	//sheathe_sound = 'sound/sheath_sounds/put_back_to_holster.ogg'
 	var/spread_num = 10
-	var/damfactor = 2
+	var/damfactor = 1
 	var/reloaded = FALSE
 	var/load_time = 50
 	var/gunpowder = FALSE
+	var/advanced_icon
 	var/obj/item/twilight_ramrod/myrod = null
 
 /obj/item/gun/ballistic/twilight_firearm/getonmobprop(tag)
@@ -109,6 +110,11 @@
 			for(AM in src)
 				user.put_in_hands(AM)
 				myrod = null
+			if(advanced_icon)
+				if(reloaded)
+					icon_state = "[advanced_icon]_r_norod"
+				else
+					icon_state = "[advanced_icon]_norod"					
 		else
 			to_chat(user, "<span class='warning'>There is no rod stowed in the [src]!</span>")
 
@@ -212,17 +218,29 @@
 				if(do_after(user, load_time_skill, src))
 					user.visible_message("<span class='notice'>[user] has finished reloading the [src].</span>")
 					reloaded = TRUE
+					if(advanced_icon)
+						icon_state = "[advanced_icon]_r_norod"
 				return
 		if(reloaded && !myrod)
 			user.transferItemToLoc(R, src)
 			myrod = R
 			playsound(src, "modular_axis/firearms/sound/musketload.ogg",  100, FALSE)
 			user.visible_message("<span class='notice'>[user] stows the [R.name] under the barrel of the [src].</span>")
+			if(advanced_icon)
+				if(reloaded)
+					icon_state = "[advanced_icon]_r"
+				else
+					icon_state = "[advanced_icon]"
 		if(!chambered && !myrod)
 			user.transferItemToLoc(R, src)
 			myrod = R
 			playsound(src, "modular_axis/firearms/sound/musketload.ogg",  100, FALSE)
 			user.visible_message("<span class='notice'>[user] stows the [R.name] under the barrel of the [src] without chambering it.</span>")
+			if(advanced_icon)
+				if(reloaded)
+					icon_state = "[advanced_icon]_r"
+				else
+					icon_state = "[advanced_icon]"
 		if(!myrod == null)
 			to_chat(user, span_warning("There's already a [R.name] inside of the [name]."))
 			return
@@ -297,9 +315,14 @@
 		spread = 0
 	for(var/obj/item/ammo_casing/CB in get_ammo_list(FALSE, TRUE))
 		var/obj/projectile/BB = CB.BB
-		BB.damage = BB.damage * damfactor
+		BB.damage *= damfactor * (user.STAPER > 10 ? user.STAPER / 10 : 1)
 	gunpowder = FALSE
 	reloaded = FALSE
+	if(advanced_icon)
+		if(myrod)
+			icon_state = "[advanced_icon]_norod"
+		else
+			icon_state = "[advanced_icon]"
 	spark_act()
 
 	..()
@@ -387,7 +410,8 @@
 	bigboy = FALSE
 	gripsprite = FALSE
 	cartridge_wording = "bullet"
-	damfactor = 1.5
+	damfactor = 0.7
+	advanced_icon = "pistol"
 
 /obj/item/gun/ballistic/twilight_firearm/arquebus_pistol/getonmobprop(tag)
 	. = ..()
@@ -439,7 +463,7 @@
 		spread = 0
 	for(var/obj/item/ammo_casing/CB in get_ammo_list(FALSE, TRUE))
 		var/obj/projectile/BB = CB.BB
-		BB.damage = BB.damage * damfactor
+		BB.damage *= damfactor * (user.STAPER > 10 ? user.STAPER / 10 : 1)
 	gunpowder = FALSE
 	reloaded = FALSE
 	spark_act()
@@ -484,7 +508,7 @@
 	icon_state = "flintgonne"
 	item_state = "flintgonne"
 	gripped_intents = list(/datum/intent/shoot/twilight_firearm/flintgonne, /datum/intent/arc/twilight_firearm/flintgonne, INTENT_GENERIC)
-	damfactor = 1.5
+	damfactor = 0.7
 
 /datum/intent/shoot/twilight_firearm/flintgonne/get_chargetime()
 	if(mastermob && chargetime)

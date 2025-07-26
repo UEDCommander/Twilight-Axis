@@ -26,7 +26,7 @@
 	var/misfire_chance = 0
 	/// Reload time, in SECONDS
 	var/reload_time = 8
-	damfactor = 3
+	damfactor = 0.5
 	var/speedfactor = 1
 	var/rangefactor = 1
 
@@ -105,9 +105,9 @@
 		return
 	for(var/obj/item/ammo_casing/CB in get_ammo_list(FALSE, TRUE))
 		var/obj/projectile/BB = CB.BB
-		BB.speed = BB.speed * speedfactor
+		BB.speed = BB.speed / speedfactor
 		BB.range = BB.range * rangefactor
-		BB.damage = BB.damage * damfactor
+		BB.damage *= damfactor * (user.STAPER > 10 ? user.STAPER / 10 : 1)
 	cocked = FALSE
 	update_icon()
 	var/dir = get_dir(src, target)
@@ -151,7 +151,7 @@
 	wlength = WLENGTH_LONG
 	slot_flags = ITEM_SLOT_BACK
 	w_class = WEIGHT_CLASS_BULKY
-	damfactor = 4
+	damfactor = 1
 	speedfactor = 1.5
 	rangefactor = 2
 	reload_time = 12

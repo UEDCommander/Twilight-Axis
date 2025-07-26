@@ -9,7 +9,7 @@
 /obj/projectile/bullet/reusable/twilight_runelock
 	name = "runed sphere"
 	desc = "Небольшой, идеально круглый металлический шар, покрытый псайдонитскими рунами. Смертоносен на высокой скорости."
-	damage = 40
+	damage = 90
 	armor_penetration = 60
 	speed = 0.6
 	damage_type = BRUTE
@@ -25,23 +25,11 @@
 /obj/projectile/bullet/reusable/twilight_runelock/blessed
 	name = "blessed sphere"
 	desc = "Небольшой, идеально круглый шар, изготовленный из чистого серебра. Такие боеприпасы создаются лучшими из отавианских кузнецов и освящяются лично Великим Магистром. Смертоностны против нежити, но весьма эффективны и против других еретиков."
-	damage = 40
+	damage = 100
 	armor_penetration = 50
 	ammo_type = /obj/item/ammo_casing/caseless/twilight_lead/runelock/blessed
 	icon_state = "musketball_blessed"
 	silver = TRUE
-
-/obj/projectile/bullet/reusable/twilight_runelock/on_hit(atom/target, blocked = FALSE)
-	. = ..()
-	if(istype(target, /mob/living/carbon/human))
-		var/mob/living/carbon/human/M = target
-		var/list/screams = list("painscream", "paincrit")
-		var/check = rand(1, 20)
-		if(isliving(target))
-			if(check > M.STACON)
-				M.emote(screams)
-				M.Knockdown(rand(15,30))
-				M.Immobilize(rand(30,60))
 
 /**
  * Generic ammo used by handgonnes and arquebuses
@@ -49,7 +37,7 @@
 /obj/projectile/bullet/twilight_lead
 	name = "lead sphere"
 	desc = "Небольшая свинцовая сфера. Хорошо сочетается с порохом."
-	damage = 75	//higher damage than crossbow
+	damage = 100	//higher damage than crossbow
 	damage_type = BRUTE
 	icon = 'modular_axis/firearms/icons/ammo.dmi'
 	icon_state = "musketball_proj"
@@ -66,14 +54,14 @@
 	name = "silver sphere"
 	desc = "Небольшая серебряная сфера. Мягче, чем свинцовая пуля, но крайне эффективна против нежити."
 	ammo_type = /obj/item/ammo_casing/caseless/twilight_lead/silver
-	damage = 60
+	damage = 75
 	armor_penetration = 60
 	silver = TRUE
 
 /obj/projectile/bullet/twilight_cannonball
 	name = "cannonball"
 	desc = "Крупная свинцовая сфера. Важен не размер ствола, а размер отверстия, что он делает в вашем противнике."
-	damage = 45
+	damage = 60
 	damage_type = BRUTE
 	icon = 'modular_axis/firearms/icons/ammo.dmi'
 	icon_state = "musketball_proj"
@@ -89,7 +77,7 @@
 /obj/projectile/bullet/twilight_grapeshot
 	name = "grapeshot"
 	desc = "Плотно упакованный в бумагу набор небольших металлических шариков. Хорошо сочетается с порохом."
-	damage = 15
+	damage = 20
 	damage_type = BRUTE
 	icon = 'modular_axis/firearms/icons/ammo.dmi'
 	icon_state = "musketball_proj"
@@ -104,18 +92,24 @@
 
 /obj/projectile/bullet/on_hit(atom/target, blocked = FALSE)
 	. = ..()
-	if(isliving(firer) && isgun(fired_from))
+	if(isliving(firer) && (istype(fired_from, /obj/item/gun/ballistic/twilight_firearm) || istype(fired_from, /obj/item/gun/ballistic/revolver/grenadelauncher/twilight_runelock)))
 		var/mob/living/M = firer
 		var/obj/item/gun/G = fired_from
 		var/skill = (M?.mind ? M.get_skill_level(G.associated_skill) : 1)
 		if(isliving(target))
 			var/mob/living/T = target
-			if(skill >= 1)
+			if(skill >= 1) //Exp gain from firing a gun
 				if(isanimal(T) && (T.stat != DEAD || (T.stat == DEAD && T.timeofdeath == world.time)))
 					adjust_experience(M, G.associated_skill, M.STAINT * 3)
 				else if(ishuman(T) && (T.stat != DEAD || (T.stat == DEAD && T.timeofdeath == world.time)))
 					adjust_experience(M, G.associated_skill, M.STAINT * 6)
-			if(silver)
+					var/list/screams = list("painscream", "paincrit") //Simulating paincrit on hit
+					var/check = rand(1, 20)
+					if(check > T.STACON)
+						T.emote(screams)
+						T.Knockdown(rand(15,30))
+						T.Immobilize(rand(30,60))
+			if(silver) //Silver bullet effects
 				if(T.mind)
 					var/datum/antagonist/werewolf/W = T.mind.has_antag_datum(/datum/antagonist/werewolf/)
 					var/datum/antagonist/vampirelord/lesser/V = T.mind.has_antag_datum(/datum/antagonist/vampirelord/lesser)
@@ -141,18 +135,6 @@
 						T.visible_message("<font color='white'>The silver weapon weakens the curse temporarily!</font>")
 						to_chat(T, span_userdanger("I'm hit by my BANE!"))
 						T.apply_status_effect(/datum/status_effect/debuff/silver_curse)
-
-/obj/projectile/bullet/twilight_lead/on_hit(atom/target, blocked = FALSE)
-	. = ..()
-	if(istype(target, /mob/living/carbon/human))
-		var/mob/living/carbon/human/M = target
-		var/list/screams = list("painscream", "paincrit")
-		var/check = rand(1, 20)
-		if(isliving(target))
-			if(check > M.STACON)
-				M.emote(screams)
-				M.Knockdown(rand(15,30))
-				M.Immobilize(rand(30,60))
 
 /obj/projectile/bullet/twilight_cannonball/on_hit(atom/target, blocked = FALSE)
 	. = ..()
