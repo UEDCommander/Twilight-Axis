@@ -167,6 +167,7 @@
 	name = "silver sphere"
 	desc = "Небольшая серебряная сфера. Мягче, чем свинцовая пуля, но крайне эффективна против нежити."
 	projectile_type = /obj/projectile/bullet/twilight_lead/silver
+	icon_state = "musketball_silver"
 
 /obj/item/ammo_casing/caseless/twilight_lead/runelock/blessed
 	name = "blessed sphere"

@@ -7,6 +7,7 @@
 	allowed_sexes = list(MALE, FEMALE)
 	allowed_races = RACES_ALL_KINDS
 	outfit = /datum/outfit/job/roguetown/mercenary/twilight_gunslinger
+	maximum_possible_slots = 2
 	min_pq = 10
 	cmode_music = 'modular_axis/firearms/sound/music/combat_gunslinger.ogg'
 	category_tags = list(CTAG_MERCENARY)
