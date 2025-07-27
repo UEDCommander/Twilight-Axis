@@ -4,6 +4,7 @@
 
 /obj/effect/proc_holder/spell/invoked/appraise
 	name = "Appraise"
+	desc = "Tells you how many mammons someone has on them and in the meister."
 	overlay_state = "appraise"
 	releasedrain = 10
 	chargedrain = 0
@@ -39,6 +40,7 @@
 
 /obj/effect/proc_holder/spell/invoked/transact
 	name = "Transact"
+	desc = "Sacrifice an item in your hand, applying a heal over time to yourself with strenght depending on its value."
 	overlay_state = "transact"
 	releasedrain = 30
 	chargedrain = 0
@@ -95,6 +97,7 @@
 
 /obj/effect/proc_holder/spell/invoked/equalize
 	name = "Equalize"
+	desc = "Create equality between you and your target. Siphons the targets stats and adds onto yours if their total is higher."
 	overlay_state = "equalize"
 	clothes_req = FALSE
 	overlay_state = "equalize"
@@ -177,7 +180,7 @@
 
 /obj/effect/proc_holder/spell/invoked/churnwealthy
 	name = "Churn Wealthy"
-	desc = "Empowering the weak often involves destroying the strong."
+	desc = "Attacks the target by weight of their greed, dealing increased damage and effects depending on how wealthy they are."
 	clothes_req = FALSE
 	overlay_state = "churnwealthy"
 	associated_skill = /datum/skill/magic/holy

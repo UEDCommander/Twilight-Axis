@@ -2,6 +2,7 @@
 
 /obj/effect/proc_holder/spell/invoked/baothablessings
 	name = "Baotha's Blessings"
+	desc = "Gets the target drunk and stops them from overdosing for a time."
 	overlay_state = "lesserheal"
 	releasedrain = 30
 	chargedrain = 0
@@ -36,7 +37,7 @@
 
 /obj/effect/proc_holder/spell/invoked/projectile/blowingdust
 	name = "Enrapturing Powder"
-	desc = "Baotha's presence is always known, finding her blessings gathering on you like dust. With a good swipe, I could make others indulge in her fruits.."
+	desc = "Blows dust of a potent painkilling drug at the target."
 	clothes_req = FALSE
 	range = 3	//It's literally blowing coke in their face, basically.
 	associated_skill = /datum/skill/magic/holy
@@ -70,6 +71,7 @@
 //Numbing Pleasure - T3, removes all pain from self for a period of time. (Similar to Ravox's without any blood-clotting and better pain suppression + good mood buff.)
 /obj/effect/proc_holder/spell/invoked/painkiller
 	name = "Numbing Pleasure"
+	desc = "Numbs the targets pain and improves their mood."
 	overlay_state = "astrata"
 	releasedrain = 30
 	chargedrain = 0
@@ -95,12 +97,13 @@
 		target.visible_message(span_info("[target] begins to twitch as warmth radiates from them!"), span_notice("The pain from my wounds fade, every new one being a mere, pleasent warmth!"))
 		phy.pain_mod *= 0.5	//Literally halves your pain modifier.
 		addtimer(VARSET_CALLBACK(phy, pain_mod, phy.pain_mod /= 0.5), 1 MINUTES)	//Adds back the 0.5 of pain, basically setting it back to 1.
-		target.apply_status_effect(/datum/status_effect/buff/vitae)					//Basically lowers fortune by 2 but +3 speed, it's powerful. Drugs cus Baotha.
+		target.apply_status_effect(/datum/status_effect/buff/vitae)					//+2 Fortune and mood buff
 		return TRUE
 
 //T0 that tells the user the person's vice.
 /obj/effect/proc_holder/spell/invoked/baothavice
 	name = "Tell Vice"
+	desc = "Tells you the targets Vice."
 	overlay_state = "baotha_vice"
 	releasedrain = 10
 	chargedrain = 0

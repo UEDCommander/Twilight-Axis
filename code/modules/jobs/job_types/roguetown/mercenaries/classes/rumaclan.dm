@@ -69,6 +69,7 @@
 				/obj/item/roguekey/mercenary,
 				/obj/item/storage/belt/rogue/pouch/coins/poor,
 				/obj/item/rogueweapon/huntingknife/idagger,
+				/obj/item/rogueweapon/scabbard/sheath = 1,
 				)
 			H.adjust_skillrank(/datum/skill/combat/bows, 5, TRUE)
 			H.adjust_skillrank(/datum/skill/combat/knives, 4, TRUE)

@@ -160,6 +160,7 @@
 
 /obj/effect/proc_holder/spell/invoked/resurrect/abyssor
 	name = "Abyssal Revival"
+	desc = "Revive the target at a cost, cast on yourself to check.<br>a dreamfiend will stalk the target and sap their stats until confronted by them."
 	sound = 'sound/magic/whale.ogg'
 	//A medley of common ocean fish, totalling 10
 	required_items = list(
@@ -260,6 +261,7 @@
 
 /obj/effect/proc_holder/spell/invoked/resurrect/pestra
 	name = "Putrid Revival"
+	desc = "Revive the target by consuming extracted Lux."
 	sound = 'sound/magic/slimesquish.ogg'
 	required_items = list(
 		/obj/item/reagent_containers/lux = 1
@@ -269,6 +271,7 @@
 /obj/effect/proc_holder/spell/invoked/resurrect/eora
 	//Does heartfelt even exist?
 	name = "Heartfelt Revival"
+	desc = "Revive the target at a cost, cast on yourself to check.<br>The target will get hungry faster for a time."
 	required_items = list(
 		/obj/item/reagent_containers/food/snacks/rogue/breadslice/toast = 5
 	)
@@ -311,6 +314,7 @@
 /obj/effect/proc_holder/spell/invoked/resurrect/xylix
 	//Cheap, but wildly unpretictable with possibly far worse effects than other methods.
 	name = "Anastasis?"
+	desc = "Revives the target? Grants them a random debuff from other revivals, small change to be worse or better."
 	debuff_type = /datum/status_effect/debuff/random_revival
 
 /datum/status_effect/debuff/random_revival
@@ -510,6 +514,7 @@
 
 /obj/effect/proc_holder/spell/invoked/resurrect/malum
 	name = "Diligent Revival"
+	desc = "Revive the target at a cost, cast on yourself to check.<br>Targets endurance and strenght will be sapped for a time."
 	required_items = list(
 		/obj/item/ingot/iron = 3
 	)
@@ -518,6 +523,7 @@
 
 /obj/effect/proc_holder/spell/invoked/resurrect/ravox
 	name = "Just Revival"
+	desc = "Revive the target at a cost, cast on yourself to check.<br>Targets strenght and speed will be sapped for a time."
 	// The items here are somewhat hard to pick as it still has to be something a ravox acolyte would reasonably obtain.
 	// Bones insinuate that mayhaps, they went out there to delete some skeletons for justice?
 	required_items = list(
@@ -527,6 +533,7 @@
 
 /obj/effect/proc_holder/spell/invoked/resurrect/dendor
 	name = "Wild Revival"
+	desc = "Revive the target at a cost, cast on yourself to check.<br>Targets speed and constitution will be sapped for a time."
 	//Herbs that have to do with intelligence mostly. Easier to remember.
 	required_items = list(
 		/obj/item/reagent_containers/food/snacks/rogue/meat/steak = 3,
@@ -539,6 +546,7 @@
 
 /obj/effect/proc_holder/spell/invoked/resurrect/noc
 	name = "Moonlit Revival"
+	desc = "Revive the target at a cost, cast on yourself to check.<br>Targets intelligence will be sapped for a time, in addition they will be burned by moonlight."
 	required_items = list(
 		/obj/item/paper/scroll = 15
 	)

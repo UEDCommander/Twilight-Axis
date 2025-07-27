@@ -1,6 +1,7 @@
 // Necrite
 /obj/effect/proc_holder/spell/targeted/burialrite
 	name = "Burial Rites"
+	desc = "Consecrate a coffin or a grave. Sending any spirits within to Necras realm."
 	range = 5
 	overlay_state = "consecrateburial"
 	releasedrain = 30
@@ -32,6 +33,7 @@
 
 /obj/effect/proc_holder/spell/targeted/churn
 	name = "Churn Undead"
+	desc = "Stuns and explodes undead."
 	range = 4	//Way lower, halved.
 	overlay_state = "necra"
 	releasedrain = 30
@@ -91,6 +93,7 @@
 
 /obj/effect/proc_holder/spell/invoked/deaths_door
 	name = "Death's Door"
+	desc = "Opens a portal into a realm between lyfe and death, People can be dragged into the portal to be put into stasis, though undead will never return. Casting the portal again while people are trapped inside spits them out of the gates. <br>Necras domain will only hold people for five minutes at a time."
 	range = 7
 	no_early_release = TRUE
 	charging_slowdown = 1

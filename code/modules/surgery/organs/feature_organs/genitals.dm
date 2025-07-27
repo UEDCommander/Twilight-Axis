@@ -34,7 +34,7 @@
 /obj/item/organ/penis/knotted
 	name = "knotted penis"
 	penis_type = PENIS_TYPE_KNOTTED
-	sheath_type = SHEATH_TYPE_NONE
+	sheath_type = SHEATH_TYPE_NORMAL
 
 /obj/item/organ/penis/knotted/big
 	penis_size = 3
@@ -42,37 +42,37 @@
 /obj/item/organ/penis/equine
 	name = "equine penis"
 	penis_type = PENIS_TYPE_EQUINE
-	sheath_type = SHEATH_TYPE_NONE
+	sheath_type = SHEATH_TYPE_NORMAL
 
 /obj/item/organ/penis/tapered_mammal
 	name = "tapered penis"
 	penis_type = PENIS_TYPE_TAPERED
-	sheath_type = SHEATH_TYPE_NONE
+	sheath_type = SHEATH_TYPE_NORMAL
 
 /obj/item/organ/penis/tapered
 	name = "tapered penis"
 	penis_type = PENIS_TYPE_TAPERED
-	sheath_type = SHEATH_TYPE_NONE
+	sheath_type = SHEATH_TYPE_SLIT
 
 /obj/item/organ/penis/tapered_double
 	name = "hemi tapered penis"
 	penis_type = PENIS_TYPE_TAPERED_DOUBLE
-	sheath_type = SHEATH_TYPE_NONE
+	sheath_type = SHEATH_TYPE_SLIT
 
 /obj/item/organ/penis/tapered_double_knotted
 	name = "hemi knotted tapered penis"
 	penis_type = PENIS_TYPE_TAPERED_DOUBLE_KNOTTED
-	sheath_type = SHEATH_TYPE_NONE
+	sheath_type = SHEATH_TYPE_SLIT
 
 /obj/item/organ/penis/barbed
 	name = "barbed penis"
 	penis_type = PENIS_TYPE_BARBED
-	sheath_type = SHEATH_TYPE_NONE
+	sheath_type = SHEATH_TYPE_NORMAL
 
 /obj/item/organ/penis/barbed_knotted
 	name = "barbed knotted penis"
 	penis_type = PENIS_TYPE_BARBED_KNOTTED
-	sheath_type = SHEATH_TYPE_NONE
+	sheath_type = SHEATH_TYPE_NORMAL
 
 /obj/item/organ/penis/tentacle
 	name = "tentacle penis"
