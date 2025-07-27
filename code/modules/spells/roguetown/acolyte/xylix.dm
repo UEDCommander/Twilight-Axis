@@ -393,7 +393,7 @@
 	last_used = world.time	
 
 /obj/effect/proc_holder/spell/invoked/xylixlian_luck/cast(list/targets,mob/living/carbon/human/user = usr)
-	user.play_overhead_indicator('modular_axis/icons/mob/overhead_effects.dmi', "xylix_fortune", 30, MUTATIONS_LAYER, soundin = 'modular_axis/sound/slotmachine.ogg', y_offset = 24)
+	user.play_overhead_indicator('modular_twilight_axis/icons/mob/overhead_effects.dmi', "xylix_fortune", 30, MUTATIONS_LAYER, soundin = 'modular_twilight_axis/sound/slotmachine.ogg', y_offset = 24)
 
 	to_chat(user, span_danger("Ксайликс дает вам шанс, использовать одно из его одолжений"))
 	var/luck_bonus = 0
