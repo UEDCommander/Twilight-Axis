@@ -5,11 +5,6 @@
 	worshippers = "Отвергнутые церковью Десяти, радикалы, нонкомформисты."
 	godhead = /datum/patron/inhumen/baotha
 
-/datum/patron/inhumen
-	associated_faith = /datum/faith/inhumen
-	undead_hater = FALSE
-	crafting_recipes = list(/datum/crafting_recipe/roguetown/structure/zizo_shrine)			//Allows construction of unique bad shrine.
-
 /datum/patron/inhumen/zizo
 	name = "Zizo"
 	domain = "Бессмертие, кровь, тьма, запретные знания, амбиции"
@@ -27,7 +22,7 @@
 	domain = "Власть, сила, превосходство, завоевание"
 	desc = "Бог силы и власти, которая приходит с ней, а также покровитель жадности. Без желаний власти быть не может. «Смерть слабым» — отчеканил Граггар, казня ближайших из своих подданных, которые позволили себе дать слабину."
 	undead_hater = TRUE
-	//crafting_recipes = list(/datum/crafting_recipe/roguetown/structure/zizo_shrine/graggar)
+	crafting_recipes = list(/datum/crafting_recipe/roguetown/structure/zizo_shrine/graggar)
 	worshippers = "Племенные народы, безумцы, маньяки, жестокий люд"
 	confess_lines = list(
 		"GRAGGAR IS THE BEAST I WORSHIP!",
@@ -40,7 +35,7 @@
 	domain = "Анархия, свобода, революция, равенство и братство"
 	desc = "Бог абсолютной свободы, анархии и восстания. «Через раздор к процветанию», обещает его главная заповедь, и его последователи пойдут на всё, чтобы претворить её в реальность, разрушив мировой порядок, каким мы его знаем."
 	undead_hater = TRUE
-	//crafting_recipes = list(/datum/crafting_recipe/roguetown/structure/zizo_shrine/matthios)
+	crafting_recipes = list()
 	worshippers = "Разбойники, наёмники, революционеры, свободолюбивый люд"
 	confess_lines = list(
 		"ALL TYRANTS WILL DIE ALONE!",
@@ -54,7 +49,7 @@
 	desc = "Баота — богиня гедонизма, мирских наслаждений и страстей. «Живи, люби, смейся!» — говорила она, глядя на суету вокруг себя и усилия окружающих, стремящихся двигать куда-то мир."
 	worshippers = "Избалованные богачи, маргиналы, эскаписты."
 	undead_hater = TRUE
-	//crafting_recipes = list(/datum/crafting_recipe/roguetown/structure/zizo_shrine/baotha)
+	crafting_recipes = list()
 	confess_lines = list(
 		"BAOTHA DEMANDS PLEASURE!",
 		"LIVE, LAUGH, LOVE!",
@@ -65,41 +60,28 @@
 // Does God Hear Your Prayer ? //
 /////////////////////////////////
 
-// Zizo - When the sun is blotted out, zchurch, bad-cross, or ritual chalk
-/datum/patron/inhumen/zizo/can_pray(mob/living/follower)
+/datum/patron/proc/can_pray_inhumen(mob/living/follower)
+	// Allows death-bed prayers
+	if(follower.has_status_effect(STATUS_EFFECT_UNCONSCIOUS))
+		if(follower.has_status_effect(STATUS_EFFECT_SLEEPING))
+			to_chat(follower, span_danger("I mustn't be sleeping to pray!"))
+			return FALSE	//Stops praying just by sleeping.
+	SHOULD_CALL_PARENT(TRUE)
+	. = TRUE
+
+// Graggar - When bleeding, near blood on ground, zchurch, bad-cross, or ritual chalk
+/datum/patron/inhumen/graggar/can_pray_inhumen(mob/living/follower)
 	. = ..()
 	// Allows prayer in the Zzzzzzzurch(!)
 	if(istype(get_area(follower), /area/rogue/indoors/shelter/mountains))
 		return TRUE
-	// Allows prayer near EEEVIL psycross
-	for(var/obj/structure/fluff/psycross/zizocross/cross in view(4, get_turf(follower)))
+	for(var/obj/structure/fluff/psycross/cross in view(4, get_turf(follower)))
 		if(cross.divine == TRUE)
 			to_chat(follower, span_danger("That acursed cross interupts my prayers!"))
 			return FALSE
-		return TRUE
-	// Allows prayer near a grave.
-	for(var/obj/structure/closet/dirthole/grave/G in view(4, get_turf(follower)))
-		return TRUE
-	// Allows prayer during the sun being blotted from the sky.
-	if(hasomen(OMEN_SUNSTEAL))
-		return TRUE
-	// Allows praying atop ritual chalk of the god.
-	for(var/obj/structure/ritualcircle/zizo in view(1, get_turf(follower)))
-		return TRUE
-	to_chat(follower, span_danger("For Zizo to hear my prayers I must either be in the church of the abandoned, near an inverted psycross, atop a drawn Zizite symbol, or while the sun is blotted from the sky!"))
-	return FALSE
-
-
-// Graggar - When bleeding, near blood on ground, zchurch, bad-cross, or ritual chalk
-/datum/patron/inhumen/graggar/can_pray(mob/living/follower)
-	. = ..()
-	// Allows prayer in the Zzzzzzzurch(!)
-	if(istype(get_area(follower), /area/rogue/indoors/shelter/mountains))
-		return TRUE
-	// Allows prayer near EEEVIL psycross
-	for(var/obj/structure/fluff/psycross/zizocross/cross in view(4, get_turf(follower)))
+	for(var/obj/structure/fluff/psycross/zizocross/graggar/cross in view(4, get_turf(follower)))
 		if(cross.divine == TRUE)
-			to_chat(follower, span_danger("That acursed cross interupts my prayers!"))
+			to_chat(follower, span_danger("This altar has been corrupted by the Ten! It blocks my prayers!"))
 			return FALSE
 		return TRUE
 	// Allows prayer if actively bleeding.
@@ -111,49 +93,29 @@
 	// Allows praying atop ritual chalk of the god.
 	for(var/obj/structure/ritualcircle/graggar in view(1, get_turf(follower)))
 		return TRUE
-	to_chat(follower, span_danger("For Graggar to hear my prayers I must either be in the church of the abandoned, near an inverted psycross, near fresh blood or draw blood of my own!"))
+	to_chat(follower, span_danger("For Graggar to hear my prayers I must either be in the church of the abandoned, near an altar dedicated to Him, near fresh blood or draw blood of my own!"))
 	return FALSE
 
-// Matthios - When near coin of at least 100 mammon, zchurch, bad-cross, or ritual talk
-/datum/patron/inhumen/matthios/can_pray(mob/living/follower)
+// Matthios - Basically any way you'd like really, so long as there are comrades with you
+/datum/patron/inhumen/matthios/can_pray_inhumen(mob/living/follower)
 	. = ..()
-	// Allows prayer in the Zzzzzzzurch(!)
-	if(istype(get_area(follower), /area/rogue/indoors/shelter/mountains))
-		return TRUE
-	// Allows prayer near EEEVIL psycross
-	for(var/obj/structure/fluff/psycross/zizocross/cross in view(4, get_turf(follower)))
+	for(var/obj/structure/fluff/psycross/cross in view(4, get_turf(follower)))
 		if(cross.divine == TRUE)
 			to_chat(follower, span_danger("That acursed cross interupts my prayers!"))
 			return FALSE
-		return TRUE
-	// Allows prayer if the user has more than 100 mammon on them.
-	var/mammon_count = get_mammons_in_atom(follower)
-	if(mammon_count >= 100)
-		return TRUE
-	// Spend 5/10 mammon to pray. Megachurch pastors be like.....
-	var/obj/item/held_item = follower.get_active_held_item()
-	var/helditemvalue = held_item.get_real_price()
-	if(istype(held_item, /obj/item/roguecoin) && helditemvalue >= 5)
-		qdel(held_item)
-		return TRUE
-	// Allows praying atop ritual chalk of the god.
-	for(var/obj/structure/ritualcircle/matthios in view(1, get_turf(follower)))
-		return TRUE
-	to_chat(follower, span_danger("For Matthios to hear my prayers I must either be in the church of the abandoned, near an inverted psycross, flaunting wealth upon me of at least 100 mammon, or offer a coin of at least five mammon up to him!"))
+	for(var/mob/living/carbon/human/comrade in view(4, get_turf(follower)))
+		if(istype(comrade.patron, /datum/patron/inhumen/matthios))
+			return TRUE
+	to_chat(follower, span_danger("Matthios will hear any prayer I offer, so long as I have at least one comrade near me!"))
 	return FALSE
 
 // Baotha 
-/datum/patron/inhumen/baotha/can_pray(mob/living/follower)
+/datum/patron/inhumen/baotha/can_pray_inhumen(mob/living/follower)
 	. = ..()
-	// Allows prayer in the Zzzzzzzurch(!)
-	if(istype(get_area(follower), /area/rogue/indoors/shelter/mountains))
-		return TRUE
-	// Allows prayer near EEEVIL psycross
-	for(var/obj/structure/fluff/psycross/zizocross/cross in view(4, get_turf(follower)))
+	for(var/obj/structure/fluff/psycross/cross in view(4, get_turf(follower)))
 		if(cross.divine == TRUE)
 			to_chat(follower, span_danger("That acursed cross interupts my prayers!"))
 			return FALSE
-		return TRUE
 	// Allows prayers in the bath house - whore.
 	if(istype(get_area(follower), /area/rogue/indoors/town/bath))
 		return TRUE
@@ -163,8 +125,14 @@
 	// Allows prayers if the user is drunk.
 	if(follower.has_status_effect(/datum/status_effect/buff/drunk))
 		return TRUE
+	// Allows prayers if the user is generally happy.
+	if(follower.has_status_effect(/datum/status_effect/mood/vgood))
+		return TRUE
+	// Allows prayers during sex
+	if(follower.sexcon.arousal >= 10)
+		return TRUE
 	// Allows praying atop ritual chalk of the god.
 	for(var/obj/structure/ritualcircle/baotha in view(1, get_turf(follower)))
 		return TRUE
-	to_chat(follower, span_danger("For Baotha to hear my prayers I must either be in the church of the abandoned, near an inverted psycross, within the town's bathhouse, or actively partaking in one of various types of nose-candy!"))
+	to_chat(follower, span_danger("For Baotha to hear my prayers I must either be in the church of the abandoned, within the town's bathhouse, or actively enjoying myself, be that through drugs, sex, or whatever it is that gets my blood pumpin'!"))
 	return FALSE
