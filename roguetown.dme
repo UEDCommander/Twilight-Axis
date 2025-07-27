@@ -2515,6 +2515,8 @@
 #include "modular_twilight_axis\lore\code\gods\divine_pantheon.dm"
 #include "modular_twilight_axis\lore\code\gods\inhumen_pantheon.dm"
 #include "modular_twilight_axis\lore\code\gods\old_god.dm"
+#include "modular_twilight_axis\lore\code\jobs\atgervi.dm"
+#include "modular_twilight_axis\lore\code\jobs\Iconoclast.dm"
 #include "modular_twilight_axis\lore\code\objects\ritechalk.dm"
 #include "modular_twilight_axis\lore\code\objects\ritualcircles.dm"
 #include "modular_twilight_axis\lore\code\objects\shrines.dm"
