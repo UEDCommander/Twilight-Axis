@@ -11,7 +11,7 @@
 	craftsound = 'sound/foley/Building-01.ogg'
 
 /obj/structure/fluff/psycross/zizocross/graggar
-	name = "inverted cross"
+	name = "shrine of blood"
 	desc = "What a disgusting thing, what type of maniac would make this!?"
 	icon = 'icons/roguetown/maniac/creations.dmi'
 	icon_state = "creation1"
