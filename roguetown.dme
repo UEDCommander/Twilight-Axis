@@ -2512,6 +2512,7 @@
 #include "modular_twilight_axis\code\datums\sexcon\sexcon_helpers.dm"
 #include "modular_twilight_axis\code\datums\sexcon\sexcon_reagents.dm"
 #include "modular_twilight_axis\code\datums\status_effects\rogue\debuff.dm"
+#include "modular_twilight_axis\code\datums\stress\negative_events.dm"
 #include "modular_twilight_axis\code\game\objects\items\painting\canvas.dm"
 #include "modular_twilight_axis\code\game\objects\items\painting\easel.dm"
 #include "modular_twilight_axis\code\game\objects\items\painting\paint_brush.dm"
