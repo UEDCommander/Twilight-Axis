@@ -1,7 +1,7 @@
 /obj/item/gun/ballistic/revolver/grenadelauncher/twilight_runelock
 	name = "runelock pistol"
 	desc = "Крайне смертоностное оружие. Использует руническую магию вместо пороха."
-	icon = 'modular_axis/firearms/icons/32.dmi'
+	icon = 'modular_twilight_axis/firearms/icons/32.dmi'
 	icon_state = "pistol2"
 	var/icon_state_ready = "pistol2-1"
 	var/default_icon_state = "pistol2"
@@ -16,8 +16,8 @@
 	force = 10
 	var/cocked = FALSE
 	cartridge_wording = "runed sphere"
-	load_sound = 'modular_axis/firearms/sound/musketload.ogg'
-	fire_sound = 'modular_axis/firearms/sound/musketfire2.ogg'
+	load_sound = 'modular_twilight_axis/firearms/sound/musketload.ogg'
+	fire_sound = 'modular_twilight_axis/firearms/sound/musketfire2.ogg'
 	vary_fire_sound = TRUE
 	fire_sound_volume = 200
 	anvilrepair = /datum/skill/craft/engineering
@@ -41,7 +41,7 @@
 
 /obj/item/gun/ballistic/revolver/grenadelauncher/twilight_runelock/shoot_with_empty_chamber()
 	if(cocked)
-		playsound(src.loc, 'modular_axis/firearms/sound/musketcock.ogg', 100, FALSE)
+		playsound(src.loc, 'modular_twilight_axis/firearms/sound/musketcock.ogg', 100, FALSE)
 		cocked = FALSE
 		icon_state = initial(icon_state)
 		update_icon()
@@ -60,7 +60,7 @@
 				if(skill)
 					reload_time = reload_time / skill
 			if(move_after(user, reload_time SECONDS, target = user))
-				playsound(user, 'modular_axis/firearms/sound/musketcock.ogg', 100, FALSE)
+				playsound(user, 'modular_twilight_axis/firearms/sound/musketcock.ogg', 100, FALSE)
 				cocked = TRUE
 		else
 			to_chat(user, "<span class='warning'>Я совершенно не понимаю, как этим пользоваться!</span>")
@@ -133,7 +133,7 @@
 /obj/item/gun/ballistic/revolver/grenadelauncher/twilight_runelock/rifle
 	name = "Doomsdae"
 	desc = "Реликвия новой эпохи, созданная для войны, что положит конец истории мироздания, какой мы её знаем. Изготовленная отавианскими мастерами артефакторики, и зачарованная рунными магами Отавы, эта руническая винтовка - оружие, что сокрушит легионы тьмы в Конце Времен. Руны нанесены на ствол оружия кровью еретиков, поплатившихся за свое предательство истинной веры своими жизнями."
-	icon = 'modular_axis/firearms/icons/runelock_rifle.dmi'
+	icon = 'modular_twilight_axis/firearms/icons/runelock_rifle.dmi'
 	icon_state = "runelock"
 	icon_state_ready = "runelock_loaded"
 	default_icon_state = "runelock"

@@ -9,7 +9,7 @@
 	outfit = /datum/outfit/job/roguetown/mercenary/twilight_gunslinger
 	maximum_possible_slots = 2
 	min_pq = 10
-	cmode_music = 'modular_axis/firearms/sound/music/combat_gunslinger.ogg'
+	cmode_music = 'modular_twilight_axis/firearms/sound/music/combat_gunslinger.ogg'
 	category_tags = list(CTAG_MERCENARY)
 	traits_applied = list(TRAIT_OUTLANDER)
 

@@ -1,7 +1,7 @@
 /obj/item/quiver/twilight_bullet
 	name = "ammo bag"
 	desc = "Небольшой мешочек, в котором можно хранить пули для огнестрельного оружия."
-	icon = 'modular_axis/firearms/icons/ammo.dmi'
+	icon = 'modular_twilight_axis/firearms/icons/ammo.dmi'
 	icon_state = "pouch1"
 	item_state = "pouch1"
 	slot_flags = ITEM_SLOT_HIP|ITEM_SLOT_NECK

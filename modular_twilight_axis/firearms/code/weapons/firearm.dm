@@ -1,6 +1,6 @@
 /obj/item/twilight_ramrod
 	name = "ramrod"
-	icon = 'modular_axis/firearms/icons/arquebus_items.dmi'
+	icon = 'modular_twilight_axis/firearms/icons/arquebus_items.dmi'
 	desc = "A ramrod used for reloading a firearm."
 	icon_state = "ramrod"
 	item_state = "ramrod"
@@ -9,7 +9,7 @@
 
 /obj/item/twilight_powderflask
 	name = "powderflask"
-	icon = 'modular_axis/firearms/icons/arquebus_items.dmi'
+	icon = 'modular_twilight_axis/firearms/icons/arquebus_items.dmi'
 	desc = "A flask of gunpowder used for reloading a firearm."
 	icon_state = "powderflask"
 	item_state = "powderflask"
@@ -35,7 +35,7 @@
 /obj/item/gun/ballistic/twilight_firearm
 	name = "Gunpowder weapon"
 	desc = "IF YOU ARE SEEING THIS. REPORT THIS TO A DEV. "
-	icon = 'modular_axis/firearms/icons/arquebus.dmi'
+	icon = 'modular_twilight_axis/firearms/icons/arquebus.dmi'
 	icon_state = "arquebus"
 	item_state = "arquebus"
 	force = 10
@@ -61,8 +61,8 @@
 	walking_stick = TRUE
 	experimental_onback = TRUE
 	cartridge_wording = "bullet"
-	load_sound = 'modular_axis/firearms/sound/musketload.ogg'
-	fire_sound = 'modular_axis/firearms/sound/arquefire.ogg'
+	load_sound = 'modular_twilight_axis/firearms/sound/musketload.ogg'
+	fire_sound = 'modular_twilight_axis/firearms/sound/arquefire.ogg'
 	anvilrepair = /datum/skill/craft/engineering
 	smeltresult = /obj/item/ingot/steel
 	bolt_type = BOLT_TYPE_NO_BOLT
@@ -95,8 +95,8 @@
 
 
 /obj/item/gun/ballistic/twilight_firearm/shoot_live_shot(mob/living/user as mob|obj, pointblank = 0, mob/pbtarget = null, message = 1)
-	fire_sound = pick("modular_axis/firearms/sound/arquefire.ogg", "modular_axis/firearms/sound/arquefire2.ogg", "modular_axis/firearms/sound/arquefire3.ogg",
-				"modular_axis/firearms/sound/arquefire4.ogg", "modular_axis/firearms/sound/arquefire5.ogg")
+	fire_sound = pick("modular_twilight_axis/firearms/sound/arquefire.ogg", "modular_twilight_axis/firearms/sound/arquefire2.ogg", "modular_twilight_axis/firearms/sound/arquefire3.ogg",
+				"modular_twilight_axis/firearms/sound/arquefire4.ogg", "modular_twilight_axis/firearms/sound/arquefire5.ogg")
 	. = ..()
 
 /obj/item/gun/ballistic/twilight_firearm/attack_right(mob/user)
@@ -167,7 +167,7 @@
 	return chargetime
 
 /obj/item/gun/ballistic/twilight_firearm/shoot_with_empty_chamber()
-	playsound(src.loc, 'modular_axis/firearms/sound/musketcock.ogg', 100, FALSE)
+	playsound(src.loc, 'modular_twilight_axis/firearms/sound/musketcock.ogg', 100, FALSE)
 	update_icon()
 
 /obj/item/gun/ballistic/twilight_firearm/attack_self(mob/living/user)
@@ -195,7 +195,7 @@
 			return
 		if((loc == user) && (user.get_inactive_held_item() != src))
 			return
-		playsound(src, "modular_axis/firearms/sound/insert.ogg",  100, FALSE)
+		playsound(src, "modular_twilight_axis/firearms/sound/insert.ogg",  100, FALSE)
 		user.visible_message("<span class='notice'>[user] forces a [A] down the barrel of the [src].</span>")
 		..()
 
@@ -204,7 +204,7 @@
 			user.visible_message("<span class='notice'>The [src] is already filled with gunpowder!</span>")
 			return
 		else
-			playsound(src, "modular_axis/firearms/sound/pour_powder.ogg",  100, FALSE)
+			playsound(src, "modular_twilight_axis/firearms/sound/pour_powder.ogg",  100, FALSE)
 			if(do_after(user, load_time_skill, src))
 				user.visible_message("<span class='notice'>[user] fills the [src] with gunpowder.</span>")
 				gunpowder = TRUE
@@ -214,7 +214,7 @@
 		if(!reloaded)
 			if(chambered)
 				user.visible_message("<span class='notice'>[user] begins ramming the [R.name] down the barrel of the [src] .</span>")
-				playsound(src, "modular_axis/firearms/sound/ramrod.ogg",  100, FALSE)
+				playsound(src, "modular_twilight_axis/firearms/sound/ramrod.ogg",  100, FALSE)
 				if(do_after(user, load_time_skill, src))
 					user.visible_message("<span class='notice'>[user] has finished reloading the [src].</span>")
 					reloaded = TRUE
@@ -224,7 +224,7 @@
 		if(reloaded && !myrod)
 			user.transferItemToLoc(R, src)
 			myrod = R
-			playsound(src, "modular_axis/firearms/sound/musketload.ogg",  100, FALSE)
+			playsound(src, "modular_twilight_axis/firearms/sound/musketload.ogg",  100, FALSE)
 			user.visible_message("<span class='notice'>[user] stows the [R.name] under the barrel of the [src].</span>")
 			if(advanced_icon)
 				if(reloaded)
@@ -234,7 +234,7 @@
 		if(!chambered && !myrod)
 			user.transferItemToLoc(R, src)
 			myrod = R
-			playsound(src, "modular_axis/firearms/sound/musketload.ogg",  100, FALSE)
+			playsound(src, "modular_twilight_axis/firearms/sound/musketload.ogg",  100, FALSE)
 			user.visible_message("<span class='notice'>[user] stows the [R.name] under the barrel of the [src] without chambering it.</span>")
 			if(advanced_icon)
 				if(reloaded)
@@ -271,7 +271,7 @@
 		else
 			repair_percent *= repair_skill
 
-		playsound(src,'modular_axis/firearms/sound/arq_repair.ogg', 40, FALSE)
+		playsound(src,'modular_twilight_axis/firearms/sound/arq_repair.ogg', 40, FALSE)
 		if(repair_percent)
 			repair_percent *= max_integrity
 			exp_gained = min(obj_integrity + repair_percent, max_integrity) - obj_integrity
@@ -379,25 +379,25 @@
 /obj/item/gun/ballistic/twilight_firearm/arquebus
 	name = "arquebus rifle"
 	desc = "Пороховое оружие, стреляющее бронебойными свинцовыми пулями."
-	icon = 'modular_axis/firearms/icons/arquebus.dmi'
+	icon = 'modular_twilight_axis/firearms/icons/arquebus.dmi'
 	icon_state = "arquebus"
 	item_state = "arquebus"
 
 /obj/item/gun/ballistic/twilight_firearm/arquebus/bayonet
 	name = "arquebus rifle"
 	desc = "Пороховое оружие, стреляющее бронебойными свинцовыми пулями. Оснащена штыком для использования в ближнем бою."
-	icon = 'modular_axis/firearms/icons/arquebusbaoynet.dmi'
+	icon = 'modular_twilight_axis/firearms/icons/arquebusbaoynet.dmi'
 	gripped_intents = list(/datum/intent/shoot/twilight_firearm, /datum/intent/arc/twilight_firearm, INTENT_GENERIC, /datum/intent/spear/thrust/militia)
 
 /obj/item/gun/ballistic/twilight_firearm/arquebus/decorated
 	name = "decorated arquebus rifle"
 	desc = "Настоящее произведение искусства в обличии огнестрельного оружия. Приклад и цевье аркебузы украшены золотыми пластинами и инкрустированным рубином, а на стволе выбита надпись: «Взгляните на мои деянья и дрожите»."
-	icon = 'modular_axis/firearms/icons/decorated_arquebus.dmi'
+	icon = 'modular_twilight_axis/firearms/icons/decorated_arquebus.dmi'
 
 /obj/item/gun/ballistic/twilight_firearm/arquebus_pistol
 	name = "arquebus pistol"
 	desc = "Небольшое пороховое оружие, стреляющее бронебойными свинцовыми пулями. Меньшая длина ствола негативно сказывается на огневой мощи, но дизайн пистоля более компактный, и его можно носить на бедре."
-	icon = 'modular_axis/firearms/icons/32.dmi'
+	icon = 'modular_twilight_axis/firearms/icons/32.dmi'
 	icon_state = "pistol"
 	item_state = "pistol"
 	force = 10
@@ -425,7 +425,7 @@
 /obj/item/gun/ballistic/twilight_firearm/handgonne
 	name = "culverin"
 	desc = "Тяжелое пороховое оружие, стреляющее крупными свинцовыми ядрами. Для поджига пороха используется длинный фитиль, из-за которого орудие стреляет с задержкой. Важен не размер ствола, а размер отверстия, что он делает в вашем противнике."
-	icon = 'modular_axis/firearms/icons/handgonne.dmi'
+	icon = 'modular_twilight_axis/firearms/icons/handgonne.dmi'
 	icon_state = "handgonne"
 	item_state = "handgonne"
 	mag_type = /obj/item/ammo_box/magazine/internal/twilight_firearm/handgonne
@@ -468,7 +468,7 @@
 	reloaded = FALSE
 	spark_act()
 
-	playsound(src, "modular_axis/firearms/sound/fuse.ogg", 100, FALSE)
+	playsound(src, "modular_twilight_axis/firearms/sound/fuse.ogg", 100, FALSE)
 	spawn(rand(10,20))
 		..()
 		spawn (1)
@@ -504,7 +504,7 @@
 /obj/item/gun/ballistic/twilight_firearm/flintgonne
 	name = "flintgonne"
 	desc = "Устаревшее пороховое оружие, стреляющее бронебойными свинцовыми пулями."
-	icon = 'modular_axis/firearms/icons/flintgonne.dmi'
+	icon = 'modular_twilight_axis/firearms/icons/flintgonne.dmi'
 	icon_state = "flintgonne"
 	item_state = "flintgonne"
 	gripped_intents = list(/datum/intent/shoot/twilight_firearm/flintgonne, /datum/intent/arc/twilight_firearm/flintgonne, INTENT_GENERIC)

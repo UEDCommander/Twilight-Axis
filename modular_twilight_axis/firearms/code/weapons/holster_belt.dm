@@ -1,8 +1,8 @@
 /obj/item/storage/belt/rogue/leather/twilight_holsterbelt
 	name = "holster belt"
 	desc = "Ремень с кобурой. Пришлось пожертвовать местом на поясе ради возможности удобно носить пистоль."
-	icon = 'modular_axis/firearms/icons/obj_belts.dmi'
-	mob_overlay_icon = 'modular_axis/firearms/icons/onmob_belts.dmi'
+	icon = 'modular_twilight_axis/firearms/icons/obj_belts.dmi'
+	mob_overlay_icon = 'modular_twilight_axis/firearms/icons/onmob_belts.dmi'
 	icon_state = "holsterbelt"
 	item_state = "holsterbelt"
 	strip_delay = 20
@@ -62,8 +62,8 @@
 	sellprice = 50
 	sewrepair = FALSE
 	anvilrepair = /datum/skill/craft/armorsmithing
-	icon = 'modular_axis/firearms/icons/obj_belts_royal.dmi'
-	mob_overlay_icon = 'modular_axis/firearms/icons/onmob_belts_royal.dmi'
+	icon = 'modular_twilight_axis/firearms/icons/obj_belts_royal.dmi'
+	mob_overlay_icon = 'modular_twilight_axis/firearms/icons/onmob_belts_royal.dmi'
 
 /obj/item/storage/belt/rogue/leather/twilight_holsterbelt/lord/New()
 	. = ..()

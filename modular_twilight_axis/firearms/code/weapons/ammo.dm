@@ -13,7 +13,7 @@
 	armor_penetration = 60
 	speed = 0.6
 	damage_type = BRUTE
-	icon = 'modular_axis/firearms/icons/ammo.dmi'
+	icon = 'modular_twilight_axis/firearms/icons/ammo.dmi'
 	icon_state = "musketball_runed"
 	ammo_type = /obj/item/ammo_casing/caseless/twilight_lead/runelock
 	range = 20
@@ -39,7 +39,7 @@
 	desc = "Небольшая свинцовая сфера. Хорошо сочетается с порохом."
 	damage = 100	//higher damage than crossbow
 	damage_type = BRUTE
-	icon = 'modular_axis/firearms/icons/ammo.dmi'
+	icon = 'modular_twilight_axis/firearms/icons/ammo.dmi'
 	icon_state = "musketball_proj"
 	ammo_type = /obj/item/ammo_casing/caseless/twilight_lead
 	range = 25		
@@ -63,7 +63,7 @@
 	desc = "Крупная свинцовая сфера. Важен не размер ствола, а размер отверстия, что он делает в вашем противнике."
 	damage = 60
 	damage_type = BRUTE
-	icon = 'modular_axis/firearms/icons/ammo.dmi'
+	icon = 'modular_twilight_axis/firearms/icons/ammo.dmi'
 	icon_state = "musketball_proj"
 	ammo_type = /obj/item/ammo_casing/caseless/twilight_cannonball
 	range = 25		
@@ -79,7 +79,7 @@
 	desc = "Плотно упакованный в бумагу набор небольших металлических шариков. Хорошо сочетается с порохом."
 	damage = 20
 	damage_type = BRUTE
-	icon = 'modular_axis/firearms/icons/ammo.dmi'
+	icon = 'modular_twilight_axis/firearms/icons/ammo.dmi'
 	icon_state = "musketball_proj"
 	ammo_type = /obj/item/ammo_casing/caseless/twilight_cannonball/grapeshot
 	range = 15
@@ -146,7 +146,7 @@
 	desc = "Небольшая свинцовая сфера. Хорошо сочетается с порохом."
 	projectile_type = /obj/projectile/bullet/twilight_lead
 	caliber = "lead_sphere"
-	icon = 'modular_axis/firearms/icons/ammo.dmi'
+	icon = 'modular_twilight_axis/firearms/icons/ammo.dmi'
 	icon_state = "musketball"
 	dropshrink = 0.5
 	max_integrity = 0.1
@@ -156,7 +156,7 @@
 	desc = "Небольшой, идеально круглый металлический шар, покрытый псайдонитскими рунами. Смертоносен на высокой скорости."
 	projectile_type = /obj/projectile/bullet/reusable/twilight_runelock
 	caliber = "runed_sphere"
-	icon = 'modular_axis/firearms/icons/ammo.dmi'
+	icon = 'modular_twilight_axis/firearms/icons/ammo.dmi'
 	icon_state = "musketball_runed"
 	possible_item_intents = list(/datum/intent/use)
 	max_integrity = 0
@@ -182,7 +182,7 @@
 	desc = "Крупная свинцовая сфера. Важен не размер ствола, а размер отверстия, что он делает в вашем противнике."
 	projectile_type = /obj/projectile/bullet/twilight_cannonball
 	caliber = "cannonball"
-	icon = 'modular_axis/firearms/icons/ammo.dmi'
+	icon = 'modular_twilight_axis/firearms/icons/ammo.dmi'
 	icon_state = "cball"
 	dropshrink = 0.5
 	max_integrity = 0.1
@@ -194,7 +194,7 @@
 	desc = "Плотно упакованный в бумагу набор небольших металлических шариков. Хорошо сочетается с порохом."
 	projectile_type = /obj/projectile/bullet/twilight_grapeshot
 	caliber = "cannonball"
-	icon = 'modular_axis/firearms/icons/ammo.dmi'
+	icon = 'modular_twilight_axis/firearms/icons/ammo.dmi'
 	icon_state = "grapeshot"
 	dropshrink = 0.5
 	max_integrity = 0.1

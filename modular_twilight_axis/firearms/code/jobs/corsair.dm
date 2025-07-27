@@ -8,7 +8,7 @@
 	traits_applied = list(TRAIT_STEELHEARTED, TRAIT_DODGEEXPERT, TRAIT_OUTLANDER, TRAIT_OUTLAW, TRAIT_HERESIARCH)
 	maximum_possible_slots = 2
 	
-	cmode_music = 'modular_axis/firearms/sound/music/combat_corsair.ogg'
+	cmode_music = 'modular_twilight_axis/firearms/sound/music/combat_corsair.ogg'
 
 /datum/outfit/job/roguetown/wretch/twilight_corsair/pre_equip(mob/living/carbon/human/H)
 	..()

@@ -5,7 +5,7 @@
 	allowed_races = RACES_ALL_KINDS
 	outfit = /datum/outfit/job/roguetown/bandit/twilight_afreet
 	category_tags = list(CTAG_BANDIT)
-	cmode_music = 'modular_axis/firearms/sound/music/combat_corsair.ogg'
+	cmode_music = 'modular_twilight_axis/firearms/sound/music/combat_corsair.ogg'
 	maximum_possible_slots = 2
 
 /datum/outfit/job/roguetown/bandit/twilight_afreet/pre_equip(mob/living/carbon/human/H) //Basically an evil jager

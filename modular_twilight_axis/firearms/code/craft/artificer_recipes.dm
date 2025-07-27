@@ -83,21 +83,21 @@
 	icon_state = "gunlock"
 	desc = "The 'firing' part of a gun."
 	w_class = WEIGHT_CLASS_SMALL
-	icon = 'modular_axis/firearms/icons/misc.dmi'
+	icon = 'modular_twilight_axis/firearms/icons/misc.dmi'
 
 /obj/item/twilight_gunstock
 	name = "Gun Stock"
 	icon_state = "gunstock"
 	desc = "The 'holding' part of a gun."
 	w_class = WEIGHT_CLASS_NORMAL
-	icon = 'modular_axis/firearms/icons/misc.dmi'
+	icon = 'modular_twilight_axis/firearms/icons/misc.dmi'
 
 /obj/item/twilight_gunbarrel
 	name = "Gun Barrel"
 	icon_state = "gunbarrel"
 	desc = "The 'aiming' part of a gun."
 	w_class = WEIGHT_CLASS_NORMAL
-	icon = 'modular_axis/firearms/icons/misc.dmi'
+	icon = 'modular_twilight_axis/firearms/icons/misc.dmi'
 
 /datum/anvil_recipe/engineering/twilight_guns
 	i_type = "Firearms"
