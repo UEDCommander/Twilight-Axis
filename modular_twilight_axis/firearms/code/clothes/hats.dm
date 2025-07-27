@@ -1,2 +1,2 @@
-/obj/item/clothing/head/roguetown/bardhat/gunslinger
+/obj/item/clothing/head/roguetown/bucklehat/gunslinger
 	name = "gunslinger's hat"

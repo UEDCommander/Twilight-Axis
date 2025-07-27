@@ -22,14 +22,14 @@
 	backl = /obj/item/storage/backpack/rogue/satchel/black
 	neck = /obj/item/clothing/neck/roguetown/gorget
 	shirt = /obj/item/clothing/suit/roguetown/armor/gambeson
-	head = /obj/item/clothing/head/roguetown/bardhat/gunslinger
+	head = /obj/item/clothing/head/roguetown/bucklehat/gunslinger
 	armor = /obj/item/clothing/suit/roguetown/armor/plate/half
 	pants = /obj/item/clothing/under/roguetown/heavy_leather_pants
 	shoes = /obj/item/clothing/shoes/roguetown/grenzelhoft/gunslinger
 	gloves = /obj/item/clothing/gloves/roguetown/leather
 	backr = /obj/item/rogueweapon/scabbard/sword
 	r_hand = /obj/item/rogueweapon/sword/sabre
-	cloak = /obj/item/clothing/cloak/black_cloak
+	cloak = /obj/item/clothing/suit/roguetown/armor/longcoat
 	backpack_contents = list(/obj/item/roguekey/mercenary = 1, /obj/item/twilight_powderflask = 1, /obj/item/rogueweapon/huntingknife = 1, /obj/item/storage/belt/rogue/pouch/coins/poor = 1)
 
 	ADD_TRAIT(H, TRAIT_MEDIUMARMOR, TRAIT_GENERIC)
