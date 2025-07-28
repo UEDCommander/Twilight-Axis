@@ -840,7 +840,7 @@
 	else
 		to_chat(src, span_info("I will hear like a mortal."))
 
-/client/proc/hearglobalLOOC()
+/*/client/proc/hearglobalLOOC()
 	set category = "Prefs - Admin"
 	set name = "Show/Hide Global LOOC"
 	if(!holder)
@@ -852,7 +852,7 @@
 	if(prefs.chat_toggles & CHAT_ADMINLOOC)
 		to_chat(src, span_notice("I will now hear all LOOC chatter."))
 	else
-		to_chat(src, span_info("I will now only hear LOOC chatter around me."))
+		to_chat(src, span_info("I will now only hear LOOC chatter around me."))*/ // Лоок вырезан. Не нужно.
 
 ///Moves a mob upwards in z level
 /mob/proc/ghost_up()
