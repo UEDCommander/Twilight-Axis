@@ -502,7 +502,7 @@
 					BP.add_wound(/datum/wound/dislocation)
 
 /obj/item/gun/ballistic/twilight_firearm/flintgonne
-	name = "flintgonne"
+	name = "hakenbüchse"
 	desc = "Устаревшее пороховое оружие, стреляющее бронебойными свинцовыми пулями."
 	icon = 'modular_twilight_axis/firearms/icons/flintgonne.dmi'
 	icon_state = "flintgonne"

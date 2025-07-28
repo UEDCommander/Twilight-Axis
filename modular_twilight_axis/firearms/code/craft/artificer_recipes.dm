@@ -142,7 +142,7 @@
 	craftdiff = 4
 
 /datum/anvil_recipe/engineering/twilight_guns/flintgonne
-	name = "Flintgonne (+1 Stock) (+1 Lock) (+1 Barrel)"
+	name = "Hakenbüchse (+1 Stock) (+1 Lock) (+1 Barrel)"
 	req_bar = /obj/item/ingot/iron
 	additional_items = list(/obj/item/twilight_gunlock = 1,
 							/obj/item/twilight_gunstock = 1,

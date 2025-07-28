@@ -1,5 +1,5 @@
 datum/supply_pack/rogue/ranged_weapons/twilight_flintgonne
-	name = "Flintgonne"
+	name = "Hakenbüchse"
 	cost = 100
 	contains = list(
 					/obj/item/gun/ballistic/twilight_firearm/flintgonne,
