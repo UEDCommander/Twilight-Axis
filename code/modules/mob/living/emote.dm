@@ -1450,6 +1450,10 @@
 		set name = "Hiss"
 		set category = "Noises"
 		emote("hiss", intentional = TRUE, animal = TRUE)
+	else if (istype(usr.getorganslot(ORGAN_SLOT_TONGUE), /obj/item/organ/tongue/lizard))
+		set name = "Hiss"
+		set category = "Noises"
+		emote("hiss", intentional = TRUE, animal = TRUE)
 	else
 		to_chat(usr, span_warning("Your tongue doesn't do that"))
 		return
@@ -1465,10 +1469,14 @@
 	is_animal = TRUE
 
 /mob/living/carbon/human/verb/emote_phiss()
-	if(istype(usr.getorganslot(ORGAN_SLOT_TONGUE), /obj/item/organ/tongue/wild_tongue))
+	if(is_type_in_list(usr.getorganslot(ORGAN_SLOT_TONGUE), /obj/item/organ/tongue/wild_tongue))
 		set name = "PHiss"
 		set category = "Noises"
 		emote("phiss", intentional = TRUE, animal = TRUE)
+	else if (istype(usr.getorganslot(ORGAN_SLOT_TONGUE), /obj/item/organ/tongue/lizard))
+		set name = "PHiss"
+		set category = "Noises"
+		emote("hiss", intentional = TRUE, animal = TRUE)
 	else
 		to_chat(usr, span_warning("Your tongue doesn't do that"))
 		return
@@ -1726,6 +1734,10 @@
 
 /mob/living/carbon/human/verb/emote_chitter()
 	if(istype(usr.getorganslot(ORGAN_SLOT_TONGUE), /obj/item/organ/tongue/moth))
+		set name = "Chitter"
+		set category = "Noises"
+		emote("chitter", intentional = TRUE, animal = TRUE)
+	else if (istype(usr.getorganslot(ORGAN_SLOT_TONGUE), /obj/item/organ/tongue/wild_tongue))
 		set name = "Chitter"
 		set category = "Noises"
 		emote("chitter", intentional = TRUE, animal = TRUE)
