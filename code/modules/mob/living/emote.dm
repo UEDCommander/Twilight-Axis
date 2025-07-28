@@ -1469,7 +1469,7 @@
 	is_animal = TRUE
 
 /mob/living/carbon/human/verb/emote_phiss()
-	if(is_type_in_list(usr.getorganslot(ORGAN_SLOT_TONGUE), /obj/item/organ/tongue/wild_tongue))
+	if(istype(usr.getorganslot(ORGAN_SLOT_TONGUE), /obj/item/organ/tongue/wild_tongue))
 		set name = "PHiss"
 		set category = "Noises"
 		emote("phiss", intentional = TRUE, animal = TRUE)
