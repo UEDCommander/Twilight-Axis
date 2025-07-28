@@ -859,10 +859,11 @@
 				/obj/item/reagent_containers/food/snacks/eoran_aril/auric = 4,
 				/obj/item/reagent_containers/food/snacks/eoran_aril/ashen = 1,
 				/obj/item/reagent_containers/food/snacks/eoran_aril/ochre = 5,
-				/obj/item/reagent_containers/lux/eoran_aril = 1
+				/obj/item/reagent_containers/lux/eoran_aril = 1, //Lux equivalent
+				/obj/item/reagent_containers/eoran_seed = 1 // Seed for more trees
 			)
 
-    // Generate 4 arils +1 per tier.
+	// Generate 4 arils +1 per tier.
 	for(var/i in 1 to 4 + (floor(fruit_tier / 2)))
 		var/aril_type = pickweight(possible_arils)
 		aril_types += aril_type
@@ -994,7 +995,7 @@
 	desc = "An iridescent seed that shifts colors in the light."
 	icon_state = "opalescent"
 	effect_desc = "Transforms held gems into rubies."
-    
+	
 /obj/item/reagent_containers/food/snacks/eoran_aril/opalescent/apply_effects(mob/living/eater)
 	for(var/obj/item/roguegem/G in eater.held_items)
 		var/obj/item/roguegem/ruby/new_gem = new(eater.loc)
@@ -1132,6 +1133,41 @@
 	if(ishuman(eater))
 		var/mob/living/carbon/human/H = eater
 		H.apply_status_effect(/datum/status_effect/pearlescent_aril)
+
+/obj/item/reagent_containers/eoran_seed
+	name = "Satin aril"
+	desc = "A silky soft seed from Eora's sacred tree. It can be used to propagate her gift in fertile soil."
+	icon = 'modular_azurepeak/icons/obj/items/eora_pom.dmi'
+	icon_state = "roseate"
+
+/obj/item/reagent_containers/eoran_seed/afterattack(atom/target, mob/user, proximity_flag, click_parameters)
+	if(!isturf(target) || !proximity_flag)
+		return ..()
+
+	var/turf/T = target
+
+	// Location checks
+	if(!isopenturf(T))
+		to_chat(user, span_warning("The seed needs open space to grow!"))
+		return
+	if(!(istype(T, /turf/open/floor/rogue/grass) || istype(T, /turf/open/floor/rogue/dirt)))
+		to_chat(user, span_warning("The seed must be planted on dirt or grass!"))
+		return
+
+	// Planting process
+	to_chat(user, span_notice("You begin to plant the seed in [T]. It pulses gently..."))
+	if(!do_after(user, 30 SECONDS, target))
+		to_chat(user, span_warning("Planting was interrupted!"))
+		return
+
+	// Re-check conditions after delay
+	if(!isopenturf(T) || !(istype(T, /turf/open/floor/rogue/grass) || istype(T, /turf/open/floor/rogue/dirt)))
+		to_chat(user, span_warning("The ground is no longer suitable!"))
+		return
+
+	// Create tree and consume seed
+	new /obj/structure/eoran_pomegranate_tree(T)
+	qdel(src)
 
 #undef SPROUT
 #undef GROWING
