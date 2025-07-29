@@ -8,3 +8,6 @@
 	sprite_accessories = list(
 		/datum/sprite_accessory/tail/aura/dragontail,
 		)
+
+/datum/customizer/organ/tail/tiefling
+	allows_disabling = TRUE
