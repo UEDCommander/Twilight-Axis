@@ -62,6 +62,7 @@
 
 /obj/effect/proc_holder/spell/targeted/abrogation
 	name = "Abrogation"
+	desc = "Debuffs targeted undead as long as they remain near you, slowly getting set on fire if they stay."
 	range = 8
 	overlay_state = "necra"
 	releasedrain = 30
@@ -184,6 +185,7 @@
 
 /obj/effect/proc_holder/spell/invoked/necra_vow
 	name = "Vow to Necra"
+	desc = "Make a vow to Necra. Your chances of revival or recovery of limb will be greatly reduced. You will harm undeath and heal yourself at a slow rate."
 	range = 1
 	overlay_state = "necra"
 	releasedrain = 30

@@ -51,6 +51,9 @@
 		chance2hit += 20
 	if(istype(user.rmb_intent, /datum/rmb_intent/swift))
 		chance2hit -= 20
+	
+	if(HAS_TRAIT(user, TRAIT_CURSE_RAVOX))
+		chance2hit -= 40
 
 	chance2hit = CLAMP(chance2hit, 5, 93)
 
