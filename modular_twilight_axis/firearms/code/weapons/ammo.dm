@@ -47,7 +47,7 @@
 	embedchance = 100
 	woundclass = BCLASS_PIERCE
 	flag = "piercing"
-	armor_penetration = 75
+	armor_penetration = 85
 	speed = 0.1
 
 /obj/projectile/bullet/twilight_lead/silver
@@ -87,7 +87,7 @@
 	embedchance = 100
 	woundclass = BCLASS_PIERCE
 	flag = "piercing"
-	armor_penetration = 75
+	armor_penetration = 85
 	speed = 0.1		
 
 /obj/projectile/bullet/on_hit(atom/target, blocked = FALSE)
