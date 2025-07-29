@@ -2510,7 +2510,6 @@
 #include "modular_hearthstone\code\modules\mob\living\simple_animal\rogue\orc.dm"
 #include "modular_hearthstone\code\modules\mob\living\simple_animal\rogue\rogue_corpse.dm"
 #include "modular_hearthstone\code\modules\reagents\reagent_containers\lux.dm"
-#include "modular_twilight_axis\code\modules\client\customizer\customizers\organ\tail.dm"
 #include "modular_twilight_axis\code\modules\mob\living\emote.dm"
 #include "modular_twilight_axis\lore\code\gods\cult_of_salvation.dm"
 #include "modular_twilight_axis\lore\code\gods\divine_pantheon.dm"
