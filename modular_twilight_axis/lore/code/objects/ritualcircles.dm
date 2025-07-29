@@ -60,41 +60,6 @@
 /obj/structure/ritualcircle/zizo
 	name = "Rune of Undeath"
 
-/obj/structure/ritualcircle/zizo/attack_hand(mob/living/user)
-	if((user.patron?.type) != /datum/patron/inhumen/zizo)
-		to_chat(user,span_smallred("I don't know the proper rites for this..."))
-		return
-	if(!HAS_TRAIT(user, TRAIT_RITUALIST))
-		to_chat(user,span_smallred("I don't know the proper rites for this..."))
-		return
-	if(user.has_status_effect(/datum/status_effect/debuff/ritesexpended))
-		to_chat(user,span_smallred("I have performed enough rituals for the day... I must rest before communing more."))
-		return
-	var/riteselection = input(user, "Rituals of Undeath", src) as null|anything in zizorites
-	switch(riteselection) // put ur rite selection here
-		if("Rite of Armaments")
-			var/onrune = view(1, loc)
-			var/list/folksonrune = list()
-			for(var/mob/living/carbon/human/persononrune in onrune)
-				if(HAS_TRAIT(persononrune, TRAIT_CABAL))
-					folksonrune += persononrune
-			var/target = input(user, "Choose a host") as null|anything in folksonrune
-			if(!target)
-				return
-			if(do_after(user, 50))
-				user.say("ZIZO! ZIZO! THE ONE WHO BRINGS SALVATION!!")
-				if(do_after(user, 50))
-					user.say("ZIZO! ZIZO! HEED MY CALL!!")
-					if(do_after(user, 50))
-						user.say("ZIZO! ZIZO! ARMS TO SLAY THE IGNORANT!!")
-						if(do_after(user, 50))
-							icon_state = "zizo_active"
-							user.apply_status_effect(/datum/status_effect/debuff/ritesexpended)
-							zizoarmaments(target)
-							spawn(120)
-								icon_state = "zizo_chalky"
-
-
 /obj/structure/ritualcircle/matthios
 	name = "Rune of Brotherhood"
 
@@ -124,7 +89,7 @@
 				if(do_after(user, 50))
 					user.say("The hour draws closer for tyrants to fall!!")
 					if(do_after(user, 50))
-						user.say("The arms of freedom will crush them by nightfall!!")
+						user.say("The arms of freedom, to crush them by nightfall!!")
 						if(do_after(user, 50))
 							icon_state = "matthios_active"
 							user.apply_status_effect(/datum/status_effect/debuff/ritesexpended)
