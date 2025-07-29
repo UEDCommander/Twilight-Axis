@@ -10,7 +10,7 @@
 	name = "runed sphere"
 	desc = "Небольшой, идеально круглый металлический шар, покрытый псайдонитскими рунами. Смертоносен на высокой скорости."
 	damage = 90
-	armor_penetration = 60
+	armor_penetration = 75
 	speed = 0.6
 	damage_type = BRUTE
 	icon = 'modular_twilight_axis/firearms/icons/ammo.dmi'
@@ -19,7 +19,7 @@
 	range = 20
 	hitsound = 'sound/combat/hits/hi_bolt (2).ogg'
 	embedchance = 100
-	woundclass = BCLASS_STAB
+	woundclass = BCLASS_PIERCE
 	flag = "piercing"
 
 /obj/projectile/bullet/reusable/twilight_runelock/blessed
@@ -45,9 +45,9 @@
 	range = 25		
 	hitsound = 'sound/combat/hits/hi_arrow2.ogg'
 	embedchance = 100
-	woundclass = BCLASS_STAB
+	woundclass = BCLASS_PIERCE
 	flag = "piercing"
-	armor_penetration = 85
+	armor_penetration = 75
 	speed = 0.1
 
 /obj/projectile/bullet/twilight_lead/silver
@@ -69,9 +69,9 @@
 	range = 25		
 	hitsound = 'sound/combat/hits/hi_arrow2.ogg'
 	embedchance = 0
-	woundclass = BCLASS_STAB
+	woundclass = BCLASS_PIERCE
 	flag = "piercing"
-	armor_penetration = 95
+	armor_penetration = 105
 	speed = 0.1		
 
 /obj/projectile/bullet/twilight_grapeshot
@@ -85,9 +85,9 @@
 	range = 15
 	hitsound = 'sound/combat/hits/hi_arrow2.ogg'
 	embedchance = 100
-	woundclass = BCLASS_STAB
+	woundclass = BCLASS_PIERCE
 	flag = "piercing"
-	armor_penetration = 85
+	armor_penetration = 75
 	speed = 0.1		
 
 /obj/projectile/bullet/on_hit(atom/target, blocked = FALSE)
