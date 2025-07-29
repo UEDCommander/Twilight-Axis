@@ -26,7 +26,6 @@
 	name = "blessed sphere"
 	desc = "Небольшой, идеально круглый шар, изготовленный из чистого серебра. Такие боеприпасы создаются лучшими из отавианских кузнецов и освящяются лично Великим Магистром. Смертоностны против нежити, но весьма эффективны и против других еретиков."
 	damage = 100
-	armor_penetration = 50
 	ammo_type = /obj/item/ammo_casing/caseless/twilight_lead/runelock/blessed
 	icon_state = "musketball_blessed"
 	silver = TRUE
