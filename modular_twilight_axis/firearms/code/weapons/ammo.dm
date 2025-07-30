@@ -1,5 +1,6 @@
 /obj/projectile/bullet
 	var/silver = FALSE
+	var/critfactor = 1
 
 /**
  * Special runelock ammo
@@ -19,7 +20,7 @@
 	range = 20
 	hitsound = 'sound/combat/hits/hi_bolt (2).ogg'
 	embedchance = 100
-	woundclass = BCLASS_PIERCE
+	woundclass = BCLASS_STAB
 	flag = "piercing"
 
 /obj/projectile/bullet/reusable/twilight_runelock/blessed
@@ -44,9 +45,9 @@
 	range = 25		
 	hitsound = 'sound/combat/hits/hi_arrow2.ogg'
 	embedchance = 100
-	woundclass = BCLASS_PIERCE
+	woundclass = BCLASS_STAB
 	flag = "piercing"
-	armor_penetration = 85
+	armor_penetration = 75
 	speed = 0.1
 
 /obj/projectile/bullet/twilight_lead/silver
@@ -56,6 +57,7 @@
 	damage = 75
 	armor_penetration = 60
 	silver = TRUE
+	critfactor = 0.8
 
 /obj/projectile/bullet/twilight_cannonball
 	name = "cannonball"
@@ -68,10 +70,10 @@
 	range = 25		
 	hitsound = 'sound/combat/hits/hi_arrow2.ogg'
 	embedchance = 0
-	woundclass = BCLASS_PIERCE
+	woundclass = BCLASS_STAB
 	flag = "piercing"
 	armor_penetration = 105
-	speed = 0.1		
+	speed = 0.1
 
 /obj/projectile/bullet/twilight_grapeshot
 	name = "grapeshot"
@@ -84,10 +86,11 @@
 	range = 15
 	hitsound = 'sound/combat/hits/hi_arrow2.ogg'
 	embedchance = 100
-	woundclass = BCLASS_PIERCE
+	woundclass = BCLASS_STAB
 	flag = "piercing"
-	armor_penetration = 85
-	speed = 0.1		
+	armor_penetration = 75
+	speed = 0.1
+	critfactor = 0.67
 
 /obj/projectile/bullet/on_hit(atom/target, blocked = FALSE)
 	. = ..()
@@ -114,14 +117,9 @@
 					var/datum/antagonist/vampirelord/lesser/V = T.mind.has_antag_datum(/datum/antagonist/vampirelord/lesser)
 					var/datum/antagonist/vampirelord/V_lord = T.mind.has_antag_datum(/datum/antagonist/vampirelord/)
 					if(V)
-						if(V.disguised)
-							T.visible_message("<font color='white'>The silver weapon weakens the curse temporarily!</font>")
-							to_chat(T, span_userdanger("I'm hit by my BANE!"))
-							T.apply_status_effect(/datum/status_effect/debuff/silver_curse)
-						else
-							T.visible_message("<font color='white'>The silver weapon weakens the curse temporarily!</font>")
-							to_chat(T, span_userdanger("I'm hit by my BANE!"))
-							T.apply_status_effect(/datum/status_effect/debuff/silver_curse)
+						T.visible_message("<font color='white'>The silver weapon weakens the curse temporarily!</font>")
+						to_chat(T, span_userdanger("I'm hit by my BANE!"))
+						T.apply_status_effect(/datum/status_effect/debuff/silver_curse)
 					if(V_lord)
 						if(V_lord.vamplevel < 4 && !V)
 							T.visible_message("<font color='white'>The silver weapon weakens the curse temporarily!</font>")
@@ -134,6 +132,16 @@
 						T.visible_message("<font color='white'>The silver weapon weakens the curse temporarily!</font>")
 						to_chat(T, span_userdanger("I'm hit by my BANE!"))
 						T.apply_status_effect(/datum/status_effect/debuff/silver_curse)
+			if(blocked != 100) //Handle crits. Gunpowder weapons have a separate crit roll that ignores bodypart health
+				if(iscarbon(T))
+					var/zone = def_zone
+					var/obj/item/bodypart/affecting = T.get_bodypart(zone)
+					if(affecting)
+						var/check_crit_against_con = rand(10, 20)
+						check_crit_against_con *= critfactor * (M.STAPER > 10 ? M.STAPER / 10 : 1)
+						if(check_crit_against_con > (T.STACON))
+							if(prob(90))
+								affecting.twilight_gunpowder_crit(woundclass, zone_precise = zone, crit_message = TRUE)
 
 /obj/projectile/bullet/twilight_cannonball/on_hit(atom/target, blocked = FALSE)
 	. = ..()
