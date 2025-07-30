@@ -132,7 +132,7 @@
 						T.visible_message("<font color='white'>The silver weapon weakens the curse temporarily!</font>")
 						to_chat(T, span_userdanger("I'm hit by my BANE!"))
 						T.apply_status_effect(/datum/status_effect/debuff/silver_curse)
-			if(blocked != 100) //Handle crits. Gunpowder weapons have a separate crit roll that ignores bodypart health
+			if(blocked == 0) //Handle crits. Gunpowder weapons have a separate crit roll that ignores bodypart health
 				if(iscarbon(T))
 					var/zone = def_zone
 					var/obj/item/bodypart/affecting = T.get_bodypart(zone)
@@ -140,8 +140,12 @@
 						var/check_crit_against_con = rand(10, 20)
 						check_crit_against_con *= critfactor * (M.STAPER > 10 ? M.STAPER / 10 : 1)
 						if(check_crit_against_con > (T.STACON))
-							if(prob(90))
-								affecting.twilight_gunpowder_crit(woundclass, zone_precise = zone, crit_message = TRUE)
+							if(T.getarmor(zone, flag) >= (armor_penetration / 2))
+								if(prob(40))
+									affecting.twilight_gunpowder_crit(woundclass, zone_precise = zone, crit_message = TRUE)
+							else
+								if(prob(90))
+									affecting.twilight_gunpowder_crit(woundclass, zone_precise = zone, crit_message = TRUE)
 
 /obj/projectile/bullet/twilight_cannonball/on_hit(atom/target, blocked = FALSE)
 	. = ..()
