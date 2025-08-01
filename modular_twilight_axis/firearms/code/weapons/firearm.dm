@@ -63,7 +63,7 @@
 	cartridge_wording = "bullet"
 	load_sound = 'modular_twilight_axis/firearms/sound/musketload.ogg'
 	fire_sound = 'modular_twilight_axis/firearms/sound/arquefire.ogg'
-	anvilrepair = /datum/skill/craft/engineering
+	anvilrepair = null
 	smeltresult = /obj/item/ingot/steel
 	bolt_type = BOLT_TYPE_NO_BOLT
 	casing_ejector = FALSE
@@ -76,6 +76,7 @@
 	var/load_time = 50
 	var/gunpowder = FALSE
 	var/advanced_icon
+	var/locktype = "Wheellock"
 	var/obj/item/twilight_ramrod/myrod = null
 
 /obj/item/gun/ballistic/twilight_firearm/getonmobprop(tag)
@@ -91,7 +92,8 @@
 
 /obj/item/gun/ballistic/twilight_firearm/Initialize()
 	. = ..()
-	myrod = new /obj/item/twilight_ramrod(src)
+	if(locktype == "Wheellock")
+		myrod = new /obj/item/twilight_ramrod(src)
 
 
 /obj/item/gun/ballistic/twilight_firearm/shoot_live_shot(mob/living/user as mob|obj, pointblank = 0, mob/pbtarget = null, message = 1)
@@ -103,21 +105,21 @@
 	if(user.get_active_held_item())
 		return
 	else
-		if(myrod)
-			playsound(src, "sound/items/sharpen_short1.ogg",  100, FALSE)
-			to_chat(user, "<span class='warning'>I draw the ramrod from the [src]!</span>")
-			var/obj/item/twilight_ramrod/AM
-			for(AM in src)
-				user.put_in_hands(AM)
-				myrod = null
-			if(advanced_icon)
-				if(reloaded)
-					icon_state = "[advanced_icon]_r_norod"
-				else
-					icon_state = "[advanced_icon]_norod"					
-		else
-			to_chat(user, "<span class='warning'>There is no rod stowed in the [src]!</span>")
-
+		if(locktype == "Wheellock")
+			if(myrod)
+				playsound(src, "sound/items/sharpen_short1.ogg",  100, FALSE)
+				to_chat(user, "<span class='warning'>I draw the ramrod from [src]!</span>")
+				var/obj/item/twilight_ramrod/AM
+				for(AM in src)
+					user.put_in_hands(AM)
+					myrod = null
+				if(advanced_icon)
+					if(reloaded)
+						icon_state = "[advanced_icon]_r_norod"
+					else
+						icon_state = "[advanced_icon]_norod"
+			else
+				to_chat(user, "<span class='warning'>There is no rod stowed in [src]!</span>")
 
 /datum/intent/shoot/twilight_firarm
 	chargedrain = 0
@@ -188,69 +190,100 @@
 
 	if(istype(A, /obj/item/ammo_box) || istype(A, /obj/item/ammo_casing))
 		if(chambered)
-			to_chat(user, "<span class='warning'>There is already a [chambered] in the [src]!</span>")
+			to_chat(user, "<span class='warning'>There is already a [chambered] in [src]!</span>")
 			return
 		if(!gunpowder)
-			to_chat(user, "<span class='warning'>You must fill the [src] with gunpowder first!</span>")
+			to_chat(user, "<span class='warning'>You must fill [src] with gunpowder first!</span>")
 			return
 		if((loc == user) && (user.get_inactive_held_item() != src))
 			return
 		playsound(src, "modular_twilight_axis/firearms/sound/insert.ogg",  100, FALSE)
-		user.visible_message("<span class='notice'>[user] forces a [A] down the barrel of the [src].</span>")
+		user.visible_message("<span class='notice'>[user] forces a [A] down the barrel of [src].</span>")
 		..()
 
 	if(istype(A, /obj/item/twilight_powderflask))
 		if(gunpowder)
-			user.visible_message("<span class='notice'>The [src] is already filled with gunpowder!</span>")
+			user.visible_message("<span class='notice'>The [name] is already filled with gunpowder!</span>")
 			return
 		else
 			playsound(src, "modular_twilight_axis/firearms/sound/pour_powder.ogg",  100, FALSE)
 			if(do_after(user, load_time_skill, src))
-				user.visible_message("<span class='notice'>[user] fills the [src] with gunpowder.</span>")
+				user.visible_message("<span class='notice'>[user] fills [src] with gunpowder.</span>")
 				gunpowder = TRUE
 			return
 	if(istype(A, /obj/item/twilight_ramrod))
-		var/obj/item/twilight_ramrod/R=A
-		if(!reloaded)
-			if(chambered)
-				user.visible_message("<span class='notice'>[user] begins ramming the [R.name] down the barrel of the [src] .</span>")
-				playsound(src, "modular_twilight_axis/firearms/sound/ramrod.ogg",  100, FALSE)
-				if(do_after(user, load_time_skill, src))
-					user.visible_message("<span class='notice'>[user] has finished reloading the [src].</span>")
-					reloaded = TRUE
-					if(advanced_icon)
-						icon_state = "[advanced_icon]_r_norod"
+		if(locktype == "Wheellock")
+			var/obj/item/twilight_ramrod/R=A
+			if(!reloaded)
+				if(chambered)
+					user.visible_message("<span class='notice'>[user] begins ramming the [R.name] down the barrel of [src].</span>")
+					playsound(src, "modular_twilight_axis/firearms/sound/ramrod.ogg",  100, FALSE)
+					if(do_after(user, load_time_skill, src))
+						user.visible_message("<span class='notice'>[user] has finished reloading [src].</span>")
+						reloaded = TRUE
+						if(advanced_icon)
+							icon_state = "[advanced_icon]_r_norod"
+					return
+			if(reloaded && !myrod)
+				user.transferItemToLoc(R, src)
+				myrod = R
+				playsound(src, "modular_twilight_axis/firearms/sound/musketload.ogg",  100, FALSE)
+				user.visible_message("<span class='notice'>[user] stows the [R.name] under the barrel of [src].</span>")
+				if(advanced_icon)
+					if(reloaded)
+						icon_state = "[advanced_icon]_r"
+					else
+						icon_state = "[advanced_icon]"
+			if(!chambered && !myrod)
+				user.transferItemToLoc(R, src)
+				myrod = R
+				playsound(src, "modular_twilight_axis/firearms/sound/musketload.ogg",  100, FALSE)
+				user.visible_message("<span class='notice'>[user] stows the [R.name] under the barrel of [src] without chambering it.</span>")
+				if(advanced_icon)
+					if(reloaded)
+						icon_state = "[advanced_icon]_r"
+					else
+						icon_state = "[advanced_icon]"
+			if(!myrod == null)
+				to_chat(user, span_warning("There's already a [R.name] inside of the [name]."))
 				return
-		if(reloaded && !myrod)
-			user.transferItemToLoc(R, src)
-			myrod = R
-			playsound(src, "modular_twilight_axis/firearms/sound/musketload.ogg",  100, FALSE)
-			user.visible_message("<span class='notice'>[user] stows the [R.name] under the barrel of the [src].</span>")
-			if(advanced_icon)
-				if(reloaded)
-					icon_state = "[advanced_icon]_r"
-				else
-					icon_state = "[advanced_icon]"
-		if(!chambered && !myrod)
-			user.transferItemToLoc(R, src)
-			myrod = R
-			playsound(src, "modular_twilight_axis/firearms/sound/musketload.ogg",  100, FALSE)
-			user.visible_message("<span class='notice'>[user] stows the [R.name] under the barrel of the [src] without chambering it.</span>")
-			if(advanced_icon)
-				if(reloaded)
-					icon_state = "[advanced_icon]_r"
-				else
-					icon_state = "[advanced_icon]"
-		if(!myrod == null)
-			to_chat(user, span_warning("There's already a [R.name] inside of the [name]."))
-			return
+	if(istype(A, /obj/item/natural/bundle/fibers))
+		var/obj/item/natural/bundle/fibers/W = A
+		if(locktype == "Matchlock")
+			if(!reloaded)
+				if(chambered)
+					user.visible_message("<span class='notice'>[user] begins attaching the fuse to [src].</span>")
+					playsound(src, "sound/foley/bandage.ogg",  100, FALSE)
+					if(do_after(user, (load_time_skill * 0.8), src))
+						user.visible_message("<span class='notice'>[user] has finished reloading [src].</span>")
+						W.amount = W.amount - 1
+						if(W.amount == 1)
+							new /obj/item/natural/fibers(get_turf(user))
+							qdel(W)
+						reloaded = TRUE
+						if(advanced_icon)
+							icon_state = "[advanced_icon]_r"
+					return
+	if(istype(A, /obj/item/natural/fibers))
+		if(locktype == "Matchlock")
+			if(!reloaded)
+				if(chambered)
+					user.visible_message("<span class='notice'>[user] begins attaching the fuse to [src].</span>")
+					playsound(src, "sound/foley/bandage.ogg",  100, FALSE)
+					if(do_after(user, (load_time_skill * 0.8), src))
+						user.visible_message("<span class='notice'>[user] has finished reloading [src].</span>")
+						qdel(A)
+						reloaded = TRUE
+						if(advanced_icon)
+							icon_state = "[advanced_icon]_r"
+					return
 	if(istype(A, /obj/item/rogueweapon/hammer))
 		var/repair_percent = 0.025 // 2.5% Repairing per hammer smack
 		if(locate(/obj/machinery/anvil) in src.loc)
 			repair_percent *= 2 // Double the repair amount if we're using an anvil
 		var/exp_gained = 0
-		var/repair_skill = (user?.mind ? user.get_skill_level(anvilrepair) : 1)
-		if(!anvilrepair || (obj_integrity >= max_integrity) || !isturf(src.loc))
+		var/repair_skill = (user?.mind ? user.get_skill_level(/datum/skill/craft/engineering) : 1)
+		if((obj_integrity >= max_integrity) || !isturf(src.loc))
 			return
 
 		if(!src.ontable())
@@ -282,7 +315,7 @@
 				user.visible_message(span_info("[user] repairs [src]!"))
 			if(obj_broken && obj_integrity == max_integrity)
 				src.obj_fix()
-			adjust_experience(user, anvilrepair, exp_gained/2) //We gain as much exp as we fix divided by 2
+			adjust_experience(user, /datum/skill/craft/engineering, exp_gained/2) //We gain as much exp as we fix divided by 2
 			return
 		else
 			user.visible_message(span_warning("[user] fumbles trying to repair [src]!"))
@@ -292,16 +325,21 @@
 
 /obj/item/gun/ballistic/twilight_firearm/examine(mob/user)
 	. = ..()
+	switch(locktype)
+		if("Wheellock")
+			. += span_info("Это оружие оснащено колесцовым замком — оно не требует фитиля, но перед выстрелом пороховой заряд необходимо уплотнить шомполом.")
+		if("Matchlock")
+			. += span_info("Это оружие оснащено фитильным замком — чтобы его взвести, необходимо установить фитиль.")
 	if(gunpowder)
 		if(chambered)
 			if(reloaded)
-				. += span_notice("Взведено и готово к стрельбе.")
+				. += span_bold("Взведено и готово к стрельбе.")
 			else
-				. += span_notice("Внутри оружия видна пуля, но оно не взведено.")
+				. += span_bold("Внутри оружия видна пуля, но оно не взведено.")
 		else
-			. += span_notice("Через запальное отверстие виден пороховой заряд, но пуля не установлена.")
+			. += span_bold("Через запальное отверстие виден пороховой заряд, но пуля не установлена.")
 	else
-		. += span_notice("Не заряжено.")
+		. += span_bold("Не заряжено.")
 
 /obj/item/gun/ballistic/twilight_firearm/process_fire(atom/target, mob/living/user, message = TRUE, params = null, zone_override = "", bonus_spread = 0)
 
@@ -437,12 +475,13 @@
 
 /obj/item/gun/ballistic/twilight_firearm/handgonne
 	name = "culverin"
-	desc = "Тяжелое пороховое оружие, стреляющее крупными свинцовыми ядрами. Для поджига пороха используется длинный фитиль, из-за которого орудие стреляет с задержкой. Важен не размер ствола, а размер отверстия, что он делает в вашем противнике."
+	desc = "Тяжелое пороховое оружие, стреляющее крупными свинцовыми ядрами. Важен не размер ствола, а размер отверстия, что он делает в вашем противнике."
 	icon = 'modular_twilight_axis/firearms/icons/handgonne.dmi'
 	icon_state = "handgonne"
 	item_state = "handgonne"
 	mag_type = /obj/item/ammo_box/magazine/internal/twilight_firearm/handgonne
 	cartridge_wording = "cannonball"
+	locktype = "Matchlock"
 
 /obj/item/ammo_box/magazine/internal/twilight_firearm/handgonne
 	name = "handgonne internal magazine"
