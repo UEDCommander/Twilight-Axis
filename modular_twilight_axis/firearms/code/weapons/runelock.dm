@@ -26,7 +26,7 @@
 	var/misfire_chance = 0
 	/// Reload time, in SECONDS
 	var/reload_time = 8
-	damfactor = 0.5
+	damfactor = 0.7
 	var/speedfactor = 1
 	var/rangefactor = 1
 
