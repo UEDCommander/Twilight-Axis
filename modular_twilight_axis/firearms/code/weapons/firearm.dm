@@ -290,6 +290,19 @@
 				attack_obj(src, user)
 			return
 
+/obj/item/gun/ballistic/twilight_firearm/examine(mob/user)
+	. = ..()
+	if(gunpowder)
+		if(chambered)
+			if(reloaded)
+				. += span_notice("Взведено и готово к стрельбе.")
+			else
+				. += span_notice("Внутри оружия видна пуля, но оно не взведено.")
+		else
+			. += span_notice("Через запальное отверстие виден пороховой заряд, но пуля не установлена.")
+	else
+		. += span_notice("Не заряжено.")
+
 /obj/item/gun/ballistic/twilight_firearm/process_fire(atom/target, mob/living/user, message = TRUE, params = null, zone_override = "", bonus_spread = 0)
 
 	var/accident_chance = 0
