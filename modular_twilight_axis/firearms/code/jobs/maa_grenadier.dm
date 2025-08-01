@@ -33,6 +33,12 @@
 	armor = /obj/item/clothing/suit/roguetown/armor/plate/half
 	neck = /obj/item/clothing/neck/roguetown/chaincoif
 	pants = /obj/item/clothing/under/roguetown/trou/leather
+	backpack_contents = list(
+		/obj/item/rogueweapon/huntingknife/idagger/steel/special = 1,
+		/obj/item/rope/chain = 1,
+		/obj/item/storage/keyring/guardcastle,
+		/obj/item/twilight_powderflask = 1,
+		)
 
 	H.adjust_blindness(-3)
 	var/weapons = list("Аркебуза со штыком","Кулеврина и картечь")
@@ -45,13 +51,8 @@
 		if("Кулеврина и картечь") 
 			beltr = /obj/item/quiver/twilight_bullet/cannonball/grapeshot
 			backl = /obj/item/gun/ballistic/twilight_firearm/handgonne
+			backpack_contents += list(/obj/item/natural/bundle/fibers/full = 1)
 
-	backpack_contents = list(
-		/obj/item/rogueweapon/huntingknife/idagger/steel/special = 1,
-		/obj/item/rope/chain = 1,
-		/obj/item/storage/keyring/guardcastle,
-		/obj/item/twilight_powderflask = 1,
-		)
 	H.verbs |= /mob/proc/haltyell
 
 	var/helmets = list(
