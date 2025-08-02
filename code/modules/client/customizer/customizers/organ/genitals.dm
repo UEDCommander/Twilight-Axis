@@ -97,13 +97,13 @@
 
 /datum/customizer_choice/organ/penis/human
 	name = "Plain Penis"
-	organ_type = /obj/item/organ/penis
+	organ_type = /obj/item/organ/penis/human
 	sprite_accessories = list(/datum/sprite_accessory/penis/human)
 	allows_accessory_color_customization = FALSE
 
 /datum/customizer_choice/organ/penis/human_anthro
 	name = "Plain Penis"
-	organ_type = /obj/item/organ/penis
+	organ_type = /obj/item/organ/penis/human
 	sprite_accessories = list(/datum/sprite_accessory/penis/human)
 	allows_accessory_color_customization = TRUE
 

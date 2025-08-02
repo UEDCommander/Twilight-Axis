@@ -17,6 +17,7 @@
 	max_pq = null
 	round_contrib_points = 3
 	cmode_music = 'sound/music/combat_noble.ogg'
+	same_job_respawn_delay = 30 MINUTES
 
 /datum/outfit/job/roguetown/steward
 	job_bitflag = BITFLAG_ROYALTY
@@ -24,12 +25,15 @@
 /datum/outfit/job/roguetown/steward/pre_equip(mob/living/carbon/human/H)
 	..()
 	if(should_wear_femme_clothes(H))
-		shirt = /obj/item/clothing/suit/roguetown/shirt/dress/silkdress/steward
-		pants = /obj/item/clothing/under/roguetown/tights/stockings/silk/random	//Added Silk Stockings for the female nobles
+		shirt = /obj/item/clothing/suit/roguetown/shirt/dress/stewarddress
+		pants = /obj/item/clothing/under/roguetown/tights/stockings/silk/white
+		shoes = /obj/item/clothing/shoes/roguetown/boots/nobleboot
 	else if(should_wear_masc_clothes(H))
-		shirt = /obj/item/clothing/suit/roguetown/shirt/undershirt/guard
-		pants = /obj/item/clothing/under/roguetown/tights/random
-		armor = /obj/item/clothing/suit/roguetown/shirt/tunic/silktunic
+		shirt = /obj/item/clothing/suit/roguetown/armor/gambeson/steward
+		pants = /obj/item/clothing/under/roguetown/tights/black
+		shoes = /obj/item/clothing/shoes/roguetown/boots/nobleboot
+	armor = /obj/item/clothing/suit/roguetown/armor/leather/jacket/artijacket/handjacket
+	head = /obj/item/clothing/head/roguetown/stewardtophat
 	shoes = /obj/item/clothing/shoes/roguetown/shortboots
 	belt = /obj/item/storage/belt/rogue/leather/plaquegold/steward
 	beltr = /obj/item/storage/keyring/steward
@@ -51,6 +55,10 @@
 	H.change_stat("intelligence", 2)
 	H.change_stat("perception", 2)
 	H.change_stat("speed", -1)
+	H.mind.special_items["Steward Tights"] = /obj/item/clothing/under/roguetown/tights/black
+	H.mind.special_items["Steward Tailcoat"] = /obj/item/clothing/suit/roguetown/armor/gambeson/steward
+	H.mind.special_items["Steward Silkdress"] = /obj/item/clothing/suit/roguetown/shirt/dress/silkdress/steward
+	H.mind.special_items["Steward Silktunic"] = /obj/item/clothing/suit/roguetown/shirt/tunic/silktunic
 	if(H.mind)
 		H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/appraise/secular)
 	ADD_TRAIT(H, TRAIT_NOBLE, TRAIT_GENERIC)
@@ -78,5 +86,5 @@ GLOBAL_VAR_INIT(steward_tax_cooldown, -50000) // Antispam
 		if(stat)
 			return
 		SStreasury.tax_value = newtax / 100
-		priority_announce("The new tax in Azure Peak shall be [newtax] percent.", "The Steward Meddles", pick('sound/misc/royal_decree.ogg', 'sound/misc/royal_decree2.ogg'), "Captain")
+		priority_announce("The new tax in Twilight Axis shall be [newtax] percent.", "The Steward Meddles", pick('sound/misc/royal_decree.ogg', 'sound/misc/royal_decree2.ogg'), "Captain")
 		GLOB.steward_tax_cooldown = world.time

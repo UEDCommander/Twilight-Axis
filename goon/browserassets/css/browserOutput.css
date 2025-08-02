@@ -12,7 +12,7 @@ body {
 }
 body {
 	background: #000000;
-	font-family: Pterra;
+	font-family: Mookmania;
 	font-size: 13px;
 	color: #c9c1ba;
 	line-height: 1.2;
@@ -28,17 +28,17 @@ body {
 
 /* Fonts */
 @font-face {
-	font-family: "Pterra";
-	src: url("pterra.ttf");
+  font-family: "Mookmania";
+  src: url('Mookmania.otf');
 }
 @font-face {
 	font-family: "Honoka Mincho";
 	src: url("HonokaMincho.ttf");
 }
 
-@font-face {
-	font-family: "Dauphin";
-	src: url("elf.ttf");
+@font-face { 
+  font-family: "MarkScript-Regular"; 
+  src: url('MarkScript-Regular.ttf'); 
 }
 
 @font-face {
@@ -46,34 +46,34 @@ body {
 	src: url("dwarf.ttf");
 }
 
-@font-face {
-	font-family: "Furqan";
-	src: url("sand.ttf");
+@font-face { 
+  font-family: "Kamelia"; 
+  src: url('Kamelia.ttf'); 
 }
 
-@font-face {
-	font-family: "Xaphan";
-	src: url("hell.ttf");
+@font-face { 
+  font-family: "Comforter Brush"; 
+  src: url('Comforter Brush.otf'); 
 }
 
-@font-face {
-	font-family: "FriskyVampire";
-	src: url("undead.ttf");
+@font-face { 
+  font-family: "FDMedian"; 
+  src: url('FDMedian.ttf'); 
 }
 
-@font-face {
-	font-family: "Thief by The Riddler";
-	src: url("orc.ttf");
+@font-face { 
+  font-family: "VizaviTYGRA"; 
+  src: url('VizaviTYGRA.ttf'); 
 }
 
-@font-face {
-	font-family: "Kingthings Petrock";
-	src: url("draconic.ttf");
+@font-face { 
+  font-family: "Kautiva Cyrillic Black"; 
+  src: url('Kautiva Cyrillic Black.ttf'); 
 }
 
-@font-face {
-	font-family: "Emperialisme";
-	src: url("grenzelhoftian.ttf");
+@font-face { 
+  font-family: "ALOT Gutenberg B Normal"; 
+  src: url('ALOT Gutenberg B Normal.ttf'); 
 }
 
 @font-face {
@@ -81,9 +81,8 @@ body {
 	src: url("kazengunese.ttf");
 }
 
-@font-face {
-	font-family: "Notredame";
-	src: url("otavan.ttf");
+@font-face { 
+  font-family: "Deutsch Gothic"; 
 }
 
 @font-face {

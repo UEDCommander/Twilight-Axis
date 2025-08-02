@@ -1,5 +1,5 @@
 /datum/sex_action/force_cunnilingus
-	name = "Force them to suck"
+	name = "Заставить отлизать"
 	require_grab = TRUE
 	stamina_cost = 1.0
 
@@ -22,11 +22,12 @@
 	return TRUE
 
 /datum/sex_action/force_cunnilingus/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
-	user.visible_message(span_warning("[user] forces [target]'s head against [user.p_their()] cunt!"))
+	user.visible_message(span_warning("[user] вжимает носом [target] в свою киску!"))
 
 /datum/sex_action/force_cunnilingus/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
-	user.visible_message(user.sexcon.spanify_force("[user] [user.sexcon.get_generic_force_adjective()] forces [target] to suck [user.p_their()] cunt."))
+	user.visible_message(user.sexcon.spanify_force("[user] [user.sexcon.get_generic_force_adjective()] вынуждает [target] отлизать свою киску."))
 	target.make_sucking_noise()
+	do_thrust_animate(user, target)
 
 	user.sexcon.perform_sex_action(user, 2, 4, TRUE)
 	user.sexcon.handle_passive_ejaculation()
@@ -35,7 +36,7 @@
 	target.sexcon.handle_passive_ejaculation()
 
 /datum/sex_action/force_cunnilingus/on_finish(mob/living/carbon/human/user, mob/living/carbon/human/target)
-	user.visible_message(span_warning("[user] pulls [target]'s head away."))
+	user.visible_message(span_warning("[user] освобождает лик [target] от своей промежности."))
 
 /datum/sex_action/force_cunnilingus/is_finished(mob/living/carbon/human/user, mob/living/carbon/human/target)
 	if(user.sexcon.finished_check())

@@ -1,0 +1,22 @@
+/obj/item/clothing/under/roguetown/platelegs/captain
+	name = "captain's chausses"
+	desc = "Cuisses made of plated steel, offering additional protection against blunt force. These are specially fitted for the captain."
+	gender = PLURAL
+	icon = 'modular_twilight_axis/icons/roguetown/clothing/special/captain.dmi'
+	mob_overlay_icon = 'modular_twilight_axis/icons/roguetown/clothing/special/onmob/captain.dmi'
+	icon_state = "capplateleg"
+	item_state = "capplateleg"
+//	adjustable = CAN_CADJUST
+	sewrepair = FALSE
+	armor = ARMOR_PLATE
+	prevent_crits = list(BCLASS_CUT, BCLASS_STAB, BCLASS_CHOP, BCLASS_BLUNT)
+	blocksound = PLATEHIT
+	max_integrity = ARMOR_INT_LEG_STEEL_PLATE
+	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
+	anvilrepair = /datum/skill/craft/armorsmithing
+	smeltresult = /obj/item/ingot/steel
+	r_sleeve_status = SLEEVE_NOMOD
+	l_sleeve_status = SLEEVE_NOMOD
+	smelt_bar_num = 2
+	resistance_flags = FIRE_PROOF
+	armor_class = ARMOR_CLASS_HEAVY

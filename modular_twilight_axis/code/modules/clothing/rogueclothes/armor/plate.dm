@@ -1,0 +1,21 @@
+/obj/item/clothing/suit/roguetown/armor/plate/captain
+	slot_flags = ITEM_SLOT_ARMOR
+	name = "captain's brigandine"
+	desc = "A coat with plates specifically tailored and forged for the captain of Twilight Axis."
+	body_parts_covered = COVERAGE_TORSO
+	icon = 'modular_twilight_axis/icons/roguetown/clothing/special/captain.dmi'
+	mob_overlay_icon = 'modular_twilight_axis/icons/roguetown/clothing/special/onmob/captain.dmi'
+	sleeved = 'modular_twilight_axis/icons/roguetown/clothing/special/onmob/captain.dmi'
+	icon_state = "capplate"
+	item_state = "capplate"
+	armor = ARMOR_PLATE
+	prevent_crits = list(BCLASS_CUT, BCLASS_STAB, BCLASS_CHOP, BCLASS_BLUNT, BCLASS_TWIST)
+	nodismemsleeves = TRUE
+	max_integrity = ARMOR_INT_CHEST_PLATE_STEEL
+	allowed_sex = list(MALE, FEMALE)
+	anvilrepair = /datum/skill/craft/armorsmithing
+	smeltresult = /obj/item/ingot/steel
+	equip_delay_self = 4 SECONDS
+	unequip_delay_self = 4 SECONDS
+	armor_class = ARMOR_CLASS_HEAVY
+	smelt_bar_num = 3

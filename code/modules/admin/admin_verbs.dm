@@ -8,7 +8,7 @@ GLOBAL_PROTECT(admin_verbs_default)
 	/client/proc/check_pq,
 	/client/proc/adjust_pq,
 	/client/proc/hearallasghost,
-	/client/proc/hearglobalLOOC,
+//	/client/proc/hearglobalLOOC, Лоок вырезан. Не нужно.
 	/client/proc/toggle_aghost_invis,
 	/client/proc/admin_ghost,
 	/datum/admins/proc/start_vote,
@@ -55,10 +55,10 @@ GLOBAL_PROTECT(admin_verbs_admin)
 	/client/proc/debug_variables,		/*allows us to -see- the variables of any instance in the game. +VAREDIT needed to modify*/
 	/client/proc/dsay,					/*talk in deadchat using our ckey/fakekey*/
 	/client/proc/investigate_show,		/*various admintools for investigation. Such as a singulo grief-log*/
-	/client/proc/secrets,				/* Almost entirely non-functional after Azure Peak Debloatening. Final few are redundant, but keeping just in case */
+	/client/proc/secrets,				/* Almost entirely non-functional after Twilight Axis Debloatening. Final few are redundant, but keeping just in case */
 	/client/proc/toggle_hear_radio,		/*allows admins to hide all radio output*/
 	/client/proc/reload_admins,
-	/client/proc/reload_whitelist,
+//	/client/proc/reload_whitelist,
 	/client/proc/reestablish_db_connection, /*reattempt a connection to the database*/
 	/client/proc/cmd_admin_pm_context,	/*right-click adminPM interface*/
 	/client/proc/cmd_admin_pm_panel,		/*admin-pm list*/
@@ -270,7 +270,7 @@ GLOBAL_LIST_INIT(admin_verbs_hideable, list(
 	/client/proc/enable_debug_verbs,
 	/proc/possess,
 	/proc/release,
-	/client/proc/reload_whitelist,
+//	/client/proc/reload_whitelist,
 	/client/proc/panicbunker,
 //	/client/proc/admin_change_sec_level,
 	/client/proc/cmd_display_del_log,
