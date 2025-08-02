@@ -133,7 +133,7 @@ h1.alert, h2.alert	{color: #c9c1ba;font-family: Mookmania, TrueType;}
 .human					{font-family: "Honoka Mincho", Mookmania;}
 .elf					{font-family: "MarkScript-Regular", cursive, Mookmania;}
 .dwarf					{font-family: "MasonAlternate", Mookmania;}
-.sandspeak				{font-family: "Arabolical", Mookmania;}
+.sandspeak				{font-family: "Furqan", Mookmania;}
 .delf					{font-family: "MarkScript-Regular", Mookmania;}
 .hellspeak				{font-family: "Comforter Brush", Mookmania; font-size: 110%}
 .undead					{font-family: "FDMedian", Mookmania;}
