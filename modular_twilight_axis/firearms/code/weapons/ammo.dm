@@ -174,6 +174,20 @@
 	w_class = WEIGHT_CLASS_TINY
 	smeltresult = /obj/item/rogueore/iron
 
+/obj/item/ammo_casing/caseless/twilight_lead/runelock/Initialize()
+	. = ..()
+	var/filter = src.get_filter("rune_filter")
+	if(!filter)
+		src.add_filter("rune_filter", 2, list("type" = "outline", "color" = rgb(112, 28, 28, 1), "alpha" = 200, "size" = 2))
+
+/obj/item/ammo_casing/caseless/twilight_lead/runelock/equipped(mob/living/user)
+	if(!HAS_TRAIT(user, TRAIT_INQUISITION) && !(user.STAINT >= 15) && !(user.patron?.type == /datum/patron/old_god))
+		to_chat(user, "<font color='yellow'>The [name] is extremely hot to touch! It burns your hand!</font>")
+		var/def_zone = "[(user.active_hand_index == 2) ? "r" : "l" ]_hand"
+		user.apply_damage(rand(5,15), BURN, def_zone)
+		src.forceMove(get_turf(user))
+	..()
+
 /obj/item/ammo_casing/caseless/twilight_lead/silver
 	name = "silver sphere"
 	desc = "Небольшая серебряная сфера. Мягче, чем свинцовая пуля, но крайне эффективна против нежити."
