@@ -10,7 +10,7 @@
 					"Shaman" = "You are a Shaman of the Fjall, The Northern Empty. Savage combatants who commune with the Ecclesical Beast gods through ritualistic violence, rather than idle prayer.")
 
 /datum/outfit/job/roguetown/mercenary/atgervi
-	allowed_patrons = list(/datum/patron/inhumen/zizo, /datum/patron/inhumen/graggar, /datum/patron/divine/dendor) //TA EDIT - Allowing Atgervi to follow Dendor
+	allowed_patrons = ALL_INHUMEN_PATRONS
 
 /datum/outfit/job/roguetown/mercenary/atgervi/pre_equip(mob/living/carbon/human/H)
 	..()
