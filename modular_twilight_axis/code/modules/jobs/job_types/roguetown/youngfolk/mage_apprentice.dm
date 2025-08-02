@@ -25,12 +25,14 @@
 		/obj/item/storage/keyring/mageapprentice,
 		)
 	if(H.mind)
-		H.mind.AddSpell(new /obj/effect/proc_holder/spell/targeted/touch/prestidigitation)
 		H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/projectile/airblade)
 		H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/enchant_weapon)
 		H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/conjure_weapon)
 	H.adjust_skillrank(/datum/skill/misc/climbing, 3, TRUE)
-	H.adjust_skillrank(/datum/skill/combat/swords, 3, TRUE)
+	H.adjust_skillrank(/datum/skill/combat/swords, 2, TRUE)
+	H.adjust_skillrank(/datum/skill/combat/axes, 1, TRUE)
+	H.adjust_skillrank(/datum/skill/combat/maces, 1, TRUE)
+	H.adjust_skillrank(/datum/skill/combat/polearms, 1, TRUE)
 	H.adjust_skillrank(/datum/skill/combat/shields, 2, TRUE)
 	H.adjust_skillrank(/datum/skill/combat/wrestling, 2, TRUE)
 	H.adjust_skillrank(/datum/skill/combat/unarmed, 2, TRUE)
@@ -45,20 +47,33 @@
 	H?.mind.adjust_spellpoints(15)
 	ADD_TRAIT(H, TRAIT_MAGEARMOR, TRAIT_GENERIC)
 	ADD_TRAIT(H, TRAIT_ARCYNE_T2, TRAIT_GENERIC)
-	var/weapons = list("Bastard Sword", "Falchion & Buckler Shield", "Messer & Buckler Shield")
+	var/weapons = list("Bastard Sword", "Falchion & Buckler Shield", "Messer & Buckler Shield", "Battle Axe", "Steel Warhammer & Buckler Shield", "Billhook")
 	var/weapon_choice = input("Choose your weapon.", "TAKE UP ARMS") as anything in weapons
 	switch(weapon_choice)
 		if("Bastard Sword")
 			beltr = /obj/item/rogueweapon/scabbard/sword
 			r_hand = /obj/item/rogueweapon/sword/long
+			H.adjust_skillrank(/datum/skill/combat/swords, 1, TRUE)
 		if("Falchion & Buckler Shield")
 			beltr = /obj/item/rogueweapon/scabbard/sword
 			backr = /obj/item/rogueweapon/shield/buckler
 			r_hand = /obj/item/rogueweapon/sword/falchion
+			H.adjust_skillrank(/datum/skill/combat/swords, 1, TRUE)
 		if("Messer & Buckler Shield")
 			beltr = /obj/item/rogueweapon/scabbard/sword
 			backr = /obj/item/rogueweapon/shield/buckler
 			r_hand = /obj/item/rogueweapon/sword/iron/messer
+			H.adjust_skillrank(/datum/skill/combat/swords, 1, TRUE)
+		if("Battle Axe")
+			beltr = /obj/item/rogueweapon/stoneaxe/battle
+			H.adjust_skillrank(/datum/skill/combat/axes, 2, TRUE)
+		if("Steel Warhammer & Buckler Shield")
+			beltr = /obj/item/rogueweapon/mace/warhammer/steel
+			backr = /obj/item/rogueweapon/shield/buckler
+			H.adjust_skillrank(/datum/skill/combat/maces, 2, TRUE)
+		if("Billhook")
+			r_hand = /obj/item/rogueweapon/spear/billhook
+			H.adjust_skillrank(/datum/skill/combat/polearms, 2, TRUE)
 	switch(H.patron?.type)
 		if(/datum/patron/inhumen/zizo)
 			H.cmode_music = 'sound/music/combat_heretic.ogg'

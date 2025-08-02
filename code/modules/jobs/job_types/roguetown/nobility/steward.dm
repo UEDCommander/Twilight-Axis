@@ -55,8 +55,10 @@
 	H.change_stat("intelligence", 2)
 	H.change_stat("perception", 2)
 	H.change_stat("speed", -1)
-	H.mind.special_items["steward tights"] = /obj/item/clothing/under/roguetown/tights/black
-	H.mind.special_items["steward tailcoat"] = /obj/item/clothing/suit/roguetown/armor/gambeson/steward
+	H.mind.special_items["Steward Tights"] = /obj/item/clothing/under/roguetown/tights/black
+	H.mind.special_items["Steward Tailcoat"] = /obj/item/clothing/suit/roguetown/armor/gambeson/steward
+	H.mind.special_items["Steward Silkdress"] = /obj/item/clothing/suit/roguetown/shirt/dress/silkdress/steward
+	H.mind.special_items["Steward Silktunic"] = /obj/item/clothing/suit/roguetown/shirt/tunic/silktunic
 	if(H.mind)
 		H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/appraise/secular)
 	ADD_TRAIT(H, TRAIT_NOBLE, TRAIT_GENERIC)

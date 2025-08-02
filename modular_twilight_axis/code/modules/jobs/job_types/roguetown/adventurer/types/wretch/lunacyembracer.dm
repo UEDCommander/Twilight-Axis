@@ -5,10 +5,13 @@
 	allowed_races = RACES_ALL_KINDS
 	outfit = /datum/outfit/job/roguetown/wretch/lunacyembracer
 	category_tags = list(CTAG_WRETCH)
+	maximum_possible_slots = 1
 
 /datum/outfit/job/roguetown/wretch/lunacyembracer/pre_equip(mob/living/carbon/human/H)
+	H.set_patron(/datum/patron/divine/dendor)
 	var/datum/devotion/C = new /datum/devotion(H, H.patron)
 	C.grant_miracles(H, cleric_tier = CLERIC_T3, passive_gain = CLERIC_REGEN_MAJOR)
+	neck = /obj/item/clothing/neck/roguetown/psicross/dendor
 
 	ADD_TRAIT(H, TRAIT_NUDIST, TRAIT_GENERIC)
 	ADD_TRAIT(H, TRAIT_CRITICAL_RESISTANCE, TRAIT_GENERIC)
