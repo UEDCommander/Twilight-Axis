@@ -1,6 +1,6 @@
 /datum/advclass/iconoclast //Support Cleric, Heavy armor, unarmed, miracles.
 	name = "Iconoclast"
-	tutorial = "Trained by an Ecclesial sect, you uphold the Ideological purity of the Matthian Creed. Take from the wealthy, give to the worthless, empower. They will look up to you, in search of the God of Robbery's guidance. Be their light in the dark."
+	tutorial = "Born to be Free, trained from childhood by Free-God's most loyal, and tasked to uphold the purity of the Matthian Creed. Take from the wealthy, give to the worthless, empower. They will look up to you, in search of the Father's guidance. Be their light in the dark." //TA EDIT - Matthios is god of freedom
 	allowed_sexes = list(MALE, FEMALE)
 	allowed_races = RACES_ALL_KINDS
 	outfit = /datum/outfit/job/roguetown/bandit/iconoclast
@@ -16,8 +16,8 @@
 	H.adjust_skillrank(/datum/skill/combat/maces, 3, TRUE)
 	H.adjust_skillrank(/datum/skill/combat/shields, 3, TRUE)
 	H.adjust_skillrank(/datum/skill/magic/holy, 4, TRUE)
-	H.adjust_skillrank(/datum/skill/combat/whipsflails, 4, TRUE) // Whips/Flails so we can use the Gilded Flail if we want.
-	H.adjust_skillrank(/datum/skill/combat/polearms, 3, TRUE) // Poles or maces if we're a wimp and don't want to engage with unarmed. Not ideal.
+	H.adjust_skillrank(/datum/skill/combat/whipsflails, 3, TRUE) // TA EDIT - We use a polearm weapon in the ritual now, high-level whips not needed
+	H.adjust_skillrank(/datum/skill/combat/polearms, 4, TRUE) // TA EDIT - We use a polearm weapon in the ritual now
 	H.adjust_skillrank(/datum/skill/combat/unarmed, 5, TRUE)
 	H.adjust_skillrank(/datum/skill/combat/wrestling, 5, TRUE)  // Unarmed if we want to kick ass for the lord(you do, this is what you SHOULD DO!!)
 	H.adjust_skillrank(/datum/skill/craft/crafting, 2, TRUE)
