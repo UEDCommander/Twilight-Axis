@@ -11,8 +11,8 @@
 			ritechoices+="Rune of Undeath"
 		if(/datum/patron/inhumen/matthios)
 			ritechoices+="Rune of Brotherhood"
-		if(/datum/patron/inhumen/baotha)
-			ritechoices+="Rune of Hedonism"
+		//if(/datum/patron/inhumen/baotha)
+		//	ritechoices+="Rune of Hedonism"
 		if(/datum/patron/divine/astrata)
 			ritechoices+="Rune of Sun"
 		if(/datum/patron/divine/noc)
@@ -108,7 +108,7 @@
 			to_chat(user,span_cultsmall("I begin inscribing the rune of Addiction."))
 			if(do_after(user, 30, src))
 				playsound(src, 'sound/foley/scribble.ogg', 40, TRUE)
-				new /obj/structure/ritualcircle/baotha(step_turf)
+				//new /obj/structure/ritualcircle/baotha(step_turf)
 		if("Rune of Sacrament")
 			to_chat(user,span_cultsmall("I begin inscribing His holy symbol."))
 			if(do_after(user, 30, src))
