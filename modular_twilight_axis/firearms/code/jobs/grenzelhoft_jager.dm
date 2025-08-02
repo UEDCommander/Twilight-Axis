@@ -55,3 +55,5 @@
 	H.change_stat("endurance", 2)
 	H.change_stat("perception", 2)
 	H.change_stat("speed", 3)
+
+	H.merctype = 7
