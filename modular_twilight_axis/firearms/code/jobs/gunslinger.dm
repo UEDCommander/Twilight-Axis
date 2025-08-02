@@ -34,13 +34,6 @@
 
 	ADD_TRAIT(H, TRAIT_MEDIUMARMOR, TRAIT_GENERIC)
 
-	if(iswoodelf(H))
-		H.change_stat("strength", 1)
-		H.change_stat("speed", -1)
-	if(isdwarfmountain(H))
-		H.change_stat("speed", 1)
-		H.change_stat("endurance", -1)
-
 	H.adjust_skillrank(/datum/skill/combat/twilight_firearms, 4, TRUE)
 	H.adjust_skillrank(/datum/skill/combat/swords, 4, TRUE)
 	H.adjust_skillrank(/datum/skill/combat/knives, 3, TRUE)
