@@ -59,9 +59,11 @@
 
 /obj/structure/ritualcircle/zizo
 	name = "Rune of Undeath"
+	desc = "A Holy Rune of ZIZO. The last enemy to be destroyed is death."
 
 /obj/structure/ritualcircle/matthios
 	name = "Rune of Brotherhood"
+	desc = "A Holy Rune of Matthios. Freedom for all, no matter the cost."
 
 /obj/structure/ritualcircle/matthios/attack_hand(mob/living/user)
 	if((user.patron?.type) != /datum/patron/inhumen/matthios)
@@ -84,18 +86,42 @@
 			var/target = input(user, "Choose a host") as null|anything in folksonrune
 			if(!target)
 				return
-			if(do_after(user, 50))
-				user.say("Lord of No Realm, heed my call!!")
-				if(do_after(user, 50))
-					user.say("The hour draws closer for tyrants to fall!!")
-					if(do_after(user, 50))
-						user.say("The arms of freedom, to crush them by nightfall!!")
-						if(do_after(user, 50))
-							icon_state = "matthios_active"
-							user.apply_status_effect(/datum/status_effect/debuff/ritesexpended)
-							twilight_matthiosarmaments(target)
-							spawn(120)
-								icon_state = "matthios_chalky"
+			if(!do_after(user, 5 SECONDS))
+				return
+			user.say("Lord of No Realm, heed my call!!")
+			if(!do_after(user, 5 SECONDS))
+				return
+			user.say("The hour draws closer for tyrants to fall!!")
+			if(!do_after(user, 5 SECONDS))
+				return
+			user.say("The arms of freedom, to crush them by nightfall!!")
+			if(!do_after(user, 5 SECONDS))
+				return
+			icon_state = "matthios_active"
+			user.apply_status_effect(/datum/status_effect/debuff/ritesexpended)
+			twilight_matthiosarmaments(target)
+			spawn(120)
+				icon_state = "matthios_chalky"
+		if("Defenestration")
+			if(!do_after(user, 5 SECONDS))
+				return
+			user.say("Father of freedon, pay heed to our litany!!")
+			if(!do_after(user, 5 SECONDS))
+				return
+			user.say("To thou we offer - a scion of tyranny!!")
+			if(!do_after(user, 5 SECONDS))
+				return
+			user.say("Ravage their soul, a penance for villainy!!")
+			if(!do_after(user, 5 SECONDS))
+				return
+			icon_state = "matthios_active"
+			if(defenestration())
+				to_chat(user, span_cultsmall("The ritual is complete, the noble gift of Astrata has been taken!"))
+				user.apply_status_effect(/datum/status_effect/debuff/ritesexpended)
+			else
+				to_chat(user, span_cultsmall("The ritual fails. A noble must be in the center of the circle!"))
+			spawn(120)
+				icon_state = "matthios_chalky"
 
 /obj/structure/ritualcircle/matthios/proc/twilight_matthiosarmaments(mob/living/carbon/human/target)
 	if(!HAS_TRAIT(target, TRAIT_COMMIE))
@@ -106,10 +132,29 @@
 	to_chat(target, span_userdanger("UNIMAGINABLE PAIN!"))
 	target.emote("Agony")
 	playsound(loc, 'sound/misc/smelter_fin.ogg', 50)
-	loc.visible_message(span_cult("[target]'s lux pours from their nose, into the rune, gleaming golds sizzles. Molten gold and metals swirl into armor, seered to their skin."))
+	loc.visible_message(span_cult("[target]'s lux pours from their nose, into the rune, and the scent of rust fills the air. Molten metals burst from the ground, swirl into armor, seered to their skin."))
 	spawn(20)
 		playsound(loc, 'sound/combat/hits/onmetal/grille (2).ogg', 50)
-		target.equipOutfit(/datum/outfit/job/roguetown/gildedrite)
+		target.equipOutfit(/datum/outfit/job/roguetown/twilight_matthiosarmaments)
 		target.apply_status_effect(/datum/status_effect/debuff/devitalised)
 		spawn(40)
 			to_chat(target, span_cult("Take up these arms, and claim your right."))
+
+/datum/outfit/job/roguetown/twilight_matthiosarmaments/pre_equip(mob/living/carbon/human/H)
+	..()
+	var/list/items = list()
+	items |= H.get_equipped_items(TRUE)
+	for(var/I in items)
+		H.dropItemToGround(I, TRUE)
+	H.drop_all_held_items()
+	armor = /obj/item/clothing/suit/roguetown/armor/plate/full/matthios/twilight
+	pants = /obj/item/clothing/under/roguetown/platelegs/matthios/twilight
+	shoes = /obj/item/clothing/shoes/roguetown/boots/armor/matthios/twilight
+	gloves = /obj/item/clothing/gloves/roguetown/plate/matthios/twilight
+	head = /obj/item/clothing/head/roguetown/helmet/heavy/guard/paalloy/twilight_matthios
+	neck = /obj/item/clothing/neck/roguetown/chaincoif/chainmantle
+	backr = /obj/item/rogueweapon/halberd/bardiche/twilight_matthios_spear
+	shirt = /obj/item/clothing/suit/roguetown/armor/chainmail/hauberk/twilight_matthios
+
+/obj/structure/ritualcircle/psydon
+	name = "Rune of Sacrament"

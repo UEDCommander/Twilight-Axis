@@ -8,9 +8,11 @@
 		if(/datum/patron/inhumen/graggar)
 			ritechoices+="Rune of Violence"
 		if(/datum/patron/inhumen/zizo)
-			ritechoices+="Rune of Undeath" 
+			ritechoices+="Rune of Undeath"
 		if(/datum/patron/inhumen/matthios)
-			ritechoices+="Rune of Brotherhood" 
+			ritechoices+="Rune of Brotherhood"
+		if(/datum/patron/inhumen/baotha)
+			ritechoices+="Rune of Hedonism"
 		if(/datum/patron/divine/astrata)
 			ritechoices+="Rune of Sun"
 		if(/datum/patron/divine/noc)
@@ -28,9 +30,11 @@
 		if(/datum/patron/divine/eora)
 			ritechoices+="Rune of Love"
 		if(/datum/patron/divine/ravox)
-			ritechoices+="Rune of War"
+			ritechoices+="Rune of Justice"
 		if(/datum/patron/divine/abyssor)
 			ritechoices+="Rune of Storm"
+		if(/datum/patron/old_god)
+			ritechoices+="Rune of Sacrament"
 
 	var/runeselection = input(user, "Which rune shall I inscribe?", src) as null|anything in ritechoices
 	var/turf/step_turf = get_step(get_turf(user), user.dir)
@@ -75,7 +79,7 @@
 			if(do_after(user, 30, src))
 				playsound(src, 'sound/foley/scribble.ogg', 40, TRUE)
 				new /obj/structure/ritualcircle/eora(step_turf)
-		if("Rune of War")
+		if("Rune of Justice")
 			to_chat(user,span_cultsmall("I begin inscribing the rune of His Prowess..."))
 			if(do_after(user, 30, src))
 				playsound(src, 'sound/foley/scribble.ogg', 40, TRUE)
@@ -100,3 +104,13 @@
 			if(do_after(user, 30, src))
 				playsound(src, 'sound/foley/scribble.ogg', 40, TRUE)
 				new /obj/structure/ritualcircle/graggar(step_turf)
+		if("Rune of Hedonism")
+			to_chat(user,span_cultsmall("I begin inscribing the rune of Addiction."))
+			if(do_after(user, 30, src))
+				playsound(src, 'sound/foley/scribble.ogg', 40, TRUE)
+				new /obj/structure/ritualcircle/baotha(step_turf)
+		if("Rune of Sacrament")
+			to_chat(user,span_cultsmall("I begin inscribing His holy symbol."))
+			if(do_after(user, 30, src))
+				playsound(src, 'sound/foley/scribble.ogg', 40, TRUE)
+				new /obj/structure/ritualcircle/psydon(step_turf)
