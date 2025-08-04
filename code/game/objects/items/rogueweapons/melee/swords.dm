@@ -232,7 +232,7 @@
 
 /obj/item/rogueweapon/sword/short/pashortsword
 	name = "ancient shortsword"
-	desc = "A sword made of ancient alloys. Aeon's grasp has been lifted from its form."
+	desc = "A polished sidearm-sword, forged from gilbranze. From after His sacrifice, but before Her ascension; the tithe of a war without reason, waged between squabbling children who hadn't known that the world was about to end."
 	icon_state = "ashortsword"
 	sheathe_icon = "ashortsword"
 	smeltresult = /obj/item/ingot/aaslag
@@ -285,6 +285,15 @@
 	name = "basket-hilted longsword"
 	desc = "An uncommon and elaborate type of longsword with a compound hilt like those seen on rapiers and smallswords. It has a marked unsharpened section for safe unarmored half-swording, and it's made of Calorian steel."
 	icon_state = "elongsword"
+
+/obj/item/rogueweapon/sword/long/frei		//Challenge weapon
+	name = "dueling longsword"
+	desc = "Fechtfeders are a type of training sword brought up by Grenzelhoft fencing guilds, their name - literally \"Feather\" - matches their construction; thinner, lighter, dull but more balanced - with a blade catcher to boot. Freifechters often modify them, giving them edges and a point for use in real dueling - this is one such example, and there's a reason they don't make it out of the fighting pit."
+	icon_state = "sharpfeder"
+	force = 22
+	force_wielded = 27
+	wdefense = 5		//+1
+	wbalance = WBALANCE_SWIFT
 
 /obj/item/rogueweapon/sword/long/malumflamm
 	name = "forgefiend flamberge"
@@ -635,13 +644,15 @@
 
 /obj/item/rogueweapon/sword/iron/short/ashort
 	name = "decrepit short sword"
-	desc = "A decrepit old short sword. Aeon's grasp has withered its form."
+	desc = "A chipped sidearm-sword, wrought from frayed bronze. It's hard to gauge whether it was naturally forged to be so short, or if it's all that remained of a longer blade."
 	icon_state = "ashortsword"
 	sheathe_icon = "ashortsword"
 	max_integrity = 75
 	force = 18
-	smeltresult = /obj/item/ingot/aalloy
 	blade_dulling = DULLING_SHAFT_CONJURED
+	color = "#bb9696"
+	smeltresult = /obj/item/ingot/aaslag
+	anvilrepair = null
 
 /obj/item/rogueweapon/sword/iron/short/gladius
 	name = "gladius"
@@ -654,16 +665,18 @@
 
 /obj/item/rogueweapon/sword/iron/short/gladius/agladius
 	name = "decrepit gladius"
-	desc = "A decrepit old gladius. Aeon's grasp is upon its form."
+	desc = "A hefty shortsword, wrought from frayed bronze. Once, the sidearm of a proud legionnaire; now, a consequence of progress and sacrifice."
 	force = 18
 	max_integrity = 150
 	icon_state = "agladius"
-	smeltresult = /obj/item/ingot/aalloy
 	blade_dulling = DULLING_SHAFT_CONJURED
+	color = "#bb9696"
+	smeltresult = /obj/item/ingot/aaslag
+	anvilrepair = null
 
 /obj/item/rogueweapon/sword/iron/short/gladius/pagladius
 	name = "ancient gladius"
-	desc = "A gladius made of ancient alloys. Aeon's grasp lifted from its form."
+	desc = "A polished shortsword, forged from gilbranze. Favored by Zizo's undying legionnaires, this antiquated tool serves a simple purpose; to spill the innards of unenlightened fools."
 	icon_state = "agladius"
 	smeltresult = /obj/item/ingot/aaslag
 
@@ -774,16 +787,18 @@
 
 /obj/item/rogueweapon/sword/sabre/alloy
 	name = "decrepit khopesh"
-	desc = "A decrepit old khopesh. Aeon's grasp is upon its form."
-	smeltresult = /obj/item/ingot/aalloy
+	desc = "A hooked sword, wrought from frayed bronze. The design is not only baffling, but seems to predate history itself."
 	force = 18
 	max_integrity = 115
 	icon_state = "akhopesh"
 	blade_dulling = DULLING_SHAFT_CONJURED
+	color = "#bb9696"
+	smeltresult = /obj/item/ingot/aaslag
+	anvilrepair = null
 
 /obj/item/rogueweapon/sword/sabre/palloy
 	name = "ancient khopesh"
-	desc = "A ancient alloy khopesh. Aeon's grasp has been lifted from its form."
+	desc = "A polished hook-sword, forged from gilbronze. The Comet Syon's glare once graced this blade; now, it's wielded by those who can't even remember what came before His sacrifice."
 	smeltresult = /obj/item/ingot/aaslag
 	icon_state = "akhopesh"
 
@@ -934,7 +949,7 @@
 	to the siege that smashed the Mad Duke's keep to rubble, and burnt the Duke himself to cinders."
 	icon_state = "lordrap"
 	sheathe_icon = "lordrapier"
-	sellprice = 300
+	sellprice = 100
 	max_integrity = 300
 	max_blade_int = 300
 	wdefense = 7
