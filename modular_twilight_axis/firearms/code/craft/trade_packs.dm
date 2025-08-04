@@ -1,4 +1,4 @@
-datum/supply_pack/rogue/ranged_weapons/twilight_flintgonne
+/datum/supply_pack/rogue/ranged_weapons/twilight_flintgonne
 	name = "Hakenbüchse"
 	cost = 100
 	contains = list(
