@@ -30,22 +30,18 @@
 
 /atom/movable/screen/ghost/orbit/rogue/Click(location, control, params)
 	var/mob/dead/observer/G = usr
-	var/paramslist = params2list(params)
-	if(paramslist["right"]) // screen objects don't do the normal Click() stuff so we'll cheat
-		G.follow()
-	else
-		if(G.client)
-			if(istype(G, /mob/dead/observer/rogue/arcaneeye))
-				return
-			if(alert("Travel with the boatman?", "", "Yes", "No") == "Yes")
-				if(G.mind)
-					var/datum/job/target_job = SSjob.GetJob(G.mind.assigned_role)
-					if(target_job)
-						if(target_job.job_reopens_slots_on_death)
-							target_job.current_positions = max(0, target_job.current_positions - 1)
-						if(target_job.same_job_respawn_delay)
-							// Store the current time for the player
-							GLOB.job_respawn_delays[G.ckey] = world.time + target_job.same_job_respawn_delay
+	if(G.client)
+		if(istype(G, /mob/dead/observer/rogue/arcaneeye))
+			return
+		if(alert("Travel with the boatman?", "", "Yes", "No") == "Yes")
+			if(G.mind)
+				var/datum/job/target_job = SSjob.GetJob(G.mind.assigned_role)
+				if(target_job)
+					if(target_job.job_reopens_slots_on_death)
+						target_job.current_positions = max(0, target_job.current_positions - 1)
+					if(target_job.same_job_respawn_delay)
+						// Store the current time for the player
+						GLOB.job_respawn_delays[G.ckey] = world.time + target_job.same_job_respawn_delay
 
 				G.returntolobby(0)
 

@@ -1157,6 +1157,7 @@ SUBSYSTEM_DEF(gamemode)
 	GLOB.azure_round_stats[STATS_ALIVE_VULPS] = 0
 	GLOB.azure_round_stats[STATS_ALIVE_LUPIANS] = 0
 	GLOB.azure_round_stats[STATS_ALIVE_MOTHS] = 0
+	GLOB.azure_round_stats[STATS_ALIVE_AURA] = 0
 
 	for(var/client/client in GLOB.clients)
 		if(roundstart)
@@ -1266,6 +1267,8 @@ SUBSYSTEM_DEF(gamemode)
 				GLOB.azure_round_stats[STATS_ALIVE_LUPIANS]++
 			if(ismoth(human_mob))
 				GLOB.azure_round_stats[STATS_ALIVE_MOTHS]++
+			if(isaura(human_mob))
+				GLOB.azure_round_stats[STATS_ALIVE_AURA]++
 
 
 /// Returns total follower influence for the given storyteller

@@ -49,7 +49,7 @@
 		return
 	pixel_x = rand(-8, 8)
 	pixel_y = rand(-5, 5)
-	if(isturf(T) && quantity > 1)
+	if(isturf(T) && quantity > 1 && quantity <= 20)
 		var/obj/structure/table/TA = locate() in T
 		if(!TA) //no table
 			for(var/i in 2 to quantity)

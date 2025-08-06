@@ -1,5 +1,5 @@
 /datum/sex_action/frotting
-	name = "Frot them"
+	name = "Фехтование"
 
 /datum/sex_action/frotting/shows_on_menu(mob/living/carbon/human/user, mob/living/carbon/human/target)
 	if(user == target)
@@ -24,10 +24,10 @@
 	return TRUE
 
 /datum/sex_action/frotting/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
-	user.visible_message(span_warning("[user] shoves [user.p_their()] cock against [target]'s own!"))
+	user.visible_message(span_warning("[user] толкается своим хером о ствол [target]!"))
 
 /datum/sex_action/frotting/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
-	user.visible_message(user.sexcon.spanify_force("[user] [user.sexcon.get_generic_force_adjective()] frots cocks together with [target]."))
+	user.visible_message(user.sexcon.spanify_force("[user] [user.sexcon.get_generic_force_adjective()] скрещивает пенисы вместе с [target]."))
 	playsound(user, 'sound/misc/mat/fingering.ogg', 20, TRUE, -2, ignore_walls = FALSE)
 
 	user.sexcon.perform_sex_action(user, 1, 4, TRUE)
@@ -37,4 +37,4 @@
 	target.sexcon.handle_passive_ejaculation()
 
 /datum/sex_action/frotting/on_finish(mob/living/carbon/human/user, mob/living/carbon/human/target)
-	user.visible_message(span_warning("[user] lets go of both their cocks."))
+	user.visible_message(span_warning("[user] уводит свой хер в сторону"))
