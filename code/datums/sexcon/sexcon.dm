@@ -85,24 +85,24 @@
 	show_ui()
 
 /datum/sex_controller/proc/cum_onto()
-	log_combat(user, target, "Came onto the target")
+	log_combat(user, target, "Кончает на партнера")
 	playsound(target, 'sound/misc/mat/endout.ogg', 50, TRUE, ignore_walls = FALSE)
 	add_cum_floor(get_turf(target))
 	after_ejaculation()
 
 /datum/sex_controller/proc/cum_into(oral = FALSE)
-	log_combat(user, target, "Came inside the target")
+	log_combat(user, target, "Кончает в партнера")
 	if(oral)
 		playsound(target, pick(list('sound/misc/mat/mouthend (1).ogg','sound/misc/mat/mouthend (2).ogg')), 100, FALSE, ignore_walls = FALSE)
 	else
 		playsound(target, 'sound/misc/mat/endin.ogg', 50, TRUE, ignore_walls = FALSE)
+	target.reagents.add_reagent(/datum/reagent/erpjuice/cum, 3)
 	after_ejaculation()
-	if(!oral)
-		after_intimate_climax()
+	after_intimate_climax()
 
 /datum/sex_controller/proc/ejaculate()
-	log_combat(user, user, "Ejaculated")
-	user.visible_message(span_love("[user] makes a mess!"))
+	log_combat(user, user, "Кончает!")
+	user.visible_message(span_lovebold("[user.name] пачкает все вокруг своими выделениями!"))
 	playsound(user, 'sound/misc/mat/endout.ogg', 50, TRUE, ignore_walls = FALSE)
 	add_cum_floor(get_turf(user))
 	after_ejaculation()
@@ -125,12 +125,16 @@
 		if(!user.mob_timers["cumtri"])
 			user.mob_timers["cumtri"] = world.time
 			user.adjust_triumphs(1)
-			to_chat(user, span_love("Our loving is a true TRIUMPH!"))
+			to_chat(user, span_love("Наша любовь - истинный ТРИУМФ!"))
+			user.add_stress(/datum/stressevent/cumgood)
+			user.apply_status_effect(/datum/status_effect/buff/goodloving)
 	if(HAS_TRAIT(user, TRAIT_GOODLOVER))
 		if(!target.mob_timers["cumtri"])
 			target.mob_timers["cumtri"] = world.time
 			target.adjust_triumphs(1)
-			to_chat(target, span_love("Our loving is a true TRIUMPH!"))
+			to_chat(user, span_love("Наша любовь - истинный ТРИУМФ!"))
+			target.add_stress(/datum/stressevent/cumgood)
+			target.apply_status_effect(/datum/status_effect/buff/goodloving)
 
 /datum/sex_controller/proc/just_ejaculated()
 	return (last_ejaculation_time + 2 SECONDS >= world.time)
@@ -260,19 +264,19 @@
 		return
 	last_pain = world.time
 	if(pain_amt >= PAIN_HIGH_EFFECT)
-		var/pain_msg = pick(list("IT HURTS!!!", "IT NEEDS TO STOP!!!", "I CAN'T TAKE IT ANYMORE!!!"))
+		var/pain_msg = pick(list("БОЛЬНО!!!", "Я ХОЧУ ПРЕКРАТИТЬ!!!", "Я БОЛЬШЕ НЕ МОГУ!!!"))
 		to_chat(user, span_boldwarning(pain_msg))
 		user.flash_fullscreen("redflash2")
 		if(prob(70) && user.stat == CONSCIOUS)
-			user.visible_message(span_warning("[user] shudders in pain!"))
+			user.visible_message(span_warning("[user.name] корчится в муках боли!"))
 	else if(pain_amt >= PAIN_MED_EFFECT)
-		var/pain_msg = pick(list("It hurts!", "It pains me!"))
+		var/pain_msg = pick(list("Больно!", "Мне больно!"))
 		to_chat(user, span_boldwarning(pain_msg))
 		user.flash_fullscreen("redflash1")
 		if(prob(40) && user.stat == CONSCIOUS)
-			user.visible_message(span_warning("[user] shudders in pain!"))
+			user.visible_message(span_warning("[user.name] болезненно содрогается!"))
 	else
-		var/pain_msg = pick(list("It hurts a little...", "It stings...", "I'm aching..."))
+		var/pain_msg = pick(list("Больновато...", "Слегка жжется болью...", "Все побаливает..."))
 		to_chat(user, span_warning(pain_msg))
 
 /datum/sex_controller/proc/update_blueballs()
@@ -347,15 +351,19 @@
 	var/list/dat = list()
 	var/force_name = get_force_string()
 	var/speed_name = get_speed_string()
-	dat += "<center><a href='?src=[REF(src)];task=speed_down'>\<</a> [speed_name] <a href='?src=[REF(src)];task=speed_up'>\></a> ~|~ <a href='?src=[REF(src)];task=force_down'>\<</a> [force_name] <a href='?src=[REF(src)];task=force_up'>\></a></center>"
-	dat += "<center>| <a href='?src=[REF(src)];task=toggle_finished'>[do_until_finished ? "UNTIL IM FINISHED" : "UNTIL I STOP"]</a> |</center>"
-	dat += "<center><a href='?src=[REF(src)];task=set_arousal'>SET AROUSAL</a> | <a href='?src=[REF(src)];task=freeze_arousal'>[arousal_frozen ? "UNFREEZE AROUSAL" : "FREEZE AROUSAL"]</a></center>"
-	if(target == user)
-		dat += "<center>Doing unto yourself</center>"
+	var/manual_arousal_name = get_manual_arousal_string()
+	if(!user.getorganslot(ORGAN_SLOT_PENIS))
+		dat += "<center><a href='?src=[REF(src)];task=speed_down'>\<</a> [speed_name] <a href='?src=[REF(src)];task=speed_up'>\></a> ~|~ <a href='?src=[REF(src)];task=force_down'>\<</a> [force_name] <a href='?src=[REF(src)];task=force_up'>\></a></center>"
 	else
-		dat += "<center>Doing unto [target]'s</center>"
+		dat += "<center><a href='?src=[REF(src)];task=speed_down'>\<</a> [speed_name] <a href='?src=[REF(src)];task=speed_up'>\></a> ~|~ <a href='?src=[REF(src)];task=force_down'>\<</a> [force_name] <a href='?src=[REF(src)];task=force_up'>\></a> ~|~ <a href='?src=[REF(src)];task=manual_arousal_down'>\<</a> [manual_arousal_name] <a href='?src=[REF(src)];task=manual_arousal_up'>\></a></center>"
+  dat += "<center>| <a href='?src=[REF(src)];task=toggle_finished'>[do_until_finished ? "ПОКА НЕ КОНЧУ" : "ПОКА НЕ ОСТАНОВЛЮСЬ"]</a> |</center>"
+  dat += "<center><a href='?src=[REF(src)];task=set_arousal'>ЗАДАТЬ ВОЗБУЖДЕНИЕ</a> | <a href='?src=[REF(src)];task=freeze_arousal'>[arousal_frozen ? "ВОЗБУЖДАТЬСЯ" : "НЕ ВОЗБУЖДАТЬСЯ"]</a></center>"
+	if(target == user)
+		dat += "<center>Самоудовлетворение</center>"
+	else
+		dat += "<center>Соитие с [target]</center>"
 	if(current_action)
-		dat += "<center><a href='?src=[REF(src)];task=stop'>Stop</a></center>"
+		dat += "<center><a href='?src=[REF(src)];task=stop'>Прекратить</a></center>"
 	else
 		dat += "<br>"
 	dat += "<table width='100%'><td width='50%'></td><td width='50%'></td><tr>"
@@ -378,7 +386,7 @@
 			dat += "</tr><tr>"
 
 	dat += "</tr></table>"
-	var/datum/browser/popup = new(user, "sexcon", "<center>Sate Desire</center>", 430, 540)
+	var/datum/browser/popup = new(user, "sexcon", "<center>Утолить желания</center>", 500, 550)
 	popup.set_content(dat.Join())
 	popup.open()
 	return
@@ -403,10 +411,14 @@
 			adjust_force(1)
 		if("force_down")
 			adjust_force(-1)
+		if("manual_arousal_up")
+			adjust_arousal_manual(1)
+		if("manual_arousal_down")
+			adjust_arousal_manual(-1)
 		if("toggle_finished")
 			do_until_finished = !do_until_finished
 		if("set_arousal")
-			var/amount = input(user, "Value above 120 will immediately cause orgasm!", "Set Arousal", arousal) as num
+			var/amount = input(user, "Значение выше 120 приведет к немедленному экстазу!", "Задать возбуждение", arousal) as num
 			set_arousal(amount)
 		if("freeze_arousal")
 			arousal_frozen = !arousal_frozen
@@ -577,35 +589,35 @@
 /datum/sex_controller/proc/get_force_string()
 	switch(force)
 		if(SEX_FORCE_LOW)
-			return "<font color='#eac8de'>GENTLE</font>"
+			return "<font color='#eac8de'>НЕЖНО</font>"
 		if(SEX_FORCE_MID)
-			return "<font color='#e9a8d1'>FIRM</font>"
+			return "<font color='#e9a8d1'>НАСТОЙЧИВО</font>"
 		if(SEX_FORCE_HIGH)
-			return "<font color='#f05ee1'>ROUGH</font>"
+			return "<font color='#f05ee1'>ГРУБО</font>"
 		if(SEX_FORCE_EXTREME)
-			return "<font color='#d146f5'>BRUTAL</font>"
+			return "<font color='#d146f5'>ЖЕСТОКО</font>"
 
 /datum/sex_controller/proc/get_speed_string()
 	switch(speed)
 		if(SEX_SPEED_LOW)
-			return "<font color='#eac8de'>SLOW</font>"
+			return "<font color='#eac8de'>МЕДЛЕННО</font>"
 		if(SEX_SPEED_MID)
-			return "<font color='#e9a8d1'>STEADY</font>"
+			return "<font color='#e9a8d1'>ПОСТЕПЕННО</font>"
 		if(SEX_SPEED_HIGH)
-			return "<font color='#f05ee1'>QUICK</font>"
+			return "<font color='#f05ee1'>БЫСТРО</font>"
 		if(SEX_SPEED_EXTREME)
-			return "<font color='#d146f5'>UNRELENTING</font>"
+			return "<font color='#d146f5'>НЕУМОЛИМО</font>"
 
 /datum/sex_controller/proc/get_generic_force_adjective()
 	switch(force)
 		if(SEX_FORCE_LOW)
-			return pick(list("gently", "carefully", "tenderly", "gingerly", "delicately", "lazily"))
+			return pick(list("нежно", "заботливо", "ласково", "мягко", "осторожно", "неторопливо"))
 		if(SEX_FORCE_MID)
-			return pick(list("firmly", "vigorously", "eagerly", "steadily", "intently"))
+			return pick(list("решительно", "энергично", "страстно", "уверенно", "увлеченно"))
 		if(SEX_FORCE_HIGH)
-			return pick(list("roughly", "carelessly", "forcefully", "fervently", "fiercely"))
+			return pick(list("грубо", "небрежно", "жестко", "пылко", "свирепо"))
 		if(SEX_FORCE_EXTREME)
-			return pick(list("brutally", "violently", "relentlessly", "savagely", "mercilessly"))
+			return pick(list("жестоко", "неистово", "неумолимо", "свирепо", "безжалостно"))
 
 /datum/sex_controller/proc/spanify_force(string)
 	switch(force)

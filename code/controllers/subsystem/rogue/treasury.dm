@@ -230,7 +230,7 @@ SUBSYSTEM_DEF(treasury)
 	SStreasury.total_export += amt
 	SStreasury.log_to_steward("+[amt] exported [D.name]")
 	if(!silent && amt >= EXPORT_ANNOUNCE_THRESHOLD) //Only announce big spending.
-		scom_announce("Azure Peak exports [D.name] for [amt] mammon.")
+		scom_announce("Twilight Axis exports [D.name] for [amt] mammon.")
 	D.lower_demand()
 	return amt
 
@@ -248,4 +248,4 @@ SUBSYSTEM_DEF(treasury)
 			var/exported = do_export(D, TRUE)
 			total_value_exported += exported
 	if(total_value_exported >= EXPORT_ANNOUNCE_THRESHOLD)
-		scom_announce("Azure Peak exports [total_value_exported] mammons of surplus goods.")
+		scom_announce("Twilight Axis exports [total_value_exported] mammons of surplus goods.")
