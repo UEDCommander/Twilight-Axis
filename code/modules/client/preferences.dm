@@ -1723,7 +1723,7 @@ Slots: [job.spawn_positions] [job.round_contrib_points ? "RCP: +[job.round_contr
 						dat += "<div align='center'><b>OOC notes</b></div>"
 						dat += "<div align='left'>[ooc_notes_display]</div>"
 					if(ooc_extra)
-						dat += "[ooc_extra]"
+						dat += "<div align='center'>[ooc_extra]</div>"
 					if(nsfw_headshot_link)//TA edit
 						dat += "<br><div align='center'><b>NSFW</b></div>"
 						dat += ("<br><div align='center'><img src='[nsfw_headshot_link]' width='600px'></div>")//TA edit end
