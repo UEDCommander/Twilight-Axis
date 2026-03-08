@@ -23,11 +23,13 @@
 	// TA Edit start - SOUNDBREAKER
 	var/success = FALSE
 
-	switch(d_intent)
-		if(INTENT_PARRY)
-			success = attempt_parry(intenty, user)
-		if(INTENT_DODGE)
-			success = attempt_dodge(intenty, user)
+	success = attempt_concealment(intenty, user)
+	if(!success)
+		switch(d_intent)
+			if(INTENT_PARRY)
+				success = attempt_parry(intenty, user)
+			if(INTENT_DODGE)
+				success = attempt_dodge(intenty, user)
 
 	if(success)
 		soundbreaker_riff_defense_success(src)

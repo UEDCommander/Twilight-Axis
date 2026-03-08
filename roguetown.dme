@@ -2312,6 +2312,7 @@
 #include "code\modules\mob\living\combat\accuracy_checks.dm"
 #include "code\modules\mob\living\combat\azure_combat.dm"
 #include "code\modules\mob\living\combat\checkdefense.dm"
+#include "code\modules\mob\living\combat\concealment.dm"
 #include "code\modules\mob\living\combat\dodge.dm"
 #include "code\modules\mob\living\combat\parry.dm"
 #include "code\modules\mob\living\combat\shared.dm"

@@ -132,7 +132,7 @@
 	name = "Jäger" //TA EDIT START
 	tutorial = "Trackers, Huntsmen, Marksmen. Those are the first words that describe a Jäger of the Freikorps. Usually drafted from recruits with hunting background, Jägers serve as support troops for the Imperial armies, scouting ahead of the main force, assassinating enemy officers, arranging crossings and foraging for much-needed supplies. As one of those elite soldiers, you are expected to provide the Guild with your expertise in tracking, and scouting. Alongside your marksmanship."
 	outfit = /datum/outfit/job/roguetown/mercenary/grenzelhoft_crossbowman
-	traits_applied = list(TRAIT_STEELHEARTED, TRAIT_SURVIVAL_EXPERT, TRAIT_SLEUTH, TRAIT_DODGEEXPERT) //DE to be replaced with Concealment Expert
+	traits_applied = list(TRAIT_STEELHEARTED, TRAIT_SURVIVAL_EXPERT, TRAIT_SLEUTH, TRAIT_CONCEALMENT_EXPERT) //DE replaced with Concealment Expert, DO NOT GIVE DE AT THE SAME TIME
 	subclass_stats = list(
 		STATKEY_SPD = 2,
 		STATKEY_WIL = 2,
