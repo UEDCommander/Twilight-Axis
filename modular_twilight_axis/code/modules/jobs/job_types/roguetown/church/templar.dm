@@ -1,3 +1,10 @@
+/datum/job/roguetown/templar/New()
+	job_subclasses += list(
+		/datum/advclass/templar/vigilant,
+		/datum/advclass/noctite_spellblade
+		)
+	. = ..()
+
 /datum/job/roguetown/templar/after_spawn(mob/living/H, mob/M, latejoin = TRUE)
 	..()
 	if(ishuman(H))
@@ -355,6 +362,7 @@
 	if(H.patron?.type == /datum/patron/divine/abyssor)
 		H.adjust_skillrank(/datum/skill/labor/fishing, 2, TRUE)
 		ADD_TRAIT(H, TRAIT_WATERBREATHING, TRAIT_GENERIC)
+		H.grant_language(/datum/language/abyssal)
 	if(H.patron?.type == /datum/patron/divine/necra)
 		ADD_TRAIT(H, TRAIT_NOSTINK, TRAIT_GENERIC)
 		ADD_TRAIT(H, TRAIT_SOUL_EXAMINE, TRAIT_GENERIC)

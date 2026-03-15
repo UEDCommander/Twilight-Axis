@@ -48,13 +48,8 @@
 		/datum/advclass/wretch/pariah,
 		/datum/advclass/wretch/heretic_spellblade,
 		/datum/advclass/wretch/ancient_spellblade,
-		/datum/advclass/wretch/ancient_deathknight,
-		/datum/advclass/wretch/munitioneer,
-
-		/datum/advclass/wretch/twilight_corsair,
-		/datum/advclass/wretch/lunacyembracer,
-		/datum/advclass/wretch/rogueshaman
-
+//		/datum/advclass/wretch/ancient_deathknight,
+		/datum/advclass/wretch/munitioneer
 	)
 
 /datum/job/roguetown/wretch/after_spawn(mob/living/L, mob/M, latejoin = TRUE)
@@ -161,9 +156,11 @@
 	// Tier 2: Garrison-gated expansion from 10 to 15
 	var/garrison_count = SSgamemode.garrison
 	var/holy_count = SSgamemode.holy_warrior
-	var/combat_count = garrison_count + holy_count
+	var/acolyte_count = SSgamemode.half_combatant
+	var/combat_count = garrison_count + holy_count + FLOOR(acolyte_count * 0.5, 1)
 	result["garrison"] = garrison_count
 	result["holy_warrior"] = holy_count
+	result["acolyte"] = acolyte_count
 	result["combat_total"] = combat_count
 
 	var/tier2_max = 0
