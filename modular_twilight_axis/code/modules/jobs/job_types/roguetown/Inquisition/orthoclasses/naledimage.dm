@@ -1,12 +1,15 @@
 /datum/advclass/naledimage
-	name = "Naledian Psydon Mage"
-	tutorial = "The Neledian mage, who had studied the arcana from a young age, also studied the teachings of the church. After long and meticulous preparation, the secrets of the elements were revealed to him — secrets he was destined to take with him to the grave."
+	name = "Warscholar"
+	tutorial = "A devotee of Naledi, Psydonite mage, tempered in both scripture and spell. From youth you were taught that the Arcyne is not merely a tool, but a covenant - a force to be shaped with discipline and purpose. \
+	Where others see raw power, you see design. Where chaos takes form, you impose will. \
+	Through flame, through force, through unseen currents of mana — Psydon's enemies shall be unmade. \
+	His will be done."
 	allowed_sexes = list(MALE, FEMALE)
 	allowed_races = RACES_ALL_KINDS
 	outfit = /datum/outfit/job/roguetown/naledimage
+	subclass_languages = list(/datum/language/otavan, /datum/language/celestial)
+	cmode_music = 'sound/music/warscholar.ogg'
 	category_tags = list(CTAG_ORTHODOXIST)
-	subclass_languages = list(/datum/language/otavan, /datum/language/raneshi)
-	cmode_music = 'sound/music/cmode/antag/combat_deadlyshadows.ogg'
 	traits_applied = list(
 		TRAIT_PSYDONITE,
 		TRAIT_ARCYNE,
@@ -21,7 +24,8 @@
 		STATKEY_CON = 1,
 		STATKEY_STR = -1,
 	)
-	subclass_mage_aspects = list("mastery" = FALSE, "major" = 1, "minor" = 2, "utilities" = 6)
+	age_mod = /datum/class_age_mod/war_scholar
+	subclass_mage_aspects = list("mastery" = FALSE, "major" = 1, "minor" = 2, "utilities" = 6, "post_aspect_spells" = list(/datum/action/cooldown/spell/mindlink, /datum/action/cooldown/spell/mending), "ward" = TRUE)
 	subclass_skills = list(
 		/datum/skill/combat/staves = SKILL_LEVEL_JOURNEYMAN,
 		/datum/skill/combat/polearms = SKILL_LEVEL_JOURNEYMAN,
@@ -48,30 +52,37 @@
 
 /datum/outfit/job/roguetown/naledimage/pre_equip(mob/living/carbon/human/H, visualsOnly)
 	..()
-	if(!H)
-		return
-
-	cloak = /obj/item/clothing/suit/roguetown/shirt/robe/pointfex
-	gloves = /obj/item/clothing/gloves/roguetown/chain/psydon
+	r_hand = /obj/item/rogueweapon/woodstaff/implement/grand/naledi
 	head = /obj/item/clothing/head/roguetown/roguehood/psydon
-	armor = /obj/item/clothing/suit/roguetown/armor/leather/heavy/coat
-	shirt = /obj/item/clothing/suit/roguetown/armor/gambeson/heavy
-	pants = /obj/item/clothing/under/roguetown/heavy_leather_pants/otavan/generic
+	gloves = /obj/item/clothing/gloves/roguetown/otavan/psygloves
+	cloak = /obj/item/clothing/cloak/tabard/psydontabard
+	armor = /obj/item/clothing/suit/roguetown/armor/gambeson/heavy/hierophant/warscholar
+	shirt = /obj/item/clothing/suit/roguetown/shirt/robe/hierophant/warscholar
+	pants = /obj/item/clothing/under/roguetown/heavy_leather_pants
 	mask = /obj/item/clothing/mask/rogue/lordmask/naledi
 	wrists = /obj/item/clothing/neck/roguetown/psicross/g
-	belt = /obj/item/storage/belt/rogue/leather
-	beltl = /obj/item/flashlight/flare/torch/lantern
-	beltr = /obj/item/storage/belt/rogue/pouch/coins/poor
+	belt = /obj/item/storage/belt/rogue/leather/black
+	beltl = /obj/item/storage/belt/rogue/pouch/coins/mid
 	shoes = /obj/item/clothing/shoes/roguetown/boots/psydonboots
 	backr = /obj/item/storage/backpack/rogue/satchel/black
-	id = /obj/item/clothing/ring/signet/silver
-	backl = /obj/item/rogueweapon/woodstaff/implement/grand/naledi
+	id = /obj/item/clothing/ring/signet
+	var/naledi_book = pick(/obj/item/book/rogue/naledi1, /obj/item/book/rogue/naledi2, /obj/item/book/rogue/naledi3, /obj/item/book/rogue/naledi4)
 	backpack_contents = list(
 		/obj/item/roguekey/inquisitionmanor,
-		/obj/item/rogueweapon/huntingknife,
-		/obj/item/rogueweapon/scabbard/sheath,
 		/obj/item/paper/inqslip/arrival/ortho,
-		/obj/item/book/spellbook
+		/obj/item/book/spellbook,
+		(naledi_book) = 1
 	)
-	if(H.age == AGE_OLD)
-		H.adjust_skillrank(/datum/skill/magic/arcane, SKILL_LEVEL_MASTER, TRUE)
+
+/obj/item/clothing/suit/roguetown/shirt/robe/hierophant/warscholar
+	name = "warscholar's kandys"
+	desc = "A thin piece of fabric worn under a robe to stop chafing and keep ones dignity if a harsh blow of wind comes through. Despite the light fabric, it offers decent protection."
+	icon = 'modular_twilight_axis/icons/roguetown/clothing/armor.dmi'
+	mob_overlay_icon = 'modular_twilight_axis/icons/roguetown/clothing/onmob/armor.dmi'
+	icon_state = "psydongown"
+	item_state = "psydongown"
+
+/obj/item/clothing/suit/roguetown/armor/gambeson/heavy/hierophant/warscholar
+	name = "warscholar's shawl"
+	desc = "Thick and protective while remaining light and breezy; the perfect garb for protecting one from the hot sun and the harsh sands of Naledi."
+	color = "#48443b"
