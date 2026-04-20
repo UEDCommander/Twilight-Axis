@@ -13,3 +13,5 @@ GLOBAL_LIST_EMPTY(preference_faiths)
 	var/datum/patron/godhead = /datum/patron
 	/// Whether or not this faith can be accessed in preferences
 	var/preference_accessible = TRUE
+	/// TA EDIT - Origins that are allowed to access this faith, null for any
+	var/list/required_origins = null

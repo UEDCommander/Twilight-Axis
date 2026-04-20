@@ -212,6 +212,10 @@
 
 			preferences.virtue_origin = chosen_origin
 			to_chat(user, preferences.process_virtue_text(chosen_origin))
+			var/datum/faith/selected_faith = GLOB.faithlist[preferences.selected_patron?.associated_faith]
+			if(selected_faith && selected_faith.required_origins && !(preferences.virtue_origin.type in selected_faith.required_origins))
+				preferences.selected_patron = GLOB.patronlist[preferences.default_patron]
+				to_chat(user, span_notice("Выбранное происхождение несовместимо с заданой религией! Вера и покровитель сброшены до значений по умолчанию."))
 			if(user)
 				preferences.ShowChoices(user)
 			SStgui.update_uis(src)

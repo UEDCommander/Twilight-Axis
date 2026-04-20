@@ -1934,6 +1934,8 @@ GLOBAL_LIST_EMPTY(chosen_names)
 						var/datum/faith/faith = GLOB.faithlist[path]
 						if(!faith.name)
 							continue
+						if(virtue_origin && faith.required_origins && !(virtue_origin.type in faith.required_origins)) //TA EDIT
+							continue //TA EDIT
 						faiths_named[faith.name] = faith
 					var/faith_input = tgui_input_list(user, "The world rots. Which truth you bear?", "FAITH", faiths_named)
 					if(faith_input)
