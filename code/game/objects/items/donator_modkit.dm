@@ -552,7 +552,11 @@
 /obj/item/enchantingkit/weapon/koruu_kukri/warden
 	name = "'Warden Leachwhacker' morphing elixir"
 	target_items = list(
-		/obj/item/rogueweapon/huntingknife/idagger/warden_machete
+		/obj/item/rogueweapon/huntingknife/idagger/warden_machete,
+		/obj/item/rogueweapon/huntingknife/idagger,
+		/obj/item/rogueweapon/huntingknife/idagger/steel,
+		/obj/item/rogueweapon/huntingknife/combat,
+		/obj/item/rogueweapon/huntingknife
 		)
 	result_item = /obj/item/rogueweapon/koruu/kukri/warden
 
@@ -642,6 +646,42 @@
 		/obj/item/rogueweapon/greatsword/grenz/flamberge/blacksteel
 	)
 	result_item = /obj/item/rogueweapon/example/aeternum
+
+
+/obj/item/enchantingkit/weapon/darling
+	name = "'Darling' morphing elixir"
+	desc = "A small container of special morphing dust, perfect to make a specifc item. Required: Longsword"
+	target_items = list(
+		/obj/item/rogueweapon/sword/long
+	)
+	result_item = /obj/item/rogueweapon/example/darling
+
+/obj/item/enchantingkit/weapon/sumquoderis
+	name = "'Vial of Crimson Ichor'"
+	desc = "A small container of special morphing dust, perfect to make a specifc item. Required: Executioners sword"
+	target_items = list(
+		/obj/item/rogueweapon/sword/long/exe
+	)
+	result_item = /obj/item/rogueweapon/example/sumquoderis
+
+/obj/item/enchantingkit/weapon/euthanasia
+	name = "'Ritual Dagger Mould'"
+	desc = "A small container of special morphing dust, perfect to make a specifc item. Required: Dagger or Seax"
+	target_items = list(
+		/obj/item/rogueweapon/huntingknife/combat,
+		/obj/item/rogueweapon/huntingknife/idagger,
+		/obj/item/rogueweapon/huntingknife/idagger/steel,
+	)
+	result_item = /obj/item/rogueweapon/example/euthanasia
+
+/obj/item/enchantingkit/weapon/nicksonessang
+	name = "'Dark Delight' morphing elixir"
+	desc = "A small container of special morphing dust, perfect to make a specifc item. Required: Ssangsudo or Longsword"
+	target_items = list(
+	/obj/item/rogueweapon/sword/long/kriegmesser/ssangsudo,
+	/obj/item/rogueweapon/sword/long)
+	result_item = /obj/item/rogueweapon/example/ssangsudo_long
+
 
 /////////////////////////////
 // ! Triumph-Exc. Kits !   //

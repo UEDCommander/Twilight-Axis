@@ -1535,6 +1535,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 //shameless copypaste
 /datum/species/proc/kicked(mob/living/carbon/human/user, mob/living/carbon/human/target)
+	SEND_SIGNAL(user, COMSIG_MOB_KICK_ATTACK, target) //Ta edit
 	if(HAS_TRAIT(user, TRAIT_PACIFISM))
 		to_chat(user, span_warning("I don't want to harm [target]!"))
 		return FALSE
