@@ -8,6 +8,8 @@
 #define SEX_ORGAN_PENIS   "penis"
 #define SEX_ORGAN_BODY    "body"
 
+#define ERP_ORGAN_SLEEP_TRAUMA_LOSS -2
+
 #define REL_LOVE_POTION (1<<0)
 
 #define SEX_SENSITIVITY_MAX 2
@@ -108,7 +110,7 @@ GLOBAL_LIST_INIT(erp_race_body_zone_bonus, list(
 
 #define ERP_OVERLOAD_SP_TRIGGER 6.0
 #define ERP_OVERLOAD_MAX_OP 10
-#define ERP_OVERLOAD_DECAY_INTERVAL (15 MINUTES)
+#define ERP_OVERLOAD_DECAY_INTERVAL (24 MINUTES)
 
 #define ERP_BASE_AROUSAL_DECAY_RATE 0.20
 

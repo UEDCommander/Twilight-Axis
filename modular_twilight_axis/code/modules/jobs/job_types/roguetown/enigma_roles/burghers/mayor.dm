@@ -5,7 +5,7 @@
 	faction = "Station"
 	total_positions = 1
 	spawn_positions = 1
-	allowed_races = ACCEPTED_RACES
+	forbidden_races = list(RACES_SHUNNED RACES_DESPISED RACES_CONSTRUCT)
 	allowed_sexes = list(MALE, FEMALE)
 	display_order = JDO_MAYOR
 	tutorial = "Погрязший в коррупции или же великий благодетель, быть может, что-то между - вы мэр города Рокхилл и пользуетесь уважением и почётом среди его жителей. \
@@ -16,9 +16,10 @@
 	whitelist_req = TRUE
 	advclass_cat_rolls = list(CTAG_MAYOR = 2)
 	give_bank_account = TRUE
-	min_pq = 5 
+	min_pq = 8
 	max_pq = null
-	round_contrib_points = 5
+	round_contrib_points = 3
+	same_job_respawn_delay = 30 MINUTES
 
 	cmode_music = 'sound/music/combat_poacher.ogg'
 	job_traits = list(TRAIT_SEEPRICES, TRAIT_EMPATH, TRAIT_INTELLECTUAL,)

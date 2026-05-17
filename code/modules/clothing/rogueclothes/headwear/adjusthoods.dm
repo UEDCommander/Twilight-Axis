@@ -3,7 +3,7 @@
 
 /obj/item/clothing/head/roguetown/roguehood
 	name = "hood"
-	desc = ""
+	desc = "A head's best friend."
 	color = CLOTHING_BROWN
 	icon_state = "basichood"
 	item_state = "basichood"
@@ -249,6 +249,70 @@
 	salvage_amount = 1
 	block2add = null
 
+/obj/item/clothing/head/roguetown/roguehood/undivided
+	name = "undivided hood"
+	desc = "A hood of those devoted to upholding the deca-divinity in their dae to dae duties."
+	color = null
+	icon_state = "undividedhood"
+	item_state = "undividedhood"
+	icon = 'icons/roguetown/clothing/head.dmi'
+	body_parts_covered = NECK
+	slot_flags = ITEM_SLOT_HEAD|ITEM_SLOT_MASK
+	hidesnoutADJ = FALSE
+	flags_inv = HIDEEARS|HIDEHAIR|HIDEFACIALHAIR	//Does not hide face.
+	block2add = null
+	dynamic_hair_suffix = ""
+	edelay_type = 1
+	adjustable = CAN_CADJUST
+	toggle_icon_state = TRUE
+	max_integrity = 180
+	salvage_result = /obj/item/natural/cloth
+	salvage_amount = 1
+
+/obj/item/clothing/head/roguetown/roguehood/eora
+	name = "eoran hood"
+	desc = "A hood of devotees of Eora, coupled with her silver cabbit mask. Does not pacify the wearer for every rose has it's thorns."
+	color = null
+	icon = 'icons/roguetown/clothing/head.dmi'
+	mob_overlay_icon = 'icons/roguetown/clothing/onmob/64x64/head.dmi'
+	bloody_icon = 'icons/effects/blood64.dmi'
+	worn_x_dimension = 64
+	worn_y_dimension = 64
+	icon_state = "eoramonk"//Stonekeep sprite
+	item_state = "eoramonk"
+	body_parts_covered = NECK
+	slot_flags = ITEM_SLOT_HEAD|ITEM_SLOT_MASK
+	hidesnoutADJ = FALSE
+	flags_inv = HIDEEARS|HIDEHAIR|HIDEFACIALHAIR	//Does not hide face.
+	block2add = null
+	dynamic_hair_suffix = ""
+	edelay_type = 1
+	adjustable = CAN_CADJUST
+	toggle_icon_state = TRUE
+	max_integrity = 180
+	salvage_result = /obj/item/natural/cloth
+	salvage_amount = 1
+
+/obj/item/clothing/head/roguetown/roguehood/ravox
+	name = "ravox hood"
+	desc = "A hood of those devoted to upholding Justicar's will. Justice might be blind but not it's servants."
+	color = null
+	icon_state = "ravoxhood"
+	item_state = "ravoxhood"
+	icon = 'icons/roguetown/clothing/head.dmi'
+	body_parts_covered = NECK
+	slot_flags = ITEM_SLOT_HEAD|ITEM_SLOT_MASK
+	hidesnoutADJ = FALSE
+	flags_inv = HIDEEARS|HIDEHAIR|HIDEFACIALHAIR	//Does not hide face.
+	block2add = null
+	dynamic_hair_suffix = ""
+	edelay_type = 1
+	adjustable = CAN_CADJUST
+	toggle_icon_state = TRUE
+	max_integrity = 180
+	salvage_result = /obj/item/natural/cloth
+	salvage_amount = 1
+
 // UN-Holy Hoods!
 /obj/item/clothing/head/roguetown/roguehood/unholy
 	name = "foreboding hood"
@@ -333,7 +397,7 @@
 
 /obj/item/clothing/head/roguetown/roguehood/psydon
 	name = "psydonian hood"
-	desc = "A hood worn by Psydon's disciples, oft-worn in conjunction with its matching tabard. Made with spell-laced fabric to provide some protection."
+	desc = "A hood worn by the adherents of the Holy Psydonic Inquisition, oft-donned in conjunction with its matching tabard. Made with spell-laced fabric to provide some protection."
 	icon_state = "psydonhood"
 	item_state = "psydonhood"
 	color = null
@@ -351,6 +415,12 @@
 	max_integrity = 200
 	salvage_result = /obj/item/natural/cloth
 	salvage_amount = 1
+
+/obj/item/clothing/head/roguetown/roguehood/psydon/black
+	name = "blessed hood"
+	desc = "A hood worn by the worshippers of Psydon, oft-donned in conjunction with its matching tabard. Mourn, but do not despair; for even the smallest spark of faith might yet reignite the hearth of this dying world."
+	icon_state = "blackpsydonhood"
+	item_state = "blackpsydonhood"
 
 /obj/item/clothing/head/roguetown/roguehood/psydon/confessor
 	name = "confessional hood"

@@ -116,24 +116,6 @@
 	triumph_cost = 5
 	sort_category = "Triumphs"
 
-/datum/loadout_item/triumph_gildedshirt
-	name = "Gilded Dress Shirt"
-	path = /obj/item/clothing/suit/roguetown/shirt/dress/royal/prince
-	triumph_cost = 5
-	sort_category = "Triumphs"
-
-/datum/loadout_item/triumph_pristinedress
-	name = "Pristine Dress"
-	path = /obj/item/clothing/suit/roguetown/shirt/dress/royal/princess
-	triumph_cost = 5
-	sort_category = "Triumphs"
-
-/datum/loadout_item/triumph_royalsleeves
-	name = "Royal Sleeves"
-	path = /obj/item/clothing/wrists/roguetown/royalsleeves
-	triumph_cost = 5
-	sort_category = "Triumphs"
-
 /datum/loadout_item/triumph_goldhalfmask
 	name = "Golden Halfmask, Ornate"
 	path = /obj/item/clothing/mask/rogue/lordmask/triumph
@@ -158,23 +140,41 @@
 	triumph_cost = 5
 	sort_category = "Triumphs"
 
-// -9 TRI
+/datum/loadout_item/triumph_gildedshirt
+	name = "Gilded Dress Shirt"
+	path = /obj/item/clothing/suit/roguetown/shirt/dress/royal/prince
+	triumph_cost = 5
+	sort_category = "Triumphs"
+
+/datum/loadout_item/triumph_pristinedress
+	name = "Pristine Dress"
+	path = /obj/item/clothing/suit/roguetown/shirt/dress/royal/princess
+	triumph_cost = 5
+	sort_category = "Triumphs"
+
+/datum/loadout_item/triumph_royalsleeves
+	name = "Royal Sleeves"
+	path = /obj/item/clothing/wrists/roguetown/royalsleeves
+	triumph_cost = 5
+	sort_category = "Triumphs"
+
+// -7 TRI
 /datum/loadout_item/triumph_buttpack
 	name = "Belted Satchel"
 	path = /obj/item/storage/backpack/rogue/satchel/beltpack
-	triumph_cost = 9
+	triumph_cost = 7
 	sort_category = "Triumphs"
 
 /datum/loadout_item/triumph_lunchpouch
 	name = "Pouch of Luncheons"
 	path = /obj/item/storage/belt/rogue/pouch/triumphlunch
-	triumph_cost = 9
+	triumph_cost = 7
 	sort_category = "Triumphs"
 
 /datum/loadout_item/triumph_lordcloak
 	name = "Lordly Cloak"
 	path = /obj/item/clothing/cloak/lordcloak
-	triumph_cost = 9
+	triumph_cost = 7
 	sort_category = "Triumphs"
 
 /datum/loadout_item/triumph_ladycloak
@@ -186,30 +186,19 @@
 /datum/loadout_item/triumph_scabbardroyal
 	name = "Decorated Scabbard, Golden"
 	path = /obj/item/rogueweapon/scabbard/sword/royal
-	triumph_cost = 9
+	triumph_cost = 7
 	sort_category = "Triumphs"
 
 /datum/loadout_item/triumph_sheathroyal
 	name = "Decorated Sheath, Golden"
 	path = /obj/item/rogueweapon/scabbard/sheath/royal
-	triumph_cost = 9
+	triumph_cost = 7
 	sort_category = "Triumphs"
 
 /datum/loadout_item/triumph_gdorpelring
 	name = "Golden Dorpel Ring, Ornate"
 	path = /obj/item/clothing/ring/diamond/triumph
-	triumph_cost = 9
-	sort_category = "Triumphs"
-
-//////////////////
-//  UNIQUES  !  //
-//////////////////
-//Anything that doesn't fall within the standard pricing bracket, or is sufficently unique to warrant being categorized differently.
-
-/datum/loadout_item/triumph_buffpot
-	name = "Vial of Distilled Triumphance"
-	path = /obj/item/reagent_containers/glass/bottle/alchemical/tripot
-	triumph_cost = 99
+	triumph_cost = 7
 	sort_category = "Triumphs"
 
 //////////////////
@@ -304,6 +293,66 @@
 /datum/loadout_item/triumph_weaponkit_estoc
 	name = "Morphing Elixir, 'Azurian Estoc'"
 	path = /obj/item/enchantingkit/triumph_weaponkit_estoc
+	triumph_cost = 3
+	sort_category = "Triumphs"
+
+/datum/loadout_item/triumph_weaponkit_fancymace
+	name = "Morphing Elixir, 'Rungu-Shishpar Mace'"
+	path = /obj/item/enchantingkit/triumph_weaponkit_fancymace
+	triumph_cost = 3
+	sort_category = "Triumphs"
+
+/datum/loadout_item/triumph_weaponkit_krisdagger
+	name = "Morphing Elixir, 'Kris'"
+	path = /obj/item/enchantingkit/triumph_weaponkit_kris
+	triumph_cost = 3
+	sort_category = "Triumphs"
+
+/datum/loadout_item/triumph_weaponkit_njoradagger
+	name = "Morphing Elixir, 'Njora'"
+	path = /obj/item/enchantingkit/triumph_weaponkit_njora
+	triumph_cost = 3
+	sort_category = "Triumphs"
+
+/datum/loadout_item/triumph_weaponkit_alloywhip
+	name = "Morphing Elixir, 'Alloytip Whip'"
+	path = /obj/item/enchantingkit/triumph_weaponkit_whip
+	triumph_cost = 3
+	sort_category = "Triumphs"
+
+/datum/loadout_item/triumph_weaponkit_kaskara
+	name = "Morphing Elixir, 'Kaskara'"
+	path = /obj/item/enchantingkit/weapon/triumph_weaponkit_kaskara
+	triumph_cost = 3
+	sort_category = "Triumphs"
+
+/datum/loadout_item/triumph_weaponkit_ida
+	name = "Morphing Elixir, 'Ida'"
+	path = /obj/item/enchantingkit/weapon/triumph_weaponkit_ida
+	triumph_cost = 3
+	sort_category = "Triumphs"
+
+/datum/loadout_item/triumph_weaponkit_hwi
+	name = "Morphing Elixir, 'Hwi'"
+	path = /obj/item/enchantingkit/weapon/triumph_weaponkit_hwi
+	triumph_cost = 3
+	sort_category = "Triumphs"
+
+/datum/loadout_item/triumph_weaponkit_ngombe
+	name = "Morphing Elixir, 'Ngombe'"
+	path = /obj/item/enchantingkit/weapon/triumph_weaponkit_ngombe
+	triumph_cost = 3
+	sort_category = "Triumphs"
+
+/datum/loadout_item/triumph_weaponkit_ada
+	name = "Morphing Elixir, 'Ada'"
+	path = /obj/item/enchantingkit/weapon/triumph_weaponkit_ada
+	triumph_cost = 3
+	sort_category = "Triumphs"
+
+/datum/loadout_item/triumph_weaponkit_sengese
+	name = "Morphing Elixir, 'Sengese'"
+	path = /obj/item/enchantingkit/weapon/triumph_weaponkit_sengese
 	triumph_cost = 3
 	sort_category = "Triumphs"
 */

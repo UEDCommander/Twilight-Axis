@@ -101,6 +101,11 @@
 	path = /obj/item/clothing/neck/roguetown/collar/bell_collar
 	sort_category = "Accessories"
 
+/datum/loadout_item/faceveil
+	name= "Face Veil"
+	path = /obj/item/clothing/mask/rogue/faceveil
+	sort_category = "Accessories"
+	
 /datum/loadout_item/cursed_collar
 	name = "Cursed Collar"
 	path = /obj/item/clothing/neck/roguetown/gorget/cursed_collar
@@ -144,6 +149,11 @@
 /datum/loadout_item/doublebelt
 	name = "Paired slim belts"
 	path = /obj/item/storage/belt/rogue/leather/double
+	sort_category = "Accessories"
+
+/datum/loadout_item/knifebelt // comes empty
+	name = "Tossblade Belt"
+	path = /obj/item/storage/belt/rogue/leather/knifebelt/black
 	sort_category = "Accessories"
 
 /datum/loadout_item/psicross
@@ -333,4 +343,8 @@
 	path = /obj/item/clothing/cloak/cotehardie
 	sort_category = "Accessories"
 
+/datum/loadout_item/weatheredmask
+	name = "Weathered Xylixian Mask"
+	path = /obj/item/clothing/mask/rogue/xylixmask/weathered
+	sort_category = "Accessories"
 */

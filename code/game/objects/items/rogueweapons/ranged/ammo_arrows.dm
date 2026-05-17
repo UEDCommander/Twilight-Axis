@@ -88,6 +88,8 @@
 	range = 15
 	hitsound = 'sound/combat/hits/hi_arrow2.ogg'
 	embedchance = 25
+	intdamfactor = 1.25 // Attempt to make it so that arrows do more damage to armor
+	// Without instantly killing people when armor breaks
 	woundclass = BCLASS_PIERCE
 	flag = "piercing"
 	speed = 0.4
@@ -118,6 +120,7 @@
 /obj/projectile/bullet/reusable/arrow/stone
 	name = "stone arrow"
 	ammo_type = /obj/item/ammo_casing/caseless/rogue/arrow/stone
+	damage = 30
 	accuracy = 60
 
 // Broadheads are high damage, low AP. Very high base damage - relies on breaking armor
@@ -136,10 +139,9 @@
 	name = "decrepit broadhead arrow"
 	ammo_type = /obj/item/ammo_casing/caseless/rogue/arrow/iron/aalloy
 	icon_state = "ancientarrow_proj"
-	damage = 40
+	damage = 50
 	armor_penetration = PEN_LIGHT
 	flag = "piercing"
-	embedchance = 40
 
 // Bodkins should penetrate essentially any armour in the game with decent perception, as
 // recompense for their very low damage. Better for lower perception characters without
@@ -213,7 +215,8 @@
 	that has been fitted with a spearhead of silver. It is expensive, yet unrivaled \
 	in power - pray that you have the will to see its aim unfettered-and-true."
 	projectile_type = /obj/projectile/bullet/reusable/arrow/silver
-	is_silver = FALSE //Give these to the bad guys, if you want to be a little evil. Realistically wouldn't blight someone, unless they're touching the tip.
+	is_silver = TRUE
+	is_lesser_silver = TRUE //Still technically useable by cursed individuals, if they load it quickly enough. Would this be the Zizoid equivalent of using depleted uranium rounds?
 
 /obj/projectile/bullet/reusable/arrow/silver
 	name = "silver arrow"
@@ -221,10 +224,8 @@
 	damage = 60 //The rarest, but most powerful arrow subtype. Intended to be incredibly scarce, in practice - a 'silver bullet', to the most literal extent.
 	armor_penetration = PEN_HEAVY
 	embedchance = 100
-	poisontype = /datum/reagent/water/blessed
-	poisonamount = 7
 	npc_simple_damage_mult = 7 //..or 420 damage against a mindless mob. Strike true; reduce if these become craftable or more easily acquirable, through any means.
-
+	is_silver_proj = TRUE 
 
 /obj/item/ammo_casing/caseless/rogue/arrow/getonmobprop(tag)
 	. = ..()

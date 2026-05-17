@@ -49,10 +49,30 @@
 	r_sleeve_status = SLEEVE_NORMAL
 	l_sleeve_status = SLEEVE_NORMAL
 	allowed_sex = list(MALE, FEMALE)
-	allowed_race = NON_DWARVEN_RACE_TYPES
 	boobed = TRUE
 	flags_inv= HIDEBOOB|HIDECROTCH
 	body_parts_covered = CHEST|GROIN|ARMS|VITALS
+
+/obj/item/clothing/suit/roguetown/armor/vestments_padded
+	name = "padded undervestments"
+	desc = "A soft garment designed to prevent chafing from wearing heavy robes all dae and night. This one has extra layers of thick fabric on the inside, preventing harm to the faithful."
+	icon_state = "priestunder"
+	item_state = "priestunder"
+	sleeved = 'icons/roguetown/clothing/onmob/helpers/sleeves_shirts.dmi'
+	slot_flags = ITEM_SLOT_SHIRT|ITEM_SLOT_ARMOR
+	r_sleeve_status = SLEEVE_NORMAL
+	l_sleeve_status = SLEEVE_NORMAL
+	allowed_sex = list(MALE, FEMALE)
+	boobed = TRUE
+	flags_inv= HIDEBOOB|HIDECROTCH
+	body_parts_covered = CHEST|GROIN|ARMS|VITALS
+	max_integrity = ARMOR_INT_CHEST_LIGHT_BASE
+	armor = ARMOR_PADDED_BAD
+	icon = 'icons/roguetown/clothing/shirts.dmi'
+	mob_overlay_icon = 'icons/roguetown/clothing/onmob/shirts.dmi'
+	break_sound = 'sound/foley/cloth_rip.ogg'
+	drop_sound = 'sound/foley/dropsound/cloth_drop.ogg'
+	sewrepair = TRUE
 
 /obj/item/clothing/suit/roguetown/shirt/undershirt/black
 	color = CLOTHING_BLACK
@@ -723,7 +743,7 @@
 
 /obj/item/clothing/suit/roguetown/shirt/dress/maid
 	slot_flags = ITEM_SLOT_ARMOR|ITEM_SLOT_SHIRT
-	name = "servant dress"
+	name = "maid dress"
 	desc = "A distinctive black dress that should be kept clean and tidy - unless you want to be disciplined."
 	body_parts_covered = CHEST|GROIN|ARMS|LEGS|VITALS
 	boobed = TRUE
@@ -737,13 +757,13 @@
 /obj/item/clothing/suit/roguetown/shirt/dress/maid/attack_right(mob/user)
 	switch(open_wear)
 		if(FALSE)
-			name = "open servant dress"
+			name = "open maid dress"
 			body_parts_covered = null
 			open_wear = TRUE
 			flags_inv = HIDEBOOB
 			to_chat(usr, span_warning("Now wearing radically!"))
 		if(TRUE)
-			name = "servant dress"
+			name = "maid dress"
 			body_parts_covered = CHEST|GROIN|ARMS|LEGS|VITALS
 			open_wear = FALSE
 			flags_inv = HIDEBOOB|HIDECROTCH
@@ -808,8 +828,9 @@
 		add_overlay(pic)
 
 /obj/item/clothing/suit/roguetown/shirt/dress/maidfancy
-	name = "maid dress"
+	name = "valorian maid dress"
 	desc = "A dress befitting the housekeeper of a lord's staff. While not as intricate as a royal's, it is indicative of the house's status."
+	slot_flags = ITEM_SLOT_ARMOR|ITEM_SLOT_SHIRT
 	body_parts_covered = CHEST|GROIN|ARMS|VITALS
 	sleeved = 'icons/roguetown/clothing/special/onmob/sleeves_maids.dmi'
 	r_sleeve_status = SLEEVE_NORMAL
@@ -821,7 +842,7 @@
 	detail_color = CLOTHING_DARK_GREY
 
 /obj/item/clothing/suit/roguetown/shirt/dress/maidservant
-	name = "servant gown"
+	name = "maid gown"
 	sleeved = 'icons/roguetown/clothing/special/onmob/sleeves_maids.dmi'
 	desc = "A dress worn by those of manors and noble staff. Commonly black, though some estates dye them to their house colors."
 	icon_state = "maidgown"
@@ -834,3 +855,32 @@
 	icon_state = "butlershirt"
 	item_state = "butlershirt"
 	sleeved = 'icons/roguetown/clothing/special/onmob/sleeves_maids.dmi'
+
+/obj/item/clothing/suit/roguetown/shirt/velvetdress
+	name = "velvet dress"
+	desc = "A garment made with embroidered velvet, both elegant and warm. Poetry made manifest in swaying fabric."
+	icon_state = "velvetdress"
+	item_state = "velvetdress"
+	sleeved = 'icons/roguetown/clothing/onmob/helpers/sleeves_shirts.dmi'
+
+/obj/item/clothing/suit/roguetown/shirt/nobledress
+	name = "noble's pinafore"
+	desc = "A comfortable dress adapted from simpler garments often worn by working-class women."
+	icon_state = "nobledress"
+	item_state = "nobledress"
+	sleeved = 'icons/roguetown/clothing/onmob/helpers/sleeves_shirts.dmi'
+	detail_tag = "_detail"
+	detail_color = CLOTHING_WHITE
+
+/obj/item/clothing/suit/roguetown/shirt/nobledress/Initialize()
+	. = ..()
+	update_icon()
+
+/obj/item/clothing/suit/roguetown/shirt/nobledress/update_icon()
+	cut_overlays()
+	if(get_detail_tag())
+		var/mutable_appearance/pic = mutable_appearance(icon(icon, "[icon_state][detail_tag]"))
+		pic.appearance_flags = RESET_COLOR
+		if(get_detail_color())
+			pic.color = get_detail_color()
+		add_overlay(pic)

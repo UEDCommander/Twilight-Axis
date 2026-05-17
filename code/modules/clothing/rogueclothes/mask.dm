@@ -46,10 +46,11 @@
 			update_icon()
 			return
 
-/obj/item/clothing/mask/rogue/examine()
+/obj/item/clothing/mask/rogue/get_mechanics_examine()
 	. = ..()
 
-	. += "[span_notice("Alt+RMB while on face to swap sprites between snout and standard variant, if it exists.")]"
+	. += span_notice("Alt+RMB while on face to swap sprites between snout and standard variant, if it exists.")
+	. += span_info("MMB will reveal my character's hair from underneath \the [src].")
 
 /obj/item/clothing/mask/rogue/spectacles
 	name = "spectacles"
@@ -63,6 +64,15 @@
 	slot_flags = ITEM_SLOT_MASK|ITEM_SLOT_HEAD
 	anvilrepair = /datum/skill/craft/armorsmithing
 //	block2add = FOV_BEHIND
+	grid_width = 32
+	grid_height = 32
+
+/obj/item/clothing/mask/rogue/faceveil
+	name = "simple veil"
+	icon_state = "faceveil"
+	desc = "A remarkably plain veil meant to conceal ones face... if you wore this, a gust of wind would be all it takes to reveal your identity."
+	grid_width = 32
+	grid_height = 32
 
 /obj/item/clothing/mask/rogue/spectacles/inq
 	name = "otavan nocshade lens-pair"
@@ -76,6 +86,8 @@
 	slot_flags = ITEM_SLOT_MASK|ITEM_SLOT_HEAD
 	anvilrepair = /datum/skill/craft/armorsmithing
 	var/lensmoved = FALSE
+	grid_width = 32
+	grid_height = 32
 
 /obj/item/clothing/mask/rogue/spectacles/inq/spawnpair
 	lensmoved = TRUE
@@ -138,18 +150,20 @@
 		if (user.get_skill_level(/datum/skill/craft/engineering) >= 2)
 			ADD_TRAIT(user, TRAIT_ENGINEERING_GOGGLES, "[type]")
 			user.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/engineeranalyze)
-			to_chat(user, span_notice("Time to build"))
+			to_chat(user, span_green("Time to get to work."))
 			active_item = TRUE
 			return
 		else
-			to_chat(user, span_notice("I can't understand these words and numbers before my eyes"))
+			to_chat(user, span_notice("I can't make sense of the words and numbers before my eyes."))
 			return
 	else
 		return
 
-
-
-
+/obj/item/clothing/mask/rogue/spectacles/golden/get_mechanics_examine(mob/user)
+	. = ..()
+	. += span_info("Wear these on your face or head to activate them.")
+	. += span_info("With Apprentice Engineering or higher, they grant Analyze and engineering goggles, letting you inspect a structure's integrity and linked machinery details.")
+	. += span_info("Removing them disables the effect.")
 
 /obj/item/clothing/mask/rogue/spectacles/golden/dropped(mob/user, slot)
 	..()
@@ -157,7 +171,7 @@
 		active_item = FALSE
 		REMOVE_TRAIT(user, TRAIT_ENGINEERING_GOGGLES, "[type]")
 		user.mind.RemoveSpell(new /obj/effect/proc_holder/spell/invoked/engineeranalyze)
-		to_chat(user, span_notice("Time to stop working"))
+		to_chat(user, span_warning("Time to stop working."))
 
 /obj/item/clothing/mask/rogue/spectacles/golden/ComponentInitialize()
 	AddComponent(/datum/component/adjustable_clothing, NECK, null, null, 'sound/foley/equip/rummaging-03.ogg', null, (UPD_HEAD|UPD_MASK))	//Standard mask
@@ -188,6 +202,8 @@
 	block2add = FOV_RIGHT
 	body_parts_covered = EYES
 	sewrepair = TRUE
+	grid_width = 32
+	grid_height = 32
 
 /obj/item/clothing/mask/rogue/eyepatch/left
 	desc = "An eyepatch, fitted for the left eye."
@@ -246,6 +262,10 @@
 	. = ..()
 	if(user.wear_mask == src)
 		worn = TRUE
+
+
+/obj/item/clothing/mask/rogue/facemask/steel/confessor/ComponentInitialize()
+	AddComponent(/datum/component/armour_filtering/positive, TRAIT_NOSTINK, "plague_resistant")
 
 /obj/item/clothing/mask/rogue/facemask/steel/confessor/dropped(mob/user)
 	. = ..()
@@ -405,6 +425,17 @@
 	max_integrity = 200
 	smeltresult = /obj/item/ingot/steel
 
+/obj/item/clothing/mask/rogue/facemask/steel/graggar
+	name = "vicious jawmask"
+	desc = "Shattered jaws, chipped teeth, sunken metal - fit for a skull of the same. It snarls in mimicry of the Sinistar's visage."
+	icon_state = "graggarplatemask_heavy"
+	block2add = null
+	body_parts_covered = MOUTH|NOSE
+	flags_inv = HIDEFACE|HIDESNOUT
+
+/obj/item/clothing/mask/rogue/facemask/steel/graggar/ComponentInitialize()
+	AddComponent(/datum/component/cursed_item, TRAIT_HORDE, "ARMOR", "RENDERED ASUNDER")
+
 /obj/item/clothing/mask/rogue/facemask/steel/paalloy
 	name = "ancient mask"
 	desc = "Polished gilbranze, molded into an intimidating visage. Touch the cheek; it is warm, \
@@ -474,6 +505,8 @@
 	toggle_icon_state = TRUE
 	experimental_onhip = TRUE
 	sewrepair = TRUE
+	grid_width = 32
+	grid_height = 32
 
 /obj/item/clothing/mask/rogue/shepherd/ComponentInitialize()
 	AddComponent(/datum/component/adjustable_clothing, NECK, null, null, 'sound/foley/equip/rummaging-03.ogg', null, (UPD_HEAD|UPD_MASK))	//Standard mask
@@ -496,6 +529,23 @@
 	sewrepair = TRUE
 	salvage_result = /obj/item/natural/hide/cured
 	salvage_amount = 1
+	grid_width = 32
+	grid_height = 32
+
+/obj/item/clothing/mask/rogue/physician/feld
+	name = "feldsher's mask"
+	desc = "Tragedy, neutrality, and comedy; the guise of a master, tempered against the most sorrowful and sudden consequences of bad medicine."
+	icon_state = "pestramask"
+	item_state = "pestramask"
+
+/obj/item/clothing/mask/rogue/physician/phys
+	name = "physicker's mask"
+	desc = "A beaked guise, stuffed with herbs to keep one's humors unmarred during more grizzlesome labors."
+	icon_state = "feldmask"
+	item_state = "feldmask"
+
+/obj/item/clothing/mask/rogue/physician/ComponentInitialize()
+	AddComponent(/datum/component/armour_filtering/positive, TRAIT_NOSTINK, "plague_resistant")
 
 /obj/item/clothing/mask/rogue/skullmask
 	name = "skull mask"
@@ -525,6 +575,8 @@
 	toggle_icon_state = TRUE
 	experimental_onhip = TRUE
 	sewrepair = TRUE
+	grid_width = 32
+	grid_height = 32
 
 /obj/item/clothing/mask/rogue/ragmask/ComponentInitialize()
 	AddComponent(/datum/component/adjustable_clothing, NECK, null, null, 'sound/foley/equip/rummaging-03.ogg', null, (UPD_HEAD|UPD_MASK))	//Standard mask
@@ -542,6 +594,7 @@
 	desc = "Runes and wards, meant for daemons; the gold has somehow rusted in unnatural, impossible agony. The most prominent of these etchings is in the shape of the Naledian psycross. Armored to protect the wearer's face."
 	max_integrity = 100
 	armor = ARMOR_PLATE
+	slot_flags = ITEM_SLOT_MASK|ITEM_SLOT_HIP
 	flags_inv = HIDEFACE|HIDESNOUT
 	sellprice = 0
 
@@ -556,6 +609,7 @@
 	max_integrity = 150
 	armor = ARMOR_PLATE
 	flags_inv = HIDEFACE|HIDESNOUT
+	slot_flags = ITEM_SLOT_MASK|ITEM_SLOT_HIP
 	sellprice = 0
 	equip_delay_self = 3.5 SECONDS
 	unequip_delay_self = 3.5 SECONDS
@@ -570,6 +624,8 @@
 	toggle_icon_state = FALSE
 	salvage_result = /obj/item/natural/silk
 	salvage_amount = 2
+	grid_width = 32
+	grid_height = 32
 
 /obj/item/clothing/mask/rogue/silkmask/ComponentInitialize()
 	AddComponent(/datum/component/adjustable_clothing, NECK, null, null, 'sound/foley/equip/rummaging-03.ogg', null, (UPD_HEAD|UPD_MASK))	//Standard mask
@@ -584,6 +640,8 @@
 	tint = 3
 	mob_overlay_icon = 'icons/mob/clothing/eyes.dmi'
 	icon = 'icons/obj/clothing/glasses.dmi'
+	grid_width = 32
+	grid_height = 32
 
 /obj/item/clothing/mask/rogue/blindfold/fake
 	desc = "A strip of cloth tied around the eyes. It's too transparent to block vision."
@@ -600,6 +658,8 @@
 	detail_tag = "_detail"
 	detail_color = COLOR_SILVER
 	sewrepair = TRUE
+	grid_width = 32
+	grid_height = 32
 
 /obj/item/clothing/mask/rogue/courtphysician
 	name = "head physician's mask"
@@ -609,6 +669,9 @@
 	icon_state = "docmask"
 	item_state = "docmask"
 	salvage_result = /obj/item/natural/bone
+
+/obj/item/clothing/mask/rogue/courtphysician/ComponentInitialize()
+	AddComponent(/datum/component/armour_filtering/positive, TRAIT_NOSTINK, "plague_resistant")
 
 //gemcarved masks from Vanderlin
 
@@ -699,3 +762,13 @@
 	smeltresult = null
 	anvilrepair = /datum/skill/craft/ceramics
 	sellprice = 0
+
+/obj/item/clothing/mask/rogue/xylixmask/weathered
+	name = "weathered mask"
+	item_state = "xylix_weathered"
+	icon_state = "xylix_weathered"
+	desc = "An ancient ceramic face. It looks weathered, the sort molded by Xylixian worshippers of many yils past. Even when cast aside, it feels like the hardened clay has never left your hands. As if it always finds a way back into your palms."
+	// No armor anyways
+	max_integrity = 200
+	// Not messing with jester mask, but again, it has no armor. many other masks also don't block vision.
+	block2add = FOV_DEFAULT

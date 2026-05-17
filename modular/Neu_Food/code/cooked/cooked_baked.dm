@@ -10,6 +10,7 @@
 	cooked_type = /obj/item/reagent_containers/food/snacks/rogue/crackerscooked
 	w_class = WEIGHT_CLASS_NORMAL
 	eat_effect = null
+	cooked_smell = /datum/pollutant/food/hardtack
 
 /obj/item/reagent_containers/food/snacks/rogue/foodbase/hardtack_raw/attackby(obj/item/I, mob/living/user, params)
 	var/found_table = locate(/obj/structure/table) in (loc)
@@ -114,13 +115,13 @@
 /obj/item/reagent_containers/food/snacks/rogue/bread/On_Consume(mob/living/eater)
 	..()
 	if(slices_num)
-		if(bitecount == 3)
+		if(bitecount == 3 && slices_num >= 5)
 			slices_num = 5
-		if(bitecount == 4)
+		if(bitecount == 4 && slices_num >= 4)
 			slices_num = 4
-		if(bitecount == 5)
+		if(bitecount == 5 && slices_num >= 3)
 			slices_num = 3
-		if(bitecount == 6)
+		if(bitecount == 6 && slices_num >= 2)
 			slices_num = 2
 		if(bitecount == 7)
 			changefood(slice_path, eater)
@@ -628,13 +629,13 @@
 /obj/item/reagent_containers/food/snacks/rogue/raisinbread/On_Consume(mob/living/eater)
 	..()
 	if(slices_num)
-		if(bitecount == 3)
+		if(bitecount == 3 && slices_num >= 5)
 			slices_num = 5
-		if(bitecount == 4)
+		if(bitecount == 4 && slices_num >= 4)
 			slices_num = 4
-		if(bitecount == 5)
+		if(bitecount == 5 && slices_num >= 3)
 			slices_num = 3
-		if(bitecount == 6)
+		if(bitecount == 6 && slices_num >= 2)
 			slices_num = 2
 		if(bitecount == 7)
 			changefood(slice_path, eater)
@@ -719,13 +720,13 @@
 /obj/item/reagent_containers/food/snacks/rogue/applebread/On_Consume(mob/living/eater)
 	..()
 	if(slices_num)
-		if(bitecount == 3)
+		if(bitecount == 3 && slices_num >= 5)
 			slices_num = 5
-		if(bitecount == 4)
+		if(bitecount == 4 && slices_num >= 4)
 			slices_num = 4
-		if(bitecount == 5)
+		if(bitecount == 5 && slices_num >= 3)
 			slices_num = 3
-		if(bitecount == 6)
+		if(bitecount == 6 && slices_num >= 2)
 			slices_num = 2
 		if(bitecount == 7)
 			changefood(slice_path, eater)

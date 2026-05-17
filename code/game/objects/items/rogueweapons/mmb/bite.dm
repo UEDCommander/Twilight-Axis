@@ -83,7 +83,7 @@
 	next_attack_msg.Cut()
 
 	user.do_attack_animation(src, "bite")
-	playsound(user, 'sound/gore/flesh_eat_01.ogg', 100)
+	playsound(user, 'sound/gore/flesh_eat_01.ogg', vol = 50, vary = FALSE, extrarange = -2, ignore_walls = FALSE, quiet = TRUE)
 	var/nodmg = FALSE
 	var/dam2do = 10*(user.STASTR/20)
 	if(HAS_TRAIT(user, TRAIT_STRONGBITE))
@@ -112,7 +112,7 @@
 //nodmg if we don't have strongbite
 //nodmg if our teeth can't break through their armour
 	if(!nodmg)
-		playsound(src, "smallslash", 100, TRUE, -1)
+		playsound(src, "smallslash", vol = 50, vary = FALSE, extrarange = -1, ignore_walls = FALSE, quiet = TRUE)
 		if(ishuman(src) && user.mind)
 			var/mob/living/carbon/human/bite_victim = src
 			/*
@@ -122,7 +122,17 @@
 				if(HAS_TRAIT(src, TRAIT_SILVER_BLESSED))
 					to_chat(user, span_warning("BLEH! [bite_victim] tastes of SILVER! My gift cannot take hold."))
 				else
-					caused_wound?.werewolf_infect_attempt()
+					if(caused_wound)
+						var/infected = FALSE 
+
+						for(var/datum/wound/W in affecting.wounds)
+							if(W.werewolf_infect_attempt())
+								infected = TRUE
+								break
+
+						if(infected)
+							to_chat(user, span_boldnotice("I have successfully delivered the gift to [bite_victim] through their new wound!"))
+
 					if(prob(30))
 						user.werewolf_feed(bite_victim, 10)
 			if(istype(user.dna.species, /datum/species/gnoll))
@@ -250,13 +260,26 @@
 	C.next_attack_msg.Cut()
 	user.do_attack_animation(C, "bite")
 	if(C.apply_damage(damage, BRUTE, limb_grabbed, armor_block))
-		playsound(C.loc, "smallslash", 100, FALSE, -1)
+		playsound(C.loc, "smallslash", vol = 50, vary = FALSE, extrarange = -1, ignore_walls = FALSE, quiet = TRUE)
 		var/datum/wound/caused_wound = limb_grabbed.bodypart_attacked_by(BCLASS_BITE, damage, user, sublimb_grabbed, crit_message = TRUE)
 		if(user.mind && caused_wound)
 			/*
 				WEREWOLF CHEW.
 			*/
 			if(istype(user.dna.species, /datum/species/werewolf))
+				if(HAS_TRAIT(C, TRAIT_SILVER_BLESSED))
+					to_chat(user, span_warning("BLEH! [C] tastes of SILVER! My gift cannot take hold."))
+				else
+					if(caused_wound)
+						var/infected = FALSE
+						for(var/datum/wound/W in limb_grabbed.wounds)
+							if(W.werewolf_infect_attempt())
+								infected = TRUE
+								break
+						
+						if(infected)
+							to_chat(user, span_boldnotice("I have delivered the gift to [C] while chewing on their [parse_zone(sublimb_grabbed)]!"))
+
 				if(prob(30))
 					user.werewolf_feed(C)
 

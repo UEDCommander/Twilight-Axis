@@ -49,6 +49,8 @@
 		return
 	var/should_update = FALSE
 	var/list/choices = list("Accessory", "Breast Quantity", "Breast Size", "Ears", "Ear Color One", "Ear Color Two", "Eye Color", "Facial Hairstyle", "Facial Hair Color", "Face Detail", "Hairstyle", "Hair Primary Color", "Hair Secondary Gradient", "Hair Secondary Natural Color", "Hair Third Gradient", "Hair Third Dye Color", "Horns", "Horn Color", "Penis", "Penis Size", "Tail", "Tail Color One", "Tail Color Two", "Testicles", "Testicle Size", "Vagina", "Wings", "Wing Color")
+	if(HAS_TRAIT(H, TRAIT_EDIT_DESCRIPTORS))
+		choices += "Descriptors"
 	var/chosen = input(H, "Change what?", "Appearance") as null|anything in choices
 
 	if(!chosen)
@@ -372,7 +374,9 @@
 
 		if("Penis")
 			var/list/valid_penis_organs = list("none")
-			for(var/penis_type in subtypesof(/obj/item/organ/penis))
+			var/list/penis_paths = list(/obj/item/organ/penis) + subtypesof(/obj/item/organ/penis)
+
+			for(var/penis_type in penis_paths)
 				var/obj/item/organ/penis/temp_penis = new penis_type
 				valid_penis_organs[temp_penis.name] = penis_type
 				qdel(temp_penis)
@@ -806,6 +810,31 @@
 					should_update = TRUE
 			else
 				to_chat(H, span_warning("You don't have wings!"))
+		if("Descriptors")
+			var/list/species_choices = H.dna.species.descriptor_choices
+			if(!length(species_choices))
+				to_chat(H, span_warning("Your species has no standard descriptors to modify."))
+				return
+			var/list/choice_map = list()
+			for(var/path in species_choices)
+				var/datum/descriptor_choice/C = DESCRIPTOR_CHOICE(path)
+				choice_map[C.name] = path
+			var/choice_name = input(H, "Which feature do you want to describe?", "Standard Descriptors") as null|anything in choice_map
+			if(!choice_name)
+				return
+			var/choice_type = choice_map[choice_name]
+			var/datum/descriptor_choice/chosen_datum = DESCRIPTOR_CHOICE(choice_type)
+			var/list/picklist = list()
+			for(var/desc_type in chosen_datum.descriptors)
+				var/datum/mob_descriptor/descriptor = MOB_DESCRIPTOR(desc_type)
+				if(descriptor)
+					picklist[descriptor.name] = desc_type
+			var/picked_name = input(H, "Choose a new description for [choice_name]:", "Describe Myself") as null|anything in picklist
+			if(picked_name)
+				for(var/old_path in picklist)
+					H.remove_mob_descriptor(picklist[old_path])
+				H.add_mob_descriptor(picklist[picked_name])
+				should_update = TRUE
 
 	if(should_update)
 		H.update_hair()
@@ -871,3 +900,9 @@
 
 		A2.mark_organs_dirty()
 		C2.ui?.request_update()
+
+	if(ishuman(M))
+		var/mob/living/carbon/human/H = M
+		var/obj/item/organ/penis/penis = H.getorganslot(ORGAN_SLOT_PENIS)
+		if(penis)
+			penis.refresh_sex_organ()

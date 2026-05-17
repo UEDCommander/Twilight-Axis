@@ -2,10 +2,9 @@
 	name = "Nightblade"
 	tutorial = "You were too weak to carry armour or heavy blade, but your devoution dragged you to serving Gods. You are knife in shadows and eternal nightblade."
 	outfit = /datum/outfit/job/roguetown/cleric/nightblade
-	subclass_languages = list(/datum/language/grenzelhoftian)
 	traits_applied = list(TRAIT_DODGEEXPERT)
 	subclass_stats = list(
-		STATKEY_SPD = 2,
+		STATKEY_SPD = 1,
 		STATKEY_WIL = 1,
 		STATKEY_PER = 1,
 		STATKEY_STR = -2
@@ -21,12 +20,13 @@
 		/datum/skill/misc/sneaking = SKILL_LEVEL_JOURNEYMAN,
 		/datum/skill/misc/lockpicking = SKILL_LEVEL_APPRENTICE,
 		/datum/skill/misc/stealing = SKILL_LEVEL_APPRENTICE,
-		/datum/skill/magic/holy = SKILL_LEVEL_JOURNEYMAN,
+		/datum/skill/magic/holy = SKILL_LEVEL_APPRENTICE,
 	)
 	category_tags = list(CTAG_ADVENTURER, CTAG_COURTAGENT)
 	class_select_category = CLASS_CAT_CLERIC
 	subclass_stashed_items = list(
 		"The Verses and Acts of the Ten" = /obj/item/book/rogue/bibble,
+		"Tome of Psydon" = /obj/item/book/rogue/bibble/psy
 	)
 	extra_context = "This subclass can pick twin daggers, gaining increased speed, or ranged options, gaining increased perception."
 
@@ -69,7 +69,7 @@
 			head = /obj/item/clothing/head/roguetown/roguehood/phys
 			wrists = /obj/item/clothing/neck/roguetown/psicross/pestra
 			cloak = /obj/item/clothing/cloak/tabard/devotee/pestra
-		if(/datum/patron/divine/eora) //Eora content from stonekeep
+		if(/datum/patron/divine/eora)
 			head = /obj/item/clothing/head/roguetown/eoramask
 			wrists = /obj/item/clothing/neck/roguetown/psicross/eora
 			cloak = /obj/item/clothing/suit/roguetown/shirt/robe/eora
@@ -156,9 +156,9 @@
 			if(H.patron?.type == /datum/patron/inhumen/zizo)
 				backpack_contents+= list(/obj/item/clothing/neck/roguetown/psicross/inhumen/iron)
 				H.mind?.AddSpell(new /obj/effect/proc_holder/spell/invoked/minion_order)
-				H.mind?.AddSpell(new /obj/effect/proc_holder/spell/invoked/gravemark)
+				H.mind?.AddSpell(new /datum/action/cooldown/spell/gravemark)
 				H.mind?.current.faction += "[H.name]_faction"
-	shirt = /obj/item/clothing/suit/roguetown/armor/gambeson
+	shirt = /obj/item/clothing/suit/roguetown/armor/gambeson/light
 	armor = /obj/item/clothing/suit/roguetown/armor/leather
 	pants = /obj/item/clothing/under/roguetown/trou/leather
 	belt = /obj/item/storage/belt/rogue/leather/knifebelt/black/iron
@@ -168,7 +168,7 @@
 	// -- End of section for god specific bonuses --
 
 	var/datum/devotion/C = new /datum/devotion(H, H.patron)
-	C.grant_miracles(H, cleric_tier = CLERIC_T2, passive_gain = CLERIC_REGEN_WEAK, devotion_limit = CLERIC_REQ_2)	//Capped to T2 miracles.
+	C.grant_miracles(H, cleric_tier = CLERIC_T2, passive_gain = CLERIC_REGEN_WEAK, devotion_limit = CLERIC_REQ_2)
 
 	var/weapons = list("Dagger + Parrying Dagger","Rapier + Parrying Dagger","Recurve Bow + Dagger","Crossbow + Dagger")
 	var/weapon_choice = input(H,"Choose your weapon.", "TAKE UP ARMS") as anything in weapons
@@ -186,31 +186,28 @@
 			r_hand =/obj/item/rogueweapon/huntingknife/idagger/steel/parrying
 			beltl = /obj/item/rogueweapon/scabbard/sword
 			H.adjust_skillrank_up_to(/datum/skill/combat/swords, SKILL_LEVEL_JOURNEYMAN, TRUE)
-			H.adjust_skillrank_up_to(/datum/skill/combat/knives, SKILL_LEVEL_APPRENTICE, TRUE)
 			H.change_stat(STATKEY_SPD, 2)
 			H.change_stat(STATKEY_INT, 1)
 		if("Recurve Bow + Dagger")
-			l_hand = /obj/item/rogueweapon/huntingknife/idagger/steel/special
+			l_hand = /obj/item/rogueweapon/huntingknife/idagger/steel
 			beltl = /obj/item/quiver/arrows
 			r_hand = /obj/item/gun/ballistic/revolver/grenadelauncher/bow/recurve
 			H.change_stat(STATKEY_PER, 2)
 			H.change_stat(STATKEY_SPD, 1)
 			H.adjust_skillrank_up_to(/datum/skill/combat/bows, SKILL_LEVEL_JOURNEYMAN, TRUE)
-			H.adjust_skillrank_up_to(/datum/skill/combat/knives, SKILL_LEVEL_APPRENTICE, TRUE)
-		if("Сrossbow + Dagger")
-			l_hand = /obj/item/rogueweapon/huntingknife/idagger/steel/special
+		if("Crossbow + Dagger")
+			l_hand = /obj/item/rogueweapon/huntingknife/idagger/steel
 			r_hand = /obj/item/gun/ballistic/revolver/grenadelauncher/crossbow
-			beltl = /obj/item/quiver/bolt
+			beltl = /obj/item/quiver/bolt/standard
 			H.change_stat(STATKEY_PER, 2)
 			H.change_stat(STATKEY_SPD, 1)
 			H.adjust_skillrank_up_to(/datum/skill/combat/crossbows, SKILL_LEVEL_JOURNEYMAN, TRUE)
-			H.adjust_skillrank_up_to(/datum/skill/combat/knives, SKILL_LEVEL_APPRENTICE, TRUE)
 
 	// -- Start of section for god specific bonuses --
 	if(H.patron?.type == /datum/patron/divine/undivided)
-		H.adjust_skillrank_up_to(/datum/skill/magic/holy, SKILL_LEVEL_EXPERT, TRUE)
+		H.adjust_skillrank_up_to(/datum/skill/magic/holy, SKILL_LEVEL_JOURNEYMAN, TRUE)
 	if(H.patron?.type == /datum/patron/divine/astrata)
-		H.adjust_skillrank_up_to(/datum/skill/magic/holy, SKILL_LEVEL_EXPERT, TRUE)
+		H.adjust_skillrank_up_to(/datum/skill/magic/holy, SKILL_LEVEL_JOURNEYMAN, TRUE)
 		H.cmode_music = 'sound/music/cmode/church/combat_astrata.ogg'
 	if(H.patron?.type == /datum/patron/divine/dendor)
 		H.adjust_skillrank_up_to(/datum/skill/labor/farming, SKILL_LEVEL_NOVICE, TRUE)

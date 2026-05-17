@@ -226,8 +226,8 @@
 	var/is_forsaken = (!is_player)
 	if(minutes_dead < 5 && is_earthbound) // fresh + earthbound = VERY BAD
 		score -= 15
-	if(is_forsaken || is_departed) // forsaken or departed = good, this means it's only 2 minutes till they're valid
-		score += 3
+	if(is_forsaken || is_departed) // forsaken or departed are now instantly valid because dear lord these corpses be vanishin
+		score += 10
 	if(is_skeleton) // skeletons start on neutral, unless they're players
 		score += 2
 
@@ -457,7 +457,7 @@ var/global/mob/_corpse_sort_ref = null
 	if(!target || QDELETED(target))
 		return
 
-	user.say("#Undermaiden, guide my hand to those who have lost their way...")
+	user.say("#Undermaiden, guide my hand to those who have lost their way...", language = /datum/language/common)
 
 	var/score = get_necra_score(target)
 	var/judgement = get_necra_judgement(target)

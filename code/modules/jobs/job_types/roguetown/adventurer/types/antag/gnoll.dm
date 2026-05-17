@@ -6,7 +6,7 @@
 	faction = "Station"
 	total_positions = 0
 	spawn_positions = 0
-	allowed_races = RACES_SHUNNED_UP
+	forbidden_races = list(RACES_CONSTRUCT RACES_DESPISED)
 	tutorial = "You have proven yourself worthy to Graggar, and he's granted you his blessing most divine. Now you hunt for worthy opponents, seeking out those strong enough to make you bleed."
 	outfit = null
 	outfit_female = null
@@ -111,12 +111,21 @@
 	if(is_storyteller_soft_antag_blocked())
 		result["final_slots"] = 0
 		return result
-	result["final_slots"] = 1
+	var/slots = 1
+	if(SSgnoll_scaling)
+		switch(SSgnoll_scaling.get_gnoll_scaling())
+			if(GNOLL_SCALING_FLAT)
+				slots = 2
+			if(GNOLL_SCALING_DYNAMIC)
+				slots = 3
+	result["final_slots"] = slots
 	return result
 
 /proc/gnollslot_update()
 	var/datum/job/gnoll_job = SSjob.GetJob("Gnoll")
 	if(!gnoll_job)
+		return
+	if(gnoll_job.admin_slot_override)
 		return
 	var/list/scaling = gnollslot_calc()
 	var/slots = max(0, scaling["final_slots"])

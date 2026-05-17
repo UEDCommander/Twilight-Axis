@@ -172,6 +172,11 @@
 	cdmid.screen_loc = "WEST-3:0,SOUTH+7"
 	static_inventory += cdmid
 
+	defdelay = new /atom/movable/screen/action_bar/defensedelay/defdelay()
+	defdelay.hud = src
+	defdelay.screen_loc = "WEST-1:-5,SOUTH+10:15"
+	static_inventory += defdelay
+
 	build_hand_slots()
 
 	inv_box = new /atom/movable/screen/inventory()
@@ -409,6 +414,9 @@
 
 	energy = new /atom/movable/screen/energy()
 	infodisplay += energy
+
+	feint_bar = new /atom/movable/screen/feint()
+	infodisplay += feint_bar
 
 	breath_bar = new /atom/movable/screen/bloodpool/breath()
 	breath_bar.hud = src

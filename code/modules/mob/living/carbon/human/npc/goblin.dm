@@ -1,5 +1,14 @@
 GLOBAL_LIST_INIT(goblin_aggro, world.file2list("strings/rt/goblinaggrolines.txt"))
 
+GLOBAL_LIST_INIT(goblin_pyromancer_aggro, list(
+	"SFERA IGNA!",
+	"EVOMOO FLAMAS!",
+	"IGNA EERAY!",
+	"VELUM... VELAM... FIRE CURTAIN THING!",
+	"MAYA SFERA IGNA!",
+	"IGNA SFERA BOMBADA!",
+))
+
 /mob/living/carbon/human/species/goblin
 	name = "goblin"
 
@@ -7,6 +16,7 @@ GLOBAL_LIST_INIT(goblin_aggro, world.file2list("strings/rt/goblinaggrolines.txt"
 	icon_state = "goblin"
 	race = /datum/species/goblin
 	gender = MALE
+	blood_toll_bucket = STATS_KILLED_GOBLINS
 	bodyparts = list(/obj/item/bodypart/chest/goblin, /obj/item/bodypart/head/goblin, /obj/item/bodypart/l_arm/goblin,
 					/obj/item/bodypart/r_arm/goblin, /obj/item/bodypart/r_leg/goblin, /obj/item/bodypart/l_leg/goblin)
 	rot_type = /datum/component/rot/corpse/goblin
@@ -15,24 +25,20 @@ GLOBAL_LIST_INIT(goblin_aggro, world.file2list("strings/rt/goblinaggrolines.txt"
 	base_intents = list(INTENT_HELP, INTENT_DISARM, INTENT_GRAB, /datum/intent/unarmed/claw)
 	a_intent = INTENT_HELP
 	possible_mmb_intents = list(INTENT_SPECIAL, INTENT_JUMP, INTENT_KICK, INTENT_BITE)
-	possible_rmb_intents = list(/datum/rmb_intent/feint, /datum/rmb_intent/swift, /datum/rmb_intent/riposte, /datum/rmb_intent/weak)
-	flee_in_pain = TRUE
 
 /mob/living/carbon/human/species/goblin/npc
-	aggressive=1
-	mode = NPC_AI_IDLE
-	dodgetime = 30 //they can dodge easily, but have a cooldown on it
-	flee_in_pain = TRUE
-	npc_jump_chance = 60
-	npc_jump_distance = 3 // this might make them concheck more often, but it'll also mean it's easier to kick their legs out from under them
-	rude = TRUE
-	wander = FALSE
+	ai_controller = /datum/ai_controller/human_npc
+	dodgetime = 30
 
 /mob/living/carbon/human/species/goblin/npc/ambush
-	threat_point = THREAT_LOW
+	threat_point = THREAT_TRASH
 	ambush_faction = "goblins"
-	wander = TRUE
-	attack_speed = 2
+
+/mob/living/carbon/human/species/goblin/npc/archer
+	gob_outfit = /datum/outfit/job/roguetown/npc/goblin/archer
+
+/mob/living/carbon/human/species/goblin/npc/slinger
+	gob_outfit = /datum/outfit/job/roguetown/npc/goblin/slinger
 
 /mob/living/carbon/human/species/goblin/hell
 	name = "hell goblin"
@@ -61,7 +67,7 @@ GLOBAL_LIST_INIT(goblin_aggro, world.file2list("strings/rt/goblinaggrolines.txt"
 	race = /datum/species/goblin/cave
 
 /mob/living/carbon/human/species/goblin/npc/ambush/cave
-	threat_point = THREAT_LOW
+	threat_point = THREAT_TRASH
 	race = /datum/species/goblin/cave
 
 /datum/species/goblin/cave
@@ -72,11 +78,11 @@ GLOBAL_LIST_INIT(goblin_aggro, world.file2list("strings/rt/goblinaggrolines.txt"
 	name = "sea goblin"
 	race = /datum/species/goblin/sea
 /mob/living/carbon/human/species/goblin/npc/sea
-	threat_point = THREAT_LOW
+	threat_point = THREAT_TRASH
 	ambush_faction = "goblins"
 	race = /datum/species/goblin/sea
 /mob/living/carbon/human/species/goblin/npc/ambush/sea
-	threat_point = THREAT_LOW
+	threat_point = THREAT_TRASH
 	race = /datum/species/goblin/sea
 /datum/species/goblin/sea
 	raceicon = "goblin_sea"
@@ -88,7 +94,7 @@ GLOBAL_LIST_INIT(goblin_aggro, world.file2list("strings/rt/goblinaggrolines.txt"
 /mob/living/carbon/human/species/goblin/npc/moon
 	race = /datum/species/goblin/moon
 /mob/living/carbon/human/species/goblin/npc/ambush/moon
-	threat_point = THREAT_LOW
+	threat_point = THREAT_TRASH
 	race = /datum/species/goblin/moon
 /datum/species/goblin/moon
 	id = "goblin_moon"
@@ -127,12 +133,12 @@ GLOBAL_LIST_INIT(goblin_aggro, world.file2list("strings/rt/goblinaggrolines.txt"
 	name = "goblin"
 	id = "goblin"
 	species_traits = list(NO_UNDERWEAR,NOEYESPRITES)
-	inherent_traits = list(TRAIT_RESISTCOLD, 
-		TRAIT_RESISTHIGHPRESSURE, 
-		TRAIT_RESISTLOWPRESSURE, 
-		TRAIT_RADIMMUNE, 
-		TRAIT_CRITICAL_WEAKNESS, 
-		TRAIT_NASTY_EATER, 
+	inherent_traits = list(TRAIT_RESISTCOLD,
+		TRAIT_RESISTHIGHPRESSURE,
+		TRAIT_RESISTLOWPRESSURE,
+		TRAIT_RADIMMUNE,
+		TRAIT_CRITICAL_WEAKNESS,
+		TRAIT_NASTY_EATER,
 		TRAIT_LEECHIMMUNE) // For goblin armor
 	no_equip = list(SLOT_SHIRT, SLOT_WEAR_MASK, SLOT_GLOVES, SLOT_SHOES, SLOT_PANTS, SLOT_S_STORE)
 	nojumpsuit = 1
@@ -218,20 +224,14 @@ GLOBAL_LIST_INIT(goblin_aggro, world.file2list("strings/rt/goblinaggrolines.txt"
 	. = ..()
 	addtimer(CALLBACK(src, PROC_REF(after_creation)), 1 SECONDS)
 
-/mob/living/carbon/human/species/goblin/retaliate(mob/living/L)
-	var/newtarg = target
-	. = ..()
-	if(target != newtarg && npc_combat_dialogue(GLOB.goblin_aggro, list("laugh", "giggle", "chuckle", "cackle", "screech", "hiss", "growl"), prob_chance = 10))
-		pointed(target)
 
-
-/mob/living/carbon/human/species/goblin/handle_combat()
-	if(mode == NPC_AI_HUNT)
-		npc_combat_dialogue(GLOB.goblin_aggro, list("laugh", "giggle", "chuckle", "cackle", "screech", "hiss", "growl"), prob_chance = 10)
-	. = ..()
 
 /mob/living/carbon/human/species/goblin/after_creation()
 	..()
+	AddComponent(/datum/component/ai_aggro_system)
+	// Goblins shrug off their own bottle bombs
+	ADD_TRAIT(src, TRAIT_HARDSOLE, INNATE_TRAIT)
+	SEND_SIGNAL(src, COMSIG_MOB_MODIFY_AGGRO_LINES, GLOB.goblin_aggro, TRUE)
 	gender = MALE
 	if(src.dna && src.dna.species)
 		src.dna.species.soundpack_m = new /datum/voicepack/other/goblin()
@@ -253,7 +253,9 @@ GLOBAL_LIST_INIT(goblin_aggro, world.file2list("strings/rt/goblinaggrolines.txt"
 		charflaws.Remove(cf)
 		QDEL_NULL(cf)
 	update_body()
-	faction = list("orcs")
+	faction = list(FACTION_ORCS)
+	if(is_species(src, /datum/species/goblin/hell))
+		faction += FACTION_INFERNAL
 	name = "goblin"
 	real_name = "goblin"
 	ADD_TRAIT(src, TRAIT_NOMOOD, TRAIT_GENERIC)
@@ -266,6 +268,7 @@ GLOBAL_LIST_INIT(goblin_aggro, world.file2list("strings/rt/goblinaggrolines.txt"
 	if(is_species(src, /datum/species/goblin/sea))
 		ADD_TRAIT(src, TRAIT_NOBREATH, TRAIT_GENERIC)
 	ADD_TRAIT(src, TRAIT_TOXIMMUNE, TRAIT_GENERIC)
+	AddComponent(/datum/component/npc_death_line, GLOB.npc_death_lines_goblin, 25)
 	if(gob_outfit)
 		var/datum/outfit/O = new gob_outfit
 		if(O)
@@ -316,27 +319,19 @@ GLOBAL_LIST_INIT(goblin_aggro, world.file2list("strings/rt/goblinaggrolines.txt"
 /datum/outfit/job/roguetown/npc/goblin/pre_equip(mob/living/carbon/human/H)
 	..()
 	H.STASTR = 8
-	var/chance_zjumper = 5
-	var/chance_treeclimber = 30
 	if(is_species(H, /datum/species/goblin/moon))
 		H.STASPD = 16
-		chance_zjumper = 20
-		chance_treeclimber = 70
 	else
 		H.STASPD = 14
-	if(prob(chance_zjumper))
-		ADD_TRAIT(H, TRAIT_ZJUMP, TRAIT_GENERIC)
-		H.find_targets_above = TRUE
-	if(prob(chance_treeclimber))
-		H.tree_climber = TRUE
-		H.find_targets_above = TRUE // so they can taunt
-	H.STACON = 6
-	H.STAWIL = 15
+	H.STACON = 4
+	H.STAWIL = 4
+	H.STAPER = 8
 	if(is_species(H, /datum/species/goblin/moon))
 		H.STAINT = 8
 	else
 		H.STAINT = 4
-	var/loadout = rand(1,5)
+	// Stopgap: bow (was 6) and slinger (was 7) loadouts removed from the random pool because the ranged NPC AI is unreliable. Bomber moved into the freed slot.
+	var/loadout = rand(1,6)
 	switch(loadout)
 		if(1) //tribal spear
 			r_hand = /obj/item/rogueweapon/spear/stone
@@ -378,6 +373,13 @@ GLOBAL_LIST_INIT(goblin_aggro, world.file2list("strings/rt/goblinaggrolines.txt"
 			if(prob(20))
 				r_hand = /obj/item/rogueweapon/flail
 				l_hand = /obj/item/rogueweapon/shield/wood
+		if(6) // bottle bomber
+			r_hand = /obj/item/rogueweapon/huntingknife/stoneknife
+			neck = /obj/item/storage/belt/rogue/pouch/bombs
+			armor = /obj/item/clothing/suit/roguetown/armor/leather/hide/goblin
+			H.name = "goblin pyromancer"
+			H.real_name = "goblin pyromancer"
+			SEND_SIGNAL(H, COMSIG_MOB_MODIFY_AGGRO_LINES, GLOB.goblin_pyromancer_aggro, TRUE)
 	H.adjust_skillrank(/datum/skill/combat/polearms, 2, TRUE)
 	H.adjust_skillrank(/datum/skill/combat/maces, 2, TRUE)
 	H.adjust_skillrank(/datum/skill/combat/axes, 2, TRUE)
@@ -388,19 +390,61 @@ GLOBAL_LIST_INIT(goblin_aggro, world.file2list("strings/rt/goblinaggrolines.txt"
 	H.adjust_skillrank(/datum/skill/misc/swimming, 2, TRUE)
 	H.adjust_skillrank(/datum/skill/misc/climbing, 2, TRUE)
 
+/datum/outfit/job/roguetown/npc/goblin/archer/pre_equip(mob/living/carbon/human/H)
+	..()
+	r_hand = /obj/item/rogueweapon/huntingknife/stoneknife
+	l_hand = null
+	backr = /obj/item/gun/ballistic/revolver/grenadelauncher/bow
+	backl = /obj/item/quiver/stonearrows
+	armor = /obj/item/clothing/suit/roguetown/armor/leather/hide/goblin
+	H.STASTR = 6
+	H.STAPER = 11
+	H.adjust_skillrank(/datum/skill/combat/bows, 2, TRUE)
+	H.upgrade_ai_controller(/datum/ai_controller/human_npc/archer)
+
+/datum/outfit/job/roguetown/npc/goblin/slinger/pre_equip(mob/living/carbon/human/H)
+	..()
+	r_hand = /obj/item/rogueweapon/huntingknife/stoneknife
+	l_hand = null
+	backr = null
+	backl = null
+	wrists = /obj/item/gun/ballistic/revolver/grenadelauncher/sling
+	neck = /obj/item/quiver/sling/stone
+	armor = /obj/item/clothing/suit/roguetown/armor/leather/hide/goblin
+	H.adjust_skillrank(/datum/skill/combat/slings, 2, TRUE)
+
+/mob/living/carbon/human/species/goblin/npc/bomber
+	name = "goblin pyromancer"
+	gob_outfit = /datum/outfit/job/roguetown/npc/goblin/bomber
+
+/mob/living/carbon/human/species/goblin/npc/bomber/after_creation()
+	..()
+	SEND_SIGNAL(src, COMSIG_MOB_MODIFY_AGGRO_LINES, GLOB.goblin_pyromancer_aggro, TRUE)
+	name = "goblin pyromancer"
+	real_name = "goblin pyromancer"
+
+/datum/outfit/job/roguetown/npc/goblin/bomber/pre_equip(mob/living/carbon/human/H)
+	..()
+	r_hand = /obj/item/rogueweapon/huntingknife/stoneknife
+	l_hand = null
+	neck = /obj/item/storage/belt/rogue/pouch/bombs
+	armor = /obj/item/clothing/suit/roguetown/armor/leather/hide/goblin
+
 //////////////////   INVADER ZIM	//////////////////
 
 /obj/structure/gob_portal
-	name = "gob portal"
-	desc = "A bright portal torn through the fabric of the world. This can't be good."
+	name = "goblin portal"
+	desc = "A bright portal torn through the fabric of the world, sounds of marching and goblin warcries can be heard on the other side. This can't be good."
 	icon = 'icons/roguetown/misc/structure.dmi'
 	icon_state = "shitportal"
-	max_integrity = 200
+	max_integrity = 400 //keep it a bit more intact, you'll need an axe to properly take it down quickly.
 	anchored = TRUE
 	density = FALSE
 	layer = BELOW_OBJ_LAYER
 	var/gobs = 0
-	var/maxgobs = 3
+	var/maxgobs = 6 //CHAOS, CHAOS, CHAOS
+	var/playergobs = 0 //Seperate so that goblin NPCs don't hog player slots
+	var/maxplayergobs = 10 //upped for player shenngions with these. Below 30 active living players this will be capped to 5.
 	var/datum/looping_sound/boneloop/soundloop
 	var/spawning = FALSE
 	var/moon_goblins = 0
@@ -412,17 +456,28 @@ GLOBAL_LIST_INIT(goblin_aggro, world.file2list("strings/rt/goblinaggrolines.txt"
 	soundloop.start()
 	spawn_gob()
 
+	set_light(3, 2, 20, l_color = "#7b60f3")
+	playsound(loc, 'sound/misc/portalopen.ogg', 100, FALSE, pressure_affected = FALSE)
+
 /obj/structure/gob_portal/attack_ghost(mob/dead/observer/user)
 	if(QDELETED(user))
 		return
 	if(!in_range(src, user))
 		return
-	if(gobs >= (maxgobs+1))
-		to_chat(user, "<span class='danger'>Too many Gobs.</span>")
+	if(playergobs >= (maxplayergobs+1))
+		to_chat(user, "<span class='danger'>Too many player Goblins.</span>")
 		return
-	gobs++
-	var/mob/living/carbon/human/species/goblin/npc/N = new (get_turf(src))
+	playergobs++
+	var/mob/living/carbon/human/species/goblin/N = new (get_turf(src))
 	N.key = user.key
+	N.base_intents = list(INTENT_HELP, INTENT_DISARM, INTENT_GRAB, /datum/intent/simple/claw) //As intended from seige goblins, so it is here.
+	N.update_a_intents()
+	N.set_patron(/datum/patron/inhumen/graggar)
+	N.cmode_music = 'sound/music/combat_shaman2.ogg' //GRAGGAR. GRAGGAR. GRAGGAR. (Different to Gnolls/Heretics, you're just a barbaric goblin shocktrooper)
+	N.choose_name_popup("Goblin") //This is so dumb but funny
+	if(N.mind)
+		N.mind.add_antag_datum(new /datum/antagonist/goblin()) //Ensures we are in fact, a goblin (so friend/foe examines + admin antag tracking)
+	to_chat(N, span_danger("You are a disposable antagonist, expect to die rather quickly. Now go cause problems and stirr some conflict! Remember to roleplay where possible."))
 	qdel(user)
 
 
@@ -435,19 +490,25 @@ GLOBAL_LIST_INIT(goblin_aggro, world.file2list("strings/rt/goblinaggrolines.txt"
 	if(moon_goblins == 0)
 		if(GLOB.tod == "night")
 			if(prob(30))
-				moon_goblins = 1
-			else
 				moon_goblins = 2
+			else
+				moon_goblins = 3
 	if(moon_goblins == 1)
 		new /mob/living/carbon/human/species/goblin/npc/moon(get_turf(src))
 	else
 		new /mob/living/carbon/human/species/goblin/npc(get_turf(src))
 	gobs++
 	update_icon()
-	if(living_player_count() < 10)
-		maxgobs = 1
+	if(living_player_count() < 30) //Lowpop Measures
+		maxgobs = 3 //Three NPCs at most, like old portals
+		maxplayergobs = 5 //Five is very generous
 	if(gobs < maxgobs)
 		spawn_gob()
+
+/obj/structure/gob_portal/examine(mob/user) //Ghosts only can examine this.
+	. = ..()
+	if(!isliving(user))
+		. += span_bloody("Graggar demands blood! You can click this portal to join as a goblin if there are open slots. There are [playergobs] out of [maxplayergobs] goblins taken.")
 
 /obj/structure/gob_portal/proc/spawn_gob()
 	if(QDELETED(src))

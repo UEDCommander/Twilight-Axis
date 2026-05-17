@@ -189,7 +189,7 @@
 
 /atom/movable/screen/alert/status_effect/buff/fortitude
 	name = "Fortitude"
-	desc = "My humors has been hardened to the fatigues of the body. (-50% Stamina Usage)"
+	desc = "My humors have been hardened to the fatigues of the body. (-50% Stamina Usage)"
 	icon_state = "buff"
 
 #define FORTITUDE_FILTER "fortitude_glow"
@@ -250,7 +250,7 @@
 /atom/movable/screen/alert/status_effect/buff/darkvision
 	name = "Darkvision"
 	desc = "I can see in the dark somewhat."
-	icon_state = "buff"
+	icon_state = "darkvision"
 
 /datum/status_effect/buff/darkvision
 	id = "darkvision"

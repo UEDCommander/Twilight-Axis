@@ -6,7 +6,7 @@
 	total_positions = 1
 	spawn_positions = 1
 	selection_color = JCOLOR_VANGUARD
-	allowed_races = RACES_TOLERATED_UP
+	forbidden_races = list(RACES_SHUNNED RACES_DESPISED RACES_CONSTRUCT)
 	allowed_ages = list(AGE_MIDDLEAGED, AGE_OLD)
 	display_order = JDO_OVERSEER
 	tutorial = "Вам, как опытному солдату из свиты Его Величества, поручено наблюдать за недавно построенным Бастионом. \
@@ -19,6 +19,8 @@
 	give_bank_account = TRUE
 	min_pq = 10
 	max_pq = null
+	round_contrib_points = 3
+	same_job_respawn_delay = 30 MINUTES
 
 	cmode_music = 'modular_twilight_axis/sound/music/combat/combat_vanguard.ogg'
 	job_subclasses = list(
