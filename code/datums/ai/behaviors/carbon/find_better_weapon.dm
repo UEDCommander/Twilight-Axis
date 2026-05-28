@@ -1,7 +1,11 @@
 /datum/ai_behavior/find_and_set/better_weapon
 
 /datum/ai_behavior/find_and_set/better_weapon/search_tactic(datum/ai_controller/controller, locate_path, search_range)
+	if(!controller?.pawn || !controller.blackboard || !controller.blackboard[BB_WEAPON_TYPE])
+		return null
 	var/mob/living/carbon/living_pawn = controller.pawn
+	if(!istype(living_pawn))
+		return null
 	var/obj/item/held_item = living_pawn.get_active_held_item()
 	if(istype(held_item, /obj/item/rogueweapon/shield))
 		living_pawn.swap_hand()
@@ -23,7 +27,11 @@
 	if(checking == pawn)
 		return FALSE
 	var/mob/living/carbon/living_pawn = pawn
+	if(!istype(living_pawn) || !living_pawn.ai_controller)
+		return FALSE
 	var/datum/ai_controller/controller = living_pawn.ai_controller
+	if(!controller.blackboard || !controller.blackboard[BB_WEAPON_TYPE])
+		return FALSE
 	if(!istype(checking, controller.blackboard[BB_WEAPON_TYPE]))
 		return FALSE
 	var/obj/item/held_item = living_pawn.get_active_held_item()

@@ -3,6 +3,8 @@
 #define UNARMED_BASE_WDEF_EQUIPPED 7	// Bracers / knuckles / bandages — matches a rapier
 
 /mob/living/proc/attempt_parry(datum/intent/intenty, mob/living/user)
+	if(!user)
+		return FALSE
 	var/prob2defend = user.defprob
 	var/mob/living/H = src
 	var/mob/living/U = user
@@ -59,7 +61,7 @@
 
 	// TA Edit start - new Ronin Class
 	var/need_override = TRUE
-	if(mainhand?.can_parry || offhand?.can_parry)
+	if((istype(mainhand) && mainhand.can_parry) || (istype(offhand) && offhand.can_parry))
 		need_override = FALSE
 
 	if(need_override)

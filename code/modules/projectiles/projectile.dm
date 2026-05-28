@@ -389,6 +389,9 @@
 	beam_segments[beam_index] = null
 
 /obj/projectile/Bump(atom/A)
+	if(!trajectory)
+		qdel(src)
+		return FALSE
 	var/datum/point/pcache = trajectory.copy_to()
 	var/turf/T = get_turf(A)
 	if(ricochets < ricochets_max && check_ricochet_flag(A) && check_ricochet(A))
@@ -773,10 +776,13 @@
 //Spread is FORCED!
 /obj/projectile/proc/preparePixelProjectile(atom/target, atom/source, params, spread = 0)
 	var/turf/curloc = get_turf(source)
+	if(!curloc)
+		qdel(src)
+		return FALSE
 	var/turf/targloc = get_turf(target)
 	var/turf/start_loc = curloc
 
-	if(targloc && curloc)
+	if(targloc)
 		target_z = targloc.z
 		if(arcshot)
 			if(targloc.z > curloc.z)
