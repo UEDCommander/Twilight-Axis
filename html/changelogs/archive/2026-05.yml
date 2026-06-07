@@ -1924,8 +1924,6 @@
 2026-05-28:
   Baneuus:
   - bugfix: Gnoll / Werewolf claws now do have special once again.
-  changelingonberry:
-  - rscadd: Cycle MMB intent hotkey DEFAULT UNBOUND GO CHANGE IT TO YOUR LIKING
   Vladmar11:
   - balance: "\u0437\u0430\u0432\u0438\u0441\u0438\u043C\u043E\u0441\u0442\u044C \u0431\
       \u0430\u043D\u0434\u0438\u0442\u043E\u0432 \u043E\u0442 \u0432\u044B\u0431\u0440\
@@ -1956,6 +1954,8 @@
   - bugfix: "\u0434\u0443\u0431\u043B\u0438\u043A\u0430\u0446\u0438\u044F \u0441\u0438\
       \u043A\u0435\u0435\u0432 \u043B\u044E\u0434\u0435\u0439 \u0443 \u0430\u0434\u043C\
       \u0438\u043D\u043E\u0432 \u0432 \u0447\u0430\u0442\u0435"
+  changelingonberry:
+  - rscadd: Cycle MMB intent hotkey DEFAULT UNBOUND GO CHANGE IT TO YOUR LIKING
   namenlos66:
   - rscadd: "\u0422\u0435\u043F\u0435\u0440\u044C \u0440\u043E\u043B\u044C \u043A\u043E\
       \u0440\u0442\u0430\u0433\u0435\u043D\u0442\u0430 \u043C\u043E\u0436\u0435\u0442\
@@ -1980,3 +1980,64 @@
       \ MASTER OF MAILS \u0438 \u0432\u044B\u0434\u0430\u044E\u0442\u0441\u044F \u043D\
       \u0435\u043F\u043E\u0441\u0440\u0435\u0434\u0441\u0442\u0432\u0435\u043D\u043D\
       \u043E \u0434\u0435\u0441\u043D\u0438\u0446\u0435"
+2026-05-29:
+  Aisu9:
+  - bugfix: Fixed Mystic's quarterstaff weapon choice not working correctly.
+  EtheoBoxxman:
+  - bugfix: Fixes Vampire Scrying Eye Movement
+  Quinalion:
+  - rscadd: Giggle sounds for elven female voicepack.
+  - rscadd: Giggle sounds for generic male voicepack.
+  Ryan180602:
+  - bugfix: runtime batchfixes (2)
+  Vladmar11:
+  - bugfix: "\u0418\u0441\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0430 \u0432\u043E\
+      \u0437\u043C\u043E\u0436\u043D\u043E\u0441\u0442\u044C \u0434\u043B\u044F \u0441\
+      \u043F\u0435\u043B\u043B\u0431\u043B\u0435\u0439\u0434\u043E\u0432 \u043E\u0441\
+      \u0442\u0430\u0432\u0430\u0442\u044C\u0441\u044F \u0432 \u0432\u043E\u0437\u0434\
+      \u0443\u0445\u0435 \u0441 \u043F\u043E\u043C\u043E\u0449\u044C\u044E Advance!"
+  WeNeedMorePhoron:
+  - rscadd: Fixes Tailoring Commissioner and make most recipes appear there
+  - rscadd: Dedupe a fencing jacket recipe
+  - rscadd: Consolidated the fine & luxury garments category together since fine only
+      have 2 items
+  - bugfix: Placed the noticeboard in clinic in the proper position
+  changelingonberry:
+  - admin: Adds coordinates to lockpicking and doorbreaking
+2026-05-30:
+  Ketrai:
+  - rscadd: Deadite cabbit
+  Oats:
+  - rscadd: Added pork belly
+  - rscadd: Made regular pork flesh mince-able
+  - rscadd: Truffle pigs now yield the same butchering results as regular pigs
+  - rscadd: Boars now yield pork belly as well.
+  Quinalion:
+  - bugfix: Fixed a bug where washing in water did not clear blood overlays from character
+      body sprites.
+  Ryan180602:
+  - bugfix: repair exploit of disassembling mailled cuirass.
+  - bugfix: rename mailled hauberk to mailled cuirass.
+  WeNeedMorePhoron:
+  - rscadd: TGUI Calendar accessible by clicking "IC Date" with 29 human (me) written
+      events based on real historical festivals and events.
+  kiwedespars:
+  - bugfix: pants
+2026-05-31:
+  MaesuneLux:
+  - rscadd: Add donor items for Arra and Vyx
+  SpadesNeil:
+  - refactor: Moved some defines in mask.dm
+  borneblood:
+  - rscadd: Added 'Daggers' loadout for Heretic Spy.
+  - code_imp: Turned Raze into action/cooldown and added a few fluff interactions
+      to it.
+  radarseas:
+  - bugfix: wretch deserters can recruit fellow wretches again.
+  - bugfix: recruitment verbs have a cmode check now.
+  - balance: recruit verbs aren't job-shielded from antagonists, letting antagonists
+      now claim role recruitment to blend in.
+  - admin: job recruitment verbs now log to admins.
+  saltprjak:
+  - balance: Mistwalkers have received a small buff, alongside an for regenerating
+      skin armor.

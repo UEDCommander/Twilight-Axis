@@ -2,7 +2,6 @@
 #define TAB_BANK 2
 #define TAB_IMPORT 3
 #define TAB_BOUNTIES 4
-#define TAB_LOG 5
 #define TAB_FISCAL 6
 #define TAB_PAYDAY 7
 #define TAB_DEBT 8
@@ -31,6 +30,10 @@
 	var/residency_print_cooldown = 0
 	// Last trade-modal quote keyed by ckey. Read by ui_data to round-trip per-user.
 	var/list/last_trade_quote = list()
+	// Per-user ledger view state keyed by ckey: list("open", "page", "filter"). Only populated
+	// into ui_static_data while a user has the Ledger tab open, so the full ledger never rides
+	// the per-tick Market Scroll payload.
+	var/list/ledger_view = list()
 	COOLDOWN_DECLARE(fulfill_retry_cooldown)
 
 /obj/structure/roguemachine/steward/Initialize()
@@ -682,7 +685,6 @@
 			contents += "<a href='?src=\ref[src];switchtab=[TAB_IMPORT]'>\[Import\]</a><BR>"
 			contents += "<a href='?src=\ref[src];switchtab=[TAB_BOUNTIES]'>\[Bounties\]</a><BR>"
 			contents += "<a href='?src=\ref[src];switchtab=[TAB_PAYDAY]'>\[Daily Payments\]</a><BR>"
-			contents += "<a href='?src=\ref[src];switchtab=[TAB_LOG]'>\[Log\]</a><BR>"
 			contents += "<a href='?src=\ref[src];switchtab=[TAB_FISCAL]'>\[Fiscal Ledger\]</a><BR>"
 			contents += "<a href='?src=\ref[src];switchtab=[TAB_DEBT]'>\[Debts &amp; Arrears\]</a><BR>"
 			contents += "<a href='?src=\ref[src];printresidency=1'>\[Print Letter of Citizenry\]</a><BR>"
@@ -753,10 +755,14 @@
 			contents += "Treasury: [SStreasury.discretionary_fund.balance]m</center><BR>"
 			// ── Active Loans ──────────────────────────────────────────────────
 			if(length(SStreasury.loans))
-				contents += "<b>Active Loans ([length(SStreasury.loans)]):</b><BR>"
+				var/crown_loans = 0
+				var/crown_loan_content = "" 
 				for(var/datum/loan/L in SStreasury.loans)
-					var/loan_color = L.defaulted ? "#d9534f" : "#e07b39"
-					contents += "<font color='[loan_color]'>[L.format()]</font><BR>"
+					crown_loans++
+					if(L.source_fund == SStreasury.discretionary_fund)
+						var/loan_color = L.defaulted ? "#d9534f" : "#e07b39"
+						crown_loan_content += "<font color='[loan_color]'>[L.format()]</font><BR>"
+				contents += "<b>Active Crown Loans ([crown_loans]):</b><BR>"
 				contents += "<BR>"
 			else
 				contents += "<i>No active loans.</i><BR><BR>"
@@ -772,7 +778,7 @@
 				for(var/mob/living/carbon/human/A in debt_rows)
 					var/poll_owed = SStreasury.poll_tax_owed[A] || 0
 					var/overdue_days = SStreasury.poll_tax_debt_days[A] || 0
-					var/is_debtor = HAS_TRAIT(A, TRAIT_DEBTOR)
+					var/is_debtor = HAS_TRAIT(A, TRAIT_DEBTOR_CROWN)
 					var/balance = SStreasury.get_balance(A)
 					if(is_debtor)
 						var/owed_str = poll_owed > 0 ? ", owes [poll_owed]m" : ""
@@ -817,13 +823,6 @@
 					contents += "Bounty Price: <a href='?src=\ref[src];setbounty=\ref[A]'>[A.payout_price]%</a><BR><BR>"
 				else
 					contents += "Bounty Price: <a href='?src=\ref[src];setbounty=\ref[A]'>[A.payout_price]</a><BR><BR>"
-		if(TAB_LOG)
-			contents += "<a href='?src=\ref[src];switchtab=[TAB_MAIN]'>\[Return\]</a><BR>"
-			contents += "<center>Log<BR>"
-			contents += "--------------</center><BR><BR>"
-			for(var/i = SStreasury.ledger.len to 1 step -1)
-				var/datum/treasury_entry/entry = SStreasury.ledger[i]
-				contents += "<span class='info'>[entry.format()]</span><BR>"
 		if(TAB_FISCAL)
 			contents += "<a href='?src=\ref[src];switchtab=[TAB_MAIN]'>\[Return\]</a><BR>"
 			var/list/snap = SStreasury.compute_fiscal_snapshot()
@@ -1124,7 +1123,6 @@
 #undef TAB_BANK
 #undef TAB_IMPORT
 #undef TAB_BOUNTIES
-#undef TAB_LOG
 #undef TAB_FISCAL
 #undef TAB_PAYDAY
 #undef TAB_DEBT

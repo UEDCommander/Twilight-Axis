@@ -10,7 +10,7 @@
 	var/next_activation = 0
 	var/end_activation = 0
 	var/ignite_chance = 2
-	var/traits_applied = list(TRAIT_NOPAIN, TRAIT_NOPAINSTUN, TRAIT_NOMOOD, TRAIT_NOHUNGER, TRAIT_NOBREATH, TRAIT_DEATHLESS, TRAIT_BLOODLOSS_IMMUNE, TRAIT_LONGSTRIDER, TRAIT_STRONGBITE, TRAIT_STRENGTH_UNCAPPED, TRAIT_GRABIMMUNE, TRAIT_TEMPO)
+	var/traits_applied = list(TRAIT_NOPAIN, TRAIT_NOPAINSTUN, TRAIT_NOMOOD, TRAIT_NOHUNGER, TRAIT_NOBREATH, TRAIT_DEATHLESS, TRAIT_BLOODLOSS_IMMUNE, TRAIT_LONGSTRIDER, TRAIT_STRONGBITE, TRAIT_STRENGTH_UNCAPPED, TRAIT_GRABIMMUNE, TRAIT_TEMPO, TRAIT_STUNIMMUNE)
 	var/stat_bonus_martyr = 3
 	var/mob/living/current_holder
 	var/is_active = FALSE
@@ -468,7 +468,7 @@
 	faction = "Station"
 	tutorial = "Martyrs are hand-picked among the most devout of the Holy See. They are given one of the See's cherished relics to protect the Church, and to inspire hope and lead by example of grace, kindness and vicious intolerance to any who do not share the belief of the Ten. They have sworn an Oath in the sight of the gods, and will fulfill it to the bitter end."
 	allowed_sexes = list(MALE, FEMALE)
-	forbidden_races = list(RACES_CONSTRUCT RACES_DESPISED)
+	forbidden_races = list(RACES_CONSTRUCT RACES_DESPISED RACES_OOZE)
 	allowed_patrons = list(/datum/patron/divine/undivided)
 	outfit = /datum/outfit/job/roguetown/martyr
 	min_pq = 15 //Cus it's a Martyr of the Ten. Get it.

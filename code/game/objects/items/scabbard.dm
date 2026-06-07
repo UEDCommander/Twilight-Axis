@@ -549,6 +549,7 @@
 	possible_item_intents = list(SHIELD_BASH, SHIELD_SMASH)
 	can_parry = TRUE
 	sewrepair = FALSE
+	anvilrepair = /datum/skill/craft/carpentry
 	wdefense = 8
 	special = /datum/special_intent/limbguard
 
@@ -588,7 +589,7 @@
 	icon_state = "kazscabyuruku"
 	item_state = "kazscabyuruku"
 	valid_blade = /obj/item/rogueweapon/sword/short/kazengun
-	wdefense = 4
+	wdefense = 7
 	special = null
 
 /obj/item/rogueweapon/scabbard/sheath/kazengun
@@ -601,9 +602,10 @@
 	possible_item_intents = list(SHIELD_BASH, SHIELD_BLOCK)
 	can_parry = TRUE
 	sewrepair = FALSE
-	wdefense = 3
+	anvilrepair = /datum/skill/craft/carpentry
+	wdefense = 4
+	max_integrity = 220
 
-	max_integrity = 0
 
 /obj/item/rogueweapon/scabbard/sheath/courtphysician
 	name = "fancy cane"

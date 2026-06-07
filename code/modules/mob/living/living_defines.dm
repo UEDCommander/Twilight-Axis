@@ -218,7 +218,6 @@
 
 	var/tempatarget = null
 	var/pegleg = 0			//Handles check & slowdown for peglegs. Fuckin' bootleg, literally, but hey it at least works.
-	var/construct = 0
 	var/burialrited = FALSE
 
 	/// Toggle delay for Specials, or really anything else that you don't want input spam to instantly cycle through.
@@ -228,13 +227,5 @@
 
 	/// Whether we are in a swingdelay, used to check for disrupted swingdelays.
 	var/swing_state = FALSE
-	var/is_swimming = FALSE
-	var/is_underwater = FALSE
-	var/drowning_drowniness = 0
-	var/breath_remaining = 100
-	var/max_breath = 100
-	var/last_breath_spent = 0
-	var/client/swimming_filter_client = null
-
 	/// This one's for when you're choking to death.
 	var/last_gasp

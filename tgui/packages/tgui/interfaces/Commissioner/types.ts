@@ -64,7 +64,6 @@ export type MaterialEntry = {
 };
 
 export type CommissionerData = {
-  locked: BooleanLike;
   can_read: BooleanLike;
   is_guildmaster: BooleanLike;
   budget: number;
@@ -77,6 +76,7 @@ export type CommissionerData = {
   catalog: CatalogEntry[];
   categories: string[];
   ingots: string[];
+  group_order: string[];
   manifest: ManifestLine[];
   manifest_total: number;
   orders: Order[];

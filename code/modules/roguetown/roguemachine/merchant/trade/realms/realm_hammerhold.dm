@@ -1,8 +1,8 @@
 /datum/foreign_realm/hammerhold
 	id = REALM_HAMMERHOLD
-	name = "Hammerhold"
+	name = "Drud Akhdruk" //TA EDIT
 	roll_weight = TRADE_REALM_WEIGHT_DISTANT
-	demanded_categories = list(NAVIGATOR_BUCKET_GARMENT_COMMON, NAVIGATOR_BUCKET_BEVERAGE, NAVIGATOR_BUCKET_ARMOR_HEAVY, NAVIGATOR_BUCKET_SEAFOOD, NAVIGATOR_BUCKET_POTTERY, NAVIGATOR_BUCKET_MISCELLANEOUS)
+	demanded_categories = list(NAVIGATOR_BUCKET_GARMENT_COMMON, NAVIGATOR_BUCKET_ARMOR_HEAVY, NAVIGATOR_BUCKET_SEAFOOD, NAVIGATOR_BUCKET_POTTERY, NAVIGATOR_BUCKET_MISCELLANEOUS)
 	single_word_base = TRUE
 	ship_name_words = list(
 		"Æthel", "Beorht", "Hammer", "Anvil", "Grim",
@@ -75,11 +75,11 @@
 		list("typepath" = /obj/item/reagent_containers/food/snacks/rogue/cheesebun, "qty_min" = VICTUALLING_QTY_MEDIUM_MIN, "qty_max" = VICTUALLING_QTY_MEDIUM_MAX, "price" = VICTUALLING_PRICE_SIMPLE),
 	)
 	victualling_drinks_pool = list(
-		list("recipe" = /datum/brewing_recipe/beer, "qty_min" = VICTUALLING_QTY_LARGE_MIN, "qty_max" = VICTUALLING_QTY_LARGE_MAX),
-		list("recipe" = /datum/brewing_recipe/beer/oat, "qty_min" = VICTUALLING_QTY_MEDIUM_MIN, "qty_max" = VICTUALLING_QTY_MEDIUM_MAX),
-		list("recipe" = /datum/brewing_recipe/mead, "qty_min" = VICTUALLING_QTY_MEDIUM_MIN, "qty_max" = VICTUALLING_QTY_MEDIUM_MAX),
-		list("recipe" = /datum/brewing_recipe/cider, "qty_min" = VICTUALLING_QTY_MEDIUM_MIN, "qty_max" = VICTUALLING_QTY_MEDIUM_MAX),
-		list("recipe" = /datum/brewing_recipe/voddena, "qty_min" = VICTUALLING_QTY_TINY_MIN, "qty_max" = VICTUALLING_QTY_TINY_MAX),
+		list("recipe" = /datum/brewing_recipe/beer, "keg_mult" = 2),
+		list("recipe" = /datum/brewing_recipe/beer/oat),
+		list("recipe" = /datum/brewing_recipe/mead),
+		list("recipe" = /datum/brewing_recipe/cider),
+		list("recipe" = /datum/brewing_recipe/voddena),
 	)
 	cultural_stock_pool = list(
 		/datum/supply_pack/rogue/hammerhold/dwarven_maul,
@@ -121,5 +121,5 @@
 		"Three of my deckhands are bull-marked beneath the eyes - pardoned in the Hearth's tradition. They lift cargo, not coin. Mind your stevedores.",
 		"My factor at Norwardine warned me the southern markets had soured. I came anyway. Let us see who was right.",
 		"My ship carries an old Atgervi veteran, his last voyage before the abbey takes his sword. For three zennies he will sit with you and tell the true account of the Brazen Bull, the Greycoat war, and the night the gates of Granite Fort first opened to humen. He drinks more than he eats. Pay him and listen well - in Norwardine the songs live in the men who sing them, and there are not many old men left who remember the early daes.",
-		"Factor! Give me the biggest barrel of sturgeon and caviar I have ever seen! I shall trade the finest armor of gilbranze and steel! True dwarven crafts from Hammerhold. It will even take three siegebolts to the chest for your trouble. It is marked and proofed, you can even see the dent and a seal of the craftsman on the inside. And for your troubles, I shall give you four bottles of our finest voddena and ingots. My Hold hungers for the finest southern delicacies. Please deliver them unto me with haste. I'd like a taste before we set sail."
+		"Factor! Give me the biggest barrel of sturgeon and caviar I have ever seen! I shall trade the finest armor of gilbranze and steel! True dwarven crafts from Drud Akhdruk. It will even take three siegebolts to the chest for your trouble. It is marked and proofed, you can even see the dent and a seal of the craftsman on the inside. And for your troubles, I shall give you four bottles of our finest voddena and ingots. My Hold hungers for the finest southern delicacies. Please deliver them unto me with haste. I'd like a taste before we set sail."
 	)

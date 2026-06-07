@@ -360,7 +360,7 @@
 
 //Zydras donator items - Ironclad baddie
 /obj/item/enchantingkit/zydrashauberk
-	name = "Mailled Hauberk morphing elixir"
+	name = "Mailled Cuirass morphing elixir"
 	target_items = list(/obj/item/clothing/suit/roguetown/armor/chainmail/hauberk/iron/heavy)
 	result_item = /obj/item/clothing/suit/roguetown/armor/chainmail/hauberk/iron/heavy/zycuirass
 
@@ -759,6 +759,28 @@
 		/obj/item/rogueweapon/eaglebeak
 	)
 	result_item = /obj/item/rogueweapon/example/des_gaebolg
+
+// inverserun
+/obj/item/enchantingkit/weapon/arra_amdir
+	name = "'Amdir' morphing elixir"
+	target_items = list(
+	/obj/item/rogueweapon/greataxe/steel/knight,
+	/obj/item/rogueweapon/greataxe/silver,
+	/obj/item/rogueweapon/greataxe/psy,
+	/obj/item/rogueweapon/greataxe/bronze,
+	/obj/item/rogueweapon/greataxe/
+
+	)
+	result_item = /obj/item/rogueweapon/example/arra_amdir
+
+//sakuyzo
+/obj/item/enchantingkit/weapon/sakuyzo
+	name = "'Hævatein' morphing elixir"
+	target_items = list(
+		/obj/item/rogueweapon/sword/long/kriegmesser/noc,
+		/obj/item/rogueweapon/sword/long/kriegmesser
+	)
+	result_item = /obj/item/rogueweapon/sakuyzo/sword
 
 /////////////////////////////
 // ! Triumph-Exc. Kits !   //

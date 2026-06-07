@@ -52,6 +52,9 @@
 		/obj/item/alch/bone = 2,
 		/obj/item/alch/viscera = 1
 	)
+	ai_controller = /datum/ai_controller/undead
+	AIStatus = AI_OFF
+	can_have_ai = FALSE
 
 /mob/living/simple_animal/hostile/retaliate/rogue/saiga/undead/Initialize()
 	. = ..()
