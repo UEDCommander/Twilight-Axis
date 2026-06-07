@@ -84,15 +84,21 @@ SUBSYSTEM_DEF(input)
 // Badmins just wanna have fun ♪
 /datum/controller/subsystem/input/proc/refresh_client_macro_sets()
 	var/list/clients = GLOB.clients
-	for(var/i in 1 to clients.len)
+	for(var/i in clients.len to 1 step -1)
 		var/client/user = clients[i]
+		if(!user)
+			clients.Cut(i, i + 1)
+			continue
 		user.set_macros()
 		user.update_movement_keys()
 
 /datum/controller/subsystem/input/fire()
 	var/list/clients = GLOB.clients // Let's sing the list cache song
-	for(var/i in 1 to clients.len)
+	for(var/i in clients.len to 1 step -1)
 		var/client/C = clients[i]
+		if(!C)
+			clients.Cut(i, i + 1)
+			continue
 		C.keyLoop()
 
 /// A verb that does nothing, used for clearing keybinds faster.
