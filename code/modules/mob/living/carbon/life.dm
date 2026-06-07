@@ -137,20 +137,27 @@
 		if(HAS_TRAIT(src, TRAIT_NOBREATH) || HAS_TRAIT(src, TRAIT_WATERBREATHING) || HAS_TRAIT(src, TR_DEFAULTMSG))
 			return TRUE
 
-		var/breath_drain = HAS_TRAIT(src, TRAIT_HOLDBREATH) ? 1 : 2
-		breath_remaining = max(0, breath_remaining - breath_drain)
+		var/drown_damage = has_world_trait(/datum/world_trait/abyssor_rage) ? 10 : 5
+		var/was_alive = stat != DEAD
 
-		if(istype(onturf, /turf/open/water/sewer) && !HAS_TRAIT(src, TRAIT_HOLDBREATH))
-			add_stress(/datum/stressevent/sewertouched)
+		adjustOxyLoss(drown_damage)
 
-		if(istype(onturf, /turf/open/water/bath) && !wear_armor && !wear_shirt && !wear_pants)
-			add_stress(/datum/stressevent/bathwater)
+		if(was_alive && stat == DEAD && client)
+			record_round_statistic(STATS_PEOPLE_DROWNED)
 
+		if(!QDELETED(src) && stat != DEAD)
+			emote("drown")
+
+	if(QDELETED(src) || stat == DEAD)
 		return TRUE
 
-	return FALSE
+	if(istype(onturf, /turf/open/water/sewer) && !HAS_TRAIT(src, TRAIT_HOLDBREATH))
+		add_stress(/datum/stressevent/sewertouched)
 
+	if(istype(onturf, /turf/open/water/bath) && !wear_armor && !wear_shirt && !wear_pants)
+		add_stress(/datum/stressevent/bathwater)
 
+	return TRUE
 
 
 /mob/living/carbon/proc/get_complex_pain()
