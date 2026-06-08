@@ -329,23 +329,37 @@
 	var/target = comp_lookup[sigtype]
 	if(!target)
 		return NONE
-	if(!length(target))
+
+	. = NONE
+
+	if(!islist(target))
 		var/datum/listening_datum = target
 		if(!listening_datum?.signal_procs || !listening_datum.signal_procs[src] || !listening_datum.signal_procs[src][sigtype])
 			comp_lookup -= sigtype
 			return NONE
 		return NONE | call(listening_datum, listening_datum.signal_procs[src][sigtype])(arglist(arguments))
-	. = NONE
+
+	var/list/sig_lookup = target
+	if(!length(sig_lookup))
+		comp_lookup -= sigtype
+		return NONE
+
 	// This exists so that even if one of the signal receivers unregisters the signal,
 	// all the objects that are receiving the signal get the signal this final time.
 	// AKA: No you can't cancel the signal reception of another object by doing an unregister in the same signal.
 	var/list/queued_calls = list()
-	for(var/datum/listening_datum as anything in target)
+	var/list/stale_datums
+
+	for(var/datum/listening_datum as anything in sig_lookup)
 		if(!listening_datum?.signal_procs || !listening_datum.signal_procs[src] || !listening_datum.signal_procs[src][sigtype])
-			target -= listening_datum
+			LAZYADD(stale_datums, listening_datum)
 			continue
 		queued_calls[listening_datum] = listening_datum.signal_procs[src][sigtype]
-	if(!length(target))
+
+	if(stale_datums)
+		sig_lookup -= stale_datums
+
+	if(!length(sig_lookup))
 		comp_lookup -= sigtype
 	for(var/datum/listening_datum as anything in queued_calls)
 		. |= call(listening_datum, queued_calls[listening_datum])(arglist(arguments))
