@@ -25960,14 +25960,11 @@
 /turf/open/floor/rogue/cobble,
 /area/rogue/under/cave)
 "fmJ" = (
-/obj/structure/stairs/stone{
-	dir = 4
+/obj/structure/table/wood{
+	icon_state = "tablewood1"
 	},
-/obj/structure/stairs/stone{
-	dir = 4
-	},
-/turf/open/floor/rogue/hexstone,
-/area/rogue/under/town/basement)
+/turf/open/floor/rogue/cobble,
+/area/rogue/indoors/town/manor/rockhill)
 "fmP" = (
 /obj/structure/underworld/barrier,
 /turf/closed/mineral/rogue/bedrock,
@@ -104914,11 +104911,10 @@
 	pixel_x = -9;
 	pixel_y = 5
 	},
-/obj/structure/table/wood,
 /obj/structure/table/wood{
 	icon_state = "tablewood1"
 	},
-/turf/open/floor/rogue/churchbrick,
+/turf/open/floor/rogue/cobble,
 /area/rogue/indoors/town/manor/rockhill)
 "vZw" = (
 /obj/structure/fluff/railing/border{
@@ -288875,7 +288871,7 @@ fBR
 fNZ
 jJh
 hAr
-fmJ
+hAr
 hAr
 jJh
 bpD
@@ -399443,7 +399439,7 @@ iJP
 vJq
 yhZ
 yhZ
-lmf
+fmJ
 pfp
 hOh
 mwE
