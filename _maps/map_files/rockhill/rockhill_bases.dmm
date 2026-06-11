@@ -4056,19 +4056,6 @@
 /obj/item/clothing/neck/roguetown/psicross/inhumen/matthios,
 /turf/open/floor/rogue/cobble/mossy,
 /area/rogue/indoors/wretchcamp)
-"rd" = (
-/obj/structure/fluff/traveltile/bandit{
-	aportalgoesto = "banditexit";
-	aportalid = "banditin"
-	},
-/obj/structure/stairs{
-	dir = 1
-	},
-/obj/structure/stairs{
-	dir = 1
-	},
-/turf/open/floor/rogue/dirt/road,
-/area/rogue/outdoors/banditcamp)
 "re" = (
 /obj/structure/fluff/statue/gargoyle/moss/candles,
 /turf/open/floor/rogue/blocks,
@@ -60116,7 +60103,7 @@ ap
 ap
 ap
 hH
-rd
+Ij
 CT
 gE
 gE
