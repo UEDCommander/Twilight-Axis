@@ -91,7 +91,6 @@
 	beltl = /obj/item/storage/keyring/watchman
 	wrists = /obj/item/clothing/wrists/roguetown/bracers
 	backr = /obj/item/storage/backpack/rogue/satchel/citywatch
-	r_hand = /obj/item/rogueweapon/sword/sabre
 	if(H.mind)
 		backpack_contents = list(
 			/obj/item/rogueweapon/huntingknife/idagger/steel = 1,
