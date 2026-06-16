@@ -49,10 +49,14 @@
 /datum/job/roguetown/gnoll/special_job_check(mob/dead/new_player/player)
 	if(is_storyteller_soft_antag_blocked())
 		return FALSE
+	if(get_active_player_count(alive_check = 1, afk_check = 1, human_check = 1) < 40)
+		return FALSE
 	return ..()
 
 /datum/job/roguetown/gnoll/special_check_latejoin(client/C)
 	if(is_storyteller_soft_antag_blocked())
+		return FALSE
+	if(get_active_player_count(alive_check = 1, afk_check = 1, human_check = 1) < 40)
 		return FALSE
 	return ..()
 
@@ -112,6 +116,9 @@
 		result["final_slots"] = 0
 		return result
 	if(SSgamemode.current_storyteller?.preferred_gnoll_mode == GNOLL_SCALING_NONE)
+		result["final_slots"] = 0
+		return result
+	if(get_active_player_count(alive_check = 1, afk_check = 1, human_check = 1) < 40)
 		result["final_slots"] = 0
 		return result
 	var/slots = 1

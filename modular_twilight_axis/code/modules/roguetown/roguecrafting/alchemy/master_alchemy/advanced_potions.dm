@@ -3,12 +3,12 @@
 /datum/alch_cauldron_recipe/advanced
 	abstract_type = /datum/alch_cauldron_recipe/advanced
 	category = "Great Work"
-
+/*
 /datum/alch_cauldron_recipe/advanced/swift_feet
 	name = "Elixir of Swift Feet"
 	skill_required = SKILL_LEVEL_APPRENTICE
 	output_reagents = list(/datum/reagent/advanced/speed = ADVANCED_POTION_VOLUME_STANDARD)
-
+*/
 ///datum/alch_cauldron_recipe/advanced/sleep_draught
 //	name = "Morpheus Draught"
 //	skill_required = SKILL_LEVEL_EXPERT

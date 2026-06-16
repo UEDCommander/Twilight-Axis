@@ -39,12 +39,13 @@
 						to_chat(src, span_notice("[absorb_text]"))
 		else	// Unfortunate special behaviour for projectiles because they are absent most data pen_info wants (attacker mob ref, weapon sharpness, intent, etc)
 			if(armor_tier > 0)
+				// this was fucked for how long????
 				if(armor_penetration == armor_tier)
-					blocked = block_damage * PEN_PASSTHROUGH_PROJ_EQUAL // We block 80% of the damage, letting 20% through to body / into integ.
+					blocked = block_damage * (1 - PEN_PASSTHROUGH_PROJ_EQUAL) // We block 80% of the damage, letting 20% through to body / into integ.
 					if(penetrated_text)
 						to_chat(src, span_danger("[penetrated_text]"))
 				else if(armor_penetration > armor_tier)
-					blocked = block_damage * PEN_PASSTHROUGH_PROJ_MORE // We block 20% of the damage, letting 80% through to body / into integ.
+					blocked = block_damage * (1 - PEN_PASSTHROUGH_PROJ_MORE) // We block 20% of the damage, letting 80% through to body / into integ.
 					if(penetrated_text)
 						to_chat(src, span_danger("[penetrated_text]"))
 				else
@@ -61,10 +62,19 @@
 				if(dullness_ratio <= SHARPNESS_TIER2_THRESHOLD)	//Our weapon is CHUNKED. What are we PENNING WITH.
 					blocked = block_damage * 10
 
+	break_invisibility_from_combat()
+	return blocked
+
+/mob/living/proc/break_invisibility_from_combat()
+	var/should_update_invis = FALSE
+	if(vars["rogue_sneaking"])
+		mob_timers[MT_FOUNDSNEAK] = world.time
+		should_update_invis = TRUE
 	if(mob_timers[MT_INVISIBILITY] > world.time)
 		mob_timers[MT_INVISIBILITY] = world.time
+		should_update_invis = TRUE
+	if(should_update_invis)
 		update_sneak_invis(reset = TRUE)
-	return blocked
 
 #define SHARPNESS_PENALTY_RATIO_ONE 0.7
 #define SHARPNESS_PENALTY_RATIO_TWO 0.6
@@ -550,6 +560,11 @@
 		if(M.incapacitated())
 			return FALSE
 
+		if(ishuman(src))
+			var/mob/living/carbon/human/H = src
+			if(H.has_active_golgatha())
+				H.process_golgatha_rebuke(M)
+
 		if(checkguard(M))
 			return FALSE
 
@@ -594,6 +609,7 @@
 		if (prob(75))
 			log_combat(M, src, "attacked")
 			playsound(loc, 'sound/blank.ogg', 50, TRUE, -1)
+			M.break_invisibility_from_combat()
 			visible_message(span_danger("[M.name] bites [src]!"), \
 							span_danger("[M.name] bites you!"), span_hear("I hear a chomp!"), COMBAT_MESSAGE_RANGE, M)
 			to_chat(M, span_danger("I bite [src]!"))
@@ -627,6 +643,7 @@
 		if (prob(75))
 			log_combat(M, src, "attacked")
 			playsound(loc, 'sound/blank.ogg', 50, TRUE, -1)
+			M.break_invisibility_from_combat()
 			visible_message(span_danger("[M.name] bites [src]!"), \
 							span_danger("[M.name] bites you!"), span_hear("I hear a chomp!"), COMBAT_MESSAGE_RANGE, M)
 			to_chat(M, span_danger("I bite [src]!"))
