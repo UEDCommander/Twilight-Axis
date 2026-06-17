@@ -86,10 +86,15 @@
 	var/old_move_delay = move_delay
 	if(istype(mob, /mob/dead/observer))
 		var/mob/dead/observer/observer = mob
-		observer.next_gmove = world.time + (world.tick_lag * GLOB.observer_move_delay_multiplier)
+		var/observer_delay_multiplier = GLOB.observer_move_delay_multiplier
+
+		if(istype(observer, /mob/dead/observer/rogue))
+			observer_delay_multiplier = 6
+
+		observer.next_gmove = world.time + (world.tick_lag * observer_delay_multiplier)
 		move_delay = world.time
 	else
-		move_delay = world.time + world.tick_lag //this is here because Move() can now be called mutiple times per tick
+		move_delay = world.time + world.tick_lag
 	if(!mob || !mob.loc)
 		return FALSE
 	if(!n || !direct)
@@ -462,6 +467,8 @@
 	switch(mob.zone_selected)
 		if(BODY_ZONE_R_ARM)
 			next_in_line = BODY_ZONE_PRECISE_R_HAND
+		if(BODY_ZONE_PRECISE_R_HAND) // ta edit
+			next_in_line = BODY_ZONE_PRECISE_R_INHAND // ta edit
 		else
 			next_in_line = BODY_ZONE_R_ARM
 
@@ -498,6 +505,8 @@
 	switch(mob.zone_selected)
 		if(BODY_ZONE_L_ARM)
 			next_in_line = BODY_ZONE_PRECISE_L_HAND
+		if(BODY_ZONE_PRECISE_L_HAND) // ta edit
+			next_in_line = BODY_ZONE_PRECISE_L_INHAND // ta edit
 		else
 			next_in_line = BODY_ZONE_L_ARM
 

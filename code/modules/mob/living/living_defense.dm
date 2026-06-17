@@ -62,10 +62,19 @@
 				if(dullness_ratio <= SHARPNESS_TIER2_THRESHOLD)	//Our weapon is CHUNKED. What are we PENNING WITH.
 					blocked = block_damage * 10
 
+	break_invisibility_from_combat()
+	return blocked
+
+/mob/living/proc/break_invisibility_from_combat()
+	var/should_update_invis = FALSE
+	if(vars["rogue_sneaking"])
+		mob_timers[MT_FOUNDSNEAK] = world.time
+		should_update_invis = TRUE
 	if(mob_timers[MT_INVISIBILITY] > world.time)
 		mob_timers[MT_INVISIBILITY] = world.time
+		should_update_invis = TRUE
+	if(should_update_invis)
 		update_sneak_invis(reset = TRUE)
-	return blocked
 
 #define SHARPNESS_PENALTY_RATIO_ONE 0.7
 #define SHARPNESS_PENALTY_RATIO_TWO 0.6
@@ -172,9 +181,11 @@
 		return FALSE
 	var/datum/status_effect/buff/clash/guard = has_status_effect(/datum/status_effect/buff/clash)
 	if(guard)
+		var/atom/movable/original_firer = P.firer
 		if(P.on_guard_deflect(src))
 			apply_status_effect(/datum/status_effect/buff/parry_buffer)
-			apply_status_effect(/datum/status_effect/buff/adrenaline_rush)
+			if(original_firer != src)
+				apply_status_effect(/datum/status_effect/buff/adrenaline_rush/ranged)
 			guard.deflected_spell = TRUE
 			remove_status_effect(/datum/status_effect/buff/clash)
 			return TRUE
@@ -551,6 +562,11 @@
 		if(M.incapacitated())
 			return FALSE
 
+		if(ishuman(src))
+			var/mob/living/carbon/human/H = src
+			if(H.has_active_golgatha())
+				H.process_golgatha_rebuke(M)
+
 		if(checkguard(M))
 			return FALSE
 
@@ -595,6 +611,7 @@
 		if (prob(75))
 			log_combat(M, src, "attacked")
 			playsound(loc, 'sound/blank.ogg', 50, TRUE, -1)
+			M.break_invisibility_from_combat()
 			visible_message(span_danger("[M.name] bites [src]!"), \
 							span_danger("[M.name] bites you!"), span_hear("I hear a chomp!"), COMBAT_MESSAGE_RANGE, M)
 			to_chat(M, span_danger("I bite [src]!"))
@@ -628,6 +645,7 @@
 		if (prob(75))
 			log_combat(M, src, "attacked")
 			playsound(loc, 'sound/blank.ogg', 50, TRUE, -1)
+			M.break_invisibility_from_combat()
 			visible_message(span_danger("[M.name] bites [src]!"), \
 							span_danger("[M.name] bites you!"), span_hear("I hear a chomp!"), COMBAT_MESSAGE_RANGE, M)
 			to_chat(M, span_danger("I bite [src]!"))
@@ -718,6 +736,8 @@
 		used_item = get_active_held_item()
 	if(!used_intent)
 		used_intent = src.used_intent
+	if(!istype(used_intent, /datum/intent))
+		return
 	var/animation_type
 	if(used_item || !simplified)
 		animation_type = item_animation_override || used_intent?.get_attack_animation_type()
