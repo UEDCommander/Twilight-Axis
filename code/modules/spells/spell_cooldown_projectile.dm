@@ -13,7 +13,8 @@
 /datum/action/cooldown/spell/projectile
 	abstract_type = /datum/action/cooldown/spell/projectile
 	self_cast_possible = FALSE
-	spell_requirements = SPELL_REQUIRES_NO_ANTIMAGIC // Projectiles travel physically, no same-Z restriction
+	spell_requirements = SPELL_REQUIRES_NO_ANTIMAGIC
+	allow_cross_z = TRUE // Projectiles may cross Z-levels, normally.
 
 	/// What projectile we create when we shoot our spell.
 	var/obj/projectile/projectile_type = /obj/projectile/magic/teleport
@@ -72,24 +73,10 @@
 		if(L.mind)
 			to_fire.bonus_accuracy += (L.get_skill_level(associated_skill) * 5)
 
-	// Apply implement poke bonus and/or attunement glow if the caster is holding a spell implement
-	if((is_implement_scaled_spell || attunement_school) && ishuman(user))
-		var/mob/living/carbon/human/H = user
-		var/best_mult = 0
-		var/obj/item/rogueweapon/best_implement
-		for(var/obj/item/held in list(H.get_active_held_item(), H.get_inactive_held_item()))
-			if(!istype(held, /obj/item/rogueweapon))
-				continue
-			var/obj/item/rogueweapon/W = held
-			var/mult = W.implement_multiplier
-			if(mult > best_mult)
-				best_mult = mult
-				best_implement = held
-		if(best_mult)
-			if(is_implement_scaled_spell)
-				to_fire.damage = round(to_fire.damage * best_mult)
-			if(attunement_school)
-				best_implement?.attune_implement(spell_color, attunement_school)
+	// Apply attunement glow if the caster is holding a spell implement
+	if(attunement_school && ishuman(user))
+		var/obj/item/rogueweapon/best_implement = get_held_implement(user)
+		best_implement?.attune_implement(spell_color, attunement_school)
 
 	to_fire.preparePixelProjectile(target, user)
 
@@ -108,7 +95,10 @@
 		to_chat(user, span_warning("[name] cannot be arced."))
 		return
 	arc_mode = !arc_mode
-	to_chat(user, span_notice("[name] arc mode [arc_mode ? "enabled" : "disabled"]."))
+	if(arc_mode)
+		to_chat(user, span_notice("[name] arc mode enabled - aim above or below to lob the shot across elevations."))
+	else
+		to_chat(user, span_notice("[name] arc mode disabled."))
 	update_arc_maptext()
 
 /// Updates the ARC maptext indicator on the spell's action button.
@@ -145,4 +135,6 @@
 			stats += span_info("Damage: [proj_damage] x[projectiles_per_fire]")
 		else
 			stats += span_info("Damage: [proj_damage]")
+	if(projectile_type_arc)
+		stats += span_info("Arc Mode (toggle with Ctrl+G): lobs the shot across elevations - aim at a target a level above or below, or at an opening over them.")
 	return stats

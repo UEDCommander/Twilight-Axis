@@ -90,6 +90,8 @@ GLOBAL_LIST_EMPTY(last_words)
 
 /mob/living/death(gibbed, nocutscene = FALSE)
 	var/was_dead_before = stat == DEAD
+	if(blood_toll_bucket && !was_dead_before && !mind?.assigned_role && !client)
+		record_round_statistic(blood_toll_bucket)
 	set_stat(DEAD)
 	unset_machine()
 	timeofdeath = world.time
@@ -139,7 +141,8 @@ GLOBAL_LIST_EMPTY(last_words)
 		mob_timers["lastdied"] = world.time
 //		addtimer(CALLBACK(client, PROC_REF(ghostize), 1, src), 150)
 		add_client_colour(/datum/client_colour/monochrome)
-		client.verbs.Add(GLOB.ghost_verbs)
+		add_verb(client, GLOB.ghost_verbs)
+		client.init_verbs()
 		if(last_words)
 			GLOB.last_words |= last_words
 
@@ -178,4 +181,6 @@ GLOBAL_LIST_EMPTY(last_words)
 	var/area/A = get_area(src)
 	if(!A)
 		return "an unknown locale, wreathed in enigmatic fog" // fallback if we can't find the area somehow?? -- This was not clear enough for me ICly that it's somewhere I shouldn't care about, now it should
+	if(!A.deathsight_message)
+		return "[A.name], a place with no deathsight message set. Report this to the devs!"
 	return A.deathsight_message

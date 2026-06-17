@@ -57,6 +57,52 @@
 	icon_state = "astrata_g"
 	sellprice = 77
 
+/obj/item/clothing/neck/roguetown/psicross/reform/g/triumph
+	name = "ornate reformist psycross"
+	sellprice = 77
+
+/obj/item/clothing/neck/roguetown/psicross/noc/g/triumph
+	name = "ornate amulet of Noc"
+	sellprice = 77
+
+/obj/item/clothing/neck/roguetown/psicross/abyssor/g/triumph
+	name = "ornate amulet of Abyssor"
+	sellprice = 77
+
+/obj/item/clothing/neck/roguetown/psicross/dendor/g/triumph
+	name = "ornate amulet of Dendor"
+	sellprice = 77
+
+/obj/item/clothing/neck/roguetown/psicross/necra/g/triumph
+	name = "ornate amulet of Necra"
+	sellprice = 77
+
+/obj/item/clothing/neck/roguetown/psicross/pestra/g/triumph
+	name = "ornate amulet of Pestra"
+	sellprice = 77
+
+/obj/item/clothing/neck/roguetown/psicross/ravox/g/triumph
+	name = "ornate amulet of Ravox"
+	sellprice = 77
+
+/obj/item/clothing/neck/roguetown/psicross/malum/g/triumph
+	name = "ornate amulet of Malum"
+	sellprice = 77
+
+/obj/item/clothing/neck/roguetown/psicross/eora/g/triumph
+	name = "ornate amulet of Eora"
+	sellprice = 77
+
+/obj/item/clothing/neck/roguetown/psicross/xylix/g/triumph
+	name = "ornate amulet of Xylix"
+	sellprice = 77
+
+/obj/item/clothing/neck/roguetown/psicross/inhumen/graggar/g/triumph
+	name = "ornate amulet of Graggar"
+	sellprice = 77
+
+//
+
 /obj/item/clothing/ring/diamond/triumph
 	name = "ornate dorpel ring"
 	icon_state = "g_newring_diamond"
@@ -66,8 +112,8 @@
 
 /obj/item/clothing/ring/signet/triumph
 	name = "ornate signet ring"
-	desc = "A ring of opulent gold, bearing the symbol of an aristocratic household. By dipping it in melted redtallow, it can seal writs of religious importance - a matter better known to the Inquisition, rather than the Church or Crown."
-	sellprice = 77 
+	desc = "A ring of opulent gold, bearing the symbol of an aristocratic household. It seals writs of religious importance - a matter better known to the Inquisition, rather than the Church or Crown."
+	sellprice = 77
 
 /obj/item/clothing/ring/gold/triumph
 	name = "ornate gold ring"

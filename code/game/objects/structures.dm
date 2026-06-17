@@ -209,6 +209,7 @@
 //	if(adjusted_climb_time)
 //		user.visible_message(span_warning("[user] starts climbing onto [src]."), span_warning("I start climbing onto [src]..."))
 	structureclimber = user
+	user.mid_climb = TRUE
 	if(do_mob(user, user, adjusted_climb_time))
 		if(src.loc) //Checking if structure has been destroyed
 			if(do_climb(user))
@@ -224,6 +225,7 @@
 				. = 1
 			else
 				to_chat(user, span_warning("I fail to climb onto [src]."))
+	user.mid_climb = FALSE
 	structureclimber = null
 
 // You can path over a dense structure if it's climbable.
@@ -233,7 +235,7 @@
 /obj/structure/examine(mob/user)
 	. = ..()
 
-	if(in_range(user, src))
+	if(in_range(user, src) && istype(user, /mob/living))
 		if(occupied)
 			var/mob/living/M = locate() in src
 			if(M)

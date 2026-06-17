@@ -231,6 +231,38 @@
 /obj/structure/fluff/walldeco/psybanner/red
 	icon_state = "Psybanner-RED"
 
+/obj/structure/fluff/walldeco/psybanner/tennite
+	name = "ten undivided banner"
+	icon_state = "unibanner_purple"
+	desc = "A banner depicting a circle over a cross; the symbolism of the Ten Undivided, the sphere of \
+	Tennite religious practice dedicated to the entirety of the pantheon without favour or preference. \
+	Particularly strongly associated with the Grenzelhoftian Holy See."
+
+/obj/structure/fluff/walldeco/psybanner/tennite/red
+	icon_state = "unibanner_red"
+
+/obj/structure/fluff/walldeco/psybanner/astrata
+	name = "astratan banner"
+	icon_state = "astratabanner_purple"
+	desc = "The six-pronged cross of Astrata, embroidered upon fine fabric. It is Her will that \
+	suspends the heavens and the earth, and it is Her light that maintains life upon the abandoned \
+	surface of Psydonia. An image associated with the nobility of all lands, and with the \
+	highest echelons of church leadership."
+
+/obj/structure/fluff/walldeco/psybanner/astrata/red
+	icon_state = "astratabanner_red"
+
+/obj/structure/fluff/walldeco/psybanner/zizo
+	name = "zizite banner"
+	icon_state = "zizobanner_purple"
+	desc = "A carefully made banner bearing the inverted cross of Zizo, Dame of Progress. Banners such \
+	as this one are wildly dangerous to fly in any Tennite or Psydonite nation, in which the worship \
+	of the progenitor of undeath is harshly criminalised, but may be commonly found in more remote \
+	areas of the world."
+
+/obj/structure/fluff/walldeco/psybanner/zizo/red
+	icon_state = "zizobanner_red"
+
 /obj/structure/fluff/walldeco/psybanner/get_mechanics_examine(mob/user)
 	. = ..()
 	. += span_info("Faith is the most important aspect of lyfe, no matter if you're a peasant or a lord. Those with differing faiths oft-clash, both metaphorically and very literally.")
@@ -515,7 +547,7 @@
 		if(HU.anti_magic_check()) //are we shielded?
 			return
 
-		if(!(HU in SStreasury.bank_accounts)) //first off- do we not have an account? we'll ALWAYS scream if that's the case
+		if(!SStreasury.has_account(HU)) //first off- do we not have an account? we'll ALWAYS scream if that's the case
 			playsound(loc, 'sound/misc/gold_license.ogg', 100, TRUE, -1)
 			say("INTRUS! ARRESTEZ-VOUS! GARDES! GARDES! MAROUFLE A MORTIR!!")
 			next_yap = world.time + 6 SECONDS
@@ -533,19 +565,19 @@
 			next_yap = world.time + 30 SECONDS
 			return
 
-		if((user.job in GLOB.burgher_positions) || (user.job in GLOB.garrison_positions) || (user.job in GLOB.church_positions)) //Cityfolk and Garrison and Church
+		if((user.job in GLOB.burgher_positions) || (user.job in GLOB.garrison_positions) || (user.job in GLOB.church_positions) || (user.job == "Merchant")) //Cityfolk and Garrison and Church
 			say("Salutations, [user.real_name]. Thirty-breths silence period active por votre grace.")
 			playsound(loc, 'sound/misc/gold_menu.ogg', 100, TRUE, -1)
 			next_yap = world.time + 30 SECONDS
 			return
 
-		if((user.job in GLOB.peasant_positions) || (user.job in GLOB.sidefolk_positions) || (user.job in GLOB.inquisition_positions)) //Peasants and unimportant people to the crown.
+		if((user.job in GLOB.peasant_positions) || (user.job in GLOB.sidefolk_positions) || (user.job in GLOB.inquisition_positions) || (user.job == "Shophand")) //Peasants and unimportant people to the crown.
 			say("Salutations, [user.real_name]. I can spare some time por votre gueuserie.")
 			playsound(loc, 'sound/misc/gold_menu.ogg', 100, TRUE, -1)
 			next_yap = world.time + 30 SECONDS
 			return
 
-		if((HU in SStreasury.bank_accounts)) //Anyone else
+		if(SStreasury.has_account(HU)) //Anyone else
 			playsound(loc, 'sound/misc/gold_menu.ogg', 100, TRUE, -1)
 			say("[user.real_name] logged entering zone securisee.")
 			return

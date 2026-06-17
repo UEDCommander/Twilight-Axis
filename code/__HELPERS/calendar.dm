@@ -12,28 +12,41 @@
  [Weekday], [Day] [Month] [Year], [HH:MM] ([Time Of Day]), ([Cycle Number])
 */
 /proc/get_current_ic_date_as_string()
-	var/month_number
-	var/day_of_month
-	var/current_cycle
-	var/year_number = CALENDAR_EPOCH_YEAR
+	return get_ic_date_as_string(GLOB.dayspassed)
 
+/// Returns list(day_of_month, month_number, year_number) for a given GLOB.dayspassed-style day.
+/proc/resolve_ic_date_parts(day_number)
+	if(!day_number)
+		day_number = GLOB.dayspassed
 	var/round_id = text2num(GLOB.round_id) || 0
-	current_cycle = FLOOR(round_id / (YEAR_PER_CYCLE * CALENDAR_WEEKS_IN_YEAR), 1) + 1
-
-	var/days_since_epoch = (round_id) * CALENDAR_DAYS_IN_WEEK + (GLOB.dayspassed - 1)
-
+	var/days_since_epoch = (round_id) * CALENDAR_DAYS_IN_WEEK + (day_number - 1)
 	if(GLOB.date_override_enabled)
 		days_since_epoch += GLOB.date_override_offset
-
 	var/day_of_year = MODULUS(days_since_epoch, CALENDAR_DAYS_IN_YEAR) + 1
-	month_number = FLOOR((day_of_year - 1) / CALENDAR_DAYS_IN_MONTH, 1) + 1
-	day_of_month = MODULUS((day_of_year - 1), CALENDAR_DAYS_IN_MONTH) + 1
+	var/month_number = FLOOR((day_of_year - 1) / CALENDAR_DAYS_IN_MONTH, 1) + 1
+	var/day_of_month = MODULUS((day_of_year - 1), CALENDAR_DAYS_IN_MONTH) + 1
+	return list(day_of_month, month_number, CALENDAR_EPOCH_YEAR)
 
+/// Full IC date string (with cycle / season annotations). Used by admin verbs + admin-style UIs.
+/proc/get_ic_date_as_string(day_number)
+	if(!day_number)
+		day_number = GLOB.dayspassed
+	var/list/parts = resolve_ic_date_parts(day_number)
+	var/day_of_month = parts[1]
+	var/month_number = parts[2]
+	var/year_number = parts[3]
+	var/round_id = text2num(GLOB.round_id) || 0
+	var/current_cycle = FLOOR(round_id / (YEAR_PER_CYCLE * CALENDAR_WEEKS_IN_YEAR), 1) + 1
 	var/month_name = get_month_number_to_text(month_number)
 	var/season = get_season_from_month(month_number)
 	var/season_phase = get_season_phase(month_number)
 
 	return "[day_of_month] [month_name] [year_number] of New Order (Month [month_number] [season_phase] [season]), Cycle [current_cycle]" //TA EDIT
+
+/// Compact IC date - what players say in-character. e.g. "3 Eora 1513 AP".
+/proc/get_ic_date_short_as_string(day_number)
+	var/list/parts = resolve_ic_date_parts(day_number)
+	return "[parts[1]] [get_month_number_to_text(parts[2])] [parts[3]] of New Order" //TA EDIT
 
 // Returns the current IC time as a string in the format [DAYS] ᛉ HH:MM ([Time Of Day])
 /proc/get_current_ic_time_as_string()
@@ -110,6 +123,57 @@
 		if(3)
 			return "Late"
 	return ""
+
+/proc/get_calendar_events_for_month(month_number)
+	var/list/matches = list()
+	for(var/datum/calendar_event/event in GLOB.calendar_events)
+		if(event.recur_month == month_number)
+			matches += event
+	return matches
+
+/proc/get_calendar_events_for_day(month_number, day_of_month)
+	var/list/matches = list()
+	for(var/datum/calendar_event/event in GLOB.calendar_events)
+		if(event.covers_day(month_number, day_of_month))
+			matches += event
+	return matches
+
+/proc/get_active_calendar_event_titles()
+	var/list/parts = resolve_ic_date_parts(GLOB.dayspassed)
+	var/list/titles = list()
+	for(var/datum/calendar_event/event in get_calendar_events_for_day(parts[2], parts[1]))
+		titles += event.title
+	return titles
+
+GLOBAL_LIST_INIT(event_day_ordinals, list(
+	"first", "second", "third", "fourth", "fifth",
+	"sixth", "seventh", "eighth", "ninth", "tenth",
+))
+
+/proc/get_event_day_ordinal(index)
+	if(index >= 1 && index <= length(GLOB.event_day_ordinals))
+		return GLOB.event_day_ordinals[index]
+	var/suffix = "th"
+	var/last_two = MODULUS(index, 100)
+	if(last_two < 11 || last_two > 13)
+		switch(MODULUS(index, 10))
+			if(1)
+				suffix = "st"
+			if(2)
+				suffix = "nd"
+			if(3)
+				suffix = "rd"
+	return "[index][suffix]"
+
+/proc/scom_announce_new_dawn()
+	var/list/parts = resolve_ic_date_parts(GLOB.dayspassed)
+	for(var/datum/calendar_event/event in get_calendar_events_for_day(parts[2], parts[1]))
+		var/ordinal = get_event_day_ordinal(event.day_index(parts[2], parts[1]))
+		var/line = "The [ordinal] dae of [event.title]."
+		var/reminder_line = event.get_reminder_for_day(parts[2], parts[1])
+		if(reminder_line)
+			line = "[line] [reminder_line]"
+		scom_announce(line)
 
 /proc/get_current_day_of_week()
 	return GLOB.dayspassed

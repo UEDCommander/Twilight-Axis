@@ -427,11 +427,13 @@
 				if(user.can_see_reagents() || (user.Adjacent(src) && (user.get_skill_level(/datum/skill/craft/alchemy) >= 2 || HAS_TRAIT(user, TRAIT_CICERONE)))) //Show each individual reagent
 					. += "It contains:"
 					for(var/datum/reagent/R in reagents.reagent_list)
+						if(istype(R, /datum/reagent/advanced/hidden_dust)) continue //TA edit
 						. += "[round(R.volume, 0.1)] [UNIT_FORM_STRING(round(R.volume, 0.1))] of <font color=[R.color]>[R.name]</font>"
 				else //Otherwise, just show the total volume
 					var/total_volume = 0
 					var/reagent_color
 					for(var/datum/reagent/R in reagents.reagent_list)
+						if(istype(R, /datum/reagent/advanced/hidden_dust)) continue //Ta edit
 						total_volume += R.volume
 					reagent_color = mix_color_from_reagents(reagents.reagent_list)
 					if(total_volume < 1)
@@ -454,7 +456,7 @@
 				var/obj/item/reagent_containers/container = src
 				is_closed = !container.spillable
 			if(is_closed == FALSE && reagents.total_volume) // if the container is open, and there's liquids in there
-				user.visible_message(span_info("[user] takes a whiff of the [src]..."), span_info("I take a whiff of the [src]..."))
+				user.visible_message(span_info("[user] takes a whiff of [src]..."), span_info("I take a whiff of [src]..."))
 				. += span_notice("I smell [src.reagents.generate_scent_message()].")
 				if (HAS_TRAIT(user, TRAIT_LEGENDARY_ALCHEMIST))
 					var/full_reagents = ""
@@ -563,7 +565,7 @@
  */
 /atom/proc/hitby(atom/movable/AM, skipcatch, hitpush, blocked, datum/thrownthing/throwingdatum, damage_flag = "blunt")
 	SEND_SIGNAL(src, COMSIG_ATOM_HITBY, AM, skipcatch, hitpush, blocked, throwingdatum, damage_flag)
-	if(density) //thrown stuff bounces off dense stuff in no grav, unless the thrown stuff ends up inside what it hit(embedding, bola, etc...).
+	if(density && !(pass_flags_self & LETPASSTHROW)) //thrown stuff bounces off dense stuff in no grav, unless the thrown stuff ends up inside what it hit(embedding, bola, etc...).
 		addtimer(CALLBACK(src, PROC_REF(hitby_react), AM), 2)
 
 /**
@@ -611,9 +613,28 @@
 ///to add blood from a mob onto something, and transfer their dna info
 /atom/proc/add_mob_blood(mob/living/M)
 	var/list/blood_dna = M.get_blood_dna_list()
-	if(!blood_dna)
-		return FALSE
-	return add_blood_DNA(blood_dna)
+	var/source_color = M.get_blood_color() || BLOOD_COLOR_RED
+	if(length(blood_dna))
+		. = add_blood_DNA(blood_dna)
+	if(ismob(src))
+		var/mob/recipient = src
+		recipient.bloody_hands_color = source_color
+		if(ishuman(recipient))
+			var/mob/living/carbon/human/H = recipient
+			if(H.gloves)
+				var/datum/component/decal/blood/glove_blood = H.gloves.LoadComponent(/datum/component/decal/blood)
+				glove_blood?.set_blood_color(source_color)
+			else if(!H.bloody_hands)
+				H.bloody_hands = rand(2, 4)
+			H.update_inv_gloves()
+			if(istype(H.shoes, /obj/item/clothing/shoes))
+				var/obj/item/clothing/shoes/S = H.shoes
+				var/datum/component/decal/blood/shoe_blood = S.LoadComponent(/datum/component/decal/blood)
+				shoe_blood?.set_blood_color(source_color)
+				H.update_inv_shoes()
+	else if(isitem(src))
+		var/datum/component/decal/blood/B = LoadComponent(/datum/component/decal/blood)
+		B?.set_blood_color(source_color)
 
 ///Called when gravity returns after floating I think
 /atom/proc/handle_fall()
@@ -1071,6 +1092,8 @@
 			log_adminsay(log_text)
 		if(LOG_OWNERSHIP)
 			log_game(log_text)
+		if(LOG_CRAFT)
+			log_game(log_text)
 		if(LOG_GAME)
 			log_game(log_text)
 		if(LOG_MECHA)
@@ -1175,6 +1198,9 @@
 		filter_data = list()
 	var/list/p = params.Copy()
 	p["priority"] = priority
+	if(("color" in p) && !isnull(p["color"]) && !istext(p["color"]) && !islist(p["color"]))
+		stack_trace("filter '[name]' on [type] given non-text non-list color [p["color"]] - fix the caller")
+		return
 	filter_data[name] = p
 	update_filters()
 
@@ -1241,6 +1267,9 @@
 /atom/movable/proc/modify_filter(name, list/new_params, overwrite = FALSE)
 	var/filter = get_filter(name)
 	if(!filter)
+		return
+	if(("color" in new_params) && !isnull(new_params["color"]) && !istext(new_params["color"]) && !islist(new_params["color"]))
+		stack_trace("filter '[name]' on [type] given non-text non-list color [new_params["color"]] - fix the caller")
 		return
 	if(overwrite)
 		filter_data[name] = new_params

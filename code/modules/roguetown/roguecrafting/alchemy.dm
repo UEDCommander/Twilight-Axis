@@ -6,22 +6,6 @@
 	subtype_reqs = TRUE
 	structurecraft = /obj/structure/fluff/alch
 
-/datum/crafting_recipe/roguetown/alchemy/mortar
-	name = "alchemical mortar"
-	result = /obj/item/reagent_containers/glass/mortar
-	reqs = list(/obj/item/natural/stone = 1)
-	craftdiff = 2
-	structurecraft = null
-	verbage_simple = "create"
-
-/datum/crafting_recipe/roguetown/alchemy/pestle
-	name = "stone pestle"
-	result = /obj/item/pestle
-	reqs = list(/obj/item/natural/stone = 1)
-	craftdiff = 2
-	structurecraft = null
-	verbage_simple = "create"
-
 /datum/crafting_recipe/roguetown/alchemy/bbomb
 	name = "bottle bomb"
 	category = "Table"
@@ -121,7 +105,7 @@
 	name = "rot cure potion"
 	category = "Table"
 	result = list(/obj/item/reagent_containers/glass/bottle/alchemical/rogue/rotcure = 1)
-	reqs = list(/obj/item/reagent_containers/glass/bottle/alchemical = 1, /obj/item/reagent_containers/food/snacks/grown/rogue/fyritius = 1, /obj/item/alch/golddust = 1, /obj/item/alch/viscera = 2)
+	reqs = list(/obj/item/reagent_containers/glass/bottle/alchemical = 1, /obj/item/reagent_containers/food/snacks/grown/rogue/fyritius = 1, /obj/item/heart_blood_vial/filled = 2, /obj/item/alch/viscera = 2)
 	craftdiff = 5	//Master-level
 
 /datum/crafting_recipe/roguetown/alchemy/paralytic_venom
@@ -186,24 +170,8 @@
 	name = "water to wine"
 	category = "Transmutation"
 	result = list(/obj/item/reagent_containers/glass/bottle/rogue/wine = 1)
-	reqs = list(/obj/item/reagent_containers/glass/bottle = 1, /datum/reagent/water = 48)
+	reqs = list(/obj/item/reagent_containers/glass/bottle = 1, /datum/reagent/water = 50)
 	craftdiff = 3 //WHO THE FUCK THOUGHT SETTING THIS AT 2 WAS A GOOD IDEA? MAKE IT MAKE SENSE.
-	verbage_simple = "transmute"
-
-/datum/crafting_recipe/roguetown/alchemy/g2wes
-	name = "grain to westleach"
-	category = "Transmutation"
-	result = list(/obj/item/reagent_containers/food/snacks/grown/rogue/pipeweed = 1)
-	reqs = list(/obj/item/reagent_containers/food/snacks/grown/wheat = 2)
-	craftdiff = 3
-	verbage_simple = "transmute"
-
-/datum/crafting_recipe/roguetown/alchemy/w2swa
-	name = "westleach to swampweed"
-	category = "Transmutation"
-	result = list(/obj/item/reagent_containers/food/snacks/grown/rogue/swampweed = 1)
-	reqs = list(/obj/item/reagent_containers/food/snacks/grown/rogue/pipeweed = 2)
-	craftdiff = 3
 	verbage_simple = "transmute"
 
 /datum/crafting_recipe/roguetown/alchemy/f2gra
@@ -212,118 +180,6 @@
 	result = list(/obj/item/reagent_containers/food/snacks/grown/wheat = 1)
 	reqs = list(/obj/item/natural/fibers = 4)
 	craftdiff = 3
-	verbage_simple = "transmute"
-
-/datum/crafting_recipe/roguetown/alchemy/b2app
-	name = "berry to apple"
-	category = "Transmutation"
-	result = list(/obj/item/reagent_containers/food/snacks/grown/apple = 1)
-	reqs = list(/obj/item/reagent_containers/food/snacks/grown/berries/rogue = 2)
-	craftdiff = 3
-	verbage_simple = "transmute"
-
-/datum/crafting_recipe/roguetown/alchemy/d2cla
-	name = "dirt to clay"
-	category = "Transmutation"
-	result = list(/obj/item/natural/clay = 1)
-	reqs = list(/obj/item/natural/dirtclod = 2)
-	craftdiff = 3
-	verbage_simple = "transmute"
-
-/datum/crafting_recipe/roguetown/alchemy/c2sto
-	name = "clay to stone"
-	category = "Transmutation"
-	result = list(/obj/item/natural/stone = 1)
-	reqs = list(/obj/item/natural/clay = 2)
-	craftdiff = 2
-	verbage_simple = "transmute"
-
-/datum/crafting_recipe/roguetown/alchemy/s2coa
-	name = "stone to coal"
-	category = "Transmutation"
-	result = list(/obj/item/rogueore/coal = 1)
-	reqs = list(/obj/item/natural/stone = 4)
-	craftdiff = 2
-	verbage_simple = "transmute"
-
-/datum/crafting_recipe/roguetown/alchemy/cl2st2copp
-	name = "stone & clay to copper"
-	category = "Transmutation"
-	result = list(/obj/item/rogueore/copper = 1)
-	reqs = list(/obj/item/natural/stone = 2, /obj/item/natural/clay = 2)
-	craftdiff = 3
-	verbage_simple = "transmute"
-
-/datum/crafting_recipe/roguetown/alchemy/st2di2tin
-	name = "stone & dirt to tin"
-	category = "Transmutation"
-	result = list(/obj/item/rogueore/tin = 1)
-	reqs = list(/obj/item/natural/stone = 2, /obj/item/natural/dirtclod = 2)
-	craftdiff = 3
-	verbage_simple = "transmute"
-
-/datum/crafting_recipe/roguetown/alchemy/c2irn
-	name = "coal to iron"
-	category = "Transmutation"
-	result = list(/obj/item/rogueore/iron = 1)
-	reqs = list(/obj/item/rogueore/coal = 2)
-	craftdiff = 3
-	verbage_simple = "transmute"
-
-/datum/crafting_recipe/roguetown/alchemy/i2gol
-	name = "iron to gold"
-	category = "Transmutation"
-	result = list(/obj/item/rogueore/gold = 1)
-	reqs = list(/obj/item/rogueore/iron = 4)
-	craftdiff = 4
-	verbage_simple = "transmute"
-
-/datum/crafting_recipe/roguetown/alchemy/g2top
-	name = "gold to toper"
-	category = "Transmutation"
-	result = list(/obj/item/roguegem/yellow = 1)
-	reqs = list(/obj/item/rogueore/gold = 2, /obj/item/natural/stone = 1)
-	craftdiff = 4
-	verbage_simple = "transmute"
-
-/datum/crafting_recipe/roguetown/alchemy/t2gem
-	name = "toper to gemerald"
-	category = "Transmutation"
-	result = list(/obj/item/roguegem/green = 1)
-	reqs = list(/obj/item/roguegem/yellow = 1, /obj/item/rogueore/gold = 2)
-	craftdiff = 4
-	verbage_simple = "transmute"
-
-/datum/crafting_recipe/roguetown/alchemy/g2saf
-	name = "gemerald to saffira"
-	category = "Transmutation"
-	result = list(/obj/item/roguegem/violet = 1)
-	reqs = list(/obj/item/roguegem/green = 1, /obj/item/rogueore/gold = 2)
-	craftdiff = 4
-	verbage_simple = "transmute"
-
-/datum/crafting_recipe/roguetown/alchemy/s2blo
-	name = "saffira to blortz"
-	category = "Transmutation"
-	result = list(/obj/item/roguegem/blue = 1)
-	reqs = list(/obj/item/roguegem/violet = 1, /obj/item/rogueore/gold = 2)
-	craftdiff = 4
-	verbage_simple = "transmute"
-
-/datum/crafting_recipe/roguetown/alchemy/r2dia
-	name = "blortz to dorpel"
-	category = "Transmutation"
-	result = list(/obj/item/roguegem/diamond = 1)
-	reqs = list(/obj/item/roguegem/blue = 2, /obj/item/rogueore/gold = 2)
-	craftdiff = 5
-	verbage_simple = "transmute"
-
-/datum/crafting_recipe/roguetown/alchemy/d2ros
-	name = "dorpel to riddle of steel" /// holy grail requires legendary. (sell price on average is 350. rontz and diamond worth 100 each. you get to legndary you deserve 150-200 profit)
-	category = "Transmutation"
-	result = list(/obj/item/riddleofsteel = 1)
-	reqs = list(/obj/item/roguegem/diamond = 2, /obj/item/rogueore/iron = 1, /obj/item/rogueore/coal = 1)
-	craftdiff = 6
 	verbage_simple = "transmute"
 
 /datum/crafting_recipe/roguetown/alchemy/skysugarbase
@@ -434,110 +290,3 @@
 		/obj/item/roguegem/blood_diamond = 2,
 		)
 	subtype_reqs = TRUE
-
-// Flavorful Zigarets
-
-/datum/crafting_recipe/roguetown/alchemy/menthazig
-	name = "handmade mentha zig"
-	category = "Table"
-	result = list(/obj/item/clothing/mask/cigarette/rollie/mentha/crafted)
-	reqs = list(/obj/item/clothing/mask/cigarette/rollie/nicotine = 1, /obj/item/alch/mentha = 1)
-	craftdiff = 1
-	
-/datum/crafting_recipe/roguetown/alchemy/blackberryzig
-	name = "handmade blackberry zig"
-	category = "Table"
-	result = list(/obj/item/clothing/mask/cigarette/rollie/blackberry/crafted)
-	reqs = list(/obj/item/clothing/mask/cigarette/rollie/nicotine = 1, /obj/item/reagent_containers/food/snacks/grown/fruit/blackberry = 1)
-	craftdiff = 1
-	
-/datum/crafting_recipe/roguetown/alchemy/applezig
-	name = "handmade apple zig"
-	category = "Table"
-	result = list(/obj/item/clothing/mask/cigarette/rollie/apple/crafted)
-	reqs = list(/obj/item/clothing/mask/cigarette/rollie/nicotine = 1, /obj/item/reagent_containers/food/snacks/grown/apple = 1)
-	craftdiff = 1
-	
-/datum/crafting_recipe/roguetown/alchemy/menthaapplezig
-	name = "handmade mentha-apple zig"
-	category = "Table"
-	result = list(/obj/item/clothing/mask/cigarette/rollie/menthaapple/crafted)
-	reqs = list(/obj/item/clothing/mask/cigarette/rollie/nicotine = 1, /obj/item/alch/mentha = 1, /obj/item/reagent_containers/food/snacks/grown/apple = 1)
-	craftdiff = 1
-	
-/datum/crafting_recipe/roguetown/alchemy/chocolatezig
-	name = "handmade chocolate zig"
-	category = "Table"
-	result = list(/obj/item/clothing/mask/cigarette/rollie/chocolate/crafted)
-	reqs = list(/obj/item/clothing/mask/cigarette/rollie/nicotine = 1, /obj/item/reagent_containers/food/snacks/chocolate = 1)
-	craftdiff = 1
-	
-/datum/crafting_recipe/roguetown/alchemy/strawberryzig
-	name = "handmade strawberry zig"
-	category = "Table"
-	result = list(/obj/item/clothing/mask/cigarette/rollie/strawberry/crafted)
-	reqs = list(/obj/item/clothing/mask/cigarette/rollie/nicotine = 1, /obj/item/reagent_containers/food/snacks/grown/fruit/strawberry = 1)
-	craftdiff = 1
-	
-/datum/crafting_recipe/roguetown/alchemy/carrotzig
-	name = "handmade carrot zig"
-	category = "Table"
-	result = list(/obj/item/clothing/mask/cigarette/rollie/carrot/crafted)
-	reqs = list(/obj/item/clothing/mask/cigarette/rollie/nicotine = 1, /obj/item/reagent_containers/food/snacks/grown/carrot = 1)
-	craftdiff = 1
-	
-/datum/crafting_recipe/roguetown/alchemy/limezig
-	name = "handmade lime zig"
-	category = "Table"
-	result = list(/obj/item/clothing/mask/cigarette/rollie/lime/crafted)
-	reqs = list(/obj/item/clothing/mask/cigarette/rollie/nicotine = 1, /obj/item/reagent_containers/food/snacks/grown/fruit/lime = 1)
-	craftdiff = 1
-	
-/datum/crafting_recipe/roguetown/alchemy/salviazig
-	name = "handmade salvia zig"
-	category = "Table"
-	result = list(/obj/item/clothing/mask/cigarette/rollie/salvia/crafted)
-	reqs = list(/obj/item/clothing/mask/cigarette/rollie/nicotine = 1, /obj/item/herbseed/salvia = 1)
-	craftdiff = 1
-	
-/datum/crafting_recipe/roguetown/alchemy/salviavalerianazig
-	name = "handmade salvia-valeriana zig"
-	category = "Table"
-	result = list(/obj/item/clothing/mask/cigarette/rollie/salviavaleriana/crafted)
-	reqs = list(/obj/item/clothing/mask/cigarette/rollie/nicotine = 1, /obj/item/herbseed/salvia = 1, /datum/reagent/drug/valeriana = 2)
-	craftdiff = 3
-
-/datum/crafting_recipe/roguetown/alchemy/calendulazig
-	name = "handmade calendula zig"
-	category = "Table"
-	result = list(/obj/item/clothing/mask/cigarette/rollie/calendula)
-	reqs = list(/obj/item/clothing/mask/cigarette/rollie/nicotine = 1, /obj/item/alch/calendula = 1)
-	craftdiff = 3
-
-/datum/crafting_recipe/roguetown/alchemy/jacksberries
-	name = "handmade jacksberries zig"
-	category = "Table"
-	result = list(/obj/item/clothing/mask/cigarette/rollie/jacksberries/crafted)
-	reqs = list(/obj/item/clothing/mask/cigarette/rollie/nicotine = 1, /obj/item/reagent_containers/food/snacks/grown/berries/rogue = 2)
-	craftdiff = 1
-	
-/datum/crafting_recipe/roguetown/alchemy/jacksberriespoison
-	name = "handmade jacksberries zig"
-	category = "Table"
-	result = list(/obj/item/clothing/mask/cigarette/rollie/jacksberriespoison/crafted)
-	reqs = list(/obj/item/clothing/mask/cigarette/rollie/nicotine = 1, /obj/item/reagent_containers/food/snacks/grown/berries/rogue/poison = 2)
-	craftdiff = 1
-	
-/datum/crafting_recipe/roguetown/alchemy/abyss
-	name = "handmade abyss zig"
-	category = "Table"
-	result = list(/obj/item/clothing/mask/cigarette/rollie/abyss/crafted)
-	reqs = list(/obj/item/clothing/mask/cigarette/rollie/nicotine = 1, /obj/item/reagent_containers/food/snacks/grown/berries/rogue = 1, /datum/reagent/water/salty = 20, /obj/item/reagent_containers/food/snacks/fish = 3)
-	craftdiff = 3
-
-/datum/crafting_recipe/roguetown/alchemy/ziggara
-	name = "handmade ziggara"
-	category = "Table"
-	result = list(/obj/item/clothing/mask/cigarette/rollie/ziggara/crafted)
-	reqs = list(/obj/item/clothing/mask/cigarette/rollie/nicotine = 1, /obj/item/herbseed/hypericum  = 1, /obj/item/reagent_containers/food/snacks/grown/rogue/pipeweeddry = 3)
-	craftdiff = 3

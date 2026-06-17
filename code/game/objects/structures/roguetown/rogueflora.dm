@@ -213,7 +213,7 @@
 	desc = "Someone cut this tree down."
 	icon_state = "t1stump"
 	opacity = 0
-	pass_flags = LETPASSTHROW
+	pass_flags_self = LETPASSTHROW
 	max_integrity = 100
 	climbable = TRUE
 	climb_time = 0
@@ -348,13 +348,13 @@
 		if(L.m_intent == MOVE_INTENT_SNEAK)
 			return
 		else
-			if(!(HAS_TRAIT(L, TRAIT_AZURENATIVE) && L.m_intent != MOVE_INTENT_RUN))
+			if(L.m_intent == MOVE_INTENT_RUN || !(HAS_TRAIT(L, TRAIT_AZURENATIVE) || HAS_TRAIT(L, TRAIT_NOPVE) || (HAS_TRAIT(L, TRAIT_BOGWALKER) && istype(get_area(L), /area/rogue/outdoors/bog))))
 				playsound(A.loc, "plantcross", 100, FALSE, -1)
-			var/oldx = A.pixel_x
-			animate(A, pixel_x = oldx+1, time = 0.5)
-			animate(pixel_x = oldx-1, time = 0.5)
-			animate(pixel_x = oldx, time = 0.5)
-			L.consider_ambush()
+				var/oldx = A.pixel_x
+				animate(A, pixel_x = oldx+1, time = 0.5)
+				animate(pixel_x = oldx-1, time = 0.5)
+				animate(pixel_x = oldx, time = 0.5)
+				L.consider_ambush()
 	return
 
 
@@ -431,9 +431,13 @@
 					res_replenish = world.time + 8 MINUTES
 				var/obj/item/B = pick_n_take(looty)
 				if(B)
+					var/double_output = (HAS_TRAIT(user, TRAIT_ALCHEMY_EXPERT) && user.get_skill_level(/datum/skill/craft/alchemy) >= SKILL_LEVEL_JOURNEYMAN)
+					if(double_output)
+						var/obj/item/C = new B.type(user.loc)
+						user.put_in_hands(C)
 					B = new B(user.loc)
 					user.put_in_hands(B)
-					user.visible_message(span_notice("[user] finds [B] in [src]."))
+					user.visible_message("<span class='notice'>[user] finds [double_output ? "two of " : ""][B] in [src].</span>")
 					return
 			user.visible_message(span_warning("[user] searches through [src]."))
 			if(looty.len)
@@ -782,10 +786,21 @@
 				if(B)
 					B = new B(user.loc)
 					user.put_in_hands(B)
-					if(HAS_TRAIT(user, TRAIT_WOODWALKER))
+					var/bonus_chance = 0
+					if(user.mind)
+						var/alch_level = user.get_skill_level(/datum/skill/craft/alchemy)
+						var/farm_level = user.get_skill_level(/datum/skill/labor/farming)
+						var/alch_chance = (alch_level / 6) * 100
+						var/farm_chance = (farm_level / 6) * 66
+						if(HAS_TRAIT(user, TRAIT_ALCHEMY_EXPERT) && alch_level >= SKILL_LEVEL_JOURNEYMAN)
+							alch_chance *= 2
+						bonus_chance = max(bonus_chance, alch_chance, farm_chance)
+					var/got_bonus = FALSE
+					if(prob(bonus_chance))
 						var/obj/item/C = new B.type(user.loc)
 						user.put_in_hands(C)
-					user.visible_message("<span class='notice'>[user] finds [HAS_TRAIT(user, TRAIT_WOODWALKER) ? "two of " : ""][B] in [src].</span>")
+						got_bonus = TRUE
+					user.visible_message(span_notice("[user] harvests [got_bonus ? "two " : ""][B.name] from [src] bush."))
 					return
 			user.visible_message("<span class='warning'>[user] searches through [src].</span>")
 			if(looty.len)
@@ -801,18 +816,18 @@
 	climbable = FALSE
 	dir = SOUTH
 	debris = list(/obj/item/natural/fibers = 2)
-	var/list/looty = list(/obj/item/natural/shellplant/pumpkin, /obj/item/natural/fibers)
+	var/list/looty = list(/obj/item/seeds/pumpkin, /obj/item/natural/fibers)
 
 /obj/structure/flora/roguegrass/pumpkin/Initialize()
 	. = ..()
 	icon_state = "pumpkin[rand(1,2)]"
 	if(prob(78))
-		looty += /obj/item/natural/shellplant/pumpkin
+		looty += /obj/item/natural/fibers
 	if(prob(32))
-		looty += /obj/item/natural/shellplant/pumpkin
+		looty += /obj/item/seeds/pumpkin
 	if(prob(24))
 		looty += /obj/item/natural/fibers
-	if(prob(7))
+	if(prob(5))
 		looty += /obj/item/natural/shellplant/pumpkin
 	pixel_x += rand(-3,3)
 	pixel_y += rand(0,6)

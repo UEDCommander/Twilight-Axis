@@ -185,6 +185,9 @@ GLOBAL_VAR_INIT(rpg_loot_items, FALSE)
 	/// %-age of our raw damage that is dealt to armor or weapon on hit / parry / clip.
 	var/intdamage_factor = 1
 
+	var/item_quality = ITEM_QUALITY_STANDARD
+	var/has_item_quality = FALSE
+
 	var/sleeved = null
 	var/sleevetype = null
 	var/nodismemsleeves = FALSE
@@ -278,17 +281,25 @@ GLOBAL_VAR_INIT(rpg_loot_items, FALSE)
 	/// no force-undisguise on hit, and only a slow accumulation of (non-igniting) sunder stacks while held/worn.
 	var/is_lesser_silver = FALSE
 	var/last_used = 0
-	var/toggle_state = null
+	var/override_state = null
 	var/icon_x_offset = 0
 	var/icon_y_offset = 0
 	var/always_destroy = FALSE
 	/// If TRUE, this item is not allowed to be minted. May be useful for other things later.
 	var/is_important = FALSE
+	var/unmintable = FALSE
+	var/atc_sealed = FALSE
+	var/was_crafted = FALSE
+	var/is_carved = FALSE
 	/// does this item/weapon circumvent two-stage death during dismemberment? (do not add this to anything but ultra rare shit)
 	var/vorpal = FALSE
 
-/obj/item/Initialize()
+/obj/item/Initialize(mapload)
 	. = ..()
+	if(mapload)
+		var/area/A = get_area(src)
+		if(A && is_type_in_typecache(A, GLOB.roguetown_areas_typecache))
+			unmintable = TRUE
 	if(!pixel_x && !pixel_y && !bigboy)
 		pixel_x = rand(-5,5)
 		pixel_y = rand(-5,5)
@@ -332,14 +343,14 @@ GLOBAL_VAR_INIT(rpg_loot_items, FALSE)
 					B.apply()
 				if (obj_broken)
 					update_damaged_state()
-			if(toggle_state)
-				icon_state = "[toggle_state]1"
+			if(override_state)
+				icon_state = "[override_state]1"
 			return
 		if(gripsprite)
-			if(!toggle_state)
+			if(!override_state)
 				icon_state = initial(icon_state)
 			else
-				icon_state = "[toggle_state]"
+				icon_state = "[override_state]"
 			var/datum/component/decal/blood/B = GetComponent(/datum/component/decal/blood)
 			if(B)
 				B.remove()
@@ -502,10 +513,13 @@ GLOBAL_VAR_INIT(rpg_loot_items, FALSE)
 		to_chat(usr, output)
 
 	if(href_list["explainbalance"])
-		var/output = span_info("A heavy weapon is easier to dodge, and inflicts 2 stamina damage per level of strength difference on a parrying defender. \n\
-		A swift balance weapon reduces the enemy's parry chance by 10% per level of speed difference, by up to 30%. \n\
-		If the defender has higher perception however, the penalty is reduced by 10% per point of difference, down to none.\n\
-		Intelligence also reduces the penalty by 3% per point of difference, down to none.")
+		var/output = span_info("A heavy weapon is easier to dodge, and inflicts [STAM_DRAIN_PER_STR_DIFF_HEAVY_BAL] stamina damage per level of strength difference on a parrying defender. \n\
+		A swift balance weapon reduces the enemy's parry chance depending on SPD difference. \n\
+		Targeting harder to hit zones such as hands, feet, stomach or face zones has a defense reduction cap at [SWIFTCAP_PRECISE]%. \n\
+		Targeting large limbs such as arms, head or legs has a defense reduction cap of [SWIFTCAP_LIMBS]%. \n\
+		Targeting the chest only has a cap of [SWIFTCAP_CHEST]% parry reduction. \n\
+		Swift Balance does not work if the attacker is wearing Medium or Heavy AC equipment on their outerwear, innerwear or pants slots. \n\
+		Defender's difference in INT and PER (if higher) may reduce the parry penalty in some circumstances.")
 		if(!usr.client.prefs.no_examine_blocks)
 			output = examine_block(output)
 		to_chat(usr, output)
@@ -1564,6 +1578,8 @@ GLOBAL_VAR_INIT(rpg_loot_items, FALSE)
 	if(user.get_active_held_item() == src)
 		user.update_a_intents()
 	user.changeNext_move(CLICK_CD_RAPID)
+	if(override_state)
+		apply_override_state(override_state)
 	return TRUE
 
 /obj/item/proc/altgrip(mob/living/carbon/user)
@@ -1683,8 +1699,26 @@ GLOBAL_VAR_INIT(rpg_loot_items, FALSE)
 	if(anvilrepair)
 		if(smeltresult == /obj/item/ingot/iron)
 			new /obj/item/scrap(get_turf(src))
+		if(smeltresult == /obj/item/ingot/avantyne) //In short - it checks the item's smeltable result. If it matches what's listed here, it'll spawn something 'new' - scrap, in this case - when destroyed.
+			new /obj/item/ingot/component/zizo(get_turf(src))
 			if(prob(20))
-				new /obj/item/scrap(get_turf(src))
+				new /obj/item/ingot/component/zizo(get_turf(src))
+		if(smeltresult == /obj/item/ingot/component/zizo) //This check's made so that all Ascendant-related items, if stripped and destroyed, spawn unique fragments. Decorative? Useful? Who knows!
+			new /obj/item/ingot/component/zizo(get_turf(src))
+			if(prob(20))
+				new /obj/item/ingot/component/zizo(get_turf(src))
+		if(smeltresult == /obj/item/ingot/component/graggar)
+			new /obj/item/ingot/component/graggar(get_turf(src))
+			if(prob(20))
+				new /obj/item/ingot/component/graggar(get_turf(src))
+		if(smeltresult == /obj/item/ingot/component/matthios)
+			new /obj/item/ingot/component/matthios(get_turf(src))
+			if(prob(20))
+				new /obj/item/ingot/component/matthios(get_turf(src))
+		if(smeltresult == /obj/item/ingot/component/baotha)
+			new /obj/item/ingot/component/baotha(get_turf(src))
+			if(prob(20))
+				new /obj/item/ingot/component/baotha(get_turf(src))
 	if(destroy_sound)
 		playsound(src, destroy_sound, 100, TRUE)
 	if(destroy_message)
@@ -1707,23 +1741,107 @@ GLOBAL_VAR_INIT(rpg_loot_items, FALSE)
 /obj/item/proc/repair_coverage()
 	body_parts_covered_dynamic = body_parts_covered
 
-/obj/item/examine(mob/user)
-	. = ..()
-	if(isliving(user))
-		var/mob/living/L = user
-		if(L.STAINT < 9)
-			return .
-	if(isnull(anvilrepair) && isnull(sewrepair))
-		return .
+/obj/item/proc/weight_tier_examine_line()
+	. = ""
+	var/size_word = "unwieldy"
+	switch(w_class)
+		if(WEIGHT_CLASS_TINY)
+			size_word = "tiny"
+		if(WEIGHT_CLASS_SMALL)
+			size_word = "small"
+		if(WEIGHT_CLASS_NORMAL)
+			size_word = "normal"
+		if(WEIGHT_CLASS_BULKY)
+			size_word = "bulky"
+		if(WEIGHT_CLASS_HUGE)
+			size_word = "huge"
+		if(WEIGHT_CLASS_GIGANTIC)
+			size_word = "gigantic"
+	return "Size: [size_word] ([grid_width]x[grid_height])."
 
-	var/str = "This object can be repaired using "
-	if(anvilrepair)
-		var/datum/skill/S = anvilrepair		//Should only ever be a skill or null
-		str += "<b>[initial(S.name)]</b> and a hammer."
-	if(sewrepair)
-		str += "<b>Sewing</b> and a needle."
-	str = span_info(str)
-	. += str
+/obj/item/proc/apply_quality(mob/crafter, skill_path, forced_tier = null)
+	var/tier
+	if(forced_tier != null)
+		tier = forced_tier
+	else
+		var/skill_level = 0
+		if(crafter && skill_path)
+			skill_level = crafter.get_skill_level(skill_path)
+		var/roll = rand(1, 100)
+		switch(skill_level)
+			if(SKILL_LEVEL_NONE, SKILL_LEVEL_NOVICE)
+				if(roll <= 60)
+					tier = ITEM_QUALITY_CRUDE
+				else if(roll <= 95)
+					tier = ITEM_QUALITY_ROUGH
+				else
+					tier = ITEM_QUALITY_STANDARD
+			if(SKILL_LEVEL_APPRENTICE)
+				if(roll <= 20)
+					tier = ITEM_QUALITY_CRUDE
+				else if(roll <= 75)
+					tier = ITEM_QUALITY_ROUGH
+				else
+					tier = ITEM_QUALITY_STANDARD
+			if(SKILL_LEVEL_JOURNEYMAN)
+				tier = ITEM_QUALITY_STANDARD
+			if(SKILL_LEVEL_EXPERT)
+				if(roll <= 70)
+					tier = ITEM_QUALITY_FINE
+				else if(roll <= 95)
+					tier = ITEM_QUALITY_FLAWLESS
+				else
+					tier = ITEM_QUALITY_MASTERWORK
+			if(SKILL_LEVEL_MASTER)
+				if(roll <= 30)
+					tier = ITEM_QUALITY_FINE
+				else if(roll <= 80)
+					tier = ITEM_QUALITY_FLAWLESS
+				else
+					tier = ITEM_QUALITY_MASTERWORK
+			else
+				if(roll <= 40)
+					tier = ITEM_QUALITY_FLAWLESS
+				else
+					tier = ITEM_QUALITY_MASTERWORK
+	item_quality = tier
+	var/prefix
+	switch(tier)
+		if(ITEM_QUALITY_LOOTED)
+			prefix = ITEM_QUALITY_PREFIX_LOOTED
+		if(ITEM_QUALITY_RUINED)
+			prefix = ITEM_QUALITY_PREFIX_RUINED
+		if(ITEM_QUALITY_AWFUL)
+			prefix = ITEM_QUALITY_PREFIX_AWFUL
+		if(ITEM_QUALITY_CRUDE)
+			prefix = ITEM_QUALITY_PREFIX_CRUDE
+		if(ITEM_QUALITY_ROUGH)
+			prefix = ITEM_QUALITY_PREFIX_ROUGH
+		if(ITEM_QUALITY_FINE)
+			prefix = ITEM_QUALITY_PREFIX_FINE
+		if(ITEM_QUALITY_FLAWLESS)
+			prefix = ITEM_QUALITY_PREFIX_FLAWLESS
+		if(ITEM_QUALITY_MASTERWORK)
+			prefix = ITEM_QUALITY_PREFIX_MASTERWORK
+	if(prefix)
+		name = "[prefix] [name]"
+	if(initial(sellprice) > 0)
+		sellprice = max(1, round(sellprice * ITEM_QUALITY_MULT(tier)))
+	return tier
+
+/obj/item/proc/mark_as_looted()
+	if(looted)
+		return
+	looted = TRUE
+	item_quality = ITEM_QUALITY_LOOTED
+	name = "[ITEM_QUALITY_PREFIX_LOOTED] [name]"
+
+/obj/item/proc/unmark_as_looted()
+	if(!looted)
+		return
+	looted = FALSE
+	item_quality = ITEM_QUALITY_STANDARD
+	name = replacetext(name, "[ITEM_QUALITY_PREFIX_LOOTED] ", "")
 
 /obj/item/proc/update_force_dynamic()
 	force_dynamic = (wielded ? force_wielded : force)
@@ -1736,3 +1854,90 @@ GLOBAL_VAR_INIT(rpg_loot_items, FALSE)
 
 /obj/item/proc/ai_withdraw_item(obj/item/it, mob/living/user)
 	return FALSE
+
+/** Does this item have an important, immediately notable quality (such as being heretical)?
+*	If it is, this should to return a list containing:
+* - First: A highlight status (see `code\__DEFINES\highlight_examine_defines.dm`).
+* - Second: A short description explaining in-character why this item has that status.
+*
+* When set, highlights the item's mob examine name/tooltip with obvious heretical flavor when worn/held.
+* 
+* If this returns null, the item will not be shown as heretical.*/
+/obj/item/proc/get_examine_highlight_status()
+	return null
+
+/** Returns an HTML-formatted string explaining how/why this item has the highlight status it does.
+* - `examine_highlight_status`: This item's examine highlight status (see `proc/get_examine_highlight_status()`).
+* - `itis`: Determines if the string will start with "It is".
+* - `allcaps`: Determines if the returned string will be in allcaps.
+*/
+/obj/item/proc/get_examine_highlight_description(list/examine_highlight_status, itis = FALSE, allcaps = TRUE)
+	if(examine_highlight_status)
+		var/severity = examine_highlight_status[1]
+		var/heresy_desc = examine_highlight_status[2]
+		if(!severity || !heresy_desc)
+			return null
+		var/highlight_itis = "[itis ? "It is " : ""]<b>[get_examine_highlight_adjective(severity)]</b>"
+		return get_examine_highlight_labeled_string(severity, "[allcaps ? uppertext(highlight_itis) : highlight_itis]: [allcaps ? uppertext(heresy_desc) : heresy_desc]")
+	return null
+
+/// Returns `label_string` HTML formatted depending on the provided highlight status (see `code\__DEFINES\highlight_examine_defines.dm`). 
+/obj/item/proc/get_examine_highlight_labeled_string(examine_highlight_type, label_string)
+	if(!examine_highlight_type || !label_string)
+		return null
+	var/highlight_color = get_examine_highlight_color(examine_highlight_type)
+	var/highlight_symbol = get_examine_highlight_symbol(examine_highlight_type)
+	return "<font color = '[highlight_color]'>[highlight_symbol] [label_string] [highlight_symbol]</font>"
+
+/// Returns a full HTML-formatted tooltip string whose contents depend on the given highlight status type (See `proc/get_examine_highlight_status()` and `code\__DEFINES\highlight_examine_defines.dm`). 
+/obj/item/proc/get_examine_highlight_tooltip_string(list/examine_highlight_status)
+	if(!examine_highlight_status)
+		return null
+	var/highlight_reason = get_examine_highlight_description(examine_highlight_status)
+	var/highlight_explanation = get_examine_highlight_explanation(examine_highlight_status[1])
+
+	return "[highlight_reason]<br>[highlight_explanation]"
+
+/// See `proc/get_examine_highlight_status()` and `code\__DEFINES\highlight_examine_defines.dm`. 
+/obj/item/proc/get_examine_highlight_adjective(highlight_type)
+	switch(highlight_type)
+		if(EXAMINEHIGHLIGHT_HERESYSEVERITY_ALARMING)
+			return "HERETICAL"
+		if(EXAMINEHIGHLIGHT_HERESYSEVERITY_SUSPICIOUS)
+			return "SUSPICIOUS"
+		if(EXAMINEHIGHLIGHT_HERESYSEVERITY_ODD)
+			return "Odd"
+	return null
+
+/// See `proc/get_examine_highlight_status()` and `code\__DEFINES\highlight_examine_defines.dm`. 
+/obj/item/proc/get_examine_highlight_explanation(highlight_type)
+	switch(highlight_type)
+		if(EXAMINEHIGHLIGHT_HERESYSEVERITY_ALARMING)
+			return EXAMINEHIGHLIGHT_TOOLTIP_HERESYSEVERITY_ALARMING
+		if(EXAMINEHIGHLIGHT_HERESYSEVERITY_SUSPICIOUS)
+			return EXAMINEHIGHLIGHT_TOOLTIP_HERESYSEVERITY_SUSPICIOUS
+		if(EXAMINEHIGHLIGHT_HERESYSEVERITY_ODD)
+			return EXAMINEHIGHLIGHT_TOOLTIP_HERESYSEVERITY_ODD
+	return null
+
+/// See `proc/get_examine_highlight_status()` and `code\__DEFINES\highlight_examine_defines.dm`. 
+/obj/item/proc/get_examine_highlight_color(highlight_type)
+	switch(highlight_type)
+		if(EXAMINEHIGHLIGHT_HERESYSEVERITY_ALARMING)
+			return COLOR_HERESYSEVERITY_ALARMING
+		if(EXAMINEHIGHLIGHT_HERESYSEVERITY_SUSPICIOUS)
+			return COLOR_HERESYSEVERITY_SUSPICIOUS
+		if(EXAMINEHIGHLIGHT_HERESYSEVERITY_ODD)
+			return COLOR_HERESYSEVERITY_ODD
+	return null
+	
+/// See `proc/get_examine_highlight_status()` and `code\__DEFINES\highlight_examine_defines.dm`. 
+/obj/item/proc/get_examine_highlight_symbol(highlight_type)
+	switch(highlight_type)
+		if(EXAMINEHIGHLIGHT_HERESYSEVERITY_ALARMING)
+			return EXAMINEHIGHLIGHT_SYMBOL_HERESYSEVERITY_ALARMING
+		if(EXAMINEHIGHLIGHT_HERESYSEVERITY_SUSPICIOUS)
+			return EXAMINEHIGHLIGHT_SYMBOL_HERESYSEVERITY_SUSPICIOUS
+		if(EXAMINEHIGHLIGHT_HERESYSEVERITY_ODD)
+			return EXAMINEHIGHLIGHT_SYMBOL_HERESYSEVERITY_ODD
+	return null

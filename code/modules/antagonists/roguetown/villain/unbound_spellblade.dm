@@ -22,6 +22,7 @@
 	L.become_skeleton()
 	ADD_TRAIT(L, TRAIT_MEDIUMARMOR, TRAIT_GENERIC)
 	ADD_TRAIT(L, TRAIT_ARCYNE, TRAIT_GENERIC)
+	ADD_TRAIT(L, TRAIT_SHATTER_KILL, TRAIT_GENERIC)
 
 /datum/antagonist/unbound_spellblade/proc/equip_spellblade()
 	owner.unknow_all_people()
@@ -226,6 +227,7 @@
 			switch(weapon_choice)
 				if("Spear")
 					r_hand = /obj/item/rogueweapon/spear
+					backr = /obj/item/rogueweapon/scabbard/gwstrap
 				if("Bardiche")
 					r_hand = /obj/item/rogueweapon/halberd/bardiche
 					backr = /obj/item/rogueweapon/scabbard/gwstrap
@@ -268,6 +270,7 @@
 		existing_eyes.Insert(H)
 
 	H.energy = H.max_energy
+	H.select_skeleton_features()
 
 /obj/item/clothing/suit/roguetown/armor/chainmail/hauberk/black
 	color = CLOTHING_BLACK

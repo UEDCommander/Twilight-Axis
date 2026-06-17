@@ -28,8 +28,9 @@
 
 	associated_skill = /datum/skill/magic/arcane
 	spell_tier = 2
-	is_implement_scaled_spell = TRUE
 	spell_impact_intensity = SPELL_IMPACT_MEDIUM
+
+	spell_requirements = SPELL_REQUIRES_NO_ANTIMAGIC | SPELL_REQUIRES_HUMAN
 
 	var/line_length = 4
 	var/blast_damage = 55

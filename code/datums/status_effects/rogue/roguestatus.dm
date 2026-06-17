@@ -65,7 +65,7 @@
 /atom/movable/screen/alert/status_effect/swingdelay
 	name = "Swinging!"
 	desc = "I am swinging my weapon! Why did I have the time to read this?!"
-	icon = 'icons/mob/combat_debuffs.dmi'
+	icon = 'icons/mob/screen_alert_combat.dmi'
 	icon_state = "swingdelay"
 
 /datum/status_effect/swingdelay/penalty
@@ -83,6 +83,12 @@
 	mob_effect_icon_state = "eff_swingdelay_cancel"
 	var/is_disrupted = FALSE
 
+/datum/status_effect/swingdelay/disrupt/on_creation(mob/living/new_owner, newdur, apply_slow = FALSE)
+	if(apply_slow)
+		var/spd_mod = 10 - new_owner.get_true_stat(STATKEY_SPD)
+		effectedstats = list(STATKEY_SPD = spd_mod)
+	. = ..()
+
 /datum/status_effect/swingdelay/disrupt/proc/attacked()
 	owner.swing_state = FALSE
 	is_disrupted = TRUE
@@ -97,3 +103,21 @@
 	name = "Swinging fiercely!"
 	desc = "THEY WILL JAB ME AND INTERRUPT THE ATTACK YOU GOBLINBRAINED WRETCH! LOOK AT THE ENEMY!!!"
 	icon_state = "swingdelay_disrupt"
+
+
+// This is used to make sure we cannot do stealth mechanics mid-combat.
+/datum/status_effect/stealth_revealed
+	id = "stealthreveal"
+	alert_type = /atom/movable/screen/alert/status_effect/stealth_revealed
+	duration = 10 SECONDS
+	status_type = STATUS_EFFECT_REFRESH
+
+/datum/status_effect/stealth_revealed/on_apply()
+	. = ..()
+	owner.update_sneak_invis(reset = TRUE)
+
+/atom/movable/screen/alert/status_effect/stealth_revealed
+	name = "Revealed!"
+	desc = "I'm revealed. It will take me a while to regain my sense of surroundings."
+	icon_state = "revealed"
+	icon = 'icons/mob/screen_alert_combat.dmi'

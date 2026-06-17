@@ -5,7 +5,7 @@
 	faction = "Station"
 	total_positions = 4
 	spawn_positions = 4
-	allowed_races = RACES_SHUNNED_UP
+	forbidden_races = list(RACES_CONSTRUCT RACES_DESPISED)
 	allowed_sexes = list(MALE, FEMALE)
 	allowed_ages = list(AGE_ADULT, AGE_MIDDLEAGED, AGE_OLD)
 	tutorial = "Having proven yourself both loyal and capable, you have been knighted to serve the realm as the royal family's sentry. \
@@ -16,7 +16,7 @@
 	advclass_cat_rolls = list(CTAG_ROYALGUARD = 20)
 	job_traits = list(TRAIT_NOBLE, TRAIT_STEELHEARTED, TRAIT_GUARDSMAN, TRAIT_EXPERT_HUNTER)
 	give_bank_account = TRUE
-	noble_income = 10
+	noble_income = 15
 	min_pq = 10
 	max_pq = null
 	round_contrib_points = 2
@@ -121,7 +121,7 @@
 /datum/outfit/job/roguetown/knight/heavy/pre_equip(mob/living/carbon/human/H)
 	..()
 	H.dna.species.soundpack_m = new /datum/voicepack/male/knight()
-	H.verbs |= /mob/proc/haltyell
+	add_verb(H, /mob/proc/haltyell)
 
 	H.adjust_blindness(-3)
 	if(H.mind)
@@ -219,7 +219,7 @@
 		/obj/item/rogueweapon/scabbard/sheath/noble = 1
 	)
 	if(H.mind)
-		SStreasury.give_money_account(ECONOMIC_UPPER_CLASS, H, "Savings.")
+		SStreasury.grant_savings(ECONOMIC_UPPER_CLASS, H)
 
 /datum/advclass/knight/footknight
 	name = "Foot Knight"
@@ -255,7 +255,7 @@
 /datum/outfit/job/roguetown/knight/footknight/pre_equip(mob/living/carbon/human/H)
 	..()
 	H.dna.species.soundpack_m = new /datum/voicepack/male/knight()
-	H.verbs |= /mob/proc/haltyell
+	add_verb(H, /mob/proc/haltyell)
 
 	H.adjust_blindness(-3)
 	if(H.mind)
@@ -341,7 +341,7 @@
 		/obj/item/rogueweapon/scabbard/sheath/noble = 1
 	)
 	if(H.mind)
-		SStreasury.give_money_account(ECONOMIC_UPPER_CLASS, H, "Savings.")
+		SStreasury.grant_savings(ECONOMIC_UPPER_CLASS, H)
 
 /datum/advclass/knight/mountedknight
 	name = "Mounted Knight"
@@ -385,7 +385,7 @@
 /datum/outfit/job/roguetown/knight/mountedknight/pre_equip(mob/living/carbon/human/H)
 	..()
 	H.dna.species.soundpack_m = new /datum/voicepack/male/knight()
-	H.verbs |= /mob/proc/haltyell
+	add_verb(H, /mob/proc/haltyell)
 
 	if(H.mind)
 		H.adjust_blindness(-3)
@@ -412,7 +412,8 @@
 			if("Grand Mace + Longbow")
 				backl = /obj/item/gun/ballistic/revolver/grenadelauncher/bow/longbow
 				beltr = /obj/item/quiver/arrows
-				beltl = /obj/item/rogueweapon/mace/goden/steel
+				r_hand = /obj/item/rogueweapon/mace/goden/steel
+				l_hand = /obj/item/rogueweapon/scabbard/gwstrap
 			if("Sabre + Recurve Bow")
 				backl = /obj/item/rogueweapon/scabbard/sword/noble
 				r_hand = /obj/item/rogueweapon/sword/sabre
@@ -492,7 +493,7 @@
 		/obj/item/rogueweapon/scabbard/sheath/noble = 1
 	)
 	if(H.mind)
-		SStreasury.give_money_account(ECONOMIC_UPPER_CLASS, H, "Savings.")
+		SStreasury.grant_savings(ECONOMIC_UPPER_CLASS, H)
 
 
 /datum/advclass/knight/irregularknight
@@ -533,12 +534,13 @@
 /datum/outfit/job/roguetown/knight/irregularknight/pre_equip(mob/living/carbon/human/H)
 	..()
 	H.dna.species.soundpack_m = new /datum/voicepack/male/knight()
-	H.verbs |= /mob/proc/haltyell
+	add_verb(H, /mob/proc/haltyell)
 	backpack_contents = list(
 		/obj/item/rogueweapon/huntingknife/idagger/steel/special = 1,
 		/obj/item/rope/chain = 1,
 		/obj/item/rogueweapon/scabbard/sheath/noble = 1
 	)
+
 
 	H.adjust_blindness(-3)
 	if(H.mind)
@@ -662,7 +664,7 @@
 		l_hand = onhelm[onhelmchoice]
 
 	if(H.mind)
-		SStreasury.give_money_account(ECONOMIC_UPPER_CLASS, H, "Savings.")
+		SStreasury.grant_savings(ECONOMIC_UPPER_CLASS, H)
 
 
 /datum/advclass/knight/knightchampion
@@ -736,13 +738,13 @@
 	H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/order/onfeet)
 	H.dna.species.soundpack_m = new /datum/voicepack/male/knight()
 
-	H.verbs |= list(
+	add_verb(H, list(
 		/mob/living/carbon/human/proc/request_outlaw,
 		/mob/proc/haltyell,
 		/mob/living/carbon/human/mind/proc/setorders
-	)
+	))
 
-	SStreasury.give_money_account(ECONOMIC_RICH, H, "Savings.")
+	SStreasury.grant_savings(ECONOMIC_RICH, H)
 
 	H.adjust_blindness(-3)
 	var/weapons = list(

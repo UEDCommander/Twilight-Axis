@@ -5,9 +5,8 @@
 	Through flame, through force, through unseen currents of mana — Psydon's enemies shall be unmade. \
 	His will be done."
 	allowed_sexes = list(MALE, FEMALE)
-	allowed_races = RACES_ALL_KINDS
 	outfit = /datum/outfit/job/roguetown/naledimage
-	subclass_languages = list(/datum/language/otavan, /datum/language/celestial)
+	subclass_languages = list(/datum/language/otavan, /datum/language/raneshi)
 	cmode_music = 'sound/music/warscholar.ogg'
 	category_tags = list(CTAG_ORTHODOXIST)
 	traits_applied = list(
@@ -65,8 +64,9 @@
 	beltl = /obj/item/storage/belt/rogue/pouch/coins/mid
 	shoes = /obj/item/clothing/shoes/roguetown/boots/psydonboots
 	backr = /obj/item/storage/backpack/rogue/satchel/black
-	id = /obj/item/clothing/ring/signet
 	var/naledi_book = pick(/obj/item/book/rogue/naledi1, /obj/item/book/rogue/naledi2, /obj/item/book/rogue/naledi3, /obj/item/book/rogue/naledi4)
+	id = /obj/item/clothing/ring/signet/psy/g
+	backl = /obj/item/rogueweapon/woodstaff/implement/grand/naledi
 	backpack_contents = list(
 		/obj/item/roguekey/inquisitionmanor,
 		/obj/item/paper/inqslip/arrival/ortho,

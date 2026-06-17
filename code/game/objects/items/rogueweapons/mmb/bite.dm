@@ -62,6 +62,9 @@
 	if(HAS_TRAIT(user, TRAIT_PACIFISM))
 		to_chat(user, span_warning("I don't want to harm [src]!"))
 		return FALSE
+	if(user.has_status_effect(/datum/status_effect/debuff/deadite_grace) && src.mind)
+		to_chat(user, span_warning("Ah, Lux... I calm down considerably, but my hunger only increases."))
+		user.remove_status_effect(/datum/status_effect/debuff/deadite_grace)
 	if(!user.can_bite())
 		to_chat(user, span_warning("My mouth has something in it."))
 		return FALSE
@@ -82,8 +85,9 @@
 
 	next_attack_msg.Cut()
 
+	user.break_invisibility_from_combat()
 	user.do_attack_animation(src, "bite")
-	playsound(user, 'sound/gore/flesh_eat_01.ogg', 100)
+	playsound(user, 'sound/gore/flesh_eat_01.ogg', vol = 50, vary = FALSE, extrarange = -2, ignore_walls = FALSE, quiet = TRUE)
 	var/nodmg = FALSE
 	var/dam2do = 10*(user.STASTR/20)
 	if(HAS_TRAIT(user, TRAIT_STRONGBITE))
@@ -112,7 +116,7 @@
 //nodmg if we don't have strongbite
 //nodmg if our teeth can't break through their armour
 	if(!nodmg)
-		playsound(src, "smallslash", 100, TRUE, -1)
+		playsound(src, "smallslash", vol = 50, vary = FALSE, extrarange = -1, ignore_walls = FALSE, quiet = TRUE)
 		if(ishuman(src) && user.mind)
 			var/mob/living/carbon/human/bite_victim = src
 			/*
@@ -252,6 +256,7 @@
 		return FALSE*/
 
 	user.changeNext_move(CLICK_CD_GRABBING)
+	user.break_invisibility_from_combat()
 	var/mob/living/carbon/C = grabbed
 	var/damage = user.get_punch_dmg()
 	if(HAS_TRAIT(user, TRAIT_STRONGBITE))
@@ -260,7 +265,7 @@
 	C.next_attack_msg.Cut()
 	user.do_attack_animation(C, "bite")
 	if(C.apply_damage(damage, BRUTE, limb_grabbed, armor_block))
-		playsound(C.loc, "smallslash", 100, FALSE, -1)
+		playsound(C.loc, "smallslash", vol = 50, vary = FALSE, extrarange = -1, ignore_walls = FALSE, quiet = TRUE)
 		var/datum/wound/caused_wound = limb_grabbed.bodypart_attacked_by(BCLASS_BITE, damage, user, sublimb_grabbed, crit_message = TRUE)
 		if(user.mind && caused_wound)
 			/*
@@ -276,7 +281,7 @@
 							if(W.werewolf_infect_attempt())
 								infected = TRUE
 								break
-						
+
 						if(infected)
 							to_chat(user, span_boldnotice("I have delivered the gift to [C] while chewing on their [parse_zone(sublimb_grabbed)]!"))
 
@@ -328,4 +333,5 @@
 		to_chat(user, span_warning("Sigh. It's not bleeding."))
 		return
 
+	user.break_invisibility_from_combat()
 	user.drinksomeblood(grabbed, sublimb_grabbed)

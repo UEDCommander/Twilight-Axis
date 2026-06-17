@@ -1,5 +1,6 @@
 /datum/crafting_recipe/roguetown/leather/container
 	abstract_type = /datum/crafting_recipe/roguetown/leather/container
+	display_category = ITEM_CAT_TAILOR_MISC
 	category = "Container"
 
 /datum/crafting_recipe/roguetown/leather/container/pouch
@@ -12,7 +13,7 @@
 	craftdiff = 0
 
 /datum/crafting_recipe/roguetown/leather/container/magepouch
-	name = "summoner's pouch"
+	name = "scholar's pouch"
 	reqs = list(
 		/obj/item/natural/hide/cured = 2,
 		/obj/item/natural/fibers = 1,
@@ -34,6 +35,13 @@
 	result = /obj/item/storage/backpack/rogue/satchel
 	reqs = list(/obj/item/natural/hide/cured = 2,
 				/obj/item/natural/fibers = 1)
+
+/datum/crafting_recipe/roguetown/leather/container/satchel/black
+	name = "black satchel"
+	result = /obj/item/storage/backpack/rogue/satchel/black
+	reqs = list(/obj/item/natural/hide/cured = 2,
+				/obj/item/natural/fibers = 1)
+	sellprice = 15
 
 /datum/crafting_recipe/roguetown/leather/container/satchelshort
 	name = "short satchel"
@@ -63,6 +71,12 @@
 /datum/crafting_recipe/roguetown/leather/container/boltpouch
 	name = "quiver, bolt pouch"
 	result = /obj/item/quiver/bolt
+	reqs = list(/obj/item/natural/hide/cured = 2,
+				/obj/item/natural/fibers = 1)
+
+/datum/crafting_recipe/roguetown/leather/container/stakepouch
+	name = "quiver, shotstake pouch"
+	result = /obj/item/quiver/bolt/stake
 	reqs = list(/obj/item/natural/hide/cured = 2,
 				/obj/item/natural/fibers = 1)
 

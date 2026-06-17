@@ -30,12 +30,13 @@
 	charge_slowdown = CHARGING_SLOWDOWN_NONE
 	charge_sound = 'sound/magic/charging_fire.ogg'
 	cooldown_time = 5.5 SECONDS
-	is_implement_scaled_spell = TRUE
 	attunement_school = ASPECT_NAME_GEOMANCY
 	var/spread_step = 8
 
 	associated_skill = /datum/skill/magic/arcane
 	spell_impact_intensity = SPELL_IMPACT_LOW
+
+	spell_requirements = SPELL_REQUIRES_NO_ANTIMAGIC | SPELL_REQUIRES_HUMAN
 
 /datum/action/cooldown/spell/projectile/gravel_blast/ready_projectile(obj/projectile/to_fire, atom/target, mob/user, iteration)
 	. = ..()
@@ -52,7 +53,7 @@
 	name = "gravel shot"
 	icon = 'icons/obj/magic_projectiles.dmi'
 	icon_state = "stone"
-	damage = 22
+	damage = 26
 	nodamage = FALSE
 	damage_type = BRUTE
 	woundclass = BCLASS_BLUNT
@@ -72,11 +73,11 @@
 	ricochet_incidence_leeway = 40
 	ricochet_decay_chance = 1
 	ricochet_decay_damage = 1
-	var/reduced_damage = 9
+	var/reduced_damage = 11
 
 /obj/projectile/magic/gravel_blast/arc
 	name = "arced gravel shot"
-	damage = 17
+	damage = 20
 	arcshot = TRUE
 
 /obj/projectile/magic/gravel_blast/on_hit(target)

@@ -44,7 +44,7 @@
 
 /// Public method to add threat to specific mob
 /datum/component/ai_aggro_system/proc/add_threat_to_mob(mob/target, amount)
-	if(!target || !parent)
+	if(!target || !parent || target == parent)
 		return
 
 	var/mob/living/living_mob = parent
@@ -52,7 +52,7 @@
 
 /// Public method to add threat to specific mob
 /datum/component/ai_aggro_system/proc/add_threat_to_mob_capped(mob/target, amount, cap)
-	if(!target || !parent)
+	if(!target || !parent || target == parent)
 		return
 	var/mob/living/living_mob = parent
 	var/list/aggro_table = living_mob.ai_controller.blackboard[BB_MOB_AGGRO_TABLE]
@@ -73,6 +73,9 @@
 		return
 
 	if(!ismob(attacker))
+		return
+
+	if(attacker == victim)
 		return
 
 	// Base threat from being attacked
@@ -103,6 +106,14 @@
 /datum/component/ai_aggro_system/proc/add_threat(mob/victim, mob/attacker, amount)
 	if(!victim?.ai_controller || !attacker)
 		return
+	if(attacker == victim)
+		return
+	// TA EDIT
+	if(isliving(attacker))
+		var/mob/living/living_attacker = attacker
+		if(SEND_SIGNAL(living_attacker, "mob_ai_target_check", victim))
+			return
+	// TA EDIT END
 
 	var/list/aggro_table = victim.ai_controller.blackboard[BB_MOB_AGGRO_TABLE]
 	if(!aggro_table)
@@ -181,6 +192,12 @@
 
 	// Find the mob with the highest threat
 	for(var/mob/threat_mob as anything in aggro_table)
+		// TA EDIT
+		if(isliving(threat_mob))
+			var/mob/living/living_threat = threat_mob
+			if(SEND_SIGNAL(living_threat, "mob_ai_target_check", source))
+				continue
+		// TA EDIT END
 		if(aggro_table[threat_mob] > highest_threat)
 			highest_threat = aggro_table[threat_mob]
 			highest_threat_mob = threat_mob

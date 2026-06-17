@@ -538,7 +538,6 @@
 "IG" = (
 /obj/structure/closet/crate/drawer/inn,
 /obj/item/recipe_book/alchemy,
-/obj/item/book/granter/arcane_aspect/major,
 /obj/item/scomstone/bad,
 /turf/open/floor/carpet/royalblack,
 /area/rogue/under/tomb/indoors/magic)
@@ -626,7 +625,7 @@
 /turf/open/floor/rogue/dirt,
 /area/rogue/under/tomb/cave/lava)
 "Pq" = (
-/obj/structure/fluff/buysign{
+/obj/structure/fluff/sign{
 	name = "If you are reading this, the Ten says you are a nerd."
 	},
 /turf/open/floor/rogue/grassred,

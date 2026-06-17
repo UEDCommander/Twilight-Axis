@@ -20,6 +20,8 @@
 	. = ..()
 	var/static/list/loc_connections = list(COMSIG_ATOM_EXIT = PROC_REF(on_exit))
 	AddElement(/datum/element/connect_loc, loc_connections)
+	if(mapload)
+		resistance_flags |= INDESTRUCTIBLE
 	return
 
 /obj/structure/stairs/proc/on_exit(datum/source, atom/movable/leaving, atom/new_location)
@@ -50,12 +52,24 @@
 		if(partner.dir == dir)	//partner matches our dir
 			return newtarg
 
-/obj/structure/stairs/proc/user_walk_into_target_loc(atom/movable/AM, dirmove)
+/obj/structure/stairs/proc/user_walk_into_target_loc(atom/movable/AM, dirmove) // TA EDIT START
 	var/turf/newtarg = get_target_loc(dirmove)
-	if(newtarg)
-		INVOKE_ASYNC(src, GLOBAL_PROC_REF(movable_travel_z_level), AM, newtarg)
-		return TRUE
-	return FALSE
+	if(!newtarg)
+		return FALSE
+
+	INVOKE_ASYNC(src, PROC_REF(travel_with_stamina_cost), AM, newtarg)
+	return TRUE
+
+/obj/structure/stairs/proc/travel_with_stamina_cost(atom/movable/AM, turf/newtarg)
+	if(!AM || !newtarg)
+		return
+
+	movable_travel_z_level(AM, newtarg)
+
+	if(ishuman(AM))
+		var/mob/living/carbon/human/H = AM
+		if(H.mind)
+			H.stamina_add(15, null, FALSE) // TA EDIT END
 
 /obj/structure/stairs/stone
 	name = "stone stairs"
@@ -106,6 +120,7 @@
 /obj/structure/stairs/d/OnCrafted(dirin, mob/user)
 	dir = turn(dirin, 180)
 	var/turf/partner = get_step_multiz(get_turf(src), DOWN)
+	log_craft("[user.real_name], ([user.ckey]) has built stairs at [get_turf(src)], [AREACOORD(src)]")
 	partner = get_step(partner, dirin)
 	if(isopenturf(partner))
 		var/obj/stairs = new /obj/structure/stairs(partner)
@@ -117,6 +132,7 @@
 /obj/structure/stairs/stone/d/OnCrafted(dirin, mob/user)
 	dir = turn(dirin, 180)
 	var/turf/partner = get_step_multiz(get_turf(src), DOWN)
+	log_craft("[user.real_name], ([user.ckey]) has built stairs at [get_turf(src)], [AREACOORD(src)]")
 	partner = get_step(partner, dirin)
 	if(isopenturf(partner))
 		var/obj/stairs = new /obj/structure/stairs/stone(partner)

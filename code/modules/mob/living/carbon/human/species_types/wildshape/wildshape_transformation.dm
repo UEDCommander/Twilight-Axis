@@ -7,27 +7,29 @@
 		. = ..()
 
 //Will drop or destroy items depending on their allowed status within the proc
-/mob/living/carbon/human/proc/wildshape_drop_items()
+/mob/living/carbon/human/proc/wildshape_drop_items(list/allowed_types, list/disallowed_types)
 
-	var/list/disallowed_equipment_Type = list(	/obj/item/storage,
+	if(!disallowed_types)
+		disallowed_types = list(/obj/item/storage,
 											/obj/item/rogueweapon,
 											)
 
-	var/list/allowed_equipment_Type = list(	/obj/item/rogueweapon/woodstaff,
+	if(!allowed_types)
+		allowed_types = list(/obj/item/rogueweapon/woodstaff,
 											/obj/item/storage/belt
 											)
 	
 	drop_all_held_items() //Drop what were in your hands
 
 	for(var/obj/item/I in src)
-		if(is_type_in_list(I, allowed_equipment_Type)) //Allow items of allowed type no matter what
+		if(is_type_in_list(I, allowed_types)) //Allow items of allowed type no matter what
 			continue
-		if(is_type_in_list(I, disallowed_equipment_Type)) //Drops all items of the disallowed type
+		if(is_type_in_list(I, disallowed_types)) //Drops all items of the disallowed type
 			dropItemToGround(I)
 		else if(I.has_armor_value()) //Drop armor
 			dropItemToGround(I)
 
-/mob/living/carbon/human/proc/wildshape_transformation(shapepath)
+/mob/living/carbon/human/proc/wildshape_transformation(shapepath, list/allowed_equipment, list/disallowed_equipment)
 	if(!mind)
 		log_runtime("NO MIND ON [src.name] WHEN TRANSFORMING")
 	Paralyze(1, ignore_canstun = TRUE)
@@ -44,7 +46,7 @@
 	dropItemToGround(stored_neck)
 	dropItemToGround(stored_ring)
 
-	wildshape_drop_items()
+	wildshape_drop_items(allowed_equipment, disallowed_equipment)
 
 	regenerate_icons()
 	icon = null
@@ -87,13 +89,21 @@
 		var/obj/item/bodypart/bp = W.get_bodypart(old_wound.bodypart_owner.body_zone)
 		bp?.remove_wound(old_wound.type)
 
-	var/list/datum/wound/woundlist = get_wounds()
+	var/list/datum/wound/woundlist = src.get_wounds()
 	if(woundlist.len)
 		for(var/datum/wound/wound in woundlist)
-			var/obj/item/bodypart/c_BP = get_bodypart(wound.bodypart_owner.body_zone)
-			var/obj/item/bodypart/w_BP = W.get_bodypart(wound.bodypart_owner.body_zone)
-			w_BP.add_wound(wound.type)
-			c_BP.remove_wound(wound.type)
+			if (istype(wound, /datum/wound/dismemberment))
+				continue				
+			var/target_zone = wound.bodypart_owner.body_zone
+			if (target_zone == BODY_ZONE_TAUR)
+				target_zone = pick(BODY_ZONE_L_LEG, BODY_ZONE_R_LEG)
+			
+			var/bleedrate = wound.bleed_rate
+			var/obj/item/bodypart/w_bp = W.get_bodypart(target_zone)
+			
+			wound.apply_to_bodypart(w_bp, silent = TRUE, crit_message = FALSE)
+			wound.set_bleed_rate(bleedrate) // restore bleed rate, since apply_to_bodypart resets it.
+
 
 	W.adjustBruteLoss(getBruteLoss())
 	W.adjustFireLoss(getFireLoss())
@@ -102,11 +112,8 @@
 	src.adjustBruteLoss(-src.getBruteLoss())
 	src.adjustFireLoss(-src.getFireLoss())
 	src.adjustOxyLoss(-src.getOxyLoss())
+
 	W.blood_volume = blood_volume
-	W.bleed_rate = bleed_rate
-	W.bleedsuppress = bleedsuppress
-	bleed_rate = 0
-	bleedsuppress = TRUE
 	W.set_nutrition(nutrition)
 	W.set_hydration(hydration)
 
@@ -192,10 +199,13 @@
 	var/list/datum/wound/woundlist = get_wounds()
 	if(woundlist.len)
 		for(var/datum/wound/wound in woundlist)
-			var/obj/item/bodypart/c_BP = get_bodypart(wound.bodypart_owner.body_zone)
-			var/obj/item/bodypart/w_BP = W.get_bodypart(wound.bodypart_owner.body_zone)
-			w_BP.add_wound(wound.type)
-			c_BP.remove_wound(wound.type)
+			var/target_zone = wound.bodypart_owner.body_zone
+			
+			var/bleedrate = wound.bleed_rate
+			var/obj/item/bodypart/w_bp = W.get_bodypart(target_zone)
+			
+			wound.apply_to_bodypart(w_bp, silent = TRUE, crit_message = FALSE)
+			wound.set_bleed_rate(bleedrate)
 
 	W.adjustBruteLoss(getBruteLoss())
 	W.adjustFireLoss(getFireLoss())
@@ -205,8 +215,7 @@
 	src.adjustFireLoss(-src.getFireLoss())
 	src.adjustOxyLoss(-src.getOxyLoss())
 	W.blood_volume = blood_volume
-	W.bleed_rate = bleed_rate
-	W.bleedsuppress = bleedsuppress
+
 	W.set_nutrition(nutrition)
 	W.set_hydration(hydration)
 

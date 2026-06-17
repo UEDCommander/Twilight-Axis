@@ -1,4 +1,5 @@
 /mob/living/simple_animal/hostile/retaliate/rogue/infernal/watcher
+	threat_point = 70
 	icon = 'icons/mob/summonable/32x32.dmi'
 	name = "infernal watcher"
 	icon_state = "watcher"
@@ -48,7 +49,7 @@
 	aggressive = 1
 //	stat_attack = UNCONSCIOUS
 	ranged = TRUE
-	ranged_cooldown = 40
+	ranged_cooldown_time = 80
 	projectiletype = /obj/projectile/magic/aoe/fireball/rogue
 	ranged_message = "stares"
 

@@ -25,6 +25,7 @@ GLOBAL_LIST_INIT(character_flaws, list(
 	/datum/charflaw/noeyer::name = /datum/charflaw/noeyer,
 	/datum/charflaw/noeyel::name = /datum/charflaw/noeyel,
 	/datum/charflaw/noeyeall::name = /datum/charflaw/noeyeall,
+	/datum/charflaw/armor_break::name=/datum/charflaw/armor_break,
 	/datum/charflaw/limbloss/arm_r::name = /datum/charflaw/limbloss/arm_r,
 	/datum/charflaw/limbloss/arm_l::name = /datum/charflaw/limbloss/arm_l,
 	/datum/charflaw/sleepless::name = /datum/charflaw/sleepless,
@@ -43,12 +44,13 @@ GLOBAL_LIST_INIT(averse_factions, list(
 	"Courtiers & Nobility" = (COURTIERS | NOBLEMEN | COUNCILLOR),
 	"Inquisition" = INQUISITION,
 	"Burghers" = BURGHERS,
+	"Azurian Trading Company" = ATC,
 	"Retinue" = RETINUE,
 	"Garrison" = (GARRISON | VANGUARD | CITYWATCH),
 	"Churchmen" = CHURCHMEN,
 	"Peasants" = PEASANTS,
 	"Wanderers" = WANDERERS,
-	"Everyone" = (COURTIERS | NOBLEMEN | INQUISITION | BURGHERS | RETINUE | GARRISON | CHURCHMEN | PEASANTS | WANDERERS | SIDEFOLK | ANTAGONIST | COUNCILLOR)
+	"Everyone" = (COURTIERS | NOBLEMEN | INQUISITION | BURGHERS | ATC | RETINUE | GARRISON | CHURCHMEN | PEASANTS | WANDERERS | SIDEFOLK | ANTAGONIST | COUNCILLOR)
 ))
 
 /datum/charflaw
@@ -58,7 +60,8 @@ GLOBAL_LIST_INIT(averse_factions, list(
 	var/needs_extra_vice = FALSE
 	/// For voyeur vice examines only. Format is "[name] is " + this + "...", leave blank to use the flaw's name.
 	/// Intended for addiction types only.
-	var/voyeur_descriptor	
+	var/voyeur_descriptor
+	var/list/restricted_species = list()
 
 /datum/charflaw/proc/on_mob_creation(mob/user)
 	return
@@ -118,6 +121,12 @@ GLOBAL_LIST_INIT(averse_factions, list(
 	for(var/key in cf_list)
 		if(cf_list[key] == type || cf_list[key] == /datum/charflaw/noflaw)
 			cf_list -= key
+		var/datum/charflaw/cf = cf_list[key]
+		if(cf)
+			cf = new cf()
+			var/mob/living/carbon/human/H = user
+			if(length(cf.restricted_species) && (H.dna.species.type in cf.restricted_species))
+				cf_list.Remove(key)
 
 	var/datum/job/mob_job = null
 	if(target.mind?.assigned_role)
@@ -404,6 +413,37 @@ GLOBAL_LIST_INIT(averse_factions, list(
 	..()
 	user.add_client_colour(/datum/client_colour/monochrome)
 
+/datum/charflaw/armor_break
+	name = "Loose Straps"
+	desc = "My armor never seems to fit quite right. It has a nasty habit of exploding off my body when under inordinate stress."
+	needs_extra_vice = TRUE
+
+/datum/charflaw/armor_break/on_mob_creation(mob/user)
+	..()
+	if(ishuman(user))
+		var/mob/living/carbon/human/H = user
+		ADD_TRAIT(H, TRAIT_ARMOR_BREAK, TRAIT_GENERIC)
+
+GLOBAL_LIST_INIT(hunted_protected_roles, list(
+	"Head Physician",
+	"Martyr",
+	"Bishop",
+	"Councillor",
+	"Hand",
+	"Jester",
+	"Court Magician",
+	"Seneschal",
+	"Suitor",
+	"Sergeant",
+	"Inquisitor",
+	"Consort",
+	"Grand Duke",
+	"Prince",
+	"Servant",
+	"Knight",
+	"Marshal"
+))
+
 /datum/charflaw/hunted
 	name = "Hunted (+2 TRI)"
 	desc = "Something in my past has made me a target. I'm always looking over my shoulder.	\
@@ -646,7 +686,7 @@ GLOBAL_LIST_INIT(averse_factions, list(
 	ADD_TRAIT(insane_fool, TRAIT_PSYCHOSIS, TRAIT_GENERIC)
 	insane_fool.adjust_triumphs(3)
 	if(insane_fool.patron?.type == /datum/patron/divine/abyssor) 
-	 insane_fool.grant_language(/datum/language/abyssal)
+		insane_fool.grant_language(/datum/language/abyssal)
 
 /datum/charflaw/indebted
 	name = "Indebted"
@@ -662,28 +702,43 @@ GLOBAL_LIST_INIT(averse_factions, list(
 	addtimer(CALLBACK(src, PROC_REF(setup_self), alimony), 5 SECONDS)
 
 /datum/charflaw/indebted/proc/setup_self(mob/living/carbon/human/user)
-	if(user.mind)
-		if(!SStreasury.bank_accounts[user.real_name])
-			SStreasury.create_bank_account(user.real_name, minimum)
-			is_active = TRUE
-			next_alimony = world.time + interval
+	if(!user?.mind)
+		return
+	if(!SStreasury.has_account(user))
+		SStreasury.create_bank_account(user, minimum)
+	is_active = TRUE
+	next_alimony = world.time + interval
 
 /datum/charflaw/indebted/flaw_on_life(mob/user)
 	. = ..()
-	if(is_active)
-		if(world.time > next_alimony)
-			calculate_childsupport(user)
+	if(!is_active)
+		return
+	if(world.time <= next_alimony)
+		return
+	// Undeath cancels mortal obligations. A vampiric servant has no meister account to speak of
+	// and the repeated fine attempts spam error notes every life tick.
+	if(user?.mind?.has_antag_datum(/datum/antagonist/vampire) || user?.mind?.has_antag_datum(/datum/antagonist/vampire/lord))
+		is_active = FALSE
+		return
+	calculate_childsupport(user)
 
 /datum/charflaw/indebted/proc/calculate_childsupport(mob/deadbeat)
-	var/bankamt = SStreasury.bank_accounts[deadbeat]
+	// Always reschedule first, regardless of outcome, so a broke debtor doesn't re-enter every
+	// life tick and spam.
+	next_alimony = world.time + interval
+	// Bypass give_money_account's fine path - Indebted is a personal debt to an NPC creditor, not
+	// a Crown fine, so the per-day fine cap and rate cap added for Steward abuse don't apply.
+	var/datum/fund/account = SStreasury.get_account(deadbeat)
+	var/bankamt = account ? account.balance : 0
 	var/alimony = minimum
 	if(bankamt > minimum)
 		if((bankamt * relative) > minimum)
 			alimony = round(bankamt * relative)
-		SStreasury.give_money_account(-alimony, deadbeat, "Debts")
-		next_alimony = world.time + interval
+		if(SStreasury.burn(account, alimony, "Debts"))
+			send_ooc_note("<b>MEISTER:</b> [alimony]m was taken in debts owed.", name = deadbeat.real_name)
 	else
-		SStreasury.give_money_account(-bankamt, deadbeat, "Defaulted Debts")
+		if(bankamt > 0 && SStreasury.burn(account, bankamt, "Defaulted Debts"))
+			send_ooc_note("<b>MEISTER:</b> [bankamt]m was taken in defaulted debts.", name = deadbeat.real_name)
 		deadbeat.add_stress(/datum/stressevent/debt)
 		if(!bounty_added)
 			if(ishuman(deadbeat))

@@ -21,10 +21,12 @@
 				/mob/living/carbon/human/species/goblin/npc/ambush/moon = 30,
 				/mob/living/simple_animal/hostile/retaliate/rogue/troll = 15,
 				/mob/living/simple_animal/hostile/retaliate/rogue/drider = 10,
+				/mob/living/simple_animal/hostile/retaliate/rogue/ooze_blob = 20
 	)
 	converted_type = /area/rogue/outdoors/caves
 	deathsight_message = "an acid-scarred depths"
 	detail_text = DETAIL_TEXT_UNDERDARK
+	threat_region = THREAT_REGION_UNDERDARK
 
 /area/rogue/under/underdark/south
 	name = "Southern Underdark"

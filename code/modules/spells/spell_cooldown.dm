@@ -130,6 +130,8 @@
 	var/self_cast_possible = TRUE
 	/// The casting range of our spell.
 	var/cast_range = 7
+	/// If TRUE, this spell may be cast at a target on a different Z-level. Defaults FALSE; only projectile spells opt in.
+	var/allow_cross_z = FALSE
 	/// Variable dictating if the spell will use turf based aim assist.
 	var/aim_assist = TRUE
 
@@ -164,9 +166,6 @@
 	var/charge_target_time = 0
 	/// Whether the spell is currently charged, for cases where you want to keep casting after the initial charge (projectiles).
 	var/charged = FALSE
-	/// If TRUE, this spell benefits from implement damage bonus when the caster holds a spell implement.
-	// Only poke spells (low CD staple spammable projectiles) should ever get this.
-	var/is_implement_scaled_spell = FALSE
 	/// The school this spell attunes to. If set, holding a spell implement while casting will attune it (glow + name).
 	/// Use ASPECT_NAME defines (e.g. ASPECT_NAME_PYROMANCY). Null means no attunement.
 	var/attunement_school
@@ -177,9 +176,12 @@
 	var/weapon_penalty_active = FALSE
 	/// If TRUE, this spell ignores armor cooldown penalties (for armored casters like Tithebound).
 	var/ignore_armor_penalty = FALSE
+	/// If TRUE, will -not- trigger stealth reveal mechanics after cast.
+	var/ignore_stealth_reveal = FALSE
 	/// If TRUE, spell charges on button press, then waits for a separate middle-click to cast.
 	/// If FALSE (default), spell uses hold-and-release: hold middle-click to charge, release to cast.
 	var/charge_then_click = FALSE
+	var/blocks_defense_while_channeling = FALSE
 
 	/// Lore/flavor text. Shown on hover in spell lists, always shown in detailed examine.
 	var/fluff_desc = ""
@@ -197,6 +199,9 @@
 
 	/// Timer ID for the auto cancel, so we can cancel it
 	var/auto_cancel_timer = null
+	
+	/// A parent variable to store devotion cost. -- Kuan's Note: This is kinda needed if we want to shift Miracles from proc_holder to spell/cooldown
+	var/devotion_cost = null
 
 /datum/action/cooldown/spell/New(Target)
 	. = ..()
@@ -479,6 +484,8 @@
 // Where the cast chain starts
 /datum/action/cooldown/spell/PreActivate(atom/target)
 	charged = FALSE
+	if(owner?.channeling_spell == src)
+		owner.channeling_spell = null
 	if(!is_valid_target(target))
 		if(charge_required && click_to_activate)
 			to_chat(owner, span_warning("I can't cast [src] on [target]!"))
@@ -502,7 +509,7 @@
 		if(istype(held, /obj/item/rogueweapon/shield))
 			continue
 		var/obj/item/rogueweapon/W = held
-		if(W.implement_multiplier)
+		if(W.implement_refund)
 			continue
 		return TRUE
 	if(H.has_status_effect(/datum/status_effect/recent_weapon))
@@ -537,6 +544,8 @@
 
 /// Adjust the cooldown time based on associated_stat and armor.
 /datum/action/cooldown/spell/proc/get_adjusted_cooldown()
+	if(!isliving(owner))
+		return initial(cooldown_time)
 	var/mob/living/living_owner = owner
 	var/base = initial(cooldown_time)
 	var/newcd = base
@@ -556,6 +565,9 @@
 	// Weapon-in-hand penalty
 	if(weapon_penalty_active)
 		newcd += base * WEAPON_CAST_PENALTY
+
+	if(HAS_TRAIT(living_owner, TRAIT_LEYLINE_HASTE)) // Hastens CD by 25%.
+		newcd *= 0.75
 
 	return newcd
 
@@ -747,9 +759,12 @@
 		// The entire spell is done, start the actual cooldown at its adjusted duration
 		StartCooldown(get_adjusted_cooldown())
 
+	var/spent = 0
 	if(!(precast_result & SPELL_NO_IMMEDIATE_COST))
 		// Invoke the base cost of the spell based on primary/secondary resource types
-		invoke_cost()
+		spent = invoke_cost()
+
+	apply_residual_focus(spent)
 
 	weapon_penalty_active = FALSE
 
@@ -783,7 +798,7 @@
 		if(sig_return & SPELL_CANCEL_CAST)
 			return sig_return
 
-		if(spell_requirements & SPELL_REQUIRES_SAME_Z)
+		if(!allow_cross_z)
 			var/turf/caster_t = get_turf(owner)
 			var/turf/target_t = get_turf(cast_on)
 			if(caster_t && target_t && caster_t.z != target_t.z)
@@ -803,7 +818,7 @@
 				)
 			return sig_return | SPELL_CANCEL_CAST
 
-		if((primary_resource_type == SPELL_COST_DEVOTION) && HAS_TRAIT(cast_on, TRAIT_SILVER_BLESSED) && !(spell_flags & SPELL_PSYDON))
+		if((primary_resource_type == SPELL_COST_DEVOTION) && HAS_TRAIT(cast_on, TRAIT_PSYDONITE) && !(spell_flags & SPELL_PSYDON))
 			cast_on.visible_message(span_info("[cast_on] stirs for a moment, the miracle dissipates."), span_notice("A dull warmth swells in your heart, only to fade as quickly as it arrived."))
 			playsound(cast_on, 'sound/magic/PSY.ogg', 100, FALSE, -1)
 			owner.playsound_local(owner, 'sound/magic/PSY.ogg', 100, FALSE, -1)
@@ -873,6 +888,10 @@
 		if(H.has_status_effect(/datum/status_effect/buff/clash))
 			H.bad_guard(span_warning("I can't focus while casting spells!"), cheesy = TRUE)
 
+		if(!ignore_stealth_reveal)
+			if(H.get_skill_level(/datum/skill/misc/sneaking) >= SKILL_LEVEL_JOURNEYMAN || HAS_TRAIT(H, TRAIT_LIGHT_STEP))
+				H.apply_status_effect(/datum/status_effect/stealth_revealed)
+
 	// Sparks and smoke can only occur if there's an owner to source them from.
 	if(sparks_amt)
 		do_sparks(sparks_amt, FALSE, get_turf(owner))
@@ -941,6 +960,11 @@
 /// When we start charging the spell called from set_click_ability or start_casting
 /datum/action/cooldown/spell/proc/on_start_charge()
 	currently_charging = TRUE
+	if(owner)
+		owner.tempfixeye = TRUE
+		if(!owner.fixedeye)
+			owner.nodirchange = TRUE
+		owner.channeling_spell = src
 	START_PROCESSING(SSfastprocess, src)
 	build_all_button_icons(UPDATE_BUTTON_STATUS|UPDATE_BUTTON_BACKGROUND)
 
@@ -980,6 +1004,10 @@
 /// When finish charging the spell called from set_click_ability or try_casting
 /// This does not mean we succeeded in charging the spell just that we did mouseUp/ended the do_after
 /datum/action/cooldown/spell/proc/on_end_charge(success)
+	if(owner)
+		owner.tempfixeye = FALSE
+		if(!owner.fixedeye)
+			owner.nodirchange = FALSE
 	end_charging()
 	. = success
 	if(success)
@@ -996,6 +1024,10 @@
 	currently_charging = FALSE
 	charge_started_at = null
 	charge_target_time = null
+	// Only drop the cache if we're not about to enter the "charged, waiting to fire" phase
+	// (charge-then-click spells). Caller sets charged=TRUE after this returns on success.
+	if(owner?.channeling_spell == src && !charged)
+		owner.channeling_spell = null
 	STOP_PROCESSING(SSfastprocess, src)
 	build_all_button_icons(UPDATE_BUTTON_STATUS|UPDATE_BUTTON_BACKGROUND)
 
@@ -1181,6 +1213,8 @@
 	return TRUE
 
 /// Charge the owner with the cost of the spell. Drains both primary and secondary resources.
+/// Returns the sum of stamina + energy spent (devotion/blood are excluded — the return
+/// feeds the implement refund pool, which only tracks the two mundane resource bars).
 /datum/action/cooldown/spell/proc/invoke_cost()
 	if(!owner)
 		return
@@ -1188,10 +1222,42 @@
 	var/primary_spent = invoke_resource_cost(primary_resource_type, primary_resource_cost)
 	var/secondary_spent = invoke_resource_cost(secondary_resource_type, secondary_resource_cost)
 
-	var/total = (primary_spent || 0) + (secondary_spent || 0)
-	if(total <= 0)
+	var/refundable_total = 0
+	if(primary_resource_type == SPELL_COST_STAMINA || primary_resource_type == SPELL_COST_ENERGY)
+		refundable_total += (primary_spent || 0)
+	if(secondary_resource_type == SPELL_COST_STAMINA || secondary_resource_type == SPELL_COST_ENERGY)
+		refundable_total += (secondary_spent || 0)
+	return refundable_total
+
+/// Returns the highest-tier implement currently held by the user, or null.
+/datum/action/cooldown/spell/proc/get_held_implement(mob/user)
+	if(!ishuman(user))
+		return null
+	var/mob/living/carbon/human/H = user
+	var/obj/item/rogueweapon/best
+	for(var/obj/item/held in list(H.get_active_held_item(), H.get_inactive_held_item()))
+		if(!istype(held, /obj/item/rogueweapon))
+			continue
+		var/obj/item/rogueweapon/W = held
+		if(W.implement_refund > (best ? best.implement_refund : 0))
+			best = W
+	return best
+
+/// Apply or extend the residual focus buff based on how much stamina/energy this cast drained
+/// and which implement (if any) the caster is holding. No implement = no refund.
+/datum/action/cooldown/spell/proc/apply_residual_focus(refundable_spent)
+	if(refundable_spent <= 0)
 		return
-	return total
+	var/obj/item/rogueweapon/implement = get_held_implement(owner)
+	if(!implement?.implement_refund)
+		return
+	if(!isliving(owner))
+		return
+	var/pool = refundable_spent * implement.implement_refund
+	if(pool <= 0)
+		return
+	var/mob/living/L = owner
+	L.apply_status_effect(/datum/status_effect/buff/residual_focus, pool)
 
 /// Drain a specific resource type by the given base cost.
 /// INT scaling applies to stamina and energy. Devotion uses raw cost.
@@ -1258,13 +1324,19 @@
 	else
 		stats += span_info("Range: Self")
 
+	var/display_charge = charge_time
+	if(user && HAS_TRAIT(user, TRAIT_SWIFTCAST))
+		display_charge = 0
+
 	// Charge time
-	if(charge_time > 0)
-		stats += span_info("Charge time: [DisplayTimeText(charge_time)]")
-		if(spell_requirements & SPELL_REQUIRES_NO_MOVE)
-			stats += span_warning("Channeling is interrupted by movement.")
+	if(display_charge > 0)
+		stats += span_info("Charge time: [DisplayTimeText(display_charge)]")
+		if(HAS_TRAIT(user, TRAIT_LEYLINE_HASTE))
+			stats += span_info(" <font color='#00e1ff'>Ley Lines (-25%)</font>")
 	else
 		stats += span_info("Charge time: Instant")
+		if(HAS_TRAIT(user, TRAIT_SWIFTCAST))
+			stats += span_info(" <font color='#8c00ff'>(Swiftcast)</font>")
 
 	// Cooldown
 	var/base_cd = initial(cooldown_time)
@@ -1350,6 +1422,8 @@
 		var/armor_mod = base * armor_mult
 		var/armor_label = user.check_armor_skill() ? "Armor weight" : "Untrained armor"
 		breakdown += span_smallred("  [armor_label]: +[DisplayTimeText(armor_mod)]")
+	if(HAS_TRAIT(user, TRAIT_LEYLINE_HASTE))
+		breakdown += span_smallgreen("  <font color='#00e1ff'>Ley Lines (-25%)</font>")
 	return breakdown
 
 /// Breakdown of resource cost modifiers for examine.
@@ -1430,6 +1504,13 @@
 	on_start_charge()
 	charge_started_at = world.time
 	charge_target_time = charge_time
+
+	if(HAS_TRAIT(owner, TRAIT_SWIFTCAST)) // Makes your next spell be instant.
+		charge_target_time = 0
+	else if(HAS_TRAIT(owner, TRAIT_LEYLINE_HASTE)) // Leyline cast reduction by 25%.
+		charge_target_time = charge_time * 0.75
+	else
+		charge_target_time = charge_time
 
 	return COMPONENT_CLIENT_MOUSEDOWN_INTERCEPT
 

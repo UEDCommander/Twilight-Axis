@@ -518,3 +518,18 @@
 	timer = 2 MINUTES
 	stressadd = 3
 	desc = span_red("I long for the shelter of wall and roofs. The sun and moon are too bright for me to bear!")
+
+/datum/stressevent/water_splashed_noble
+	timer = 30 SECONDS
+	stressadd = 2
+	desc = span_red("The nerve! Water in my face? This indignity is intolerable.")
+
+/datum/stressevent/permadeath_threat
+	stressadd = 5
+	desc = span_boldred("<B>A deathly chill rolls through my heart! Flesh and soul, oh-so-meagerly tethered to this world!</B>")
+	timer = 10 MINUTES
+
+/datum/stressevent/resurrected
+	stressadd = 3
+	desc = span_boldred("<B>I've barely escaped death's grasp!</B>")
+	timer = 15 MINUTES

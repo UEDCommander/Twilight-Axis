@@ -20,8 +20,6 @@
         /datum/ai_planning_subtree/being_a_minion/mirespider
     )
 
-    idle_behavior = /datum/idle_behavior/idle_random_walk
-
 /datum/ai_controller/mirespider_lurker
     movement_delay = MIRESPIDER_MOVEMENT_SPEED
 
@@ -33,13 +31,10 @@
 
     planning_subtrees = list(
         /datum/ai_planning_subtree/aggro_find_target,
-        /datum/ai_planning_subtree/simple_find_target/closest,
         /datum/ai_planning_subtree/basic_ranged_attack_subtree/mirespider_lurker,
         /datum/ai_planning_subtree/find_cocoon_target,
         /datum/ai_planning_subtree/cocoon_target
     )
-
-    idle_behavior = /datum/idle_behavior/idle_random_walk
 
 /datum/ai_controller/mirespider_paralytic
     movement_delay = MIRESPIDER_MOVEMENT_SPEED
@@ -52,12 +47,10 @@
 
     planning_subtrees = list(
         /datum/ai_planning_subtree/aggro_find_target,
-        /datum/ai_planning_subtree/simple_find_target/closest,
         /datum/ai_planning_subtree/find_cocoon_target,
-        /datum/ai_planning_subtree/cocoon_target
+        /datum/ai_planning_subtree/cocoon_target,
+        /datum/ai_planning_subtree/basic_melee_attack_subtree
     )
-
-    idle_behavior = /datum/idle_behavior/idle_random_walk
 
 /datum/ai_planning_subtree/being_a_minion/mirespider
     /// Blackboard key where we travel a place
@@ -199,6 +192,9 @@
         controller.clear_blackboard_key(BB_BASIC_MOB_COCOON_TARGET)
         return
     var/mob/living/pawn = controller.pawn
+    if(ismob(target) && pawn.faction_check_mob(target, FALSE))
+        controller.clear_blackboard_key(BB_BASIC_MOB_COCOON_TARGET)
+        return
     if(pawn.doing)
         return
     if(!istype(target, /mob/living/carbon))
@@ -227,11 +223,16 @@
 
 /datum/ai_behavior/find_and_set/cocoon_target/search_tactic(datum/ai_controller/controller, locate_paths, search_range)
     var/list/found = list()
+    var/mob/living/pawn = controller.pawn
     for(var/mob/living/carbon/mob in oview(search_range, controller.pawn))
         var/obj/structure/spider/cocoon/cocoon = mob.loc
         if(istype(cocoon, /obj/structure/spider/cocoon))
             continue
         if(mob.stat == DEAD)
+            continue
+        if(pawn.faction_check_mob(mob, FALSE))
+            continue
+        if(!mob.stat && mob.getBruteLoss() <= 500)
             continue
         found |= mob
     if(!length(found))

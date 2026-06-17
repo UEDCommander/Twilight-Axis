@@ -68,14 +68,11 @@
 	//can be overridden by antag_rep.txt config
 	var/antag_rep = 10
 
-	var/paycheck = PAYCHECK_MINIMAL
-	var/paycheck_department = ACCOUNT_CIV
-
 	var/display_order = JOB_DISPLAY_ORDER_DEFAULT
 
 	//allowed sex/race for picking
 	var/list/allowed_sexes = list(MALE, FEMALE)
-	var/list/allowed_races = RACES_ALL_KINDS
+	var/list/forbidden_races
 	var/list/allowed_patrons
 	var/list/allowed_ages = ALL_AGES_LIST
 
@@ -176,7 +173,29 @@
 	var/is_quest_giver = FALSE
 
 	/// How many quests this job can take at once
-	var/max_active_quests = 3
+	var/max_active_quests = 2
+
+	var/townie_contract_gate_exempt = FALSE
+
+	///
+	var/quest_claim_barred = FALSE
+
+/proc/is_quest_claim_barred(mob/user)
+	if(!user?.mind)
+		return FALSE
+	var/datum/job/J = user.job ? SSjob.GetJob(user.job) : null
+	return J?.quest_claim_barred ? TRUE : FALSE
+
+/proc/is_townie_contract_gate_exempt(mob/user)
+	if(!user?.mind)
+		return FALSE
+	var/datum/job/J = user.job ? SSjob.GetJob(user.job) : null
+	if(J?.townie_contract_gate_exempt)
+		return TRUE
+	var/datum/advclass/AC = user.mind.picked_advclass
+	if(!QDELETED(AC) && AC.townie_contract_gate_exempt)
+		return TRUE
+	return FALSE
 
 
 /datum/job/proc/special_job_check(mob/dead/new_player/player)
@@ -187,7 +206,7 @@
 
 /datum/job/proc/validate_prefs_for_job(datum/preferences/P) //TA EDIT START
 	if(!P) return FALSE
-	if(length(allowed_races) && !(P.pref_species.type in allowed_races)) return FALSE
+	if(length(forbidden_races) && (P.pref_species.type in forbidden_races)) return FALSE
 	if(length(allowed_patrons) && !(P.selected_patron.type in allowed_patrons)) return FALSE
 	if(length(allowed_ages) && !(P.age in allowed_ages)) return FALSE
 	if(length(allowed_sexes) && !(P.gender in allowed_sexes)) return FALSE
@@ -271,10 +290,7 @@
 
 		if(H.mind)
 			H.mind?.special_items["Pouch of Coins"] = /obj/item/storage/belt/rogue/pouch/coins/readyuppouch
-			if (HAS_TRAIT(H, TRAIT_MEDIUMARMOR) || HAS_TRAIT(H, TRAIT_HEAVYARMOR))
-				H.mind?.special_items["Metal Scrap (Repair kit)"] = /obj/item/repair_kit/metal/bad
-			else
-				H.mind?.special_items["Fabric Patch (Repair kit)"] = /obj/item/repair_kit/bad
+			set_readyup_repair_kit(H)
 
 		to_chat(M, span_notice("Rising early, you made sure to pack a pouch of coins in your stash and eat a hearty breakfast before starting your day. A true TRIUMPH!"))
 
@@ -294,7 +310,7 @@
 
 		if(noble_income)
 			SStreasury.noble_incomes[H] = noble_income
-			SStreasury.give_money_account(noble_income, H, "Noble Estate")
+			SStreasury.grant_estate_income(H, noble_income, TRUE)
 
 	if(show_in_credits)
 		SScrediticons.processing += H
@@ -319,6 +335,17 @@
 		hugboxify_for_class_selection(H)
 
 	log_admin("[H.key]/([H.real_name]) has joined as [H.mind.assigned_role].")
+
+/// Sets the ready-up repair kit stash entry based on the mob's current armor traits.
+/// Safe to call multiple times — later calls overwrite earlier ones, so loadout-based armor picks can re-run this to upgrade the kit after choose_loadout finishes.
+/datum/job/proc/set_readyup_repair_kit(mob/living/carbon/human/H)
+	if(!H?.mind)
+		return
+	if(HAS_TRAIT(H, TRAIT_MEDIUMARMOR) || HAS_TRAIT(H, TRAIT_HEAVYARMOR))
+		H.mind.special_items -= "Fabric Patch (Repair kit)"
+		H.mind.special_items["Metal Scrap (Repair kit)"] = /obj/item/repair_kit/metal/bad
+	else
+		H.mind.special_items["Fabric Patch (Repair kit)"] = /obj/item/repair_kit/bad
 
 /// Called when a player permanently leaves the round (via returntolobby). Handles slot reopening and respawn delays.
 /datum/job/proc/on_round_removal(mob/M)
@@ -390,11 +417,6 @@
 		if((H.dna.species.id != "human") && (H.dna.species.id != "humen"))
 			H.set_species(/datum/species/human)
 			H.apply_pref_name("human", preference_source)
-	if(!visualsOnly)
-		var/datum/bank_account/bank_account = new(H.real_name, src)
-		bank_account.payday(STARTING_PAYCHECKS, TRUE)
-		H.account_id = bank_account.account_id
-
 	//Equip the rest of the gear
 	H.dna.species.before_equip_job(src, H, visualsOnly)
 	if(!outfit_override && visualsOnly && visuals_only_outfit)
@@ -754,15 +776,6 @@
 						if(istype(vice, vicetype))
 							advdat += "[cf.name]<br>"
 							found_issue = TRUE
-			
-			if(length(subclass.origin_limits)) //TA EDIT START
-				var/correlation = FALSE
-				for(var/origintype in subclass.origin_limits)
-					if(istype(player.prefs.virtue_origin, origintype))
-						correlation = TRUE
-				if(!correlation)
-					advdat += "[player.prefs.virtue_origin.name]<br>"
-					found_issue = TRUE //TA EDIT END
 			if(found_issue)
 				dat += "<font color = '#e4e1e1'><b>[subclass::name]</b></font><br>"
 				dat += advdat
@@ -802,11 +815,3 @@
 				for(var/vice in player.prefs.charflaws)
 					if(istype(vice, vicetype))
 						return TRUE
-		
-		if(length(subclass.origin_limits)) //TA EDIT START
-			var/correlation = FALSE
-			for(var/origintype in subclass.origin_limits)
-				if(istype(player.prefs.virtue_origin, origintype))
-					correlation = TRUE
-			if(!correlation)
-				return TRUE //TA EDIT END

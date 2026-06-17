@@ -49,80 +49,6 @@
 	to_chat(user, span_info("They are... [span_warning("a [vice_found]")]"))
 	return TRUE
 
-// T0: Bless drink
-/obj/effect/proc_holder/spell/self/bless_drink
-	name = "Bless Drink"
-	desc = "Blesses a container to allow it to be drunk to no end. Lasts about a minute. Due to the potency of alchemical mixes and of thoroughly cooked beverages, does not function on them."
-	action_icon = 'icons/mob/actions/baothamiracles.dmi'
-	overlay_icon = 'icons/mob/actions/baothamiracles.dmi'
-	overlay_state = "bless_drink"
-	releasedrain = 10
-	chargedrain = 0
-	chargetime = 0
-	range = 1
-	warnie = "sydwarning"
-	movement_interrupt = FALSE
-	invocation_type = "none"
-	associated_skill = /datum/skill/magic/holy
-	antimagic_allowed = TRUE
-	recharge_time = 1 MINUTES
-	miracle = TRUE
-	devotion_cost = 10
-	var/duration = 60 SECONDS
-	var/static/list/reagent_blacklist = list(
-		/datum/reagent/rotcure,
-		/datum/reagent/vitae,
-		/datum/reagent/medicine/stampot,
-		/datum/reagent/medicine/strongstam,
-		/datum/reagent/medicine/strongmana,
-		/datum/reagent/medicine/manapot,
-		/datum/reagent/medicine/healthpot,
-		/datum/reagent/medicine/stronghealth,
-		/datum/reagent/buff/tri,
-		/datum/reagent/buff/constitution,
-		/datum/reagent/buff/fortune,
-		/datum/reagent/buff/endurance,
-		/datum/reagent/buff/strength,
-		/datum/reagent/buff/speed,
-		/datum/reagent/buff/perception,
-		/datum/reagent/consumable/caffeine/,
-		/datum/reagent/consumable/golden_calendula_tea,
-		/datum/reagent/water/medicine,
-	)
-
-// Anything that heals has been restricted - caffeine for the stat buff, golden calendula tea is like a weaker red. This is solely for flavor purposes, effectively.
-/obj/effect/proc_holder/spell/self/bless_drink/cast(list/targets, mob/living/user)
-	if(!ishuman(user))
-		revert_cast()
-		return FALSE
-	var/held = user.get_active_held_item()
-	if(!istype(held, /obj/item/reagent_containers/glass))
-		revert_cast()
-		to_chat(user, span_info("This is not a suitable container for this!"))
-		return FALSE
-	
-	var/obj/item/reagent_containers/glass/target_container = held
-	for(var/reagent in reagent_blacklist)
-		if(target_container.reagents.has_reagent(reagent))
-			revert_cast()
-			to_chat(user, span_info("The drink within is too potent."))
-			return FALSE
-
-	if(target_container.is_infinite)
-		revert_cast()
-		to_chat(user, span_info("This is already blessed!"))
-		return FALSE
-
-	var/dur = duration * user.get_skill_level(associated_skill)
-	var/printed_dur = round(dur / 600)
-	if(target_container.set_infinite(user, dur))
-		user.playsound_local(get_turf(user), 'sound/magic/baotha_blessdrink.ogg', 100, TRUE)
-		to_chat(user, span_notice("The drink swirls for a mote. This will last around [printed_dur] minute[(printed_dur > 1) ? "s" : ""]."))
-	else
-		revert_cast()
-		return FALSE
-	return TRUE
-
 //Baotha's Blessings - T0, reverses overdose effect on a target + soothing moodlet. Useful to T0/Devotee because it allows them to stop an OD death, but puts them on the clock. (Medieval narcan..... #BanNarcan)
 
 /obj/effect/proc_holder/spell/invoked/baothablessings
@@ -292,8 +218,8 @@
 /obj/item/clothing/ring/griefflower
 	name = "rosa ring"
 	desc = "Once a flower of love, now touched by Baotha's hand. Its petals whisper of desire, despair, and the kind of longing that never dies. Worn by those who cannot let go."
-	icon_state = "peaceflower"
-	item_state = "peaceflower"
+	icon_state = "baothaflower"
+	item_state = "baothaflower"
 	icon = 'icons/roguetown/items/produce.dmi'
 	mob_overlay_icon = 'icons/roguetown/clothing/onmob/head_items.dmi'
 
@@ -301,11 +227,16 @@
 	. = ..()
 	if(slot == SLOT_RING)
 		user.apply_status_effect(/datum/status_effect/buff/griefflower)
+		user.remove_status_effect(/datum/status_effect/debuff/joybringer_druqks)
 
 /obj/item/clothing/ring/griefflower/dropped(mob/living/carbon/human/user)
 	. = ..()
 	if(istype(user) && user?.wear_ring == src)
 		user.remove_status_effect(/datum/status_effect/buff/griefflower)
+
+/obj/item/clothing/ring/griefflower/get_examine_highlight_status()
+	// The rosa ring is supposed to be 'discrete', so it doesn't look heretical to a casual observer.
+	return null
 
 // Insufflation - effectively just drugging yourself. Lets you pick, the same as Enrapturing Powder. T1, for now, to make up for the loss of the Baotha Blessing buff.
 
@@ -386,6 +317,7 @@
 	invocation_type = "emote"
 	invocations = list("flicks their wrist, filling the air in front of them with a fine powder.")
 	devotion_cost = 30
+	human_req = TRUE
 
 /obj/effect/proc_holder/spell/invoked/projectile/blowingdust/cast(list/targets, mob/user = user)
 	switch(user.rmb_intent.name)
@@ -467,6 +399,7 @@
 	recharge_time = 5 MINUTES
 	miracle = TRUE
 	devotion_cost = 75
+	human_req = TRUE
 
 /obj/effect/proc_holder/spell/invoked/lasthigh/cast(list/targets, mob/living/user)
 	if(isliving(targets[1]))

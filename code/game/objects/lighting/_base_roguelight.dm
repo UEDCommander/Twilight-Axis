@@ -11,8 +11,9 @@
 	var/no_refuel = FALSE // For special holder that don't actually refuel
 	var/cookonme = FALSE
 	var/crossfire = TRUE
-	var/can_damage = FALSE
+	var/can_damage = TRUE
 	var/roundstart_forbid = FALSE
+	var/refueling = FALSE
 
 /obj/machinery/light/rogue/Initialize()
 	if(soundloop)
@@ -113,6 +114,14 @@
 	var/datum/skill/craft/cooking/cs = user?.get_skill_level(/datum/skill/craft/cooking)
 	var/cooktime_divisor = get_cooktime_divisor(cs)
 	if(cookonme && on)
+		if(istype(W, /obj/item/seeds))
+			user.visible_message("<span class='notice'>[user] starts roasting [W] over [src]...</span>")
+			if(do_after(user, 60 / cooktime_divisor, target = src))
+				var/obj/item/result = W.heating_act(src)
+				if(result)
+					user.put_in_hands(result)
+					qdel(W)
+				return TRUE
 		if(istype(W, /obj/item/reagent_containers/food/snacks))
 			if(istype(W, /obj/item/reagent_containers/food/snacks/egg))
 				to_chat(user, "<span class='warning'>I wouldn't be able to cook this over the fire...</span>")
@@ -153,33 +162,61 @@
 							break
 					return
 	if(W.firefuel && !no_refuel)
-		if(W.smeltresult) // For things with actual smelt results - functionally no differences
-			if(alert(usr, "Fuel [src] with [W]?", "ROGUETOWN", "Fuel", "Smelt") != "Fuel")
-				return TRUE
-		if(alert(usr, "Fuel [src] with [W]?", "ROGUETOWN", "Yes", "No") != "Yes")
+		if(refueling)
 			return TRUE
-		if(!W)
-			return
+
+		refueling = TRUE
+
+		var/choice
+
+		if(W.smeltresult)
+			choice = alert(user, "Fuel [src] with [W]?", "ROGUETOWN", "Fuel", "Smelt")
+			if(choice != "Fuel")
+				refueling = FALSE
+				return TRUE
+
+		if(alert(user, "Fuel [src] with [W]?", "ROGUETOWN", "Yes", "No") != "Yes")
+			refueling = FALSE
+			return TRUE
+
+		if(!W || QDELETED(W))
+			refueling = FALSE
+			return TRUE
+
 		if(user.get_active_held_item() != W)
 			to_chat(user, span_warning("That item is no longer in my hand..."))
-			return
-
-		user.dropItemToGround(W)
+			refueling = FALSE
+			return TRUE
 
 		if(initial(fueluse))
 			if(fueluse > initial(fueluse) - 5 SECONDS)
 				to_chat(user, "<span class='warning'>[src] is fully fueled.</span>")
-				return
+				refueling = FALSE
+				return TRUE
 		else
 			if(!on)
-				return
+				refueling = FALSE
+				return TRUE
+
+		var/fuel_amount = W.firefuel
+
+		user.dropItemToGround(W)
+
+		if(!W || QDELETED(W))
+			refueling = FALSE
+			return TRUE
+
 		qdel(W)
+
 		user.visible_message("<span class='warning'>[user] feeds [W] to [src].</span>")
+
 		if(initial(fueluse))
-			fueluse = fueluse + W.firefuel
-			if(fueluse > initial(fueluse)) //keep it at the max
+			fueluse += fuel_amount
+			if(fueluse > initial(fueluse))
 				fueluse = initial(fueluse)
-		return
+
+		refueling = FALSE
+		return TRUE
 	else
 		if(on)
 			if(istype(W, /obj/item/natural/dirtclod))

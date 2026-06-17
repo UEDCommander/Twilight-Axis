@@ -7,7 +7,7 @@
 	spawn_positions = 0
 
 	allowed_sexes = list(MALE, FEMALE)
-	allowed_races = RACES_SHUNNED_UP
+	forbidden_races = list(RACES_CONSTRUCT RACES_DESPISED)
 	advclass_cat_rolls = list(CTAG_CONSORT = 20)
 	tutorial = "You are a noble from a foreign house who has travelled to Twilight Axis in order to win favour of the court nobles and secure a political ally for your house. Competition is fierce, and it seems you're not the only one vying for the courts favor..."
 
@@ -21,6 +21,7 @@
 	round_contrib_points = 3
 	cmode_music = 'sound/music/combat_noble.ogg'
 	job_traits = list(TRAIT_NOBLE)
+
 
 /datum/outfit/job/roguetown/suitor
 	job_bitflag = BITFLAG_ROYALTY
@@ -75,13 +76,13 @@
 		var/datum/antagonist/new_antag = new /datum/antagonist/suitor()
 		H.mind.add_antag_datum(new_antag)*/
 	if(H.mind)
-		SStreasury.give_money_account(ECONOMIC_RICH, H, "Savings.")
+		SStreasury.grant_savings(ECONOMIC_RICH, H)
 
 /datum/advclass/suitor/schemer
 	name = "Schemer"
 	tutorial = "You're a silver-tongued snake - master of whispers, poison, and perfectly timed accidents. Why win hearts when you can twist them? With rivals removed and secrets weaponized, they will learn your value."
 	outfit = /datum/outfit/job/roguetown/suitor/schemer
-	traits_applied = list(TRAIT_CICERONE, TRAIT_LIGHT_STEP)
+	traits_applied = list(TRAIT_CICERONE, TRAIT_LIGHT_STEP, TRAIT_ALCHEMY_EXPERT)
 	category_tags = list(CTAG_CONSORT)
 	subclass_stats = list(
 		STATKEY_SPD = 3,
@@ -108,7 +109,7 @@
 	head = /obj/item/clothing/head/roguetown/nyle/consortcrown
 	pants = /obj/item/clothing/under/roguetown/tights/black
 	wrists = /obj/item/clothing/wrists/roguetown/bracers/leather/heavy
-	shirt = /obj/item/clothing/suit/roguetown/armor/gambeson/lord/heavy
+	shirt = /obj/item/clothing/suit/roguetown/armor/gambeson/lord
 	shoes = /obj/item/clothing/shoes/roguetown/boots/nobleboot
 	saiga_shoes = /obj/item/clothing/shoes/roguetown/horseshoes/gold
 	belt = /obj/item/storage/belt/rogue/leather/black
@@ -126,7 +127,7 @@
 		var/datum/antagonist/new_antag = new /datum/antagonist/suitor()
 		H.mind.add_antag_datum(new_antag)*/
 	if(H.mind)
-		SStreasury.give_money_account(ECONOMIC_RICH, H, "Savings.")
+		SStreasury.grant_savings(ECONOMIC_RICH, H)
 
 /datum/advclass/suitor/gallant
 	name = "Gallant"
@@ -174,7 +175,7 @@
 		var/datum/antagonist/new_antag = new /datum/antagonist/suitor()
 		H.mind.add_antag_datum(new_antag)*/
 	if(H.mind)
-		SStreasury.give_money_account(ECONOMIC_RICH, H, "Savings.")
+		SStreasury.grant_savings(ECONOMIC_RICH, H)
 
 
 /obj/item/clothing/head/roguetown/roguehood/shalal/hijab/gallant

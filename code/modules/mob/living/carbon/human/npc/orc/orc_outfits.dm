@@ -23,6 +23,7 @@
 	orc_outfit = /datum/outfit/job/roguetown/orc/npc/berserker
 
 /mob/living/carbon/human/species/orc/npc/warlord
+	threat_point = THREAT_DANGEROUS
 	orc_outfit = /datum/outfit/job/roguetown/orc/npc/warlord
 
 // Underarmored orc with incomplete protection, bone axe / spear, and slow speed
@@ -37,7 +38,8 @@
 	if(prob(50))
 		head = /obj/item/clothing/head/roguetown/helmet/leather
 	shoes = /obj/item/clothing/shoes/roguetown/gladiator
-	var/wepchoice = rand(1, 4)
+	// Stopgap: bow loadout (was option 4) removed because the ranged NPC AI is unreliable.
+	var/wepchoice = rand(1, 3)
 	switch(wepchoice)
 		if(1)
 			l_hand = /obj/item/rogueweapon/stoneaxe/boneaxe
@@ -46,20 +48,11 @@
 			r_hand = /obj/item/rogueweapon/shield/wood // Help preserve integrity
 		if(3)
 			l_hand = /obj/item/rogueweapon/mace/cudgel/copper
-		if(4) // Ranged - bow with iron broadhead arrows
-			backr = /obj/item/gun/ballistic/revolver/grenadelauncher/bow
-			backl = /obj/item/quiver/arrows
-			l_hand = /obj/item/rogueweapon/stoneaxe/boneaxe
-			H.adjust_skillrank(/datum/skill/combat/bows, 3, TRUE)
-			H.upgrade_ai_controller(/datum/ai_controller/human_npc/archer)
 	H.STASTR = 11
 	H.STASPD = 8
 	H.STACON = 7
 	H.STAWIL = 6
 	H.STAINT = 4 // Very dumb
-	if(wepchoice == 4)
-		H.STASTR -= 2
-		H.STAPER += 3
 	H.adjust_skillrank(/datum/skill/combat/polearms, 2, TRUE)
 	H.adjust_skillrank(/datum/skill/combat/axes, 2, TRUE)
 	H.adjust_skillrank(/datum/skill/combat/wrestling, 2, TRUE)
@@ -79,7 +72,7 @@
 	neck = /obj/item/clothing/neck/roguetown/coif
 	head = /obj/item/clothing/head/roguetown/helmet/leather
 	mask = /obj/item/clothing/mask/rogue/facemask
-	shoes = /obj/item/clothing/shoes/roguetown/boots/leather/reinforced
+	shoes = /obj/item/clothing/shoes/roguetown/boots/leather
 	var/wepchoice = rand(1, 5)
 	switch(wepchoice)
 		if(1)
@@ -120,7 +113,7 @@
 	head = /obj/item/clothing/head/roguetown/helmet/leather
 	neck = /obj/item/clothing/neck/roguetown/coif
 	mask = /obj/item/clothing/mask/rogue/facemask
-	shoes = /obj/item/clothing/shoes/roguetown/boots/leather/reinforced
+	shoes = /obj/item/clothing/shoes/roguetown/boots/leather
 	var/wepchoice = rand(1, 2)
 	switch(wepchoice)
 		if(1)
@@ -153,7 +146,7 @@
 	head = /obj/item/clothing/head/roguetown/helmet/skullcap
 	neck = /obj/item/clothing/neck/roguetown/chaincoif/iron
 	mask = /obj/item/clothing/mask/rogue/facemask
-	shoes = /obj/item/clothing/shoes/roguetown/boots/leather/reinforced
+	shoes = /obj/item/clothing/shoes/roguetown/boots/leather
 	var/wepchoice = rand(1, 6)
 	switch(wepchoice)
 		if(1)

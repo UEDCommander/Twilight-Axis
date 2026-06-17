@@ -3,6 +3,7 @@ GLOBAL_LIST_INIT(character_accents, list("Без акцента",
 	//"Dwarf Gibberish accent",
 	"Dark Elven accent",
 	"West Elven accent",
+	"Zybantine (Traditional) accent",
 //	"East Elven accent",
 	"Grenzel accent",
 //	"Otavian accent",
@@ -22,5 +23,3 @@ GLOBAL_LIST_INIT(character_accents, list("Без акцента",
 //	"Gronn accent",
 	//"Axian accent"
 ))
-/mob/living/carbon/human
-	var/char_accent = "No accent"

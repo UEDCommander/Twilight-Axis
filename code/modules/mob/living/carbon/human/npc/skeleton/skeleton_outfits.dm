@@ -30,8 +30,12 @@
 	skel_outfit = /datum/outfit/job/roguetown/skeleton/npc/archer
 
 // For Duke Manor & Zizo Manor - Ground based spread, so no pirate in pool!
+/mob/living/carbon/human/species/skeleton/npc/mediumspread
+	threat_point = THREAT_MODERATE
+
 /mob/living/carbon/human/species/skeleton/npc/mediumspread/Initialize()
-	var/outfit = rand(1, 5)
+	// Stopgap: archer outfit (was option 5) removed because the ranged NPC AI is unreliable.
+	var/outfit = rand(1, 4)
 	switch(outfit)
 		if(1)
 			skel_outfit = /datum/outfit/job/roguetown/skeleton/npc/supereasy
@@ -41,16 +45,18 @@
 			skel_outfit = /datum/outfit/job/roguetown/skeleton/npc/medium
 		if(4)
 			skel_outfit = /datum/outfit/job/roguetown/skeleton/npc/hard
-		if(5)
-			skel_outfit = /datum/outfit/job/roguetown/skeleton/npc/archer
 	..()
 
 /mob/living/carbon/human/species/skeleton/npc/mediumspread/lich
 	faction = list(FACTION_LICH)
 
 // for Lich Dungeon
+/mob/living/carbon/human/species/skeleton/npc/hardspread
+	threat_point = THREAT_TOUGH
+
 /mob/living/carbon/human/species/skeleton/npc/hardspread/Initialize()
-	var/outfit = rand(1,5)
+	// Stopgap: archer outfit (was option 5) removed because the ranged NPC AI is unreliable.
+	var/outfit = rand(1,4)
 	switch(outfit)
 		if(1)
 			skel_outfit = /datum/outfit/job/roguetown/skeleton/npc/hard
@@ -60,8 +66,6 @@
 			skel_outfit = /datum/outfit/job/roguetown/skeleton/npc/pirate
 		if(4)
 			skel_outfit = /datum/outfit/job/roguetown/skeleton/npc/hard
-		if(5)
-			skel_outfit = /datum/outfit/job/roguetown/skeleton/npc/archer
 	..()
 
 // For Tomb of Matthios/Tomb of Alothesos Supreme Difficulty:TM: encounters.
@@ -304,7 +308,7 @@
 	shirt = /obj/item/clothing/suit/roguetown/armor/gambeson
 	armor = /obj/item/clothing/suit/roguetown/shirt/robe/physician
 	pants = /obj/item/clothing/under/roguetown/trou/leather/courtphysician
-	shoes = /obj/item/clothing/shoes/roguetown/boots/leather/reinforced
+	shoes = /obj/item/clothing/shoes/roguetown/boots/leather
 	wrists = /obj/item/clothing/wrists/roguetown/bracers/aalloy
 	gloves = /obj/item/clothing/gloves/roguetown/leather/black
 	neck = /obj/item/clothing/neck/roguetown/chaincoif/iron/aalloy

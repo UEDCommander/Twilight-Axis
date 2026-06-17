@@ -16,6 +16,7 @@
 	anvilrepair = /datum/skill/craft/blacksmithing
 	resistance_flags = FIRE_PROOF
 	experimental_inhand = TRUE
+	is_important = TRUE
 
 	grid_height = 32
 	grid_width = 32
@@ -385,8 +386,8 @@
 	lockid = "church"
 
 /obj/item/roguekey/graveyard
-	name = "crypt key"
-	desc = "This rusty key opens the crypt."
+	name = "graveyard key"
+	desc = "This rusty key opens the graveyard a little outside town."
 	icon_state = "rustkey"
 	lockid = "graveyard"
 
@@ -449,30 +450,6 @@
 	desc = "The key to the fifth room."
 	icon_state = "brownkey"
 	lockid = "church_bedroom_up_10"
-
-/obj/item/roguekey/church/roomxi
-	name = "church bedroom XI key"
-	desc = "The key to the fifth room."
-	icon_state = "brownkey"
-	lockid = "church_bedroom_up_11"
-	
-/obj/item/roguekey/church/roomxii
-	name = "church bedroom XII key"
-	desc = "The key to the fifth room."
-	icon_state = "brownkey"
-	lockid = "church_bedroom_up_12"
-
-/obj/item/roguekey/church/roomxiii
-	name = "church bedroom XIII key"
-	desc = "The key to the fifth room."
-	icon_state = "brownkey"
-	lockid = "church_bedroom_up_13"
-
-/obj/item/roguekey/church/roomxiv
-	name = "church bedroom XIV key"
-	desc = "The key to the fifth room."
-	icon_state = "brownkey"
-	lockid = "church_bedroom_up_14"
 
 //////////////
 // BURGHERS //
@@ -928,6 +905,12 @@
 	desc = "A ancient, rusty key."
 	icon_state = "rustkey"
 	lockid = "admin_event_door"
+
+/obj/item/roguekey/zhurch/onmap
+	name = "brass key"
+	desc = "A key made of brass."
+	icon_state = "rustkey"
+	lockid = "zhurch"
 
 //////////////
 // SIDEFOLK //

@@ -126,10 +126,10 @@
 /mob/living/carbon/human/species/human/northern/militia/deserter // Bad deserter, trash mob
 	threat_point = THREAT_MODERATE
 	ambush_faction = "bandits"
-	faction = list(FACTION_VIKING, FACTION_STATION)
+	faction = list(FACTION_BANDITS, FACTION_STATION)
 
 /mob/living/carbon/human/species/human/northern/militia/after_creation()
 	..()
 	AddComponent(/datum/component/ai_aggro_system)
 	var/obj/item/bodypart/head/head = get_bodypart(BODY_ZONE_HEAD)
-	head.sellprice = 20 // Gobbo sellprice
+	head.sellprice = HEAD_BOUNTY_GOBLIN
