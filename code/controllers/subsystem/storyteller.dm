@@ -953,11 +953,11 @@ SUBSYSTEM_DEF(gamemode)
 		if(preset.hard_mult > 1)
 			misc += "Основные антагонисты масштабируются по онлайну в [preset.hard_mult]x сильнее"
 	if(preset.block_soft)
-		misc += "Малые антагонисты отключены (вретчи, гноллы, ассасины)"
+		misc += "Малые антагонисты отключены (wretches, гноллы, ассасины)"
 	else
-		misc += "Лимит вретчей: [preset.wretch_slot_cap][preset.wretch_slot_cap > 5 ? " (масштабируется)" : " (фиксированный)"]"
-	misc += "Слоты карги: [preset.hag_slots]"
-	misc += "Дримволкер: [preset.allow_dreamwalker ? "может выпасть" : "отключён"]"
+		misc += "Лимит wretches: [preset.wretch_slot_cap][preset.wretch_slot_cap > 5 ? " (масштабируется)" : " (фиксированный)"]"
+	misc += "Слоты Hag: [preset.hag_slots]"
+	misc += "dreamwalker: [preset.allow_dreamwalker ? "может выпасть" : "отключён"]"
 	return misc
 
 /// Gnoll head-count a preset opens, from its scaling mode.
