@@ -45,6 +45,58 @@ const rarityColor: Record<CardRarity, string> = {
 
 const cardType = (card: Card) => rowLabels[card.row];
 
+const effectBadges: Record<string, string> = {
+  morale: 'MOR',
+  scorch: 'SC',
+  scorch_infantry: 'SC',
+  scorch_global: 'SC',
+  spy: 'SPY',
+  medic: 'MED',
+  bond: 'BND',
+  agile: 'AGI',
+  muster: 'MUS',
+  horn: 'HORN',
+  decoy: 'DEC',
+  berserk: 'BER',
+  mardroeme: 'MAR',
+  avenger: 'AVG',
+};
+
+const effectDescriptions: Record<string, string> = {
+  morale: 'Прилив сил: +1 к силе остальных отрядов в этом ряду.',
+  scorch: 'Казнь: уничтожает сильнейшую карту противника.',
+  scorch_infantry: 'Казнь: уничтожает сильнейшую пехоту врага, если его пехота имеет 10+ силы.',
+  scorch_global: 'Казнь: уничтожает сильнейшую карту или карты на поле.',
+  spy: 'Шпион: кладётся на поле врага и даёт вам две карты.',
+  medic: 'Медик: возвращает сильнейшую отбитую карту на поле.',
+  bond: 'Прочная связь: одинаковые карты с этим умением усиливают друг друга.',
+  agile: 'Проворство: тестовая метка гибкой карты.',
+  muster: 'Двойник: выкладывает такие же карты из руки и колоды.',
+  horn: 'Командирский рог: удваивает силу выбранного ряда на раунд.',
+  decoy: 'Чучело: возвращает сильнейшую вашу карту с поля в руку.',
+  berserk: 'Берсерк: под Мардрёмом превращается в медведя.',
+  mardroeme: 'Мардрём: превращает берсерков в ряду в медведей.',
+  avenger: 'Призвание Мстителя: при уничтожении призывает сильную карту на своё место.',
+  clear_weather: 'Ясная погода: снимает всю погоду.',
+  frost: 'Мороз: снижает пехоту до 1.',
+  fog: 'Туман: снижает лучников до 1.',
+  rain: 'Дождь: снижает осаду до 1.',
+};
+
+const cardTooltip = (card: Card) => {
+  const lines = [
+    card.known ? card.name : 'Unknown',
+    `Type: ${cardType(card)}`,
+    `Power: ${card.power}`,
+  ];
+  if (card.known && effectDescriptions[card.effect]) {
+    lines.push(`Effect: ${effectDescriptions[card.effect]}`);
+  } else if (card.known && card.desc) {
+    lines.push(card.desc);
+  }
+  return lines;
+};
+
 const CardFace = ({
   card,
   disabled = false,
@@ -57,26 +109,31 @@ const CardFace = ({
   compact?: boolean;
   count?: number;
   onClick?: () => void;
-}) => (
-  <div
-    style={{
-      position: 'relative',
-      aspectRatio: '1 / 1.6',
-      width: compact ? '88px' : '118px',
-      padding: compact ? '4px' : '6px',
-      border: `2px solid ${rarityColor[card.rarity]}`,
-      borderRadius: '4px',
-      background: 'linear-gradient(180deg, rgba(35,39,48,0.98), rgba(14,16,22,0.98))',
-      boxShadow: `0 0 0 1px rgba(0,0,0,0.7), 0 0 10px ${rarityColor[card.rarity]}33`,
-      cursor: onClick && !disabled ? 'pointer' : 'default',
-      opacity: disabled ? 0.42 : 1,
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'space-between',
-      overflow: 'hidden',
-    }}
-    onClick={!disabled ? onClick : undefined}
-  >
+}) => {
+  const [hovered, setHovered] = useState(false);
+  const tooltip = cardTooltip(card);
+  return (
+    <div
+      style={{
+        position: 'relative',
+        aspectRatio: '1 / 1.6',
+        width: compact ? '88px' : '118px',
+        padding: compact ? '4px' : '6px',
+        border: `2px solid ${rarityColor[card.rarity]}`,
+        borderRadius: '4px',
+        background: 'linear-gradient(180deg, rgba(35,39,48,0.98), rgba(14,16,22,0.98))',
+        boxShadow: `0 0 0 1px rgba(0,0,0,0.7), 0 0 10px ${rarityColor[card.rarity]}33`,
+        cursor: onClick && !disabled ? 'pointer' : 'default',
+        opacity: disabled ? 0.42 : 1,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        overflow: 'hidden',
+      }}
+      onClick={!disabled ? onClick : undefined}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
     {!!card.art && (
       <img
         src={resolveAsset(card.art)}
@@ -116,6 +173,56 @@ const CardFace = ({
     >
       {cardType(card)}
     </div>
+    {card.known && !!effectBadges[card.effect] && (
+      <div
+        style={{
+          position: 'absolute',
+          top: compact ? '18px' : '28px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          minWidth: compact ? '22px' : '30px',
+          height: compact ? '15px' : '20px',
+          padding: '0 4px',
+          borderRadius: '10px',
+          backgroundColor: 'rgba(248,250,252,0.94)',
+          color: '#0f172a',
+          fontSize: compact ? '6px' : '8px',
+          fontWeight: 900,
+          lineHeight: compact ? '15px' : '20px',
+          textAlign: 'center',
+          zIndex: 2,
+        }}
+      >
+        {effectBadges[card.effect]}
+      </div>
+    )}
+    {hovered && (
+      <div
+        style={{
+          position: 'absolute',
+          left: compact ? '10px' : '12px',
+          right: compact ? '10px' : '12px',
+          top: compact ? '38px' : '52px',
+          padding: compact ? '6px' : '8px',
+          border: '1px solid rgba(248,250,252,0.85)',
+          borderRadius: '4px',
+          backgroundColor: 'rgba(5,7,11,0.96)',
+          color: '#f8fafc',
+          fontSize: compact ? '7px' : '9px',
+          lineHeight: 1.25,
+          zIndex: 5,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.75)',
+          pointerEvents: 'none',
+        }}
+      >
+        <div style={{ color: rarityColor[card.rarity], fontWeight: 900, marginBottom: '4px' }}>
+          {tooltip[0]}
+        </div>
+        {tooltip.slice(1).map((line) => (
+          <div key={line}>{line}</div>
+        ))}
+      </div>
+    )}
 
     <div
       style={{
@@ -187,8 +294,9 @@ const CardFace = ({
         x{count}
       </div>
     )}
-  </div>
-);
+    </div>
+  );
+};
 
 export const CardDeckBuilder = () => {
   const { act, data } = useBackend<Data>();

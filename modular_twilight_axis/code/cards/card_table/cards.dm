@@ -10,7 +10,18 @@
 #define CCI_EFFECT_NONE "none"
 #define CCI_EFFECT_MORALE "morale"
 #define CCI_EFFECT_SCORCH "scorch"
+#define CCI_EFFECT_SCORCH_INFANTRY "scorch_infantry"
+#define CCI_EFFECT_SCORCH_GLOBAL "scorch_global"
 #define CCI_EFFECT_SPY "spy"
+#define CCI_EFFECT_MEDIC "medic"
+#define CCI_EFFECT_BOND "bond"
+#define CCI_EFFECT_AGILE "agile"
+#define CCI_EFFECT_MUSTER "muster"
+#define CCI_EFFECT_HORN "horn"
+#define CCI_EFFECT_DECOY "decoy"
+#define CCI_EFFECT_BERSERK "berserk"
+#define CCI_EFFECT_MARDROEME "mardroeme"
+#define CCI_EFFECT_AVENGER "avenger"
 #define CCI_EFFECT_CLEAR_WEATHER "clear_weather"
 #define CCI_EFFECT_FROST "frost"
 #define CCI_EFFECT_FOG "fog"
@@ -48,6 +59,9 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 	var/combo = CCI_COMBO_NONE
 	var/list/combo_with = list()
 	var/combo_effect = CCI_EFFECT_NONE
+	var/target_row = ""
+	var/bear_power = 8
+	var/avenger_card = ""
 	var/art = ""
 
 /datum/cci_card/proc/as_ui_data(known = TRUE, selected = FALSE)
@@ -62,6 +76,7 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 		"combo" = combo,
 		"comboEffect" = combo_effect,
 		"comboWith" = combo_with,
+		"targetRow" = target_row,
 		"art" = art,
 		"known" = known,
 		"selected" = selected
@@ -84,6 +99,7 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 	desc = "Doubles with other Spearmen."
 	row = CCI_ROW_INFANTRY
 	power = 3
+	effect = CCI_EFFECT_BOND
 	art = "cci_cards/spearman.png"
 
 /datum/cci_card/base_archer
@@ -92,6 +108,7 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 	desc = "Reliable ranged card."
 	row = CCI_ROW_ARCHERS
 	power = 4
+	effect = CCI_EFFECT_AGILE
 	combo_with = list("base_longbowman")
 	combo_effect = CCI_EFFECT_SCORCH
 	art = "cci_cards/young_archer.png"
@@ -111,6 +128,7 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 	desc = "Doubles with other Catapults."
 	row = CCI_ROW_SIEGE
 	power = 5
+	effect = CCI_EFFECT_BOND
 	combo_with = list("base_ballista")
 	combo_effect = CCI_EFFECT_SCORCH
 	art = "cci_cards/trebuchet.png"
@@ -121,6 +139,7 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 	desc = "Siege engine."
 	row = CCI_ROW_SIEGE
 	power = 6
+	effect = CCI_EFFECT_SCORCH_INFANTRY
 	combo_with = list("base_catapult")
 	combo_effect = CCI_EFFECT_SCORCH
 	art = "cci_cards/ballista.png"
@@ -186,6 +205,7 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 	desc = "Armored infantry."
 	row = CCI_ROW_INFANTRY
 	power = 4
+	effect = CCI_EFFECT_MUSTER
 	art = "cci_cards/shield_guard.png"
 
 /datum/cci_card/base_longbowman
@@ -194,6 +214,7 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 	desc = "Doubles with other Longbowmen."
 	row = CCI_ROW_ARCHERS
 	power = 3
+	effect = CCI_EFFECT_BOND
 	combo_with = list("base_archer")
 	combo_effect = CCI_EFFECT_SCORCH
 	art = "cci_cards/hood_archer.png"
@@ -225,6 +246,7 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 	desc = "Light ranged unit."
 	row = CCI_ROW_ARCHERS
 	power = 2
+	art = "cci_cards/scout.png"
 
 /datum/cci_card/base_militia
 	id = "base_militia"
@@ -232,6 +254,7 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 	desc = "Cheap infantry."
 	row = CCI_ROW_INFANTRY
 	power = 2
+	art = "cci_cards/swordsman.png"
 
 /datum/cci_card/base_mangonel
 	id = "base_mangonel"
@@ -239,6 +262,7 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 	desc = "Basic siege engine."
 	row = CCI_ROW_SIEGE
 	power = 3
+	art = "cci_cards/trebuchet.png"
 
 /datum/cci_card/base_field_medic
 	id = "base_field_medic"
@@ -246,8 +270,66 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 	desc = "Keeps the line together."
 	row = CCI_ROW_INFANTRY
 	power = 3
-	effect = CCI_EFFECT_MORALE
+	effect = CCI_EFFECT_MEDIC
 	art = "cci_cards/field_medic.png"
+
+/datum/cci_card/base_decoy
+	id = "base_decoy"
+	name = "Decoy"
+	desc = "Returns your strongest unit to hand."
+	row = CCI_ROW_WEATHER
+	power = 0
+	effect = CCI_EFFECT_DECOY
+	art = "cci_cards/fog.png"
+
+/datum/cci_card/base_horn_infantry
+	id = "base_horn_infantry"
+	name = "Infantry Horn"
+	desc = "Doubles all units in your infantry row."
+	row = CCI_ROW_INFANTRY
+	power = 0
+	effect = CCI_EFFECT_HORN
+	target_row = CCI_ROW_INFANTRY
+	art = "cci_cards/banner_bearer.png"
+
+/datum/cci_card/base_horn_archers
+	id = "base_horn_archers"
+	name = "Archers Horn"
+	desc = "Doubles all units in your archers row."
+	row = CCI_ROW_ARCHERS
+	power = 0
+	effect = CCI_EFFECT_HORN
+	target_row = CCI_ROW_ARCHERS
+	art = "cci_cards/field_captain.png"
+
+/datum/cci_card/base_horn_siege
+	id = "base_horn_siege"
+	name = "Siege Horn"
+	desc = "Doubles all units in your siege row."
+	row = CCI_ROW_SIEGE
+	power = 0
+	effect = CCI_EFFECT_HORN
+	target_row = CCI_ROW_SIEGE
+	art = "cci_cards/supply_cart.png"
+
+/datum/cci_card/base_scorch
+	id = "base_scorch"
+	name = "Scorch"
+	desc = "Destroys the strongest unit or units on the battlefield."
+	row = CCI_ROW_WEATHER
+	power = 0
+	effect = CCI_EFFECT_SCORCH_GLOBAL
+	art = "cci_cards/rain.png"
+
+/datum/cci_card/base_mardroeme
+	id = "base_mardroeme"
+	name = "Mardroeme"
+	desc = "Turns Berserkers in your infantry row into bears."
+	row = CCI_ROW_INFANTRY
+	power = 0
+	effect = CCI_EFFECT_MARDROEME
+	target_row = CCI_ROW_INFANTRY
+	art = "cci_cards/clear_weather.png"
 
 /datum/cci_card/rare_captain
 	id = "rare_captain"
@@ -266,8 +348,38 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 	row = CCI_ROW_ARCHERS
 	power = 2
 	rarity = CCI_RARITY_RARE
-	effect = CCI_EFFECT_SCORCH
+	effect = CCI_EFFECT_SCORCH_GLOBAL
 	art = "cci_cards/siege_engineer.png"
+
+/datum/cci_card/rare_berserker
+	id = "rare_berserker"
+	name = "Berserker"
+	desc = "Turns into a bear under Mardroeme."
+	row = CCI_ROW_INFANTRY
+	power = 4
+	rarity = CCI_RARITY_RARE
+	effect = CCI_EFFECT_BERSERK
+	art = "cci_cards/shield_guard.png"
+
+/datum/cci_card/unique_avenger
+	id = "unique_avenger"
+	name = "Avenger"
+	desc = "When the round ends, calls a stronger warrior before leaving."
+	row = CCI_ROW_INFANTRY
+	power = 6
+	rarity = CCI_RARITY_UNIQUE
+	effect = CCI_EFFECT_AVENGER
+	avenger_card = "unique_avenger_bear"
+	art = "cci_cards/shield_swordsman.png"
+
+/datum/cci_card/unique_avenger_bear
+	id = "unique_avenger_bear"
+	name = "Avenger Bear"
+	desc = "A called avenger form."
+	row = CCI_ROW_INFANTRY
+	power = 10
+	rarity = CCI_RARITY_UNIQUE
+	art = "cci_cards/shield_guard.png"
 
 /datum/cci_card/unique_spy
 	id = "unique_spy"

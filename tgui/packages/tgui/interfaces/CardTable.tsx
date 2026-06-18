@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Button, Section } from 'tgui-core/components';
 
 import { resolveAsset } from '../assets';
@@ -18,6 +19,7 @@ type Card = {
   rarity: CardRarity;
   effect: string;
   combo: string;
+  targetRow?: CardRow;
   art?: string;
 };
 
@@ -35,6 +37,7 @@ type Data = {
   message?: string;
   weather?: string[];
   weatherCards?: Card[];
+  rowEffects?: Record<Side, Record<CardRow, Card[]>>;
   hand?: Card[];
   opponentHandCount?: number;
   board?: Record<Side, Record<CardRow, Card[]>>;
@@ -67,6 +70,58 @@ const sideAccent: Record<Side, string> = {
   two: '#ef4444',
 };
 
+const effectBadges: Record<string, string> = {
+  morale: 'MOR',
+  scorch: 'SC',
+  scorch_infantry: 'SC',
+  scorch_global: 'SC',
+  spy: 'SPY',
+  medic: 'MED',
+  bond: 'BND',
+  agile: 'AGI',
+  muster: 'MUS',
+  horn: 'HORN',
+  decoy: 'DEC',
+  berserk: 'BER',
+  mardroeme: 'MAR',
+  avenger: 'AVG',
+};
+
+const effectDescriptions: Record<string, string> = {
+  morale: 'Прилив сил: +1 к силе остальных отрядов в этом ряду.',
+  scorch: 'Казнь: уничтожает сильнейшую карту противника.',
+  scorch_infantry: 'Казнь: уничтожает сильнейшую пехоту врага, если его пехота имеет 10+ силы.',
+  scorch_global: 'Казнь: уничтожает сильнейшую карту или карты на поле.',
+  spy: 'Шпион: кладётся на поле врага и даёт вам две карты.',
+  medic: 'Медик: возвращает сильнейшую отбитую карту на поле.',
+  bond: 'Прочная связь: одинаковые карты с этим умением усиливают друг друга.',
+  agile: 'Проворство: тестовая метка гибкой карты.',
+  muster: 'Двойник: выкладывает такие же карты из руки и колоды.',
+  horn: 'Командирский рог: удваивает силу выбранного ряда на раунд.',
+  decoy: 'Чучело: возвращает сильнейшую вашу карту с поля в руку.',
+  berserk: 'Берсерк: под Мардрёмом превращается в медведя.',
+  mardroeme: 'Мардрём: превращает берсерков в ряду в медведей.',
+  avenger: 'Призвание Мстителя: при уничтожении призывает сильную карту на своё место.',
+  clear_weather: 'Ясная погода: снимает всю погоду.',
+  frost: 'Мороз: снижает пехоту до 1.',
+  fog: 'Туман: снижает лучников до 1.',
+  rain: 'Дождь: снижает осаду до 1.',
+};
+
+const cardTooltip = (card: Card) => {
+  const lines = [
+    card.name,
+    `Type: ${cardTypeLabels[card.row]}`,
+    `Power: ${card.power}`,
+  ];
+  if (effectDescriptions[card.effect]) {
+    lines.push(`Effect: ${effectDescriptions[card.effect]}`);
+  } else if (card.desc) {
+    lines.push(card.desc);
+  }
+  return lines;
+};
+
 const cardBoxStyle = (card: Card, compact = false) => ({
   position: 'relative' as const,
   width: compact ? '54px' : '86px',
@@ -90,14 +145,19 @@ const CardView = ({
   card: Card;
   compact?: boolean;
   onClick?: () => void;
-}) => (
-  <div
-    style={{
-      ...cardBoxStyle(card, compact),
-      cursor: onClick ? 'pointer' : 'default',
-    }}
-    onClick={onClick}
-  >
+}) => {
+  const [hovered, setHovered] = useState(false);
+  const tooltip = cardTooltip(card);
+  return (
+    <div
+      style={{
+        ...cardBoxStyle(card, compact),
+        cursor: onClick ? 'pointer' : 'default',
+      }}
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
     {!!card.art && (
       <img
         src={resolveAsset(card.art)}
@@ -136,6 +196,56 @@ const CardView = ({
     >
       {cardTypeLabels[card.row]}
     </div>
+    {!!effectBadges[card.effect] && (
+      <div
+        style={{
+          position: 'absolute',
+          top: compact ? '14px' : '20px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          minWidth: compact ? '17px' : '24px',
+          height: compact ? '13px' : '17px',
+          padding: '0 3px',
+          borderRadius: '9px',
+          backgroundColor: 'rgba(248,250,252,0.94)',
+          color: '#0f172a',
+          fontSize: compact ? '5px' : '7px',
+          fontWeight: 900,
+          lineHeight: compact ? '13px' : '17px',
+          textAlign: 'center',
+          zIndex: 2,
+        }}
+      >
+        {effectBadges[card.effect]}
+      </div>
+    )}
+    {hovered && (
+      <div
+        style={{
+          position: 'absolute',
+          left: compact ? '8px' : '10px',
+          right: compact ? '8px' : '10px',
+          top: compact ? '30px' : '42px',
+          padding: compact ? '5px' : '7px',
+          border: '1px solid rgba(248,250,252,0.85)',
+          borderRadius: '4px',
+          backgroundColor: 'rgba(5,7,11,0.96)',
+          color: '#f8fafc',
+          fontSize: compact ? '6px' : '8px',
+          lineHeight: 1.25,
+          zIndex: 5,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.75)',
+          pointerEvents: 'none',
+        }}
+      >
+        <div style={{ color: rarityColor[card.rarity], fontWeight: 900, marginBottom: '3px' }}>
+          {tooltip[0]}
+        </div>
+        {tooltip.slice(1).map((line) => (
+          <div key={line}>{line}</div>
+        ))}
+      </div>
+    )}
 
     <div
       style={{
@@ -184,8 +294,9 @@ const CardView = ({
         {card.name}
       </div>
     </div>
-  </div>
-);
+    </div>
+  );
+};
 
 const RowView = ({
   row,
@@ -368,20 +479,65 @@ const BattleBoard = ({
   >
     <div
       style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: '8px',
         marginBottom: '8px',
-        padding: '5px 8px',
         minHeight: '46px',
-        border: '1px solid rgba(255,255,255,0.16)',
-        background: 'linear-gradient(90deg, rgba(5,7,11,0.72), rgba(30,41,59,0.55))',
       }}
     >
-      <div style={{ color: '#cbd5e1', fontSize: '11px', fontWeight: 800, marginBottom: '4px' }}>
-        WEATHER
+      <div
+        style={{
+          padding: '5px 8px',
+          border: '1px solid rgba(255,255,255,0.16)',
+          background: 'linear-gradient(90deg, rgba(5,7,11,0.72), rgba(30,41,59,0.55))',
+        }}
+      >
+        <div style={{ color: '#cbd5e1', fontSize: '11px', fontWeight: 800, marginBottom: '4px' }}>
+          WEATHER
+        </div>
+        <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+          {weatherCards.map((card, index) => (
+            <CardView key={`${card.id}-${index}`} card={card} compact />
+          ))}
+        </div>
       </div>
-      <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
-        {weatherCards.map((card, index) => (
-          <CardView key={`${card.id}-${index}`} card={card} compact />
-        ))}
+      <div
+        style={{
+          padding: '5px 8px',
+          border: '1px solid rgba(255,255,255,0.16)',
+          background: 'linear-gradient(90deg, rgba(5,7,11,0.72), rgba(55,65,81,0.5))',
+        }}
+      >
+        <div style={{ color: '#cbd5e1', fontSize: '11px', fontWeight: 800, marginBottom: '4px' }}>
+          ROW EFFECTS
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '5px' }}>
+          {(['infantry', 'archers', 'siege'] as CardRow[]).map((row) => (
+            <div
+              key={row}
+              style={{
+                minHeight: '36px',
+                padding: '4px',
+                border: '1px dashed rgba(203,213,225,0.28)',
+                color: '#94a3b8',
+                fontSize: '10px',
+                fontWeight: 700,
+                textAlign: 'center',
+                textTransform: 'uppercase',
+              }}
+            >
+              <div style={{ marginBottom: '4px' }}>{rowLabels[row]}</div>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '3px', flexWrap: 'wrap' }}>
+                {(['two', 'one'] as Side[]).flatMap((side) =>
+                  (data.rowEffects?.[side]?.[row] || []).map((card, index) => (
+                    <CardView key={`${side}-${row}-${card.id}-${index}`} card={card} compact />
+                  )),
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
     <PlayerBoard side="two" data={data} />
