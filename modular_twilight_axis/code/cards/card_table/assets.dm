@@ -1,0 +1,23 @@
+/datum/asset/simple/cci_cards
+	assets = list(
+		"cci_cards/ballista.png" = 'modular_twilight_axis/code/cards/card_table/assets/ballista.png',
+		"cci_cards/banner_bearer.png" = 'modular_twilight_axis/code/cards/card_table/assets/banner_bearer.png',
+		"cci_cards/blacksmith.png" = 'modular_twilight_axis/code/cards/card_table/assets/blacksmith.png',
+		"cci_cards/clear_weather.png" = 'modular_twilight_axis/code/cards/card_table/assets/clear_weather.png',
+		"cci_cards/crossbowman.png" = 'modular_twilight_axis/code/cards/card_table/assets/crossbowman.png',
+		"cci_cards/field_captain.png" = 'modular_twilight_axis/code/cards/card_table/assets/field_captain.png',
+		"cci_cards/field_medic.png" = 'modular_twilight_axis/code/cards/card_table/assets/field_medic.png',
+		"cci_cards/fog.png" = 'modular_twilight_axis/code/cards/card_table/assets/fog.png',
+		"cci_cards/frost.png" = 'modular_twilight_axis/code/cards/card_table/assets/frost.png',
+		"cci_cards/hood_archer.png" = 'modular_twilight_axis/code/cards/card_table/assets/hood_archer.png',
+		"cci_cards/rain.png" = 'modular_twilight_axis/code/cards/card_table/assets/rain.png',
+		"cci_cards/scout.png" = 'modular_twilight_axis/code/cards/card_table/assets/scout.png',
+		"cci_cards/shield_guard.png" = 'modular_twilight_axis/code/cards/card_table/assets/shield_guard.png',
+		"cci_cards/shield_swordsman.png" = 'modular_twilight_axis/code/cards/card_table/assets/shield_swordsman.png',
+		"cci_cards/siege_engineer.png" = 'modular_twilight_axis/code/cards/card_table/assets/siege_engineer.png',
+		"cci_cards/spearman.png" = 'modular_twilight_axis/code/cards/card_table/assets/spearman.png',
+		"cci_cards/supply_cart.png" = 'modular_twilight_axis/code/cards/card_table/assets/supply_cart.png',
+		"cci_cards/swordsman.png" = 'modular_twilight_axis/code/cards/card_table/assets/swordsman.png',
+		"cci_cards/trebuchet.png" = 'modular_twilight_axis/code/cards/card_table/assets/trebuchet.png',
+		"cci_cards/young_archer.png" = 'modular_twilight_axis/code/cards/card_table/assets/young_archer.png',
+	)

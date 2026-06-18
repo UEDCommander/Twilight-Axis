@@ -524,6 +524,11 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 /datum/preferences/proc/_load_loadout(S)
 	S["selected_loadout_items"] >> selected_loadout_items
 	selected_loadout_items = SANITIZE_LIST(selected_loadout_items)
+	S["cci_known_rare_cards"] >> cci_known_rare_cards
+	cci_known_rare_cards = SANITIZE_LIST(cci_known_rare_cards)
+	S["cci_selected_deck"] >> cci_selected_deck
+	cci_selected_deck = SANITIZE_LIST(cci_selected_deck)
+	cci_clean_cards()
 
 /datum/preferences/proc/_load_loadout_colours(S)
 	S["loadout_1_hex"] >> loadout_1_hex
@@ -1063,6 +1068,9 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["img_gallery"] , img_gallery)
 	WRITE_FILE(S["nsfw_img_gallery"] , nsfw_img_gallery)
 	WRITE_FILE(S["selected_loadout_items"], selected_loadout_items)
+	cci_clean_cards()
+	WRITE_FILE(S["cci_known_rare_cards"], cci_known_rare_cards)
+	WRITE_FILE(S["cci_selected_deck"], cci_selected_deck)
 
 	//Familiar Files
 	WRITE_FILE(S["familiar_names"] , familiar_prefs.familiar_names)

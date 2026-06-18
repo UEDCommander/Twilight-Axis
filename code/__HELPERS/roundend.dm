@@ -130,6 +130,7 @@
 
 	log_game("The round has ended.")
 	SSerp?.hard_shutdown_all("roundend_credits_start") // TA add - NEW ERP SYSTEM
+	cci_sync_all_player_collections()
 	to_chat(world, "<BR><BR><BR><span class='reallybig'>So ends this tale on [realm_name].</span>")
 	get_end_reason()
 	roundend_notify_discord()

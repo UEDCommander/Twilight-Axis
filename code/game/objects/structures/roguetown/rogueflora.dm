@@ -26,17 +26,13 @@
 	. += span_info("Most trees can be toppled by hitting them with the 'CUT', 'CHOP', or 'REND' intents on bladed weapons. Nothing chops trees and foliage better, or quicker, than a good old fashioned axe.")
 
 /obj/structure/flora/roguetree/attack_right(mob/user)
-	if(user.mind && isliving(user))
-		if(user.mind.special_items && user.mind.special_items.len)
-			var/item = input(user, "What will I take?", "STASH") as null|anything in user.mind.special_items
-			if(item)
-				if(user.Adjacent(src))
-					if(user.mind.special_items[item])
-						var/path2item = user.mind.special_items[item]
-						user.mind.special_items -= item
-						var/obj/item/I = new path2item(user.loc)
-						user.put_in_hands(I)
-			return
+	if(handle_special_items_retrieval(user, src))
+		return
+
+/obj/structure/flora/roguetree/attackby(obj/item/I, mob/user, params)
+	if(handle_special_items_deposit(I, user, src))
+		return TRUE
+	return ..()
 
 /obj/structure/flora/roguetree/attacked_by(obj/item/I, mob/living/user)
 	var/was_destroyed = obj_destroyed
@@ -133,6 +129,8 @@
 
 /obj/structure/flora/roguetree/wise/attackby(obj/item/I, mob/user, params)
 	. = ..()
+	if(.)
+		return
 	if(activated && !cooldown)
 		retaliate(user)
 
@@ -564,17 +562,13 @@
 	var/random_mush_zone = TRUE
 
 /obj/structure/flora/rogueshroom/attack_right(mob/user)
-	if(user.mind && isliving(user))
-		if(user.mind.special_items && user.mind.special_items.len)
-			var/item = input(user, "What will I take?", "STASH") as null|anything in user.mind.special_items
-			if(item)
-				if(user.Adjacent(src))
-					if(user.mind.special_items[item])
-						var/path2item = user.mind.special_items[item]
-						user.mind.special_items -= item
-						var/obj/item/I = new path2item(user.loc)
-						user.put_in_hands(I)
-			return
+	if(handle_special_items_retrieval(user, src))
+		return
+
+/obj/structure/flora/rogueshroom/attackby(obj/item/I, mob/user, params)
+	if(handle_special_items_deposit(I, user, src))
+		return TRUE
+	return ..()
 
 /obj/structure/flora/rogueshroom/Initialize()
 	. = ..()

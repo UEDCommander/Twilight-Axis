@@ -64,6 +64,8 @@
 		var/datum/virtue/virtue = new path()
 		GLOB.virtues[path] = virtue
 
+	cci_build_card_registry()
+
 	// Loadout items
 	for (var/path in subtypesof(/datum/loadout_item))
 		var/datum/loadout_item/loadout_item = new path()
@@ -122,4 +124,3 @@
 		for(var/path in subtypesof(prototype))
 			L+= path
 		return L
-

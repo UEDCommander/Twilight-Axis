@@ -34,16 +34,8 @@
 			update_icon()
 
 /obj/structure/flora/newtree/attack_right(mob/user)
-	if(user.mind && isliving(user))
-		if(user.mind.special_items && user.mind.special_items.len)
-			var/item = input(user, "What will I take?", "STASH") as null|anything in user.mind.special_items
-			if(item)
-				if(user.Adjacent(src))
-					if(user.mind.special_items[item])
-						var/path2item = user.mind.special_items[item]
-						user.mind.special_items -= item
-						var/obj/item/I = new path2item(user.loc)
-						user.put_in_hands(I)
+	if(handle_special_items_retrieval(user, src))
+		return
 
 /obj/structure/flora/newtree/obj_destruction(damage_flag)//this proc is stupidly long for a destruction proc
 	var/turf/NT = get_turf(src)
@@ -211,6 +203,8 @@
 #define ZTAG_TOP "top"
 
 /obj/structure/flora/newtree/attackby(obj/item/I, mob/user, params)
+	if(handle_special_items_deposit(I, user, src))
+		return TRUE
 	if(user.mind && ishuman(user) && I)
 		var/mob/living/L = user
 		if(L.used_intent && L.used_intent.blade_class == BCLASS_CHOP && I.force_dynamic >= 25)
