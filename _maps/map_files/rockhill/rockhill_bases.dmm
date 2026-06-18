@@ -3949,6 +3949,13 @@
 /obj/machinery/light/rogue/candle/l,
 /turf/open/floor/rogue/herringbone,
 /area/rogue/indoors/vampire_manor)
+"qK" = (
+/obj/structure/table/vtable/v2,
+/obj/item/reagent_containers/glass/bucket{
+	pixel_y = 13
+	},
+/turf/open/floor/rogue/churchrough,
+/area/rogue/indoors/wretchcamp)
 "qL" = (
 /obj/structure/fluff/railing/wood/east{
 	pixel_x = 8
@@ -5670,8 +5677,21 @@
 	pixel_x = 9;
 	pixel_y = 43
 	},
-/obj/machinery/alch_workbench{
-	pixel_y = -8
+/obj/structure/table/vtable,
+/obj/structure/fermentation_keg/random/water{
+	icon_state = "barrel_tapped_ready";
+	pixel_x = -9;
+	pixel_y = 5
+	},
+/obj/structure/fermentation_keg/random/water{
+	icon_state = "barrel_tapped_ready";
+	pixel_x = 8;
+	pixel_y = 5
+	},
+/obj/structure/fermentation_keg/random/water{
+	icon_state = "barrel_tapped_ready";
+	pixel_y = 15;
+	layer = 3.1
 	},
 /turf/open/floor/rogue/churchrough,
 /area/rogue/indoors/wretchcamp)
@@ -64686,7 +64706,7 @@ VL
 VL
 VL
 Tp
-IG
+qK
 IG
 IG
 Sc
