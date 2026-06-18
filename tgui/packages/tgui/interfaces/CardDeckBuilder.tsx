@@ -277,9 +277,7 @@ export const CardDeckBuilder = () => {
             <ProgressBar
               value={deckRatio}
               ranges={{
-                good: [1, 1],
-                average: [0.5, 0.99],
-                bad: [0, 0.49],
+                good: [0, 1],
               }}
               mb="10px"
             />

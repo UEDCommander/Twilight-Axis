@@ -24,6 +24,8 @@
 	var/list/round_wins = list()
 	var/list/passed = list()
 	var/list/weather = list()
+	var/list/weather_board = list()
+	var/list/combo_morale = list()
 	var/turn = CCI_SIDE_ONE
 	var/round_number = 1
 	var/result_text
@@ -60,12 +62,14 @@
 	passed[CCI_SIDE_ONE] = FALSE
 	passed[CCI_SIDE_TWO] = FALSE
 	weather = list()
+	weather_board = list()
+	combo_morale = list(
+		CCI_SIDE_ONE = list(CCI_ROW_INFANTRY = 0, CCI_ROW_ARCHERS = 0, CCI_ROW_SIEGE = 0),
+		CCI_SIDE_TWO = list(CCI_ROW_INFANTRY = 0, CCI_ROW_ARCHERS = 0, CCI_ROW_SIEGE = 0)
+	)
 	if(first_round)
 		draw_cards(CCI_SIDE_ONE, 10)
 		draw_cards(CCI_SIDE_TWO, 10)
-	else
-		draw_cards(CCI_SIDE_ONE, 2)
-		draw_cards(CCI_SIDE_TWO, 2)
 	turn = (round_number % 2) ? CCI_SIDE_ONE : CCI_SIDE_TWO
 	last_message = "Round [round_number] begins."
 
@@ -78,9 +82,14 @@
 		hand += deck[1]
 		deck.Cut(1, 2)
 
-/datum/cci_match/proc/side_for_user(mob/user)
+/datum/cci_match/proc/side_for_user(mob/user, obj/item/cci_deck/deck_context)
 	if(!user?.ckey)
 		return null
+	if(player_ckeys[CCI_SIDE_ONE] == player_ckeys[CCI_SIDE_TWO] && deck_context)
+		if(deck_context == owner)
+			return CCI_SIDE_ONE
+		if(deck_context == challenger)
+			return CCI_SIDE_TWO
 	if(user.ckey == player_ckeys[CCI_SIDE_ONE])
 		return CCI_SIDE_ONE
 	if(user.ckey == player_ckeys[CCI_SIDE_TWO])
@@ -90,8 +99,8 @@
 /datum/cci_match/proc/opposite(side)
 	return side == CCI_SIDE_ONE ? CCI_SIDE_TWO : CCI_SIDE_ONE
 
-/datum/cci_match/proc/play_card(mob/user, card_id)
-	var/side = side_for_user(user)
+/datum/cci_match/proc/play_card(mob/user, card_id, obj/item/cci_deck/deck_context)
+	var/side = side_for_user(user, deck_context)
 	if(!side || side != turn || passed[side] || result_text)
 		return FALSE
 	var/list/hand = hands[side]
@@ -100,9 +109,12 @@
 	var/datum/cci_card/card = cci_card(card_id)
 	if(!card)
 		return FALSE
-	hand -= card_id
+	var/card_index = hand.Find(card_id)
+	if(!card_index)
+		return FALSE
+	hand.Cut(card_index, card_index + 1)
 	if(card.row == CCI_ROW_WEATHER)
-		apply_weather_card(card)
+		apply_weather_card(card, side)
 	else
 		var/play_side = side
 		if(card.effect == CCI_EFFECT_SPY)
@@ -110,13 +122,18 @@
 			draw_cards(side, 2)
 		board[play_side][card.row] += new /datum/cci_played_card(card_id, side)
 		apply_card_effect(card, side, play_side)
+		if(apply_combo_effect(card, side, play_side))
+			last_message = "[player_names[side]] plays [card.name]. A combo triggers."
+		else
+			last_message = "[player_names[side]] plays [card.name]."
 	recalculate_board()
-	last_message = "[player_names[side]] plays [card.name]."
+	if(card.row == CCI_ROW_WEATHER)
+		last_message = "[player_names[side]] plays [card.name]."
 	advance_turn()
 	return TRUE
 
-/datum/cci_match/proc/pass(mob/user)
-	var/side = side_for_user(user)
+/datum/cci_match/proc/pass(mob/user, obj/item/cci_deck/deck_context)
+	var/side = side_for_user(user, deck_context)
 	if(!side || side != turn || result_text)
 		return FALSE
 	passed[side] = TRUE
@@ -132,19 +149,48 @@
 	if(!passed[other])
 		turn = other
 
-/datum/cci_match/proc/apply_weather_card(datum/cci_card/card)
+/datum/cci_match/proc/apply_weather_card(datum/cci_card/card, side)
 	if(card.effect == CCI_EFFECT_CLEAR_WEATHER)
+		for(var/datum/cci_played_card/played in weather_board)
+			discarded[played.owner_side] += played.card_id
+		weather_board = list()
 		weather = list()
+		discarded[side] += card.id
 	else if(card.effect == CCI_EFFECT_FROST)
 		weather |= CCI_ROW_INFANTRY
+		weather_board += new /datum/cci_played_card(card.id, side)
 	else if(card.effect == CCI_EFFECT_FOG)
 		weather |= CCI_ROW_ARCHERS
+		weather_board += new /datum/cci_played_card(card.id, side)
 	else if(card.effect == CCI_EFFECT_RAIN)
 		weather |= CCI_ROW_SIEGE
+		weather_board += new /datum/cci_played_card(card.id, side)
 
 /datum/cci_match/proc/apply_card_effect(datum/cci_card/card, owner_side, play_side)
 	if(card.effect != CCI_EFFECT_SCORCH)
 		return
+	scorch_strongest_enemy(owner_side)
+
+/datum/cci_match/proc/apply_combo_effect(datum/cci_card/card, owner_side, play_side)
+	if(card.combo_effect == CCI_EFFECT_NONE || !length(card.combo_with))
+		return FALSE
+	if(!combo_partner_present(card, play_side))
+		return FALSE
+	if(card.combo_effect == CCI_EFFECT_SCORCH)
+		scorch_strongest_enemy(owner_side)
+	else if(card.combo_effect == CCI_EFFECT_MORALE)
+		combo_morale[play_side][card.row]++
+		recalculate_board()
+	return TRUE
+
+/datum/cci_match/proc/combo_partner_present(datum/cci_card/card, play_side)
+	for(var/row in list(CCI_ROW_INFANTRY, CCI_ROW_ARCHERS, CCI_ROW_SIEGE))
+		for(var/datum/cci_played_card/played in board[play_side][row])
+			if(played.card_id != card.id && (played.card_id in card.combo_with))
+				return TRUE
+	return FALSE
+
+/datum/cci_match/proc/scorch_strongest_enemy(owner_side)
 	var/enemy = opposite(owner_side)
 	var/datum/cci_played_card/strongest
 	var/strongest_row
@@ -161,13 +207,11 @@
 	for(var/side in list(CCI_SIDE_ONE, CCI_SIDE_TWO))
 		for(var/row in list(CCI_ROW_INFANTRY, CCI_ROW_ARCHERS, CCI_ROW_SIEGE))
 			var/morale = 0
-			var/list/bond_counts = list()
 			for(var/datum/cci_played_card/played in board[side][row])
 				var/datum/cci_card/card = cci_card(played.card_id)
 				if(card?.effect == CCI_EFFECT_MORALE)
 					morale++
-				if(card?.combo == CCI_COMBO_BOND)
-					bond_counts[played.card_id] = text2num("[bond_counts[played.card_id]]") + 1
+			morale += text2num("[combo_morale[side][row]]")
 			for(var/datum/cci_played_card/played in board[side][row])
 				var/datum/cci_card/card = cci_card(played.card_id)
 				if(!card)
@@ -175,8 +219,6 @@
 				var/value = card.power
 				if(row in weather)
 					value = min(value, 1)
-				if(card.combo == CCI_COMBO_BOND && text2num("[bond_counts[played.card_id]]") > 1)
-					value *= text2num("[bond_counts[played.card_id]]")
 				if(card.effect != CCI_EFFECT_MORALE)
 					value += morale
 				played.current_power = value
@@ -206,6 +248,8 @@
 		for(var/row in list(CCI_ROW_INFANTRY, CCI_ROW_ARCHERS, CCI_ROW_SIEGE))
 			for(var/datum/cci_played_card/played in board[side][row])
 				discarded[side] += played.card_id
+	for(var/datum/cci_played_card/played in weather_board)
+		discarded[played.owner_side] += played.card_id
 	if(round_wins[CCI_SIDE_ONE] >= 2 || round_wins[CCI_SIDE_TWO] >= 2)
 		var/winner = round_wins[CCI_SIDE_ONE] >= 2 ? CCI_SIDE_ONE : CCI_SIDE_TWO
 		result_text = "[player_names[winner]] wins the match."
@@ -213,9 +257,9 @@
 	round_number++
 	start_round(FALSE)
 
-/datum/cci_match/proc/ui_data_for(mob/user)
+/datum/cci_match/proc/ui_data_for(mob/user, obj/item/cci_deck/deck_context)
 	var/list/data = list()
-	var/my_side = side_for_user(user)
+	var/my_side = side_for_user(user, deck_context)
 	data["mySide"] = my_side
 	data["turn"] = turn
 	data["players"] = player_names
@@ -226,7 +270,9 @@
 	data["result"] = result_text
 	data["message"] = last_message
 	data["weather"] = weather
+	data["weatherCards"] = build_weather_data()
 	data["hand"] = build_hand_data(my_side)
+	data["opponentHandCount"] = my_side ? length(hands[opposite(my_side)]) : 0
 	data["board"] = build_board_data()
 	return data
 
@@ -252,6 +298,14 @@
 					var/list/card_data = card.as_ui_data(TRUE, FALSE)
 					card_data["currentPower"] = played.current_power
 					out[side][row] += list(card_data)
+	return out
+
+/datum/cci_match/proc/build_weather_data()
+	var/list/out = list()
+	for(var/datum/cci_played_card/played in weather_board)
+		var/datum/cci_card/card = cci_card(played.card_id)
+		if(card)
+			out += list(card.as_ui_data(TRUE, FALSE))
 	return out
 
 #undef CCI_SIDE_ONE

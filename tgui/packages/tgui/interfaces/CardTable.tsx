@@ -34,7 +34,9 @@ type Data = {
   result?: string;
   message?: string;
   weather?: string[];
+  weatherCards?: Card[];
   hand?: Card[];
+  opponentHandCount?: number;
   board?: Record<Side, Record<CardRow, Card[]>>;
 };
 
@@ -60,11 +62,16 @@ const sideLabels: Record<Side, string> = {
   two: 'Player Two',
 };
 
+const sideAccent: Record<Side, string> = {
+  one: '#38bdf8',
+  two: '#ef4444',
+};
+
 const cardBoxStyle = (card: Card, compact = false) => ({
   position: 'relative' as const,
-  width: compact ? '76px' : '118px',
+  width: compact ? '54px' : '86px',
   aspectRatio: '1 / 1.6',
-  padding: compact ? '4px' : '6px',
+  padding: compact ? '3px' : '4px',
   border: `2px solid ${rarityColor[card.rarity]}`,
   borderRadius: '4px',
   background: 'linear-gradient(180deg, rgba(35,39,48,0.98), rgba(14,16,22,0.98))',
@@ -118,7 +125,7 @@ const CardView = ({
         position: 'relative',
         zIndex: 1,
         color: rarityColor[card.rarity],
-        fontSize: compact ? '7px' : '10px',
+        fontSize: compact ? '6px' : '8px',
         fontWeight: 700,
         textAlign: 'center',
         textTransform: 'uppercase',
@@ -135,16 +142,16 @@ const CardView = ({
         position: 'relative',
         zIndex: 1,
         display: 'grid',
-        gridTemplateColumns: compact ? '22px 1fr' : '30px 1fr',
+        gridTemplateColumns: compact ? '16px 1fr' : '23px 1fr',
         alignItems: 'center',
         width: '100%',
-        minHeight: compact ? '22px' : '28px',
+        minHeight: compact ? '16px' : '22px',
       }}
     >
       <div
         style={{
-          width: compact ? '22px' : '30px',
-          height: compact ? '22px' : '30px',
+          width: compact ? '16px' : '23px',
+          height: compact ? '16px' : '23px',
           borderRadius: '50%',
           backgroundColor: '#05070b',
           border: `2px solid ${rarityColor[card.rarity]}`,
@@ -152,7 +159,7 @@ const CardView = ({
           alignItems: 'center',
           justifyContent: 'center',
           color: '#f8fafc',
-          fontSize: compact ? '10px' : '15px',
+          fontSize: compact ? '8px' : '12px',
           fontWeight: 700,
           zIndex: 1,
         }}
@@ -161,12 +168,12 @@ const CardView = ({
       </div>
       <div
         style={{
-          marginLeft: compact ? '-4px' : '-5px',
-          padding: compact ? '3px 4px 3px 7px' : '4px 5px 4px 9px',
+          marginLeft: compact ? '-3px' : '-4px',
+          padding: compact ? '2px 3px 2px 5px' : '3px 4px 3px 7px',
           border: `1px solid ${rarityColor[card.rarity]}`,
           backgroundColor: 'rgba(5,7,11,0.92)',
           color: '#f8fafc',
-          fontSize: compact ? '7px' : '10px',
+          fontSize: compact ? '6px' : '8px',
           fontWeight: 700,
           lineHeight: 1.1,
           whiteSpace: 'nowrap',
@@ -181,32 +188,100 @@ const CardView = ({
 );
 
 const RowView = ({
+  row,
   title,
   cards,
+  weathered,
 }: {
+  row: CardRow;
   title: string;
   cards: Card[];
+  weathered: boolean;
 }) => {
   const total = cards.reduce((sum, card) => sum + (card.currentPower ?? card.power), 0);
   return (
     <div
       style={{
+        position: 'relative',
         display: 'grid',
-        gridTemplateColumns: '90px 1fr 42px',
+        gridTemplateColumns: '54px 1fr 42px',
         gap: '8px',
         alignItems: 'center',
-        minHeight: '130px',
-        padding: '6px',
-        borderBottom: '1px solid rgba(255,255,255,0.08)',
+        minHeight: '72px',
+        padding: '5px 8px',
+        borderTop: '1px solid rgba(255,255,255,0.16)',
+        borderBottom: '1px solid rgba(0,0,0,0.6)',
+        background:
+          'linear-gradient(90deg, rgba(45,30,18,0.92), rgba(116,91,58,0.78) 18%, rgba(72,55,35,0.84) 74%, rgba(22,19,18,0.9)), repeating-linear-gradient(0deg, rgba(255,255,255,0.05) 0 1px, transparent 1px 18px)',
+        boxShadow: 'inset 0 0 16px rgba(0,0,0,0.55)',
+        overflow: 'hidden',
       }}
     >
-      <div style={{ color: '#cbd5e1', fontWeight: 700 }}>{title}</div>
-      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+      {weathered && (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background:
+              row === 'infantry'
+                ? 'linear-gradient(90deg, rgba(147,197,253,0.26), rgba(219,234,254,0.16), rgba(147,197,253,0.24))'
+                : 'linear-gradient(90deg, rgba(148,163,184,0.24), rgba(203,213,225,0.12), rgba(100,116,139,0.24))',
+            boxShadow: 'inset 0 0 18px rgba(239,68,68,0.45)',
+            pointerEvents: 'none',
+          }}
+        />
+      )}
+      <div
+        style={{
+          position: 'relative',
+          zIndex: 1,
+          color: weathered ? '#fecaca' : '#e5e7eb',
+          fontSize: '11px',
+          fontWeight: 700,
+          textTransform: 'uppercase',
+        }}
+      >
+        {title}
+      </div>
+      <div
+        style={{
+          position: 'relative',
+          zIndex: 1,
+          display: 'flex',
+          gap: '4px',
+          minHeight: '58px',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          borderLeft: '1px solid rgba(15,23,42,0.55)',
+          borderRight: '1px solid rgba(15,23,42,0.55)',
+          padding: '2px 6px',
+        }}
+      >
         {cards.map((card, index) => (
           <CardView key={`${card.id}-${index}`} card={card} compact />
         ))}
       </div>
-      <div style={{ textAlign: 'center', fontSize: '22px', fontWeight: 700 }}>
+      <div
+        style={{
+          position: 'relative',
+          zIndex: 1,
+          width: '34px',
+          height: '34px',
+          borderRadius: '4px',
+          border: `2px solid ${weathered ? '#ef4444' : '#111827'}`,
+          background: weathered
+            ? 'linear-gradient(180deg, #7f1d1d, #1f1111)'
+            : 'linear-gradient(180deg, #263447, #0f172a)',
+          color: weathered ? '#fecaca' : '#f8fafc',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          fontSize: '17px',
+          fontWeight: 800,
+          boxShadow: '0 1px 0 rgba(255,255,255,0.15), inset 0 0 8px rgba(0,0,0,0.65)',
+        }}
+      >
         {total}
       </div>
     </div>
@@ -221,18 +296,106 @@ const PlayerBoard = ({
   data: Data;
 }) => {
   const board = data.board?.[side];
+  const weather = data.weather || [];
+  const score = data.scores?.[side] ?? 0;
+  const rows: CardRow[] =
+    side === 'two' ? ['siege', 'archers', 'infantry'] : ['infantry', 'archers', 'siege'];
   return (
-    <Section
-      title={`${data.players?.[side] || sideLabels[side]} | Score ${
-        data.scores?.[side] ?? 0
-      } | Wins ${data.wins?.[side] ?? 0}${data.passed?.[side] ? ' | Passed' : ''}`}
+    <div
+      style={{
+        border: `2px solid ${sideAccent[side]}99`,
+        background: 'linear-gradient(180deg, rgba(15,23,42,0.92), rgba(8,11,17,0.94))',
+        boxShadow: 'inset 0 0 18px rgba(0,0,0,0.65)',
+      }}
     >
-      <RowView title={rowLabels.infantry} cards={board?.infantry || []} />
-      <RowView title={rowLabels.archers} cards={board?.archers || []} />
-      <RowView title={rowLabels.siege} cards={board?.siege || []} />
-    </Section>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr auto auto',
+          gap: '10px',
+          alignItems: 'center',
+          padding: '5px 8px',
+          background: `linear-gradient(90deg, ${sideAccent[side]}33, rgba(15,23,42,0.92))`,
+          borderBottom: '1px solid rgba(255,255,255,0.12)',
+        }}
+      >
+        <div style={{ color: '#f8fafc', fontWeight: 800 }}>
+          {data.players?.[side] || sideLabels[side]}
+          {data.passed?.[side] ? ' | Passed' : ''}
+        </div>
+        <div style={{ color: '#cbd5e1' }}>Wins {data.wins?.[side] ?? 0}</div>
+        <div
+          style={{
+            minWidth: '46px',
+            color: sideAccent[side],
+            fontSize: '22px',
+            fontWeight: 900,
+            textAlign: 'right',
+          }}
+        >
+          {score}
+        </div>
+      </div>
+      {rows.map((row) => (
+        <RowView
+          key={row}
+          row={row}
+          title={rowLabels[row]}
+          cards={board?.[row] || []}
+          weathered={weather.includes(row)}
+        />
+      ))}
+    </div>
   );
 };
+
+const BattleBoard = ({
+  data,
+  weatherCards,
+}: {
+  data: Data;
+  weatherCards: Card[];
+}) => (
+  <div
+    style={{
+      padding: '10px',
+      border: '3px solid #1f2937',
+      background:
+        'linear-gradient(90deg, #27170d, #6b4a28 8%, #2a1c12 50%, #6b4a28 92%, #1b120b)',
+      boxShadow:
+        'inset 0 0 0 2px rgba(255,255,255,0.12), inset 0 0 28px rgba(0,0,0,0.85), 0 0 22px rgba(0,0,0,0.65)',
+    }}
+  >
+    <div
+      style={{
+        marginBottom: '8px',
+        padding: '5px 8px',
+        minHeight: '46px',
+        border: '1px solid rgba(255,255,255,0.16)',
+        background: 'linear-gradient(90deg, rgba(5,7,11,0.72), rgba(30,41,59,0.55))',
+      }}
+    >
+      <div style={{ color: '#cbd5e1', fontSize: '11px', fontWeight: 800, marginBottom: '4px' }}>
+        WEATHER
+      </div>
+      <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+        {weatherCards.map((card, index) => (
+          <CardView key={`${card.id}-${index}`} card={card} compact />
+        ))}
+      </div>
+    </div>
+    <PlayerBoard side="two" data={data} />
+    <div
+      style={{
+        height: '6px',
+        background: 'linear-gradient(90deg, #111827, #94a3b8, #111827)',
+        borderTop: '1px solid rgba(255,255,255,0.18)',
+        borderBottom: '1px solid rgba(0,0,0,0.8)',
+      }}
+    />
+    <PlayerBoard side="one" data={data} />
+  </div>
+);
 
 export const CardTable = () => {
   const { act, data } = useBackend<Data>();
@@ -251,6 +414,7 @@ export const CardTable = () => {
   }
 
   const hand = data.hand || [];
+  const weatherCards = data.weatherCards || [];
   const myTurn = data.mySide && data.turn === data.mySide && !data.result;
   const weather = data.weather?.length ? data.weather.join(', ') : 'Clear';
 
@@ -260,24 +424,12 @@ export const CardTable = () => {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: '1fr 300px',
+            gridTemplateColumns: '1fr 360px',
             gap: '12px',
           }}
         >
           <div>
-            <PlayerBoard side="two" data={data} />
-            <PlayerBoard side="one" data={data} />
-            <Section title={`Hand | ${hand.length} cards`}>
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                {hand.map((card, index) => (
-                  <CardView
-                    key={`${card.id}-${index}`}
-                    card={card}
-                    onClick={myTurn ? () => act('play', { card: card.id }) : undefined}
-                  />
-                ))}
-              </div>
-            </Section>
+            <BattleBoard data={data} weatherCards={weatherCards} />
           </div>
 
           <div>
@@ -290,6 +442,9 @@ export const CardTable = () => {
               </div>
               <div style={{ marginBottom: '8px' }}>
                 <b>You:</b> {data.mySide ? data.players?.[data.mySide] : 'Observer'}
+              </div>
+              <div style={{ marginBottom: '8px' }}>
+                <b>Opponent hand:</b> {data.opponentHandCount ?? 0}
               </div>
               <div style={{ marginBottom: '8px' }}>
                 <b>Weather:</b> {weather}
@@ -308,6 +463,23 @@ export const CardTable = () => {
               <Button disabled={!data.result} onClick={() => act('collect')}>
                 Collect Decks
               </Button>
+            </Section>
+            <Section title={`Hand | ${hand.length} cards`}>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(3, 86px)',
+                  gap: '8px',
+                }}
+              >
+                {hand.map((card, index) => (
+                  <CardView
+                    key={`${card.id}-${index}`}
+                    card={card}
+                    onClick={myTurn ? () => act('play', { card: card.id }) : undefined}
+                  />
+                ))}
+              </div>
             </Section>
           </div>
         </div>

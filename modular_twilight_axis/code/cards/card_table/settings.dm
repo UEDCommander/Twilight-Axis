@@ -1,4 +1,4 @@
-#define CCI_DECK_SIZE 20
+#define CCI_DECK_SIZE 30
 #define CCI_STASH_DECK_KEY "cci_deck_cards"
 
 /datum/preferences
@@ -53,6 +53,7 @@
 		var/datum/cci_card/card = cci_card(card_id)
 		if(card?.rarity != CCI_RARITY_BASE)
 			cci_known_rare_cards -= card_id
+	cci_clean_cards()
 	save_character()
 
 /datum/preferences/proc/cci_sync_cards_from_inventory(mob/living/carbon/human/H)
@@ -153,14 +154,13 @@
 			return FALSE
 		var/name = "Card Battle Deck"
 		user.mind.special_items[name] = cci_stash_deck_spec(deck_cards)
-		cci_selected_deck = list()
 		save_character()
 		to_chat(user, span_notice("A prepared card battle deck is added to your stash. Rare cards leave your collection when you retrieve the physical deck."))
 		return TRUE
 	var/obj/item/cci_deck/deck = new(get_turf(user))
 	deck.set_cards(deck_cards)
 	cci_remove_known_cards_from_deck(deck_cards)
-	cci_selected_deck = list()
+	cci_clean_cards()
 	save_character()
 	user?.put_in_hands(deck)
 	return TRUE

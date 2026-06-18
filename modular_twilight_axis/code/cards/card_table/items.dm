@@ -167,7 +167,7 @@
 	var/datum/cci_match/active_match = get_active_match()
 	if(!active_match)
 		return list("waiting" = !!inviter_ckey, "offeredName" = inviter_name)
-	return active_match.ui_data_for(user)
+	return active_match.ui_data_for(user, src)
 
 /obj/item/cci_deck/ui_act(action, list/params, datum/tgui/ui, datum/ui_state/state)
 	. = ..()
@@ -179,11 +179,11 @@
 	var/mob/user = ui.user
 	switch(action)
 		if("play")
-			if(active_match.play_card(user, params["card"]))
+			if(active_match.play_card(user, params["card"], src))
 				active_match.update_deck_uis()
 				return TRUE
 		if("pass")
-			if(active_match.pass(user))
+			if(active_match.pass(user, src))
 				active_match.update_deck_uis()
 				return TRUE
 		if("collect")

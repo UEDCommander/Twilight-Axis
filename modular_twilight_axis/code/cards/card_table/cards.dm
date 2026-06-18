@@ -17,7 +17,6 @@
 #define CCI_EFFECT_RAIN "rain"
 
 #define CCI_COMBO_NONE "none"
-#define CCI_COMBO_BOND "bond"
 
 GLOBAL_LIST_EMPTY(cci_cards_by_id)
 GLOBAL_LIST_EMPTY(cci_base_card_ids)
@@ -47,6 +46,8 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 	var/rarity = CCI_RARITY_BASE
 	var/effect = CCI_EFFECT_NONE
 	var/combo = CCI_COMBO_NONE
+	var/list/combo_with = list()
+	var/combo_effect = CCI_EFFECT_NONE
 	var/art = ""
 
 /datum/cci_card/proc/as_ui_data(known = TRUE, selected = FALSE)
@@ -59,6 +60,8 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 		"rarity" = rarity,
 		"effect" = effect,
 		"combo" = combo,
+		"comboEffect" = combo_effect,
+		"comboWith" = combo_with,
 		"art" = art,
 		"known" = known,
 		"selected" = selected
@@ -71,6 +74,8 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 	desc = "Reliable infantry."
 	row = CCI_ROW_INFANTRY
 	power = 4
+	combo_with = list("base_shieldman")
+	combo_effect = CCI_EFFECT_MORALE
 	art = "cci_cards/swordsman.png"
 
 /datum/cci_card/base_spearman
@@ -79,7 +84,6 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 	desc = "Doubles with other Spearmen."
 	row = CCI_ROW_INFANTRY
 	power = 3
-	combo = CCI_COMBO_BOND
 	art = "cci_cards/spearman.png"
 
 /datum/cci_card/base_archer
@@ -88,6 +92,8 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 	desc = "Reliable ranged card."
 	row = CCI_ROW_ARCHERS
 	power = 4
+	combo_with = list("base_longbowman")
+	combo_effect = CCI_EFFECT_SCORCH
 	art = "cci_cards/young_archer.png"
 
 /datum/cci_card/base_crossbow
@@ -105,7 +111,8 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 	desc = "Doubles with other Catapults."
 	row = CCI_ROW_SIEGE
 	power = 5
-	combo = CCI_COMBO_BOND
+	combo_with = list("base_ballista")
+	combo_effect = CCI_EFFECT_SCORCH
 	art = "cci_cards/trebuchet.png"
 
 /datum/cci_card/base_ballista
@@ -114,6 +121,8 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 	desc = "Siege engine."
 	row = CCI_ROW_SIEGE
 	power = 6
+	combo_with = list("base_catapult")
+	combo_effect = CCI_EFFECT_SCORCH
 	art = "cci_cards/ballista.png"
 
 /datum/cci_card/base_frost
@@ -158,6 +167,8 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 	desc = "Steady frontline infantry."
 	row = CCI_ROW_INFANTRY
 	power = 5
+	combo_with = list("base_swordsman")
+	combo_effect = CCI_EFFECT_MORALE
 	art = "cci_cards/shield_swordsman.png"
 
 /datum/cci_card/base_banner_bearer
@@ -183,7 +194,8 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 	desc = "Doubles with other Longbowmen."
 	row = CCI_ROW_ARCHERS
 	power = 3
-	combo = CCI_COMBO_BOND
+	combo_with = list("base_archer")
+	combo_effect = CCI_EFFECT_SCORCH
 	art = "cci_cards/hood_archer.png"
 
 /datum/cci_card/base_blacksmith
@@ -193,6 +205,8 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 	row = CCI_ROW_SIEGE
 	power = 2
 	effect = CCI_EFFECT_MORALE
+	combo_with = list("base_supply_cart")
+	combo_effect = CCI_EFFECT_MORALE
 	art = "cci_cards/blacksmith.png"
 
 /datum/cci_card/base_supply_cart
@@ -201,7 +215,30 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 	desc = "Siege support."
 	row = CCI_ROW_SIEGE
 	power = 4
+	combo_with = list("base_blacksmith")
+	combo_effect = CCI_EFFECT_MORALE
 	art = "cci_cards/supply_cart.png"
+
+/datum/cci_card/base_scout
+	id = "base_scout"
+	name = "Scout"
+	desc = "Light ranged unit."
+	row = CCI_ROW_ARCHERS
+	power = 2
+
+/datum/cci_card/base_militia
+	id = "base_militia"
+	name = "Militia"
+	desc = "Cheap infantry."
+	row = CCI_ROW_INFANTRY
+	power = 2
+
+/datum/cci_card/base_mangonel
+	id = "base_mangonel"
+	name = "Mangonel"
+	desc = "Basic siege engine."
+	row = CCI_ROW_SIEGE
+	power = 3
 
 /datum/cci_card/base_field_medic
 	id = "base_field_medic"
