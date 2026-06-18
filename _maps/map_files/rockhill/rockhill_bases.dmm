@@ -3498,6 +3498,13 @@
 "pb" = (
 /turf/closed/wall/mineral/rogue/wooddark/horizontal,
 /area/rogue/indoors/wretchcamp)
+"pc" = (
+/obj/structure/table/vtable/v2,
+/obj/item/reagent_containers/glass/bucket{
+	pixel_y = 15
+	},
+/turf/open/floor/rogue/churchrough,
+/area/rogue/indoors/wretchcamp)
 "pd" = (
 /obj/structure/rack/rogue{
 	name = "Gold pile";
@@ -5641,6 +5648,22 @@
 /obj/item/reagent_containers/glass/bottle/alchemical{
 	pixel_x = 9;
 	pixel_y = 43
+	},
+/obj/structure/table/vtable,
+/obj/structure/fermentation_keg/random/water{
+	icon_state = "barrel_tapped_ready";
+	pixel_x = -9;
+	pixel_y = 5
+	},
+/obj/structure/fermentation_keg/random/water{
+	icon_state = "barrel_tapped_ready";
+	pixel_x = 8;
+	pixel_y = 5
+	},
+/obj/structure/fermentation_keg/random/water{
+	icon_state = "barrel_tapped_ready";
+	pixel_y = 15;
+	layer = 3.1
 	},
 /turf/open/floor/rogue/churchrough,
 /area/rogue/indoors/wretchcamp)
@@ -64570,7 +64593,7 @@ VL
 VL
 VL
 Tp
-IG
+pc
 IG
 IG
 Sc
