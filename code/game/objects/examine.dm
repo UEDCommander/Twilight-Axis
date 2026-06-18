@@ -121,9 +121,20 @@
 	var/examine_highlight_status = get_examine_highlight_status()
 	if(examine_highlight_status)
 		var/severity = examine_highlight_status[1]
-		var/heresy_desc = get_examine_highlight_description(examine_highlight_status, itis = TRUE, allcaps = FALSE)
-		var/heresy_tooltip = get_examine_highlight_explanation(severity)
-		. += span_info(SPAN_TOOLTIP_DANGEROUS_HTML(heresy_tooltip, heresy_desc))
+		var/allow_reveal = FALSE  //TA EDIT START
+		switch(severity)
+			if(EXAMINEHIGHLIGHT_HERESYSEVERITY_ALARMING)
+				allow_reveal = TRUE
+			if(EXAMINEHIGHLIGHT_HERESYSEVERITY_SUSPICIOUS)
+				if(HAS_TRAIT(user, TRAIT_INQUISITION) || HAS_TRAIT(user, TRAIT_CLERGY))
+					allow_reveal = TRUE
+			if(EXAMINEHIGHLIGHT_HERESYSEVERITY_ODD)
+				if(HAS_TRAIT(user, TRAIT_INQUISITION))
+					allow_reveal = TRUE
+		if(allow_reveal)
+			var/heresy_desc = get_examine_highlight_description(examine_highlight_status, itis = FALSE, allcaps = FALSE)
+			var/heresy_tooltip = get_examine_highlight_explanation(severity)
+			. += span_info(SPAN_TOOLTIP_DANGEROUS_HTML(heresy_tooltip, heresy_desc))  //TA EDIT END
 
 	for(var/datum/examine_effect/E in examine_effects)
 		E.trigger(user)

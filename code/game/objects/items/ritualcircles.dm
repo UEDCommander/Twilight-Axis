@@ -742,7 +742,7 @@
 	var/creation_time
 
 /obj/item/abyssal_marker/volatile/get_examine_highlight_status()
-	return list(EXAMINEHIGHLIGHT_HERESYSEVERITY_ALARMING, "It shatters the barrier between reality and NIGHTMARE")
+	return list(EXAMINEHIGHLIGHT_HERESYSEVERITY_ALARMING, "Оно раскалывает барьер между реальностью и КОШМАРОМ")
 
 /obj/item/abyssal_marker/tidal
 	name = "tidal abyssal marker"

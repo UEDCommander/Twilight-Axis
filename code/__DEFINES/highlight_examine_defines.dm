@@ -1,40 +1,40 @@
 // Zizo items
-#define HERESYDESC_ZIZO_WEAPON "A grim weapon of Zizo's champions"
-#define HERESYDESC_ZIZO_ARMOR "An accursed armor piece of Zizo's champions"
-#define HERESYDESC_ZIZO_RELIC "A relic of Zizo's grim design"
-#define HERESYDESC_ZIZO_ICON "It bears the grim zcross of Zizo"
-#define HERESYDESC_ZIZO_MISC "A known design of Zizo"
-#define HERESYDESC_ZIZO_AVANTYNE "It is forged out of Zizo's foul Avantyne"
-#define HERESYDESC_ZIZO_ARTIFICE "Zizo's artificed design, recreated uncomfortably accurately"
-#define HERESYDESC_ZIZO_ARTIFICE_RECLAIMED "The old artificed designs of Zizo... Reclaimed?"
+#define HERESYDESC_ZIZO_WEAPON "Мрачное оружие воинов Зизо"
+#define HERESYDESC_ZIZO_ARMOR "Проклятый доспех воинов Зизо"
+#define HERESYDESC_ZIZO_RELIC "Реликвия мрачного творения Зизо"
+#define HERESYDESC_ZIZO_ICON "На нём изображён мрачный крест Зизо"
+#define HERESYDESC_ZIZO_MISC "Известный дизайн Зизо"
+#define HERESYDESC_ZIZO_AVANTYNE "Оно выковано из мерзкого авантина Зизо"
+#define HERESYDESC_ZIZO_ARTIFICE "Искусно созданный образец Зизо, воссозданный с пугающей точностью"
+#define HERESYDESC_ZIZO_ARTIFICE_RECLAIMED "Загадочный дизайн из древних времен"
 
 // Matthios items
-#define HERESYDESC_MATTHIOS_WEAPON "A weapon of Matthios's greedy champions"
-#define HERESYDESC_MATTHIOS_ARMOR "An avaricious armor piece of Matthios's champions"
-#define HERESYDESC_MATTHIOS_RELIC "A relic of Matthios's covetous design"
-#define HERESYDESC_MATTHIOS_ICON "It bears the covetous icon of Matthios"
-#define HERESYDESC_MATTHIOS_MISC "A known design of Matthios"
+#define HERESYDESC_MATTHIOS_WEAPON "Оружие алчных воинов Маттиоса"
+#define HERESYDESC_MATTHIOS_ARMOR "Доспех алчных воинов Маттиоса"
+#define HERESYDESC_MATTHIOS_RELIC "Реликвия алчного дизайна Маттиоса"
+#define HERESYDESC_MATTHIOS_ICON "На нём изображён символ Маттиоса"
+#define HERESYDESC_MATTHIOS_MISC "Известный образец Маттиоса"
 
 // Graggar items
-#define HERESYDESC_GRAGGAR_WEAPON "A weapon of Graggar's bloodthirsty champions"
-#define HERESYDESC_GRAGGAR_ARMOR "A brutal armor piece of Graggar's champions"
-#define HERESYDESC_GRAGGAR_RELIC "A relic of Graggar's cruel design"
-#define HERESYDESC_GRAGGAR_ICON "It bears the icon of cruel Graggar"
-#define HERESYDESC_GRAGGAR_MISC "A known design of Graggar"
+#define HERESYDESC_GRAGGAR_WEAPON "Оружие кровожадных воинов Граггара"
+#define HERESYDESC_GRAGGAR_ARMOR "Зловещий доспех воинов Граггара"
+#define HERESYDESC_GRAGGAR_RELIC "Реликвия жестокого замысла Граггара"
+#define HERESYDESC_GRAGGAR_ICON "На нём изображён символ жестокого Граггара"
+#define HERESYDESC_GRAGGAR_MISC "Известный образец, созданный Граггаром"
 
 // Baotha items
-#define HERESYDESC_BAOTHA_WEAPON "A weapon of Baotha's depraved champions"
-#define HERESYDESC_BAOTHA_ARMOR "A depraved armor piece of Baotha's champions"
-#define HERESYDESC_BAOTHA_RELIC "A relic of Baotha's debauched design"
-#define HERESYDESC_BAOTHA_ICON "It bears the icon of debauched Baotha"
-#define HERESYDESC_BAOTHA_MISC "A known design of Baotha"
+#define HERESYDESC_BAOTHA_WEAPON "Оружие гнустных воинов Баоты"
+#define HERESYDESC_BAOTHA_ARMOR "Доспех гнустных воинов Баоты"
+#define HERESYDESC_BAOTHA_RELIC "Реликвия, созданная по развратным замыслам Баоты"
+#define HERESYDESC_BAOTHA_ICON "На нём изображён символ развратной Баоты"
+#define HERESYDESC_BAOTHA_MISC "Известный образец творчества Баоты"
 
 // Dreamwalker items
-#define HERESYDESC_DREAMWALKER_WEAPON "A weapon of the enigmatic and violent Dreamwalkers"
-#define HERESYDESC_DREAMWALKER_ARMOR "An armor piece of the enigmatic and violent Dreamwalkers"
+#define HERESYDESC_DREAMWALKER_WEAPON "Оружие загадочного и жестокого культа Кошмара"
+#define HERESYDESC_DREAMWALKER_ARMOR "Доспехи загадочного и жестокого культа Кошмара"
 
 // Misc items
-#define HERESYDESC_GRONN "A symbol of the North's archaic beliefs"
+#define HERESYDESC_GRONN "Символ странных верований Севера"
 
 
 /**
@@ -71,9 +71,9 @@
 #define COLOR_HERESYSEVERITY_ODD "#c564c5"
 
 // Heresy severity descriptions
-#define EXAMINEHIGHLIGHT_TOOLTIP_HERESYSEVERITY_ALARMING "<font color=[COLOR_HERESYSEVERITY_ALARMING]><b>This is a blatantly dangerous heretical item!</b></font><br>Carrying this out in the open is tantamount to declaring myself an enemy to Tennite and Psydonite faith. Those who serve the Ten and the One are likely to respond in kind."
-#define EXAMINEHIGHLIGHT_TOOLTIP_HERESYSEVERITY_SUSPICIOUS "<font color=[COLOR_HERESYSEVERITY_SUSPICIOUS]><b>This is a suspicious heretical item!</b></font><br>It is considered heretical by Tennite and Psydonite faith. Those who serve the Ten and the One are likely to view me with suspicion and distrust <b>at best</b> if I am caught with it."
-#define EXAMINEHIGHLIGHT_TOOLTIP_HERESYSEVERITY_ODD "<font color=[COLOR_HERESYSEVERITY_ODD]><b>An odd expression of faith...</b></font><br>It is not openly deemed heretical by Tennite and Psydonite faith. However, that does not stop it from being seen as unusual. I am likely to be given odd looks if I am seen with it and not much more, but more guarded (or paranoid) Tennites and Psydonites may not be so charitable."
+#define EXAMINEHIGHLIGHT_TOOLTIP_HERESYSEVERITY_ALARMING "<font color=[COLOR_HERESYSEVERITY_ALARMING]><b>ЕРЕСЬ!</b></font><br>Этот зловещий дизайн используется еретиками, скрывающимися в темных уголках Гримории. Встреча с владельцем такого предмета не сулит ничего хорошего для последователей Десяти и Одного."
+#define EXAMINEHIGHLIGHT_TOOLTIP_HERESYSEVERITY_SUSPICIOUS "<font color=[COLOR_HERESYSEVERITY_SUSPICIOUS]><b>Вероятно, еретический дизайн!</b></font><br>Такие предметы часто обнаруживаются у схваченных ересиархов, и, предположительно, являются символами их веры."
+#define EXAMINEHIGHLIGHT_TOOLTIP_HERESYSEVERITY_ODD "<font color=[COLOR_HERESYSEVERITY_ODD]><b>Странное проявление веры... </b></font><br>Хоть этот предмет и не несет на себе явного символа еретической веры, он явно указывает на принадлежность к необычным, возможно, языческим верованиям. За владельцем такого предмета следует установить слежку."
 
 // Heresy severity symbols
 #define EXAMINEHIGHLIGHT_SYMBOL_HERESYSEVERITY_SUSPICIOUS "!"
