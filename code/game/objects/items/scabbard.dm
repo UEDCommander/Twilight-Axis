@@ -570,6 +570,17 @@
 
 	max_integrity = 0
 
+/obj/item/rogueweapon/scabbard/sword/kazengun/MiddleClick(mob/user)
+	if(hol_comp?.sheathed)
+		to_chat(user, span_notice("There's something inside!"))
+		return FALSE
+	return FALSE
+
+/obj/item/rogueweapon/scabbard/sword/kazengun/obj_fix(mob/user, full_repair = TRUE)
+	obj_broken = FALSE
+	if(full_repair)
+		obj_integrity = max_integrity
+
 /obj/item/rogueweapon/scabbard/sword/kazengun/noparry
 	name = "ceremonial kazengun scabbard"
 	desc = "A simple wooden scabbard, trimmed with bronze. Unlike its steel cousins, this one cannot parry."
