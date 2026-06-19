@@ -1,10 +1,12 @@
 #define CCI_SIDE_ONE "one"
 #define CCI_SIDE_TWO "two"
-#define CCI_HAND_SIZE 10
+#define CCI_HAND_SIZE 12
+#define CCI_MULLIGAN_COUNT 2
 
 /datum/cci_played_card
 	var/card_id
 	var/owner_side
+	var/play_id
 	var/current_power = 0
 
 /datum/cci_played_card/New(new_card_id, new_owner_side)
@@ -28,8 +30,14 @@
 	var/list/weather_board = list()
 	var/list/row_effects = list()
 	var/list/combo_morale = list()
+	var/list/mulligans_left = list()
+	var/list/mulligan_ready = list()
+	var/list/leader_ids = list()
+	var/list/leader_used = list()
 	var/turn = CCI_SIDE_ONE
 	var/round_number = 1
+	var/in_mulligan = TRUE
+	var/next_play_id = 1
 	var/result_text
 	var/last_message
 
@@ -48,6 +56,14 @@
 	discarded[CCI_SIDE_TWO] = list()
 	round_wins[CCI_SIDE_ONE] = 0
 	round_wins[CCI_SIDE_TWO] = 0
+	mulligans_left[CCI_SIDE_ONE] = CCI_MULLIGAN_COUNT
+	mulligans_left[CCI_SIDE_TWO] = CCI_MULLIGAN_COUNT
+	mulligan_ready[CCI_SIDE_ONE] = FALSE
+	mulligan_ready[CCI_SIDE_TWO] = FALSE
+	leader_ids[CCI_SIDE_ONE] = d1.leader_id
+	leader_ids[CCI_SIDE_TWO] = d2.leader_id
+	leader_used[CCI_SIDE_ONE] = FALSE
+	leader_used[CCI_SIDE_TWO] = FALSE
 	start_round(TRUE)
 
 /datum/cci_match/Destroy()
@@ -75,6 +91,10 @@
 	weather_board = null
 	row_effects = null
 	combo_morale = null
+	mulligans_left = null
+	mulligan_ready = null
+	leader_ids = null
+	leader_used = null
 	return ..()
 
 /datum/cci_match/proc/update_deck_uis()
@@ -103,11 +123,15 @@
 	if(first_round)
 		draw_cards(CCI_SIDE_ONE, CCI_HAND_SIZE)
 		draw_cards(CCI_SIDE_TWO, CCI_HAND_SIZE)
+		in_mulligan = TRUE
+		last_message = "Choose up to [CCI_MULLIGAN_COUNT] cards to redraw."
 	else
-		draw_to_hand_size(CCI_SIDE_ONE)
-		draw_to_hand_size(CCI_SIDE_TWO)
-	turn = (round_number % 2) ? CCI_SIDE_ONE : CCI_SIDE_TWO
-	last_message = "Round [round_number] begins."
+		in_mulligan = FALSE
+		last_message = "Round [round_number] begins."
+	if(first_round)
+		turn = prob(50) ? CCI_SIDE_ONE : CCI_SIDE_TWO
+	else
+		turn = (round_number % 2) ? CCI_SIDE_ONE : CCI_SIDE_TWO
 
 /datum/cci_match/proc/draw_to_hand_size(side)
 	var/list/hand = hands[side]
@@ -123,6 +147,36 @@
 			return
 		hand += deck[1]
 		deck.Cut(1, 2)
+
+/datum/cci_match/proc/mulligan_card(mob/user, card_id, obj/item/cci_deck/deck_context)
+	var/side = side_for_user(user, deck_context)
+	if(!side || !in_mulligan || mulligan_ready[side] || mulligans_left[side] <= 0)
+		return FALSE
+	var/list/hand = hands[side]
+	var/card_index = hand.Find(card_id)
+	if(!card_index)
+		return FALSE
+	var/list/deck = decks[side]
+	if(!length(deck))
+		return FALSE
+	hand.Cut(card_index, card_index + 1)
+	deck += card_id
+	decks[side] = shuffle(deck)
+	draw_cards(side, 1)
+	mulligans_left[side]--
+	last_message = "[player_names[side]] redraws a card."
+	return TRUE
+
+/datum/cci_match/proc/ready_mulligan(mob/user, obj/item/cci_deck/deck_context)
+	var/side = side_for_user(user, deck_context)
+	if(!side || !in_mulligan)
+		return FALSE
+	mulligan_ready[side] = TRUE
+	last_message = "[player_names[side]] is ready."
+	if(mulligan_ready[CCI_SIDE_ONE] && mulligan_ready[CCI_SIDE_TWO])
+		in_mulligan = FALSE
+		last_message = "Round [round_number] begins."
+	return TRUE
 
 /datum/cci_match/proc/side_for_user(mob/user, obj/item/cci_deck/deck_context)
 	if(!user?.ckey)
@@ -141,9 +195,38 @@
 /datum/cci_match/proc/opposite(side)
 	return side == CCI_SIDE_ONE ? CCI_SIDE_TWO : CCI_SIDE_ONE
 
-/datum/cci_match/proc/play_card(mob/user, card_id, obj/item/cci_deck/deck_context)
+/datum/cci_match/proc/valid_unit_row(row)
+	return row in list(CCI_ROW_INFANTRY, CCI_ROW_ARCHERS, CCI_ROW_SIEGE)
+
+/datum/cci_match/proc/add_played_card(side, row, card_id, owner_side)
+	var/datum/cci_played_card/played = new /datum/cci_played_card(card_id, owner_side)
+	played.play_id = next_play_id
+	next_play_id++
+	board[side][row] += played
+	return played
+
+/datum/cci_match/proc/add_row_effect(side, row, card_id, owner_side)
+	var/datum/cci_played_card/played = new /datum/cci_played_card(card_id, owner_side)
+	played.play_id = next_play_id
+	next_play_id++
+	row_effects[side][row] += played
+	return played
+
+/datum/cci_match/proc/find_played_card(side, row, play_id)
+	if(!valid_unit_row(row))
+		return null
+	var/id_num = text2num("[play_id]")
+	for(var/datum/cci_played_card/played in board[side][row])
+		if(played.play_id == id_num)
+			return played
+	return null
+
+/datum/cci_match/proc/is_unit_card(datum/cci_card/card)
+	return card && valid_unit_row(card.row) && !is_special_action_card(card)
+
+/datum/cci_match/proc/play_card(mob/user, card_id, obj/item/cci_deck/deck_context, list/params)
 	var/side = side_for_user(user, deck_context)
-	if(!side || side != turn || passed[side] || result_text)
+	if(!side || in_mulligan || side != turn || passed[side] || result_text)
 		return FALSE
 	var/list/hand = hands[side]
 	if(!(card_id in hand))
@@ -156,19 +239,31 @@
 		return FALSE
 	hand.Cut(card_index, card_index + 1)
 	if(is_special_action_card(card))
-		apply_special_action_card(card, side)
+		if(!apply_special_action_card(card, side, params))
+			hand.Insert(card_index, card_id)
+			return FALSE
 	else if(is_weather_card(card))
 		apply_weather_card(card, side)
 	else
 		var/play_side = side
+		var/play_row = card.row
+		if(card.effect == CCI_EFFECT_AGILE)
+			var/requested_row = params?["row"]
+			if(!valid_unit_row(requested_row))
+				hand.Insert(card_index, card_id)
+				return FALSE
+			play_row = requested_row
 		if(card.effect == CCI_EFFECT_SPY)
 			play_side = opposite(side)
 			draw_cards(side, 2)
-		board[play_side][card.row] += new /datum/cci_played_card(card_id, side)
+		add_played_card(play_side, play_row, card_id, side)
 		if(card.effect == CCI_EFFECT_MUSTER)
-			muster_copies(card, side, play_side)
+			muster_copies(card, side, play_side, play_row)
 		if(card.effect == CCI_EFFECT_MEDIC)
-			revive_strongest_discard(side)
+			if(!revive_discard(side, params?["revive"]))
+				hand.Insert(card_index, card_id)
+				remove_last_played(play_side, play_row)
+				return FALSE
 		apply_card_effect(card, side, play_side)
 		if(apply_combo_effect(card, side, play_side))
 			last_message = "[player_names[side]] plays [card.name]. A combo triggers."
@@ -182,10 +277,36 @@
 
 /datum/cci_match/proc/pass(mob/user, obj/item/cci_deck/deck_context)
 	var/side = side_for_user(user, deck_context)
-	if(!side || side != turn || result_text)
+	if(!side || in_mulligan || side != turn || result_text)
 		return FALSE
 	passed[side] = TRUE
 	last_message = "[player_names[side]] passes."
+	advance_turn()
+	return TRUE
+
+/datum/cci_match/proc/use_leader(mob/user, obj/item/cci_deck/deck_context)
+	var/side = side_for_user(user, deck_context)
+	if(!side || in_mulligan || side != turn || passed[side] || leader_used[side] || result_text)
+		return FALSE
+	var/datum/cci_leader/leader = cci_leader(leader_ids[side])
+	if(!leader)
+		return FALSE
+	leader_used[side] = TRUE
+	if(leader.effect == CCI_EFFECT_CLEAR_WEATHER)
+		for(var/datum/cci_played_card/played in weather_board)
+			discarded[played.owner_side] += played.card_id
+		weather_board = list()
+		weather = list()
+	else if(leader.effect == CCI_EFFECT_HORN)
+		if(valid_unit_row(leader.target_row) && !row_has_effect(side, leader.target_row, CCI_EFFECT_HORN))
+			add_row_effect(side, leader.target_row, "base_horn_infantry", side)
+	else if(leader.effect == CCI_EFFECT_SCORCH_GLOBAL)
+		recalculate_board()
+		scorch_strongest_global()
+	else if(leader.effect == "draw")
+		draw_cards(side, 1)
+	last_message = "[player_names[side]] uses leader: [leader.name]."
+	recalculate_board()
 	advance_turn()
 	return TRUE
 
@@ -220,28 +341,35 @@
 /datum/cci_match/proc/is_special_action_card(datum/cci_card/card)
 	return card.effect in list(CCI_EFFECT_DECOY, CCI_EFFECT_HORN, CCI_EFFECT_SCORCH_GLOBAL, CCI_EFFECT_MARDROEME)
 
-/datum/cci_match/proc/apply_special_action_card(datum/cci_card/card, side)
+/datum/cci_match/proc/apply_special_action_card(datum/cci_card/card, side, list/params)
 	if(card.effect == CCI_EFFECT_DECOY)
-		return_strongest_own_unit_to_hand(side)
+		var/target_row = params?["row"]
+		var/target_id = params?["target"]
+		if(!return_own_unit_to_hand(side, target_row, target_id))
+			return FALSE
 		discarded[side] += card.id
 		last_message = "[player_names[side]] plays [card.name]."
-		return
+		return TRUE
 	if(card.effect == CCI_EFFECT_SCORCH_GLOBAL)
 		recalculate_board()
 		scorch_strongest_global()
 		discarded[side] += card.id
 		last_message = "[player_names[side]] plays [card.name]."
-		return
+		return TRUE
 	if(card.effect == CCI_EFFECT_HORN || card.effect == CCI_EFFECT_MARDROEME)
 		var/target_row = card.target_row
 		if(!target_row)
-			target_row = card.row
+			target_row = params?["row"]
+		if(!valid_unit_row(target_row))
+			return FALSE
 		if(card.effect == CCI_EFFECT_HORN && row_has_effect(side, target_row, CCI_EFFECT_HORN))
 			discarded[side] += card.id
 			last_message = "[player_names[side]] plays [card.name], but that row already has a horn."
-			return
-		row_effects[side][target_row] += new /datum/cci_played_card(card.id, side)
+			return TRUE
+		add_row_effect(side, target_row, card.id, side)
 		last_message = "[player_names[side]] plays [card.name]."
+		return TRUE
+	return FALSE
 
 /datum/cci_match/proc/row_has_effect(side, row, effect)
 	for(var/datum/cci_played_card/played in row_effects[side][row])
@@ -282,6 +410,9 @@
 	for(var/row in list(CCI_ROW_INFANTRY, CCI_ROW_ARCHERS, CCI_ROW_SIEGE))
 		for(var/datum/cci_played_card/played in board[enemy][row])
 			if(!strongest || played.current_power > strongest.current_power)
+				var/datum/cci_card/card = cci_card(played.card_id)
+				if(card?.hero)
+					continue
 				strongest = played
 				strongest_row = row
 	if(strongest)
@@ -293,6 +424,9 @@
 	var/row_total = 0
 	var/highest = 0
 	for(var/datum/cci_played_card/played in board[enemy][CCI_ROW_INFANTRY])
+		var/datum/cci_card/card = cci_card(played.card_id)
+		if(card?.hero)
+			continue
 		row_total += played.current_power
 		highest = max(highest, played.current_power)
 	if(row_total < 10 || highest <= 0)
@@ -301,14 +435,18 @@
 	var/list/infantry_copy = infantry_row.Copy()
 	for(var/datum/cci_played_card/played in infantry_copy)
 		if(played.current_power == highest)
-			destroy_played_card(enemy, CCI_ROW_INFANTRY, played)
+			var/datum/cci_card/card = cci_card(played.card_id)
+			if(!card?.hero)
+				destroy_played_card(enemy, CCI_ROW_INFANTRY, played)
 
 /datum/cci_match/proc/scorch_strongest_global()
 	var/highest = 0
 	for(var/side in list(CCI_SIDE_ONE, CCI_SIDE_TWO))
 		for(var/row in list(CCI_ROW_INFANTRY, CCI_ROW_ARCHERS, CCI_ROW_SIEGE))
 			for(var/datum/cci_played_card/played in board[side][row])
-				highest = max(highest, played.current_power)
+				var/datum/cci_card/card = cci_card(played.card_id)
+				if(!card?.hero)
+					highest = max(highest, played.current_power)
 	if(highest <= 0)
 		return
 	for(var/side in list(CCI_SIDE_ONE, CCI_SIDE_TWO))
@@ -317,59 +455,71 @@
 			var/list/row_copy = board_row.Copy()
 			for(var/datum/cci_played_card/played in row_copy)
 				if(played.current_power == highest)
-					destroy_played_card(side, row, played)
+					var/datum/cci_card/card = cci_card(played.card_id)
+					if(!card?.hero)
+						destroy_played_card(side, row, played)
 
 /datum/cci_match/proc/destroy_played_card(side, row, datum/cci_played_card/played)
 	board[side][row] -= played
 	discarded[played.owner_side] += played.card_id
 	var/datum/cci_card/card = cci_card(played.card_id)
 	if(card?.effect == CCI_EFFECT_AVENGER && card.avenger_card && cci_card(card.avenger_card))
-		board[side][row] += new /datum/cci_played_card(card.avenger_card, played.owner_side)
+		add_played_card(side, row, card.avenger_card, played.owner_side)
 
-/datum/cci_match/proc/return_strongest_own_unit_to_hand(side)
-	recalculate_board()
-	var/datum/cci_played_card/strongest
-	var/strongest_row
-	for(var/row in list(CCI_ROW_INFANTRY, CCI_ROW_ARCHERS, CCI_ROW_SIEGE))
-		for(var/datum/cci_played_card/played in board[side][row])
-			if(!strongest || played.current_power > strongest.current_power)
-				strongest = played
-				strongest_row = row
-	if(strongest)
-		board[side][strongest_row] -= strongest
-		hands[side] += strongest.card_id
+/datum/cci_match/proc/remove_last_played(side, row)
+	var/list/row_cards = board[side][row]
+	if(!length(row_cards))
+		return FALSE
+	row_cards.Cut(row_cards.len, row_cards.len + 1)
+	return TRUE
 
-/datum/cci_match/proc/revive_strongest_discard(side)
+/datum/cci_match/proc/return_own_unit_to_hand(side, row, play_id)
+	var/datum/cci_played_card/played = find_played_card(side, row, play_id)
+	var/datum/cci_card/card = cci_card(played?.card_id)
+	if(!played || !is_unit_card(card) || card.hero)
+		return FALSE
+	board[side][row] -= played
+	hands[side] += played.card_id
+	return TRUE
+
+/datum/cci_match/proc/revive_discard(side, target_card_id)
 	var/list/discard = discarded[side]
-	var/card_id
-	var/card_power = -1
-	for(var/id in discard)
-		var/datum/cci_card/card = cci_card(id)
-		if(!card || card.row == CCI_ROW_WEATHER || card.effect == CCI_EFFECT_HORN || card.effect == CCI_EFFECT_DECOY)
-			continue
-		if(card.power > card_power)
-			card_id = id
-			card_power = card.power
-	if(!card_id)
-		return
+	var/list/choices = revive_choices(side)
+	if(!length(choices))
+		return TRUE
+	if(!target_card_id || !(target_card_id in choices))
+		return FALSE
+	var/card_id = target_card_id
 	var/index = discard.Find(card_id)
 	if(index)
 		discard.Cut(index, index + 1)
 		var/datum/cci_card/card = cci_card(card_id)
-		board[side][card.row] += new /datum/cci_played_card(card_id, side)
+		add_played_card(side, card.row, card_id, side)
+		return TRUE
+	return FALSE
 
-/datum/cci_match/proc/muster_copies(datum/cci_card/card, owner_side, play_side)
+/datum/cci_match/proc/revive_choices(side)
+	var/list/out = list()
+	var/list/discard = discarded[side]
+	for(var/id in discard)
+		var/datum/cci_card/card = cci_card(id)
+		if(!is_unit_card(card) || card.hero)
+			continue
+		out |= id
+	return out
+
+/datum/cci_match/proc/muster_copies(datum/cci_card/card, owner_side, play_side, play_row)
 	var/list/hand = hands[owner_side]
 	var/index = hand.Find(card.id)
 	while(index)
 		hand.Cut(index, index + 1)
-		board[play_side][card.row] += new /datum/cci_played_card(card.id, owner_side)
+		add_played_card(play_side, play_row, card.id, owner_side)
 		index = hand.Find(card.id)
 	var/list/deck = decks[owner_side]
 	index = deck.Find(card.id)
 	while(index)
 		deck.Cut(index, index + 1)
-		board[play_side][card.row] += new /datum/cci_played_card(card.id, owner_side)
+		add_played_card(play_side, play_row, card.id, owner_side)
 		index = deck.Find(card.id)
 
 /datum/cci_match/proc/recalculate_board()
@@ -396,14 +546,14 @@
 				var/value = card.power
 				if(card.effect == CCI_EFFECT_BERSERK && mardroeme)
 					value = max(value, card.bear_power)
-				if(row in weather)
+				if((row in weather) && !card.hero)
 					value = min(value, 1)
 				var/final_bond_count = bond_counts[played.card_id]
-				if(card.effect == CCI_EFFECT_BOND && final_bond_count > 1)
+				if(card.effect == CCI_EFFECT_BOND && final_bond_count > 1 && !card.hero)
 					value *= final_bond_count
-				if(card.effect != CCI_EFFECT_MORALE)
+				if(card.effect != CCI_EFFECT_MORALE && !card.hero)
 					value += morale
-				if(horn)
+				if(horn && !card.hero)
 					value *= 2
 				played.current_power = value
 
@@ -449,6 +599,9 @@
 	var/list/data = list()
 	var/my_side = side_for_user(user, deck_context)
 	data["mySide"] = my_side
+	data["inMulligan"] = in_mulligan
+	data["mulligansLeft"] = my_side ? mulligans_left[my_side] : 0
+	data["mulliganReady"] = my_side ? mulligan_ready[my_side] : FALSE
 	data["turn"] = turn
 	data["players"] = player_names
 	data["wins"] = round_wins
@@ -460,7 +613,10 @@
 	data["weather"] = weather
 	data["weatherCards"] = build_weather_data()
 	data["rowEffects"] = build_row_effect_data()
+	data["leader"] = my_side ? build_leader_data(my_side) : null
 	data["hand"] = build_hand_data(my_side)
+	data["discard"] = build_discard_data(my_side)
+	data["targets"] = build_target_data(my_side)
 	data["opponentHandCount"] = my_side ? length(hands[opposite(my_side)]) : 0
 	data["board"] = build_board_data()
 	return data
@@ -475,6 +631,44 @@
 			out += list(card.as_ui_data(TRUE, FALSE))
 	return out
 
+/datum/cci_match/proc/build_leader_data(side)
+	var/datum/cci_leader/leader = cci_leader(leader_ids[side])
+	if(!leader)
+		return null
+	return leader.as_ui_data(leader_used[side])
+
+/datum/cci_match/proc/build_discard_data(side)
+	var/list/out = list()
+	if(!side)
+		return out
+	for(var/id in discarded[side])
+		var/datum/cci_card/card = cci_card(id)
+		if(card)
+			out += list(card.as_ui_data(TRUE, FALSE))
+	return out
+
+/datum/cci_match/proc/build_target_data(side)
+	var/list/out = list()
+	if(!side)
+		return out
+	out["revive"] = list()
+	for(var/id in revive_choices(side))
+		var/datum/cci_card/card = cci_card(id)
+		if(card)
+			out["revive"] += list(card.as_ui_data(TRUE, FALSE))
+	out["decoy"] = list()
+	for(var/row in list(CCI_ROW_INFANTRY, CCI_ROW_ARCHERS, CCI_ROW_SIEGE))
+		for(var/datum/cci_played_card/played in board[side][row])
+			var/datum/cci_card/card = cci_card(played.card_id)
+			if(!is_unit_card(card) || card.hero)
+				continue
+			var/list/card_data = card.as_ui_data(TRUE, FALSE)
+			card_data["playId"] = played.play_id
+			card_data["row"] = row
+			card_data["currentPower"] = played.current_power
+			out["decoy"] += list(card_data)
+	return out
+
 /datum/cci_match/proc/build_board_data()
 	var/list/out = list()
 	for(var/side in list(CCI_SIDE_ONE, CCI_SIDE_TWO))
@@ -486,6 +680,7 @@
 				if(card)
 					var/list/card_data = card.as_ui_data(TRUE, FALSE)
 					card_data["currentPower"] = played.current_power
+					card_data["playId"] = played.play_id
 					out[side][row] += list(card_data)
 	return out
 
@@ -512,3 +707,4 @@
 #undef CCI_SIDE_ONE
 #undef CCI_SIDE_TWO
 #undef CCI_HAND_SIZE
+#undef CCI_MULLIGAN_COUNT

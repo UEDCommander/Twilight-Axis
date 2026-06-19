@@ -16,11 +16,22 @@ type Card = {
   row: CardRow | 'weather';
   power: number;
   currentPower?: number;
+  playId?: number;
   rarity: CardRarity;
   effect: string;
   combo: string;
   targetRow?: CardRow;
   art?: string;
+  hero?: boolean;
+};
+
+type Leader = {
+  id: string;
+  name: string;
+  desc: string;
+  effect: string;
+  targetRow?: CardRow;
+  used: boolean;
 };
 
 type Data = {
@@ -33,12 +44,21 @@ type Data = {
   passed?: Record<Side, boolean>;
   scores?: Record<Side, number>;
   round?: number;
+  inMulligan?: boolean;
+  mulligansLeft?: number;
+  mulliganReady?: boolean;
   result?: string;
   message?: string;
+  leader?: Leader;
   weather?: string[];
   weatherCards?: Card[];
   rowEffects?: Record<Side, Record<CardRow, Card[]>>;
   hand?: Card[];
+  discard?: Card[];
+  targets?: {
+    revive?: Card[];
+    decoy?: Card[];
+  };
   opponentHandCount?: number;
   board?: Record<Side, Record<CardRow, Card[]>>;
 };
@@ -118,6 +138,9 @@ const cardTooltip = (card: Card) => {
     lines.push(`Effect: ${effectDescriptions[card.effect]}`);
   } else if (card.desc) {
     lines.push(card.desc);
+  }
+  if (card.hero) {
+    lines.push('Hero: immune to weather and special effects.');
   }
   return lines;
 };
@@ -217,6 +240,27 @@ const CardView = ({
         }}
       >
         {effectBadges[card.effect]}
+      </div>
+    )}
+    {card.hero && (
+      <div
+        style={{
+          position: 'absolute',
+          right: compact ? '3px' : '5px',
+          top: compact ? '14px' : '20px',
+          width: compact ? '16px' : '22px',
+          height: compact ? '13px' : '17px',
+          borderRadius: '8px',
+          backgroundColor: 'rgba(251,191,36,0.94)',
+          color: '#111827',
+          fontSize: compact ? '5px' : '7px',
+          fontWeight: 900,
+          lineHeight: compact ? '13px' : '17px',
+          textAlign: 'center',
+          zIndex: 2,
+        }}
+      >
+        HERO
       </div>
     )}
     {hovered && (
@@ -555,6 +599,7 @@ const BattleBoard = ({
 
 export const CardTable = () => {
   const { act, data } = useBackend<Data>();
+  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
 
   if (data.waiting) {
     return (
@@ -571,8 +616,49 @@ export const CardTable = () => {
 
   const hand = data.hand || [];
   const weatherCards = data.weatherCards || [];
-  const myTurn = data.mySide && data.turn === data.mySide && !data.result;
+  const myTurn = data.mySide && data.turn === data.mySide && !data.result && !data.inMulligan;
   const weather = data.weather?.length ? data.weather.join(', ') : 'Clear';
+  const rowChoices: CardRow[] = ['infantry', 'archers', 'siege'];
+  const requiresRowChoice = (card: Card) =>
+    card.effect === 'agile' ||
+    ((card.effect === 'horn' || card.effect === 'mardroeme') && !card.targetRow);
+  const requiresTargetChoice = (card: Card) =>
+    card.effect === 'decoy' || (card.effect === 'medic' && !!data.targets?.revive?.length);
+  const playCard = (card: Card) => {
+    if (data.inMulligan) {
+      act('mulligan', { card: card.id });
+      return;
+    }
+    if (!myTurn) {
+      return;
+    }
+    if (requiresRowChoice(card) || requiresTargetChoice(card)) {
+      setSelectedCard(card);
+      return;
+    }
+    act('play', { card: card.id });
+  };
+  const playWithRow = (row: CardRow) => {
+    if (!selectedCard) {
+      return;
+    }
+    act('play', { card: selectedCard.id, row });
+    setSelectedCard(null);
+  };
+  const playWithRevive = (card: Card) => {
+    if (!selectedCard) {
+      return;
+    }
+    act('play', { card: selectedCard.id, revive: card.id });
+    setSelectedCard(null);
+  };
+  const playWithDecoy = (card: Card) => {
+    if (!selectedCard || !card.playId || !card.row || card.row === 'weather') {
+      return;
+    }
+    act('play', { card: selectedCard.id, row: card.row, target: card.playId });
+    setSelectedCard(null);
+  };
 
   return (
     <Window title="Card Battle" width={1180} height={760}>
@@ -593,6 +679,11 @@ export const CardTable = () => {
               <div style={{ marginBottom: '8px' }}>
                 <b>Round:</b> {data.round || 1}
               </div>
+              {data.inMulligan && (
+                <div style={{ color: '#fbbf24', marginBottom: '8px' }}>
+                  Mulligan: {data.mulligansLeft ?? 0} redraws left.
+                </div>
+              )}
               <div style={{ marginBottom: '8px' }}>
                 <b>Turn:</b> {data.turn ? data.players?.[data.turn] : 'None'}
               </div>
@@ -613,6 +704,74 @@ export const CardTable = () => {
                   {data.result}
                 </div>
               )}
+              {data.leader && (
+                <div
+                  style={{
+                    marginBottom: '8px',
+                    padding: '6px',
+                    border: '1px solid rgba(203,213,225,0.25)',
+                    background: 'rgba(5,7,11,0.45)',
+                  }}
+                >
+                  <div style={{ color: '#f8fafc', fontWeight: 800 }}>{data.leader.name}</div>
+                  <div style={{ color: '#94a3b8', fontSize: '11px', marginBottom: '5px' }}>
+                    {data.leader.desc}
+                  </div>
+                  <Button
+                    disabled={!!data.leader.used || !myTurn}
+                    onClick={() => act('leader')}
+                  >
+                    Use Leader
+                  </Button>
+                </div>
+              )}
+              {selectedCard && (
+                <div
+                  style={{
+                    marginBottom: '8px',
+                    padding: '6px',
+                    border: '1px solid rgba(251,191,36,0.45)',
+                    background: 'rgba(30,20,8,0.55)',
+                  }}
+                >
+                  <div style={{ color: '#fbbf24', fontWeight: 800, marginBottom: '5px' }}>
+                    Target for {selectedCard.name}
+                  </div>
+                  {requiresRowChoice(selectedCard) && (
+                    <div style={{ display: 'flex', gap: '5px', marginBottom: '6px' }}>
+                      {rowChoices.map((row) => (
+                        <Button key={row} onClick={() => playWithRow(row)}>
+                          {rowLabels[row]}
+                        </Button>
+                      ))}
+                    </div>
+                  )}
+                  {selectedCard.effect === 'medic' && (
+                    <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+                      {(data.targets?.revive || []).map((card, index) => (
+                        <Button key={`${card.id}-${index}`} onClick={() => playWithRevive(card)}>
+                          {card.name}
+                        </Button>
+                      ))}
+                    </div>
+                  )}
+                  {selectedCard.effect === 'decoy' && (
+                    <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+                      {(data.targets?.decoy || []).map((card) => (
+                        <Button key={card.playId} onClick={() => playWithDecoy(card)}>
+                          {card.name}
+                        </Button>
+                      ))}
+                    </div>
+                  )}
+                  <Button onClick={() => setSelectedCard(null)}>Cancel</Button>
+                </div>
+              )}
+              {data.inMulligan && (
+                <Button disabled={!!data.mulliganReady} onClick={() => act('ready_mulligan')}>
+                  Ready
+                </Button>
+              )}
               <Button disabled={!myTurn} onClick={() => act('pass')}>
                 Pass
               </Button>
@@ -632,7 +791,11 @@ export const CardTable = () => {
                   <CardView
                     key={`${card.id}-${index}`}
                     card={card}
-                    onClick={myTurn ? () => act('play', { card: card.id }) : undefined}
+                    onClick={
+                      (data.inMulligan && !data.mulliganReady) || myTurn
+                        ? () => playCard(card)
+                        : undefined
+                    }
                   />
                 ))}
               </div>

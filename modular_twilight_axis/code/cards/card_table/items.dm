@@ -5,6 +5,7 @@
 	icon_state = "deck"
 	w_class = WEIGHT_CLASS_SMALL
 	var/list/card_ids = list()
+	var/leader_id = "leader_clear_weather"
 	var/datum/cci_match/match
 	var/obj/item/cci_deck/match_host
 	var/inviter_ckey
@@ -182,7 +183,19 @@
 	var/mob/user = ui.user
 	switch(action)
 		if("play")
-			if(active_match.play_card(user, params["card"], src))
+			if(active_match.play_card(user, params["card"], src, params))
+				active_match.update_deck_uis()
+				return TRUE
+		if("mulligan")
+			if(active_match.mulligan_card(user, params["card"], src))
+				active_match.update_deck_uis()
+				return TRUE
+		if("ready_mulligan")
+			if(active_match.ready_mulligan(user, src))
+				active_match.update_deck_uis()
+				return TRUE
+		if("leader")
+			if(active_match.use_leader(user, src))
 				active_match.update_deck_uis()
 				return TRUE
 		if("pass")

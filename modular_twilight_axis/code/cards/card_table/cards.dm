@@ -31,6 +31,7 @@
 
 GLOBAL_LIST_EMPTY(cci_cards_by_id)
 GLOBAL_LIST_EMPTY(cci_base_card_ids)
+GLOBAL_LIST_EMPTY(cci_leaders_by_id)
 
 /proc/cci_build_card_registry()
 	GLOB.cci_cards_by_id = list()
@@ -52,6 +53,23 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 		cci_build_card_registry()
 	return GLOB.cci_cards_by_id[card_id]
 
+/proc/cci_build_leader_registry()
+	GLOB.cci_leaders_by_id = list()
+	for(var/path in subtypesof(/datum/cci_leader))
+		var/datum/cci_leader/leader = new path()
+		if(!leader.id)
+			qdel(leader)
+			continue
+		if(GLOB.cci_leaders_by_id[leader.id])
+			qdel(leader)
+			continue
+		GLOB.cci_leaders_by_id[leader.id] = leader
+
+/proc/cci_leader(leader_id)
+	if(!length(GLOB.cci_leaders_by_id))
+		cci_build_leader_registry()
+	return GLOB.cci_leaders_by_id[leader_id]
+
 /datum/cci_card
 	var/id
 	var/name = "Unnamed Card"
@@ -67,6 +85,7 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 	var/bear_power = 8
 	var/avenger_card = ""
 	var/art = ""
+	var/hero = FALSE
 
 /datum/cci_card/proc/as_ui_data(known = TRUE, selected = FALSE)
 	return list(
@@ -82,9 +101,52 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 		"comboWith" = combo_with,
 		"targetRow" = target_row,
 		"art" = art,
+		"hero" = hero,
 		"known" = known,
 		"selected" = selected
 	)
+
+/datum/cci_leader
+	var/id
+	var/name = "Unnamed Leader"
+	var/desc = ""
+	var/effect = CCI_EFFECT_NONE
+	var/target_row = ""
+
+/datum/cci_leader/proc/as_ui_data(used = FALSE)
+	return list(
+		"id" = id,
+		"name" = name,
+		"desc" = desc,
+		"effect" = effect,
+		"targetRow" = target_row,
+		"used" = used
+	)
+
+/datum/cci_leader/clear_weather
+	id = "leader_clear_weather"
+	name = "Weathered Commander"
+	desc = "Clears all weather once per match."
+	effect = CCI_EFFECT_CLEAR_WEATHER
+
+/datum/cci_leader/infantry_horn
+	id = "leader_infantry_horn"
+	name = "Infantry Marshal"
+	desc = "Places a commander horn on your infantry row once per match."
+	effect = CCI_EFFECT_HORN
+	target_row = CCI_ROW_INFANTRY
+
+/datum/cci_leader/scorch
+	id = "leader_scorch"
+	name = "Executioner"
+	desc = "Destroys the strongest unit or units once per match."
+	effect = CCI_EFFECT_SCORCH_GLOBAL
+
+/datum/cci_leader/draw
+	id = "leader_draw"
+	name = "Quartermaster"
+	desc = "Draws one card once per match."
+	effect = "draw"
 
 // Add new cards by making another /datum/cci_card subtype with a unique id.
 /datum/cci_card/base_swordsman
@@ -375,6 +437,7 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 	effect = CCI_EFFECT_AVENGER
 	avenger_card = "unique_avenger_bear"
 	art = "cci_cards/shield_swordsman.png"
+	hero = TRUE
 
 /datum/cci_card/unique_avenger_bear
 	id = "unique_avenger_bear"
@@ -384,6 +447,7 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 	power = 10
 	rarity = CCI_RARITY_UNIQUE
 	art = "cci_cards/shield_guard.png"
+	hero = TRUE
 
 /datum/cci_card/unique_spy
 	id = "unique_spy"
@@ -404,3 +468,4 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 	rarity = CCI_RARITY_UNIQUE
 	effect = CCI_EFFECT_MORALE
 	art = "cci_cards/svinoglazka.png"
+	hero = TRUE
