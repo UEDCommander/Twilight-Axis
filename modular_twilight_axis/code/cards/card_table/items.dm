@@ -50,7 +50,7 @@
 	if(inviter_ckey && inviter_ckey != user.ckey)
 		to_chat(user, span_notice("Strike this deck with your own card battle deck to begin."))
 	else
-		to_chat(user, span_notice("Put this deck on a table to offer a match."))
+		user.client?.cci_open_deckbuilder(src, user)
 	return TRUE
 
 /obj/item/cci_deck/attackby(obj/item/I, mob/living/user, params)
@@ -195,27 +195,13 @@
 	return FALSE
 
 /obj/item/cci_deck/attack_right(mob/user)
-	if(!user || !length(card_ids))
+	if(!user)
 		return
 	if(get_active_match())
 		ui_interact(user)
 		return TRUE
-	var/list/choices = list()
-	for(var/card_id in card_ids)
-		var/datum/cci_card/card = cci_card(card_id)
-		if(card)
-			choices["[card.name] ([card_id])"] = card_id
-	var/choice = tgui_input_list(user, "Choose a card to draw from this deck.", "Deck", choices)
-	if(!choice)
-		return
-	var/card_id = choices[choice]
-	var/card_index = card_ids.Find(card_id)
-	if(!card_index)
-		return
-	card_ids.Cut(card_index, card_index + 1)
-	var/obj/item/cci_card_single/single = new(get_turf(user))
-	single.set_card(card_id)
-	user.put_in_hands(single)
+	user.client?.cci_open_deckbuilder(src, user)
+	return TRUE
 
 /obj/item/cci_card_single
 	name = "collectible card"
@@ -241,6 +227,7 @@
 	var/datum/preferences/P = user?.client?.prefs
 	if(P && P.cci_add_known_card(card_id))
 		to_chat(user, span_notice("The card is added to your known collection."))
+		qdel(src)
 	else
 		to_chat(user, span_notice("You already know this card, or it is a basic card."))
 
@@ -252,6 +239,9 @@
 
 /obj/item/cci_card_single/unique_spy
 	card_id = "unique_spy"
+
+/obj/item/cci_card_single/unique_svinoglazka
+	card_id = "unique_svinoglazka"
 
 /proc/cci_find_mob_by_ckey(ckey)
 	if(!ckey)

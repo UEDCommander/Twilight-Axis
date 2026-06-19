@@ -528,6 +528,10 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	cci_known_rare_cards = SANITIZE_LIST(cci_known_rare_cards)
 	S["cci_selected_deck"] >> cci_selected_deck
 	cci_selected_deck = SANITIZE_LIST(cci_selected_deck)
+	S["cci_saved_deck_cards"] >> cci_saved_deck_cards
+	cci_saved_deck_cards = SANITIZE_LIST(cci_saved_deck_cards)
+	if(!length(cci_saved_deck_cards) && length(cci_selected_deck))
+		cci_saved_deck_cards = cci_selected_deck.Copy()
 	cci_clean_cards()
 
 /datum/preferences/proc/_load_loadout_colours(S)
@@ -1071,6 +1075,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	cci_clean_cards()
 	WRITE_FILE(S["cci_known_rare_cards"], cci_known_rare_cards)
 	WRITE_FILE(S["cci_selected_deck"], cci_selected_deck)
+	WRITE_FILE(S["cci_saved_deck_cards"], cci_saved_deck_cards)
 
 	//Familiar Files
 	WRITE_FILE(S["familiar_names"] , familiar_prefs.familiar_names)

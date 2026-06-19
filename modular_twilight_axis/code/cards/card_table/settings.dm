@@ -1,9 +1,13 @@
 #define CCI_DECK_SIZE 30
 #define CCI_STASH_DECK_KEY "cci_deck_cards"
 
+/datum/mind
+	var/cci_deck_requested = FALSE
+
 /datum/preferences
 	var/list/cci_known_rare_cards = list()
 	var/list/cci_selected_deck = list()
+	var/list/cci_saved_deck_cards = list()
 
 /datum/preferences/proc/cci_known_cards()
 	var/list/cards = list()
@@ -11,37 +15,100 @@
 		cards |= card_id
 	if(islist(cci_known_rare_cards))
 		for(var/card_id in cci_known_rare_cards)
-			cards |= card_id
+			var/count = cci_known_rare_cards[card_id]
+			if((isnum(count) && count > 0) || (!isnum(count) && (card_id in cci_known_rare_cards)))
+				cards |= card_id
 	return cards
+
+/datum/preferences/proc/cci_card_pool_count(card_id)
+	var/datum/cci_card/card = cci_card(card_id)
+	if(!card)
+		return 0
+	if(card.rarity == CCI_RARITY_BASE)
+		return CCI_DECK_SIZE
+	if(!islist(cci_known_rare_cards))
+		return 0
+	return max(0, cci_known_rare_cards[card_id])
+
+/proc/cci_card_count_in_list(list/card_ids, card_id)
+	var/count = 0
+	if(!islist(card_ids))
+		return 0
+	for(var/selected_id in card_ids)
+		if(selected_id == card_id)
+			count++
+	return count
+
+/datum/preferences/proc/cci_selected_count(card_id)
+	return cci_card_count_in_list(cci_selected_deck, card_id)
+
+/datum/preferences/proc/cci_can_select_card(card_id)
+	var/datum/cci_card/card = cci_card(card_id)
+	if(!card)
+		return FALSE
+	if(card.rarity == CCI_RARITY_BASE)
+		return TRUE
+	return cci_selected_count(card_id) < cci_card_pool_count(card_id)
+
+/datum/preferences/proc/cci_available_for_deck(list/deck_cards, card_id)
+	var/datum/cci_card/card = cci_card(card_id)
+	if(!card)
+		return 0
+	if(card.rarity == CCI_RARITY_BASE)
+		return CCI_DECK_SIZE
+	return cci_card_pool_count(card_id) + cci_card_count_in_list(deck_cards, card_id)
 
 /datum/preferences/proc/cci_clean_cards()
 	if(!islist(cci_known_rare_cards))
 		cci_known_rare_cards = list()
 	if(!islist(cci_selected_deck))
 		cci_selected_deck = list()
+	if(!islist(cci_saved_deck_cards))
+		cci_saved_deck_cards = list()
 
 	var/list/valid_rare = list()
 	for(var/card_id in cci_known_rare_cards)
 		var/datum/cci_card/card = cci_card(card_id)
 		if(card && card.rarity != CCI_RARITY_BASE)
-			valid_rare |= card_id
+			var/count = cci_known_rare_cards[card_id]
+			if(!isnum(count))
+				count = 1
+			count = max(0, round(count))
+			if(count > 0)
+				valid_rare[card_id] = count
 	cci_known_rare_cards = valid_rare
 
-	var/list/known = cci_known_cards()
+	var/list/selected_counts = list()
 	var/list/valid_deck = list()
 	for(var/card_id in cci_selected_deck)
-		if((card_id in known) && cci_card(card_id) && valid_deck.len < CCI_DECK_SIZE)
-			valid_deck += card_id
+		var/datum/cci_card/card = cci_card(card_id)
+		if(!card || valid_deck.len >= CCI_DECK_SIZE)
+			continue
+		if(card.rarity != CCI_RARITY_BASE)
+			var/selected_count = selected_counts[card_id]
+			if(!selected_count)
+				selected_count = 0
+			if(selected_count >= cci_card_pool_count(card_id))
+				continue
+			selected_counts[card_id] = selected_count + 1
+		valid_deck += card_id
 	cci_selected_deck = valid_deck
+
+	var/list/valid_saved_deck = list()
+	for(var/card_id in cci_saved_deck_cards)
+		if(cci_card(card_id) && valid_saved_deck.len < CCI_DECK_SIZE)
+			valid_saved_deck += card_id
+	cci_saved_deck_cards = valid_saved_deck
 
 /datum/preferences/proc/cci_add_known_card(card_id)
 	var/datum/cci_card/card = cci_card(card_id)
 	if(!card || card.rarity == CCI_RARITY_BASE)
 		return FALSE
 	cci_clean_cards()
-	if(card_id in cci_known_rare_cards)
-		return FALSE
-	cci_known_rare_cards += card_id
+	var/count = cci_known_rare_cards[card_id]
+	if(!count)
+		count = 0
+	cci_known_rare_cards[card_id] = count + 1
 	save_character()
 	return TRUE
 
@@ -52,9 +119,44 @@
 	for(var/card_id in card_ids)
 		var/datum/cci_card/card = cci_card(card_id)
 		if(card?.rarity != CCI_RARITY_BASE)
-			cci_known_rare_cards -= card_id
+			var/count = cci_known_rare_cards[card_id]
+			if(!count)
+				count = 0
+			count--
+			if(count > 0)
+				cci_known_rare_cards[card_id] = count
+			else
+				cci_known_rare_cards -= card_id
 	cci_clean_cards()
 	save_character()
+
+/datum/preferences/proc/cci_take_pool_card(card_id)
+	var/datum/cci_card/card = cci_card(card_id)
+	if(!card || card.rarity == CCI_RARITY_BASE)
+		return TRUE
+	cci_clean_cards()
+	var/count = cci_known_rare_cards[card_id]
+	if(!count)
+		return FALSE
+	count--
+	if(count > 0)
+		cci_known_rare_cards[card_id] = count
+	else
+		cci_known_rare_cards -= card_id
+	save_character()
+	return TRUE
+
+/datum/preferences/proc/cci_return_pool_card(card_id)
+	var/datum/cci_card/card = cci_card(card_id)
+	if(!card || card.rarity == CCI_RARITY_BASE)
+		return FALSE
+	cci_clean_cards()
+	var/count = cci_known_rare_cards[card_id]
+	if(!count)
+		count = 0
+	cci_known_rare_cards[card_id] = count + 1
+	save_character()
+	return TRUE
 
 /datum/preferences/proc/cci_sync_cards_from_inventory(mob/living/carbon/human/H)
 	if(!H)
@@ -65,13 +167,23 @@
 			var/obj/item/cci_card_single/single = thing
 			if(cci_add_known_card(single.card_id))
 				changed = TRUE
+				qdel(single)
 		else if(istype(thing, /obj/item/cci_deck))
 			var/obj/item/cci_deck/deck = thing
-			for(var/card_id in deck.card_ids)
-				if(cci_add_known_card(card_id))
-					changed = TRUE
+			cci_saved_deck_cards = deck.card_ids.Copy()
+			changed = TRUE
 	if(changed)
 		save_character()
+
+/datum/preferences/proc/cci_save_deck_snapshot(list/card_ids)
+	if(!islist(card_ids))
+		return FALSE
+	cci_saved_deck_cards = list()
+	for(var/card_id in card_ids)
+		if(cci_card(card_id) && cci_saved_deck_cards.len < CCI_DECK_SIZE)
+			cci_saved_deck_cards += card_id
+	save_character()
+	return TRUE
 
 /proc/cci_sync_all_player_collections()
 	for(var/client/C in GLOB.clients)
@@ -112,7 +224,6 @@
 		var/obj/item/cci_deck/deck = new(user.loc)
 		deck.set_cards(stash_value[CCI_STASH_DECK_KEY])
 		I = deck
-		user.client?.prefs?.cci_remove_known_cards_from_deck(deck.card_ids)
 	else
 		var/path2item = stash_value
 		I = new path2item(user.loc)
@@ -134,38 +245,37 @@
 	if(cci_mind_has_stashed_deck(user.mind))
 		to_chat(user, span_warning("You already have a card battle deck in your stash."))
 		return TRUE
-	user.mind.special_items["Card Battle Deck"] = cci_stash_deck_spec(deck.card_ids)
 	if(istype(user, /mob/living/carbon/human))
 		var/mob/living/carbon/human/H = user
 		user.client?.prefs?.cci_sync_cards_from_inventory(H)
+	user.mind.special_items["Card Battle Deck"] = cci_stash_deck_spec(deck.card_ids)
+	user.client?.prefs?.cci_save_deck_snapshot(deck.card_ids)
 	to_chat(user, span_notice("You return the card battle deck to your stash."))
 	qdel(deck)
 	return TRUE
 
-/datum/preferences/proc/cci_create_deck_item(mob/user)
+/datum/preferences/proc/cci_request_deck_item(mob/user)
 	cci_clean_cards()
-	if(!cci_selected_deck.len)
-		to_chat(user, span_warning("The card deck must contain at least one card."))
+	if(!user?.mind)
 		return FALSE
-	var/list/deck_cards = cci_selected_deck.Copy()
-	if(user?.mind)
-		if(cci_mind_has_stashed_deck(user.mind))
-			to_chat(user, span_warning("Retrieve your stashed card deck before preparing another one."))
-			return FALSE
-		var/name = "Card Battle Deck"
-		user.mind.special_items[name] = cci_stash_deck_spec(deck_cards)
-		save_character()
-		to_chat(user, span_notice("A prepared card battle deck is added to your stash. Rare cards leave your collection when you retrieve the physical deck."))
-		return TRUE
-	var/obj/item/cci_deck/deck = new(get_turf(user))
-	deck.set_cards(deck_cards)
-	cci_remove_known_cards_from_deck(deck_cards)
-	cci_clean_cards()
-	save_character()
-	user?.put_in_hands(deck)
+	if(user.mind.cci_deck_requested)
+		to_chat(user, span_warning("You have already requested a card battle deck this round."))
+		return FALSE
+	if(cci_mind_has_stashed_deck(user.mind))
+		to_chat(user, span_warning("You already have a card battle deck in your stash."))
+		return FALSE
+	var/list/deck_cards = length(cci_saved_deck_cards) ? cci_saved_deck_cards.Copy() : GLOB.cci_base_card_ids.Copy()
+	while(deck_cards.len > CCI_DECK_SIZE)
+		deck_cards.Cut(deck_cards.len, deck_cards.len + 1)
+	if(!user.mind.special_items)
+		user.mind.special_items = list()
+	user.mind.special_items["Card Battle Deck"] = cci_stash_deck_spec(deck_cards)
+	user.mind.cci_deck_requested = TRUE
+	to_chat(user, span_notice("A card battle deck is added to your stash."))
 	return TRUE
 
 /datum/cci_deckbuilder_panel
+	var/obj/item/cci_deck/deck
 
 /datum/cci_deckbuilder_panel/ui_state(mob/user)
 	return GLOB.always_state
@@ -176,7 +286,7 @@
 /datum/cci_deckbuilder_panel/ui_interact(mob/user, datum/tgui/ui)
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
-		ui = new(user, src, "CardDeckBuilder", "Card Deck Builder")
+		ui = new(user, src, "CardDeckBuilder", deck ? "Card Deck Builder" : "Card Deck Pool")
 		ui.open()
 
 /datum/cci_deckbuilder_panel/ui_data(mob/user)
@@ -185,6 +295,7 @@
 	if(!P)
 		return data
 	P.cci_clean_cards()
+	var/list/selected = deck ? deck.card_ids : P.cci_saved_deck_cards
 
 	var/list/cards = list()
 	var/list/known = P.cci_known_cards()
@@ -192,13 +303,20 @@
 		var/datum/cci_card/card = cci_card(card_id)
 		if(!card)
 			continue
-		cards += list(card.as_ui_data(card_id in known, card_id in P.cci_selected_deck))
+		var/list/card_data = card.as_ui_data(card_id in known, card_id in selected)
+		card_data["ownedCount"] = deck ? P.cci_available_for_deck(selected, card_id) : P.cci_card_pool_count(card_id)
+		cards += list(card_data)
 
+	data["mode"] = deck ? "build" : "pool"
 	data["cards"] = cards
-	data["selected"] = P.cci_selected_deck
-	data["selectedCount"] = P.cci_selected_deck.len
+	data["selected"] = selected
+	data["selectedCount"] = selected.len
 	data["deckSize"] = CCI_DECK_SIZE
-	data["knownRareCount"] = P.cci_known_rare_cards.len
+	data["canRequestDeck"] = !user?.mind?.cci_deck_requested
+	var/known_rare_count = 0
+	for(var/card_id in P.cci_known_rare_cards)
+		known_rare_count += P.cci_known_rare_cards[card_id]
+	data["knownRareCount"] = known_rare_count
 	return data
 
 /datum/cci_deckbuilder_panel/ui_act(action, list/params, datum/tgui/ui, datum/ui_state/state)
@@ -214,36 +332,68 @@
 	var/card_id = params["card"]
 	switch(action)
 		if("add")
-			if(P.cci_selected_deck.len >= CCI_DECK_SIZE)
+			if(!deck || deck.card_ids.len >= CCI_DECK_SIZE)
 				return TRUE
-			if(!(card_id in P.cci_known_cards()) || !cci_card(card_id))
+			var/datum/cci_card/card = cci_card(card_id)
+			if(!card)
 				return TRUE
-			P.cci_selected_deck += card_id
-			P.save_character()
+			if(card.rarity != CCI_RARITY_BASE && !P.cci_take_pool_card(card_id))
+				return TRUE
+			deck.card_ids += card_id
 			return TRUE
 		if("remove")
-			P.cci_selected_deck -= card_id
-			P.save_character()
+			if(!deck)
+				return TRUE
+			while(card_id in deck.card_ids)
+				var/index = deck.card_ids.Find(card_id)
+				if(!index)
+					break
+				deck.card_ids.Cut(index, index + 1)
+				P.cci_return_pool_card(card_id)
 			return TRUE
 		if("remove_one")
-			var/index = P.cci_selected_deck.Find(card_id)
+			if(!deck)
+				return TRUE
+			var/index = deck.card_ids.Find(card_id)
 			if(index)
-				P.cci_selected_deck.Cut(index, index + 1)
-				P.save_character()
+				deck.card_ids.Cut(index, index + 1)
+				P.cci_return_pool_card(card_id)
 			return TRUE
 		if("clear")
-			P.cci_selected_deck = list()
-			P.save_character()
+			if(!deck)
+				return TRUE
+			for(var/removed_id in deck.card_ids)
+				P.cci_return_pool_card(removed_id)
+			deck.card_ids = list()
 			return TRUE
-		if("create_deck")
-			P.cci_create_deck_item(user)
+		if("request_deck")
+			if(!deck)
+				P.cci_request_deck_item(user)
+			return TRUE
+		if("take_card")
+			if(!deck)
+				return TRUE
+			var/card_index = deck.card_ids.Find(card_id)
+			if(!card_index)
+				return TRUE
+			deck.card_ids.Cut(card_index, card_index + 1)
+			var/obj/item/cci_card_single/single = new(get_turf(user))
+			single.set_card(card_id)
+			user.put_in_hands(single)
 			return TRUE
 	return FALSE
 
-/client/proc/cci_open_deckbuilder(mob/user = mob)
+/client/proc/cci_open_deckpool(mob/user = mob)
 	if(!user)
 		return
 	var/datum/cci_deckbuilder_panel/panel = new()
+	panel.ui_interact(user)
+
+/client/proc/cci_open_deckbuilder(obj/item/cci_deck/deck, mob/user = mob)
+	if(!user || !deck)
+		return
+	var/datum/cci_deckbuilder_panel/panel = new()
+	panel.deck = deck
 	panel.ui_interact(user)
 
 #undef CCI_STASH_DECK_KEY

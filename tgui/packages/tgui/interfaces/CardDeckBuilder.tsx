@@ -18,16 +18,19 @@ type Card = {
   effect: string;
   combo: string;
   art?: string;
+  ownedCount?: number;
   known: boolean;
   selected: boolean;
 };
 
 type Data = {
+  mode?: 'pool' | 'build';
   cards?: Card[];
   selected?: string[];
   selectedCount: number;
   deckSize: number;
   knownRareCount: number;
+  canRequestDeck?: boolean;
 };
 
 const rowLabels: Record<CardRow, string> = {
@@ -94,21 +97,28 @@ const cardTooltip = (card: Card) => {
   } else if (card.known && card.desc) {
     lines.push(card.desc);
   }
+  if (card.rarity !== 'base') {
+    lines.push(`Owned: ${card.ownedCount || 0}`);
+  }
   return lines;
 };
 
 const CardFace = ({
   card,
   disabled = false,
+  unavailable = false,
   compact = false,
   count = 0,
   onClick,
+  onRightClick,
 }: {
   card: Card;
   disabled?: boolean;
+  unavailable?: boolean;
   compact?: boolean;
   count?: number;
   onClick?: () => void;
+  onRightClick?: () => void;
 }) => {
   const [hovered, setHovered] = useState(false);
   const tooltip = cardTooltip(card);
@@ -124,13 +134,20 @@ const CardFace = ({
         background: 'linear-gradient(180deg, rgba(35,39,48,0.98), rgba(14,16,22,0.98))',
         boxShadow: `0 0 0 1px rgba(0,0,0,0.7), 0 0 10px ${rarityColor[card.rarity]}33`,
         cursor: onClick && !disabled ? 'pointer' : 'default',
-        opacity: disabled ? 0.42 : 1,
+        opacity: disabled && !unavailable ? 0.62 : 1,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
         overflow: 'hidden',
       }}
       onClick={!disabled ? onClick : undefined}
+      onContextMenu={(event) => {
+        if (!onRightClick) {
+          return;
+        }
+        event.preventDefault();
+        onRightClick();
+      }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -143,6 +160,7 @@ const CardFace = ({
           width: '100%',
           height: '100%',
           objectFit: 'cover',
+          filter: unavailable ? 'grayscale(1) brightness(0.16) contrast(0.85)' : undefined,
           zIndex: 0,
         }}
       />
@@ -152,7 +170,9 @@ const CardFace = ({
         position: 'absolute',
         inset: 0,
         background:
-          'linear-gradient(180deg, rgba(0,0,0,0.34), rgba(0,0,0,0.04) 32%, rgba(0,0,0,0.62))',
+          unavailable
+            ? 'linear-gradient(180deg, rgba(0,0,0,0.84), rgba(0,0,0,0.78) 32%, rgba(0,0,0,0.94))'
+            : 'linear-gradient(180deg, rgba(0,0,0,0.34), rgba(0,0,0,0.04) 32%, rgba(0,0,0,0.62))',
         zIndex: 0,
       }}
     />
@@ -245,7 +265,7 @@ const CardFace = ({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: '#f8fafc',
+          color: unavailable ? '#64748b' : '#f8fafc',
           fontSize: compact ? '10px' : '15px',
           fontWeight: 700,
           zIndex: 1,
@@ -258,8 +278,8 @@ const CardFace = ({
           marginLeft: compact ? '-4px' : '-5px',
           padding: compact ? '3px 4px 3px 7px' : '4px 5px 4px 9px',
           border: `1px solid ${rarityColor[card.rarity]}`,
-          backgroundColor: 'rgba(5,7,11,0.92)',
-          color: '#f8fafc',
+          backgroundColor: unavailable ? 'rgba(5,7,11,0.98)' : 'rgba(5,7,11,0.92)',
+          color: unavailable ? '#64748b' : '#f8fafc',
           fontSize: compact ? '7px' : '10px',
           fontWeight: 700,
           lineHeight: 1.1,
@@ -332,19 +352,20 @@ export const CardDeckBuilder = () => {
     .filter(Boolean) as Card[];
 
   const deckRatio = data.deckSize > 0 ? data.selectedCount / data.deckSize : 0;
+  const isPool = data.mode === 'pool';
 
   return (
-    <Window title="Card Deck Builder" width={980} height={720}>
+    <Window title={isPool ? 'Card Deck Pool' : 'Card Deck Builder'} width={980} height={720}>
       <Window.Content>
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: '1fr 330px',
+            gridTemplateColumns: isPool ? '1fr' : '1fr 330px',
             gap: '12px',
             height: '100%',
           }}
         >
-          <Section title="Collection" fill scrollable>
+          <Section title={isPool ? 'Pool' : 'Collection'} fill scrollable>
             <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
               <Input
                 value={query}
@@ -364,20 +385,56 @@ export const CardDeckBuilder = () => {
                 ),
               )}
             </div>
+            {isPool && (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  marginBottom: '10px',
+                  color: '#94a3b8',
+                  fontSize: '12px',
+                }}
+              >
+                <span>Rare and unique cards in pool: {data.knownRareCount}</span>
+                <Button disabled={!data.canRequestDeck} onClick={() => act('request_deck')}>
+                  Request Deck
+                </Button>
+              </div>
+            )}
 
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-              {filteredCards.map((card) => (
-                <CardFace
-                  key={card.id}
-                  card={card}
-                  count={selectedCounts[card.id] || 0}
-                  disabled={!card.known || data.selectedCount >= data.deckSize}
-                  onClick={() => act('add', { card: card.id })}
-                />
-              ))}
+              {filteredCards.map((card) => {
+                const selectedCount = selectedCounts[card.id] || 0;
+                const ownedCount =
+                  card.rarity === 'base' ? data.deckSize : card.ownedCount || 0;
+                const unavailable = !card.known;
+                return (
+                  <CardFace
+                    key={card.id}
+                    card={card}
+                    count={isPool && card.rarity !== 'base' ? ownedCount : selectedCount}
+                    unavailable={unavailable}
+                    disabled={
+                      isPool
+                        ? unavailable
+                        : !card.known ||
+                          data.selectedCount >= data.deckSize ||
+                          selectedCount >= ownedCount
+                    }
+                    onClick={!isPool ? () => act('add', { card: card.id }) : undefined}
+                    onRightClick={
+                      !isPool && selectedCount > 0
+                        ? () => act('take_card', { card: card.id })
+                        : undefined
+                    }
+                  />
+                );
+              })}
             </div>
           </Section>
 
+          {!isPool && (
           <Section title="Deck" fill scrollable>
             <div style={{ marginBottom: '8px' }}>
               {data.selectedCount} / {data.deckSize}
@@ -390,12 +447,9 @@ export const CardDeckBuilder = () => {
               mb="10px"
             />
             <div style={{ color: '#94a3b8', fontSize: '12px', marginBottom: '10px' }}>
-              Known rare cards: {data.knownRareCount}
+              Rare and unique cards in pool: {data.knownRareCount}
             </div>
             <div style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}>
-              <Button onClick={() => act('create_deck')}>
-                Create Deck
-              </Button>
               <Button color="bad" onClick={() => act('clear')}>
                 Clear
               </Button>
@@ -418,10 +472,12 @@ export const CardDeckBuilder = () => {
                   card={card}
                   compact
                   onClick={() => act('remove_one', { card: card.id })}
+                  onRightClick={() => act('take_card', { card: card.id })}
                 />
               ))}
             </div>
           </Section>
+          )}
         </div>
       </Window.Content>
     </Window>

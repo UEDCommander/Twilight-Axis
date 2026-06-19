@@ -394,3 +394,13 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 	rarity = CCI_RARITY_UNIQUE
 	effect = CCI_EFFECT_SPY
 	art = "cci_cards/scout.png"
+
+/datum/cci_card/unique_svinoglazka
+	id = "unique_svinoglazka"
+	name = "Svinoglazka"
+	desc = "Unique card: Svinoglazka. A grim noble warrior in blue."
+	row = CCI_ROW_INFANTRY
+	power = 7
+	rarity = CCI_RARITY_UNIQUE
+	effect = CCI_EFFECT_MORALE
+	art = "cci_cards/svinoglazka.png"

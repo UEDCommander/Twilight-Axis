@@ -17,6 +17,7 @@
 		"cci_cards/siege_engineer.png" = 'modular_twilight_axis/code/cards/card_table/assets/siege_engineer.png',
 		"cci_cards/spearman.png" = 'modular_twilight_axis/code/cards/card_table/assets/spearman.png',
 		"cci_cards/supply_cart.png" = 'modular_twilight_axis/code/cards/card_table/assets/supply_cart.png',
+		"cci_cards/svinoglazka.png" = 'modular_twilight_axis/code/cards/card_table/assets/svinoglazka.png',
 		"cci_cards/swordsman.png" = 'modular_twilight_axis/code/cards/card_table/assets/swordsman.png',
 		"cci_cards/trebuchet.png" = 'modular_twilight_axis/code/cards/card_table/assets/trebuchet.png',
 		"cci_cards/young_archer.png" = 'modular_twilight_axis/code/cards/card_table/assets/young_archer.png',
