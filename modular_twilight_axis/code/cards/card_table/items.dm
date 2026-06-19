@@ -26,8 +26,11 @@
 				index = 1
 
 /obj/item/cci_deck/Destroy()
-	if(match && match.owner == src)
-		QDEL_NULL(match)
+	var/datum/cci_match/active_match = get_active_match()
+	if(active_match?.owner == src)
+		qdel(active_match)
+	else if(active_match?.challenger == src)
+		active_match.challenger = null
 	match = null
 	match_host = null
 	return ..()

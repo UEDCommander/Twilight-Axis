@@ -50,6 +50,33 @@
 	round_wins[CCI_SIDE_TWO] = 0
 	start_round(TRUE)
 
+/datum/cci_match/Destroy()
+	if(owner)
+		if(owner.match == src)
+			owner.match = null
+		if(owner.match_host)
+			owner.match_host = null
+	if(challenger)
+		if(challenger.match == src)
+			challenger.match = null
+		if(challenger.match_host == owner)
+			challenger.match_host = null
+	owner = null
+	challenger = null
+	player_ckeys = null
+	player_names = null
+	decks = null
+	hands = null
+	discarded = null
+	board = null
+	round_wins = null
+	passed = null
+	weather = null
+	weather_board = null
+	row_effects = null
+	combo_morale = null
+	return ..()
+
 /datum/cci_match/proc/update_deck_uis()
 	if(owner)
 		SStgui.update_uis(owner)
@@ -355,8 +382,11 @@
 				if(card?.effect == CCI_EFFECT_MORALE)
 					morale++
 				if(card?.effect == CCI_EFFECT_BOND)
-					bond_counts[played.card_id] = text2num("[bond_counts[played.card_id]]") + 1
-			morale += text2num("[combo_morale[side][row]]")
+					var/current_bond_count = bond_counts[played.card_id]
+					if(!current_bond_count)
+						current_bond_count = 0
+					bond_counts[played.card_id] = current_bond_count + 1
+			morale += combo_morale[side][row]
 			var/horn = row_has_effect(side, row, CCI_EFFECT_HORN)
 			var/mardroeme = row_has_effect(side, row, CCI_EFFECT_MARDROEME)
 			for(var/datum/cci_played_card/played in board[side][row])
@@ -368,8 +398,9 @@
 					value = max(value, card.bear_power)
 				if(row in weather)
 					value = min(value, 1)
-				if(card.effect == CCI_EFFECT_BOND && text2num("[bond_counts[played.card_id]]") > 1)
-					value *= text2num("[bond_counts[played.card_id]]")
+				var/final_bond_count = bond_counts[played.card_id]
+				if(card.effect == CCI_EFFECT_BOND && final_bond_count > 1)
+					value *= final_bond_count
 				if(card.effect != CCI_EFFECT_MORALE)
 					value += morale
 				if(horn)

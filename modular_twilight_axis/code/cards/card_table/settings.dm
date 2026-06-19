@@ -100,7 +100,7 @@
 		return FALSE
 	if(!user.mind.special_items || !user.mind.special_items.len)
 		return FALSE
-	var/item = input(user, "What will I take?", "STASH") as null|anything in user.mind.special_items
+	var/item = tgui_input_list(user, "What will I take?", "STASH", user.mind.special_items)
 	if(!item)
 		return TRUE
 	if(!user.Adjacent(host_object) || !user.mind.special_items[item])

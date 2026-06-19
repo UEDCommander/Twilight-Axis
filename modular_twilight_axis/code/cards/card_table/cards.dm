@@ -38,6 +38,10 @@ GLOBAL_LIST_EMPTY(cci_base_card_ids)
 	for(var/path in subtypesof(/datum/cci_card))
 		var/datum/cci_card/card = new path()
 		if(!card.id)
+			qdel(card)
+			continue
+		if(GLOB.cci_cards_by_id[card.id])
+			qdel(card)
 			continue
 		GLOB.cci_cards_by_id[card.id] = card
 		if(card.rarity == CCI_RARITY_BASE)
