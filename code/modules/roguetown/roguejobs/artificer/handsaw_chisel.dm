@@ -59,7 +59,7 @@
 /obj/item/rogueweapon/chisel/attackby(obj/item/W, mob/living/user, params)
 	. = ..()
 	if(already_assembled)
-		return
+		return TRUE
 
 	if(istype(W,/obj/item/natural/stoneblock))
 		playsound(get_turf(user.loc), 'sound/foley/brickdrop.ogg', 100)
@@ -68,7 +68,7 @@
 		qdel(W)
 		user.put_in_hands(F)
 		qdel(src)
-		return
+		return TRUE
 
 	else if(istype(W,/obj/item/natural/stone))
 		playsound(get_turf(user.loc), 'sound/foley/brickdrop.ogg', 100)
@@ -77,7 +77,7 @@
 		qdel(W)
 		user.put_in_hands(F)
 		qdel(src)
-		return
+		return TRUE
 
 	else if(istype(W, /obj/item/rogueweapon/hammer/steel))
 		playsound(get_turf(user.loc), 'sound/foley/brickdrop.ogg', 100)
@@ -86,7 +86,7 @@
 		qdel(W)
 		user.put_in_hands(F)
 		qdel(src)
-		return
+		return TRUE
 
 	else if(istype(W, /obj/item/rogueweapon/hammer/iron))
 		playsound(get_turf(user.loc), 'sound/foley/brickdrop.ogg', 100)
@@ -95,7 +95,7 @@
 		qdel(W)
 		user.put_in_hands(F)
 		qdel(src)
-		return
+		return TRUE
 
 	else if(istype(W, /obj/item/rogueweapon/hammer/wood))
 		playsound(get_turf(user.loc), 'sound/foley/brickdrop.ogg', 100)
@@ -104,7 +104,7 @@
 		qdel(W)
 		user.put_in_hands(F)
 		qdel(src)
-		return
+		return TRUE
 
 	else if(istype(W, /obj/item/rogueweapon/hammer/blacksteel))
 		playsound(get_turf(user.loc), 'sound/foley/brickdrop.ogg', 100)
@@ -113,7 +113,7 @@
 		qdel(W)
 		user.put_in_hands(F)
 		qdel(src)
-		return
+		return TRUE
 
 	else if(istype(W, /obj/item/rogueweapon/hammer/bronze))
 		playsound(get_turf(user.loc), 'sound/foley/brickdrop.ogg', 100)
@@ -122,7 +122,7 @@
 		qdel(W)
 		user.put_in_hands(F)
 		qdel(src)
-		return
+		return TRUE
 
 //
 
@@ -134,9 +134,8 @@
 	smeltresult = /obj/item/ingot/bronze
 
 /obj/item/rogueweapon/chisel/bronze/attackby(obj/item/W, mob/living/user, params)
-	. = ..()
 	if(already_assembled)
-		return
+		return TRUE
 
 	if(istype(W,/obj/item/natural/stoneblock))
 		playsound(get_turf(user.loc), 'sound/foley/brickdrop.ogg', 100)
@@ -145,7 +144,7 @@
 		qdel(W)
 		user.put_in_hands(F)
 		qdel(src)
-		return
+		return TRUE
 
 	else if(istype(W,/obj/item/natural/stone))
 		playsound(get_turf(user.loc), 'sound/foley/brickdrop.ogg', 100)
@@ -154,7 +153,7 @@
 		qdel(W)
 		user.put_in_hands(F)
 		qdel(src)
-		return
+		return TRUE
 
 	else if(istype(W, /obj/item/rogueweapon/hammer/steel))
 		playsound(get_turf(user.loc), 'sound/foley/brickdrop.ogg', 100)
@@ -163,7 +162,7 @@
 		qdel(W)
 		user.put_in_hands(F)
 		qdel(src)
-		return
+		return TRUE
 
 	else if(istype(W, /obj/item/rogueweapon/hammer/iron))
 		playsound(get_turf(user.loc), 'sound/foley/brickdrop.ogg', 100)
@@ -172,7 +171,7 @@
 		qdel(W)
 		user.put_in_hands(F)
 		qdel(src)
-		return
+		return TRUE
 
 	else if(istype(W, /obj/item/rogueweapon/hammer/wood))
 		playsound(get_turf(user.loc), 'sound/foley/brickdrop.ogg', 100)
@@ -181,7 +180,7 @@
 		qdel(W)
 		user.put_in_hands(F)
 		qdel(src)
-		return
+		return TRUE
 
 	else if(istype(W, /obj/item/rogueweapon/hammer/bronze))
 		playsound(get_turf(user.loc), 'sound/foley/brickdrop.ogg', 100)
@@ -190,7 +189,7 @@
 		qdel(W)
 		user.put_in_hands(F)
 		qdel(src)
-		return
+		return TRUE
 
 	else if(istype(W, /obj/item/rogueweapon/hammer/blacksteel))
 		playsound(get_turf(user.loc), 'sound/foley/brickdrop.ogg', 100)
@@ -199,7 +198,9 @@
 		qdel(W)
 		user.put_in_hands(F)
 		qdel(src)
-		return
+		return TRUE
+
+	return ..()
 
 //................	Chisel toolset	............... //
 /obj/item/rogueweapon/chisel/assembly	// template
@@ -349,7 +350,7 @@
 	icon_state = "bronzechiselbronzeh"
 	item_state = "hammer_bronze"
 
-/obj/item/rogueweapon/chisel/assembly/hammerbronze/hammer/attack_right(mob/user)
+/obj/item/rogueweapon/chisel/assembly/hammerbronze/bronze/attack_right(mob/user)
 	var/obj/item/rogueweapon/chisel/bronze/F = new(user.loc)
 	var/obj/item/rogueweapon/hammer/bronze/E = new(user.loc)
 	user.put_in_hands(E)
