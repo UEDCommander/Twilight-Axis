@@ -331,4 +331,4 @@
 	return curcomm
 
 #undef RCP_CONTRIBUTION_CAP
-
+#undef PLAYERQUALITY_RESTRICTED_RANKS
