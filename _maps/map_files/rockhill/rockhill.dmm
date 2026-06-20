@@ -463,6 +463,9 @@
 /obj/item/reagent_containers/glass/cup/silver/pewter{
 	pixel_x = 12
 	},
+/obj/machinery/light/rogue/candle/blue{
+	pixel_y = -32
+	},
 /turf/open/floor/rogue/hexstone,
 /area/rogue/indoors/town/magician/tower)
 "aeA" = (
@@ -4910,7 +4913,7 @@
 	lockid = "university";
 	name = "Wizard's Tower Backdoor"
 	},
-/turf/open/floor/rogue/ruinedwood/spiral,
+/turf/open/floor/rogue/concrete,
 /area/rogue/indoors/town/magician/tower)
 "aXJ" = (
 /obj/structure/bars/grille{
@@ -20548,7 +20551,6 @@
 /obj/item/reagent_containers/glass/bowl,
 /obj/item/reagent_containers/glass/bowl,
 /obj/item/reagent_containers/glass/bowl,
-/obj/item/millstone,
 /obj/item/rogueweapon/huntingknife/chefknife{
 	pixel_x = -3;
 	pixel_y = 8
@@ -28936,7 +28938,6 @@
 /obj/effect/decal/edge{
 	color = "#3f3f3f"
 	},
-/obj/structure/table/wood/poor,
 /obj/item/kitchen/rollingpin{
 	pixel_x = 7
 	},
@@ -28944,6 +28945,7 @@
 	pixel_y = 9;
 	pixel_x = -5
 	},
+/obj/structure/table/wood/large_table/south_west,
 /turf/open/floor/rogue/hexstone,
 /area/rogue/indoors/town/magician/tower)
 "fSf" = (
@@ -30785,6 +30787,14 @@
 /obj/machinery/light/rogue/campfire/fireplace,
 /turf/open/floor/rogue/herringbone,
 /area/rogue/indoors/town/warden)
+"glF" = (
+/obj/effect/decal/edge{
+	color = "#3f3f3f";
+	dir = 1
+	},
+/obj/structure/table/wood,
+/turf/open/floor/rogue/hexstone,
+/area/rogue/indoors/town/magician/tower)
 "glG" = (
 /obj/item/paper{
 	pixel_y = 7
@@ -33359,6 +33369,10 @@
 /obj/structure/fluff/pillow/purple,
 /turf/open/floor/carpet/royalblack,
 /area/rogue/indoors/town/bath)
+"gMz" = (
+/obj/item/natural/rock/iron,
+/turf/open/floor/rogue/ruinedwood/platform,
+/area/rogue/under/cave)
 "gME" = (
 /obj/machinery/light/rogue/candle,
 /turf/open/floor/carpet/red,
@@ -44562,6 +44576,9 @@
 	pixel_y = 6
 	},
 /obj/machinery/light/rogue/candle/blue,
+/obj/item/millstone{
+	pixel_x = -5
+	},
 /turf/open/floor/rogue/hexstone,
 /area/rogue/indoors/town/magician/tower)
 "jeQ" = (
@@ -50212,7 +50229,7 @@
 	},
 /obj/effect/decal/carpet/square/black{
 	pixel_x = 16;
-	pixel_y = 27
+	pixel_y = 21
 	},
 /turf/open/floor/rogue/ruinedwood/spiral,
 /area/rogue/indoors/town/magician/tower)
@@ -59245,7 +59262,7 @@
 /turf/closed/wall/mineral/rogue/pipe{
 	icon_state = "iron_corner"
 	},
-/area/rogue/indoors/town/vault)
+/area/rogue/under/town/basement)
 "mjY" = (
 /obj/structure/stairs/stone{
 	dir = 1
@@ -69199,7 +69216,6 @@
 /turf/open/floor/rogue/grass,
 /area/rogue/outdoors/rtfield/rockhill)
 "oqa" = (
-/obj/structure/closet/crate/roguecloset,
 /obj/item/reagent_containers/glass/bucket,
 /obj/item/reagent_containers/glass/bucket,
 /obj/item/natural/cloth,
@@ -69210,6 +69226,10 @@
 	pixel_y = 1;
 	pixel_x = 1
 	},
+/obj/machinery/light/rogue/candle/blue{
+	pixel_y = -32
+	},
+/obj/structure/closet/crate/roguecloset/inn,
 /turf/open/floor/rogue/hexstone,
 /area/rogue/indoors/town/magician/tower)
 "oqe" = (
@@ -82044,7 +82064,7 @@
 	icon_state = "iron_corner";
 	dir = 4
 	},
-/area/rogue/indoors/town/vault)
+/area/rogue/under/town/basement)
 "qZX" = (
 /obj/effect/decal/cleanable/blood/old,
 /obj/structure/chair/smallbench,
@@ -90260,15 +90280,15 @@
 /turf/open/floor/rogue/naturalstone,
 /area/rogue/under/cavewet)
 "sPb" = (
-/obj/structure/table/wood,
 /obj/item/candle/candlestick/silver/lit{
 	pixel_x = 17;
-	pixel_y = 15
+	pixel_y = 18
 	},
 /obj/effect/decal/carpet/square/black{
 	pixel_x = 16;
-	pixel_y = 20
+	pixel_y = 26
 	},
+/obj/structure/table/vtable,
 /turf/open/floor/rogue/ruinedwood/spiral,
 /area/rogue/indoors/town/magician/tower)
 "sPh" = (
@@ -91418,7 +91438,7 @@
 /turf/open/floor/rogue/woodturned/nosmooth,
 /area/rogue/outdoors/town/rockhill)
 "tcl" = (
-/obj/structure/table/wood,
+/obj/structure/table/vtable/v2,
 /turf/open/floor/rogue/ruinedwood/spiral,
 /area/rogue/indoors/town/magician/tower)
 "tcp" = (
@@ -92510,6 +92530,14 @@
 "toN" = (
 /turf/closed/wall/mineral/rogue/decostone,
 /area/rogue/under/town/basement)
+"toQ" = (
+/obj/structure/curtain/blue{
+	color = "#415e96"
+	},
+/turf/closed/wall/mineral/rogue/stone/window{
+	icon_state = "stonewindow"
+	},
+/area/rogue/indoors/town/magician/tower)
 "toU" = (
 /obj/machinery/light/rogue/candle/blue/r,
 /turf/open/floor/rogue/blocks,
@@ -185808,11 +185836,11 @@ iyZ
 iyZ
 twm
 twm
-vTW
-vTW
-vTW
-vTW
-vTW
+fyd
+fyd
+fyd
+fyd
+fyd
 swJ
 swJ
 swJ
@@ -186240,11 +186268,11 @@ cMk
 fyd
 twm
 twm
-vTW
-vTW
-vTW
-vTW
-vTW
+fyd
+fyd
+fyd
+fyd
+fyd
 swJ
 swJ
 swJ
@@ -186672,11 +186700,11 @@ jQS
 twm
 twm
 twm
-vTW
-vTW
-vTW
-vTW
-vTW
+fyd
+fyd
+fyd
+fyd
+fyd
 swJ
 swJ
 swJ
@@ -187536,11 +187564,11 @@ iyZ
 twm
 twm
 twm
-mrZ
-xEO
-xEO
-xEO
-mrZ
+gQh
+whb
+whb
+whb
+gQh
 iwJ
 swJ
 swJ
@@ -187968,11 +187996,11 @@ iyZ
 twm
 twm
 twm
-mrZ
-xEO
-xEO
-xEO
-mrZ
+gQh
+whb
+whb
+whb
+gQh
 iwJ
 iwJ
 swJ
@@ -213029,8 +213057,8 @@ whb
 swJ
 swJ
 swJ
-iwJ
-iwJ
+pus
+pus
 iwJ
 iwJ
 swJ
@@ -213866,7 +213894,7 @@ fal
 rrd
 fal
 fal
-pus
+fal
 wQS
 whb
 whb
@@ -214298,7 +214326,7 @@ fal
 fal
 fal
 fal
-pus
+fal
 pus
 pus
 pus
@@ -214730,7 +214758,7 @@ fal
 fal
 fal
 fal
-pus
+fal
 pus
 pus
 pus
@@ -215162,7 +215190,7 @@ fal
 rrd
 fal
 fal
-pus
+fal
 pus
 pus
 pus
@@ -215593,8 +215621,8 @@ whb
 whb
 wQS
 fal
-swJ
-pus
+fal
+fal
 pus
 pus
 pus
@@ -217779,7 +217807,7 @@ whb
 rqt
 rqt
 rqt
-kmK
+oNE
 tdR
 tdR
 tdR
@@ -218211,7 +218239,7 @@ whb
 whb
 dFE
 rqt
-kmK
+oNE
 rqt
 aae
 tdR
@@ -218643,7 +218671,7 @@ whb
 whb
 whb
 whb
-kmK
+oNE
 dFE
 aae
 rqt
@@ -219075,7 +219103,7 @@ whb
 whb
 whb
 whb
-kmK
+tfU
 whb
 aae
 aae
@@ -219506,8 +219534,8 @@ whb
 whb
 whb
 whb
-whb
-kmK
+oNE
+oNE
 whb
 xqr
 aae
@@ -219937,9 +219965,9 @@ whb
 whb
 whb
 whb
-whb
-whb
-kmK
+tfU
+oNE
+oNE
 whb
 whb
 whb
@@ -220368,10 +220396,10 @@ whb
 whb
 whb
 whb
-whb
-whb
-whb
-kmK
+oNE
+oNE
+mgZ
+tfU
 whb
 whb
 whb
@@ -220799,11 +220827,11 @@ whb
 whb
 whb
 whb
-whb
-whb
-vTW
-vTW
-kmK
+tfU
+mgZ
+oNE
+oNE
+oNE
 whb
 whb
 aaf
@@ -221231,10 +221259,10 @@ whb
 whb
 whb
 whb
-vTW
-vTW
-kmK
-whb
+oNE
+oNE
+tfU
+oNE
 whb
 whb
 whb
@@ -221663,9 +221691,9 @@ vTW
 vTW
 vTW
 vTW
-kmK
-whb
-whb
+oNE
+tfU
+oNE
 whb
 whb
 whb
@@ -390510,9 +390538,9 @@ fnA
 auT
 kFR
 oHc
-fkC
+toQ
 aXF
-fkC
+toQ
 tdY
 ged
 mwE
@@ -391377,7 +391405,7 @@ kTE
 xyC
 uoB
 xyC
-arz
+glF
 fkC
 fkC
 fkC
@@ -392330,7 +392358,7 @@ sSS
 sSS
 hzu
 hzu
-hzu
+gMz
 sSS
 sSS
 fyP
@@ -502499,7 +502527,7 @@ czk
 czk
 bpD
 bpD
-czk
+glo
 czk
 czk
 bpD
@@ -645016,7 +645044,7 @@ tBL
 nGW
 uOo
 fZJ
-gxc
+tmH
 tmH
 fZe
 fZe
