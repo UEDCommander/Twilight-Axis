@@ -659,18 +659,7 @@ BLIND     // can't see anything
 	if(!armor)	// No armor
 		if(examine_highlight_status)
 			var/severity = examine_highlight_status[1]
-			var/allow_reveal = FALSE
-			if(user && !istype(user.patron, /datum/patron/inhumen))
-				switch(severity)
-					if(EXAMINEHIGHLIGHT_HERESYSEVERITY_ALARMING)
-						allow_reveal = TRUE
-					if(EXAMINEHIGHLIGHT_HERESYSEVERITY_SUSPICIOUS)
-						if(user && (HAS_TRAIT(user, TRAIT_INQUISITION) || HAS_TRAIT(user, TRAIT_CLERGY)))
-							allow_reveal = TRUE
-					if(EXAMINEHIGHLIGHT_HERESYSEVERITY_ODD)
-						if(user && HAS_TRAIT(user, TRAIT_INQUISITION))
-							allow_reveal = TRUE
-			if(allow_reveal)
+			if(can_reveal_heresy(user, severity))
 				var/labeled_string = get_examine_highlight_labeled_string(severity, examine_text)
 				var/tooltip_string = get_examine_highlight_tooltip_string(examine_highlight_status)
 				return SPAN_TOOLTIP_DANGEROUS_HTML(tooltip_string, labeled_string)
@@ -681,18 +670,7 @@ BLIND     // can't see anything
 	if(armor.getRating("slash") == 0 && armor.getRating("stab") == 0 && armor.getRating("blunt") == 0 && armor.getRating("piercing") == 0)
 		if(examine_highlight_status)
 			var/severity = examine_highlight_status[1]
-			var/allow_reveal = FALSE
-			if(user && !istype(user.patron, /datum/patron/inhumen))
-				switch(severity)
-					if(EXAMINEHIGHLIGHT_HERESYSEVERITY_ALARMING)
-						allow_reveal = TRUE
-					if(EXAMINEHIGHLIGHT_HERESYSEVERITY_SUSPICIOUS)
-						if(user && (HAS_TRAIT(user, TRAIT_INQUISITION) || HAS_TRAIT(user, TRAIT_CLERGY)))
-							allow_reveal = TRUE
-					if(EXAMINEHIGHLIGHT_HERESYSEVERITY_ODD)
-						if(user && HAS_TRAIT(user, TRAIT_INQUISITION))
-							allow_reveal = TRUE
-			if(allow_reveal)
+			if(can_reveal_heresy(user, severity))
 				var/labeled_string = get_examine_highlight_labeled_string(severity, examine_text)
 				var/tooltip_string = get_examine_highlight_tooltip_string(examine_highlight_status)
 				return SPAN_TOOLTIP_DANGEROUS_HTML(tooltip_string, labeled_string)
@@ -719,22 +697,11 @@ BLIND     // can't see anything
 	if(examine_highlight_status)
 		var/heresy_desc = get_examine_highlight_description(examine_highlight_status)
 		var/severity = examine_highlight_status[1]
-		var/allow_reveal = FALSE //TA EDIT START
-		if(user && !istype(user.patron, /datum/patron/inhumen))
-			switch(severity)
-				if(EXAMINEHIGHLIGHT_HERESYSEVERITY_ALARMING)
-					allow_reveal = TRUE
-				if(EXAMINEHIGHLIGHT_HERESYSEVERITY_SUSPICIOUS)
-					if(user && (HAS_TRAIT(user, TRAIT_INQUISITION) || HAS_TRAIT(user, TRAIT_CLERGY)))
-						allow_reveal = TRUE
-				if(EXAMINEHIGHLIGHT_HERESYSEVERITY_ODD)
-					if(user && HAS_TRAIT(user, TRAIT_INQUISITION))
-						allow_reveal = TRUE
-		if(allow_reveal)
+		if(can_reveal_heresy(user, severity)) //TA EDIT
 			if(heresy_desc)
 				str += "<br>" + heresy_desc
 				str += "<br>" + get_examine_highlight_explanation(severity)
-			examine_text = get_examine_highlight_labeled_string(severity, examine_text) //TA EDIT END
+			examine_text = get_examine_highlight_labeled_string(severity, examine_text)
 	else
 		//This makes it appear darker than the rest of examine text. Draws the cursor to it like to a Wetsquires.rt link.
 		examine_text = "<font color = '#808080'>[examine_text]</font>"

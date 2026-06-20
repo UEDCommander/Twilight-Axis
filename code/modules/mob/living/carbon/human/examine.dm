@@ -1354,18 +1354,7 @@
 	var/item_examine_string = I.get_examine_string(user)
 	if(examine_highlight_status) 
 		var/severity = examine_highlight_status[1] 
-		var/allow_reveal = FALSE
-		if(user && !istype(user.patron, /datum/patron/inhumen))
-			switch(severity) 
-				if(EXAMINEHIGHLIGHT_HERESYSEVERITY_ALARMING) 
-					allow_reveal = TRUE 
-				if(EXAMINEHIGHLIGHT_HERESYSEVERITY_SUSPICIOUS) 
-					if(HAS_TRAIT(user, TRAIT_INQUISITION) || HAS_TRAIT(user, TRAIT_CLERGY)) 
-						allow_reveal = TRUE 
-				if(EXAMINEHIGHLIGHT_HERESYSEVERITY_ODD) 
-					if(HAS_TRAIT(user, TRAIT_INQUISITION)) 
-						allow_reveal = TRUE 
-		if(allow_reveal) 
+		if(I.can_reveal_heresy(user, severity)) //TA EDIT
 			var/heresy_examine_tooltip = I.get_examine_highlight_description(examine_highlight_status) + "<br>" + I.get_examine_highlight_explanation(severity) 
 			item_examine_string = SPAN_TOOLTIP_DANGEROUS_HTML(heresy_examine_tooltip, I.get_examine_highlight_labeled_string(severity, item_examine_string))
 	return item_examine_string
