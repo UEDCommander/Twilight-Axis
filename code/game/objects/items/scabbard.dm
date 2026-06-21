@@ -75,6 +75,18 @@
 /obj/item/rogueweapon/scabbard/attack_obj(obj/O, mob/living/user)
 	return FALSE
 
+/obj/item/rogueweapon/scabbard/proc/can_sheathe_item(obj/item/I, mob/user)
+	var/datum/component/martyrweapon/martyr_weapon = I.GetComponent(/datum/component/martyrweapon)
+	if(martyr_weapon?.is_active)
+		to_chat(user, span_warning("The burning relic refuses to be stowed while my Oath is invoked!"))
+		return FALSE
+	return TRUE
+
+/obj/item/rogueweapon/scabbard/attackby(obj/item/I, mob/user, params)
+	if(!can_sheathe_item(I, user))
+		return TRUE
+	return ..()
+
 /obj/item/rogueweapon/scabbard/MouseDrop(atom/over)
 	..()
 	var/mob/living/M = usr
