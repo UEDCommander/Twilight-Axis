@@ -23,6 +23,13 @@
 		return FALSE
 	return TRUE
 
+/proc/can_view_playerquality_of(client/C, key, notify = FALSE)
+	if(!C || !key)
+		return FALSE
+	if(C.ckey == ckey(key))
+		return TRUE
+	return can_view_playerquality(C, notify)
+
 /proc/can_adjust_playerquality(client/C, notify = FALSE)
 	if(!C || !C.holder)
 		return FALSE
@@ -33,12 +40,9 @@
 	return TRUE
 
 /proc/playerquality_hidden_from_user(key)
-	if(!usr || !usr.client || !usr.client.holder || !key)
+	if(!usr || !usr.client || !key)
 		return FALSE
-	var/canonical_ckey = ckey(key)
-	if(usr.client.ckey == canonical_ckey)
-		return FALSE
-	return !can_view_playerquality(usr.client, FALSE)
+	return !can_view_playerquality_of(usr.client, key, FALSE)
 
 /proc/get_playerquality(key, text)
 	if(!key)
@@ -176,7 +180,7 @@
 	check_pq_menu(theykey)
 
 /proc/check_pq_menu(ckey)
-	if(!usr || !usr.client || !can_view_playerquality(usr.client, TRUE))
+	if(!usr || !usr.client || !can_view_playerquality_of(usr.client, ckey, TRUE))
 		return
 	var/canonical_ckey = replacetext(replacetext(replacetext(replacetext(lowertext(ckey), " ", ""), "_", ""), ".", ""), "-", "")
 	var/folder_prefix = copytext(canonical_ckey, 1, 2)
