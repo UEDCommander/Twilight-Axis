@@ -169,6 +169,7 @@
 		zombie.update_a_intents()
 		for(var/datum/charflaw/cf in zombie.charflaws)
 			cf.ephemeral = FALSE
+		zombie.remove_status_effect(/datum/status_effect/debuff/rotted_zombie)
 		zombie.update_body()
 
 		zombie.STASTR = src.STASTR
