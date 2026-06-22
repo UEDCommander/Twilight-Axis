@@ -85,12 +85,12 @@
 			if("wall")
 				new /obj/structure/forcefield_weak/shelter_wall(T, H)
 			if("bed")
-				new /obj/structure/bed/rogue/conjured(T)
+				new /obj/structure/bed/rogue/inn/wool/conjured(T)
 			if("hearth")
 				new /obj/machinery/light/rogue/hearth/conjured(T)
 				new /obj/machinery/light/rogue/oven/conjured(T)
-			if("empty")
-				continue
+		if(tile_type == "bed" || tile_type == "hearth" || (tile_type == "empty" && offset[2] >= 0))
+			new /obj/effect/shelter_roof(T)
 
 	return TRUE
 
@@ -122,12 +122,35 @@
 	. = ..()
 	QDEL_IN(src, SHELTER_DURATION)
 
-/obj/structure/bed/rogue/conjured
+/obj/effect/shelter_roof
+	name = "arcyne roof"
+	anchored = TRUE
+	density = FALSE
+	mouse_opacity = 0
+	invisibility = 101
+	var/turf/covered_turf
+	var/previous_weatherproof = FALSE
+
+/obj/effect/shelter_roof/Initialize(mapload)
+	. = ..()
+	covered_turf = get_turf(src)
+	if(covered_turf?.outdoor_effect)
+		previous_weatherproof = covered_turf.outdoor_effect.weatherproof
+		covered_turf.outdoor_effect.weatherproof = TRUE
+	QDEL_IN(src, SHELTER_DURATION)
+
+/obj/effect/shelter_roof/Destroy(force)
+	if(covered_turf?.outdoor_effect)
+		covered_turf.outdoor_effect.weatherproof = previous_weatherproof
+	covered_turf = null
+	return ..()
+
+/obj/structure/bed/rogue/inn/wool/conjured
 	name = "arcyne bed"
 	desc = "A bed conjured from arcyne force. It looks uncomfortable, but functional."
 	color = "#6495ED"
 
-/obj/structure/bed/rogue/conjured/Initialize(mapload)
+/obj/structure/bed/rogue/inn/wool/conjured/Initialize(mapload)
 	. = ..()
 	QDEL_IN(src, SHELTER_DURATION)
 
