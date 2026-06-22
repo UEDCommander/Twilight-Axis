@@ -3687,6 +3687,13 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/rogue/instrument/guitar/jade_guitar
 	donatitem = TRUE
 
+/datum/loadout_item/donator/olygsword
+	name = "Donator Kit - Gre'as'anto d'Shar - Required: Greatsword"
+	category = list("Оружие", "Донат")
+	path = /obj/item/enchantingkit/olygsword
+	donatitem = TRUE
+	donat_tier = 2
+
 /datum/loadout_item/donator/ollanius_maille
 	name = "Donator Kit - Shoulderless Haubergeon - Required: Steel Haubergeon"
 	category = list("Броня", "Донат")

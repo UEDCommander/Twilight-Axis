@@ -988,6 +988,12 @@
 	target_items = list(/obj/item/clothing/suit/roguetown/armor/chainmail)
 	result_item = /obj/item/clothing/suit/roguetown/armor/chainmail/ollanius_maille
 
+//Olympus7
+/obj/item/enchantingkit/olygsword
+    name = "'Gre'as'anto d'Shar' morphing elixir"
+    target_items = list(/obj/item/rogueweapon/greatsword)
+    result_item = /obj/item/rogueweapon/greatsword/olygsword
+
 /////////////////////////////
 // ! Triumph-Exc. Kits !   //
 /////////////////////////////

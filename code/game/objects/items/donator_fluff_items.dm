@@ -1632,3 +1632,16 @@ As Excaliber."
 	The gilbranze fastens seem to be of museum quality, with a touchmark in the form of the initials 'AWE' on one end.\""
 	icon = 'icons/obj/items/donor_music.dmi'
 	icon_state = "gilbranzeguitar"
+
+// OLYMPUS7
+/obj/item/rogueweapon/greatsword/olygsword
+    name = "Gre'as'anto d'Shar"
+    desc = "A profoundly lavish, late 14th century royal Yuethindrynn kriegsmesser, reforged with Hammerholdian bluntness into a \
+    greatsword impregnated with dark alloy threads    that knit together forming cracks.\
+    From the wielder’s perspective,<i>Dro'xun phor jal dkinoss.</i> is engraved as a reminder.\
+    The center piece of The crossguard features a clan emblem of a shattered symbol of progress held together by arcane energy, \
+    in place of the intersection of the cross is a slited eye within a halo, the arms of the cross are triangular.\
+    This is not a blade of faith or morals, it is a tool with a purpose to it's user."
+    icon = 'icons/obj/items/donor_weapons_64.dmi'
+    icon_state = "olygsword"
+    bigboy = TRUE

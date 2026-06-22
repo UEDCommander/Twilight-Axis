@@ -1330,107 +1330,107 @@
 // HOLY STEEL
 
 /datum/anvil_recipe/armor/holysteel/astratahelmtemplar
-	name = "Astratan Templar's Helmet (+1 Holy Steel, +1 Cured Leather)"
+	name = "Astratan Templar's Helmet (+1 Holy Steel, +1 Cured Leather, +1 Amulet of Astrata)"
 	req_bar = /obj/item/ingot/steelholy
-	additional_items = list(/obj/item/ingot/steelholy, /obj/item/natural/hide/cured)
+	additional_items = list(/obj/item/ingot/steelholy, /obj/item/natural/hide/cured, /obj/item/clothing/neck/roguetown/psicross/astrata)
 	created_item = /obj/item/clothing/head/roguetown/helmet/heavy/astratan
 	display_category = ITEM_CAT_ARMOR_HELMETS
 
 /datum/anvil_recipe/armor/holysteel/malumhelmtemplar
-	name = "Malumite Templar's Helmet (+1 Holy Steel, +1 Cured Leather)"
+	name = "Malumite Templar's Helmet (+1 Holy Steel, +1 Cured Leather, +1 Amulet of Malum)"
 	req_bar = /obj/item/ingot/steelholy
-	additional_items = list(/obj/item/ingot/steelholy, /obj/item/natural/hide/cured)
+	additional_items = list(/obj/item/ingot/steelholy, /obj/item/natural/hide/cured, /obj/item/clothing/neck/roguetown/psicross/malum)
 	created_item = /obj/item/clothing/head/roguetown/helmet/heavy/malum
 	display_category = ITEM_CAT_ARMOR_HELMETS
 
 /datum/anvil_recipe/armor/holysteel/necrahelmtemplar
-	name = "Necran Templar's Helmet (+1 Holy Steel, +1 Cured Leather)"
+	name = "Necran Templar's Helmet (+1 Holy Steel, +1 Cured Leather, +1 Amulet of Necra)"
 	req_bar = /obj/item/ingot/steelholy
-	additional_items = list(/obj/item/ingot/steelholy, /obj/item/natural/hide/cured)
+	additional_items = list(/obj/item/ingot/steelholy, /obj/item/natural/hide/cured, /obj/item/clothing/neck/roguetown/psicross/necra)
 	created_item = /obj/item/clothing/head/roguetown/helmet/heavy/necran
 	display_category = ITEM_CAT_ARMOR_HELMETS
 
 /datum/anvil_recipe/armor/holysteel/pestrahelmtemplar
-	name = "Pestran Templar's Helmet (+1 Holy Steel, +1 Cured Leather)"
+	name = "Pestran Templar's Helmet (+1 Holy Steel, +1 Cured Leather, +1 Amulet of Pestra)"
 	req_bar = /obj/item/ingot/steelholy
-	additional_items = list(/obj/item/ingot/steelholy, /obj/item/natural/hide/cured)
+	additional_items = list(/obj/item/ingot/steelholy, /obj/item/natural/hide/cured, /obj/item/clothing/neck/roguetown/psicross/pestra)
 	created_item = /obj/item/clothing/head/roguetown/helmet/heavy/pestran
 	display_category = ITEM_CAT_ARMOR_HELMETS
 
 /datum/anvil_recipe/armor/holysteel/eorahelmtemplar
-	name = "Eoran Templar's Helmet (+1 Holy Steel, +1 Cured Leather)"
+	name = "Eoran Templar's Helmet (+1 Holy Steel, +1 Cured Leather, +1 Amulet of Eora)"
 	req_bar = /obj/item/ingot/steelholy
-	additional_items = list(/obj/item/ingot/steelholy, /obj/item/natural/hide/cured)
+	additional_items = list(/obj/item/ingot/steelholy, /obj/item/natural/hide/cured, /obj/item/clothing/neck/roguetown/psicross/eora)
 	created_item = /obj/item/clothing/head/roguetown/helmet/heavy/eoran
 	display_category = ITEM_CAT_ARMOR_HELMETS
 
 /datum/anvil_recipe/armor/holysteel/astratahelm
-	name = "Astratan Helmet (+1 Holy Steel, +1 Cured Leather)"
+	name = "Astratan Helmet (+1 Holy Steel, +1 Cured Leather, +1 Amulet of Astrata)"
 	req_bar = /obj/item/ingot/steelholy
-	additional_items = list(/obj/item/ingot/steelholy, /obj/item/natural/hide/cured)
+	additional_items = list(/obj/item/ingot/steelholy, /obj/item/natural/hide/cured, /obj/item/clothing/neck/roguetown/psicross/astrata)
 	created_item = /obj/item/clothing/head/roguetown/helmet/heavy/astratahelm
 	display_category = ITEM_CAT_ARMOR_HELMETS
 
 /datum/anvil_recipe/armor/holysteel/abyssorhelm
-	name = "Abyssorite Helmet (+1 Holy Steel, +1 Cured Leather)"
+	name = "Abyssorite Helmet (+1 Holy Steel, +1 Cured Leather, +1 Amulet of Abyssor)"
 	req_bar = /obj/item/ingot/steelholy
-	additional_items = list(/obj/item/ingot/steelholy, /obj/item/natural/hide/cured)
+	additional_items = list(/obj/item/ingot/steelholy, /obj/item/natural/hide/cured, /obj/item/clothing/neck/roguetown/psicross/abyssor)
 	created_item = /obj/item/clothing/head/roguetown/helmet/heavy/abyssorgreathelm
 	display_category = ITEM_CAT_ARMOR_HELMETS
 
 /datum/anvil_recipe/armor/holysteel/necrahelm
-	name = "Necran Helmet (+1 Holy Steel, +1 Cured Leather)"
+	name = "Necran Helmet (+1 Holy Steel, +1 Cured Leather, +1 Amulet of Necra)"
 	req_bar = /obj/item/ingot/steelholy
-	additional_items = list(/obj/item/ingot/steelholy, /obj/item/natural/hide/cured)
+	additional_items = list(/obj/item/ingot/steelholy, /obj/item/natural/hide/cured, /obj/item/clothing/neck/roguetown/psicross/necra)
 	created_item = /obj/item/clothing/head/roguetown/helmet/heavy/necrahelm
 	display_category = ITEM_CAT_ARMOR_HELMETS
 
 /datum/anvil_recipe/armor/holysteel/nochelm
-	name = "Noccian Helmet (+1 Holy Steel, +1 Cured Leather)"
+	name = "Noccian Helmet (+1 Holy Steel, +1 Cured Leather, +1 Amulet of Noc)"
 	req_bar = /obj/item/ingot/steelholy
-	additional_items = list(/obj/item/ingot/steelholy, /obj/item/natural/hide/cured)
+	additional_items = list(/obj/item/ingot/steelholy, /obj/item/natural/hide/cured, /obj/item/clothing/neck/roguetown/psicross/noc)
 	created_item = /obj/item/clothing/head/roguetown/helmet/heavy/nochelm
 	display_category = ITEM_CAT_ARMOR_HELMETS
 
 /datum/anvil_recipe/armor/holysteel/dendorhelm
-	name = "Dendorite Helmet (+1 Holy Steel, +1 Cured Leather)"
+	name = "Dendorite Helmet (+1 Holy Steel, +1 Cured Leather, +1 Amulet of Dendor)"
 	req_bar = /obj/item/ingot/steelholy
-	additional_items = list(/obj/item/ingot/steelholy, /obj/item/natural/hide/cured)
+	additional_items = list(/obj/item/ingot/steelholy, /obj/item/natural/hide/cured, /obj/item/clothing/neck/roguetown/psicross/dendor)
 	created_item = /obj/item/clothing/head/roguetown/helmet/heavy/dendorhelm
 	display_category = ITEM_CAT_ARMOR_HELMETS
 
 /datum/anvil_recipe/armor/holysteel/ravoxhelm
-	name = "Ravoxian Helmet (+1 Holy Steel, +1 Cured Leather)"
+	name = "Ravoxian Helmet (+1 Holy Steel, +1 Cured Leather, +1 Amulet of Ravox)"
 	req_bar = /obj/item/ingot/steelholy
-	additional_items = list(/obj/item/ingot/steelholy, /obj/item/natural/hide/cured)
+	additional_items = list(/obj/item/ingot/steelholy, /obj/item/natural/hide/cured, /obj/item/clothing/neck/roguetown/psicross/ravox)
 	created_item = /obj/item/clothing/head/roguetown/helmet/heavy/ravoxhelm
 	display_category = ITEM_CAT_ARMOR_HELMETS
 
 /datum/anvil_recipe/armor/holysteel/xylixhelm
-	name = "Xylixian Helmet (+1 Holy Steel, +1 Cured Leather)"
+	name = "Xylixian Helmet (+1 Holy Steel, +1 Cured Leather, +1 Amulet of Xylix)"
 	req_bar = /obj/item/ingot/steelholy
-	additional_items = list(/obj/item/ingot/steelholy, /obj/item/natural/hide/cured)
+	additional_items = list(/obj/item/ingot/steelholy, /obj/item/natural/hide/cured, /obj/item/clothing/neck/roguetown/psicross/xylix)
 	created_item = /obj/item/clothing/head/roguetown/helmet/heavy/xylixhelm
 	display_category = ITEM_CAT_ARMOR_HELMETS
 
 /datum/anvil_recipe/armor/holysteel/eorahelm
-	name = "Eoran Helmet (+1 Holy Steel, +1 Cured Leather)"
+	name = "Eoran Helmet (+1 Holy Steel, +1 Cured Leather, +1 Amulet of Eora)"
 	req_bar = /obj/item/ingot/steelholy
-	additional_items = list(/obj/item/ingot/steelholy, /obj/item/natural/hide/cured)
+	additional_items = list(/obj/item/ingot/steelholy, /obj/item/natural/hide/cured, /obj/item/clothing/neck/roguetown/psicross/eora)
 	created_item = /obj/item/clothing/head/roguetown/helmet/sallet/eoran
 	display_category = ITEM_CAT_ARMOR_HELMETS
 
 /datum/anvil_recipe/armor/holysteel/undividedtemplar_sallet
-	name = "Undivided Templar's Sallet (+1 Holy Steel, +1 Cured Leather)"
+	name = "Undivided Templar's Sallet (+1 Holy Steel, +1 Cured Leather, +1 Amulet of Ten)"
 	req_bar = /obj/item/ingot/steelholy
-	additional_items = list(/obj/item/ingot/steelholy, /obj/item/natural/hide/cured)
+	additional_items = list(/obj/item/ingot/steelholy, /obj/item/natural/hide/cured, /obj/item/clothing/neck/roguetown/psicross/undivided)
 	created_item = /obj/item/clothing/head/roguetown/helmet/heavy/undivided
 	display_category = ITEM_CAT_ARMOR_HELMETS
 
 /datum/anvil_recipe/armor/holysteel/undividedtemplar_bucket
-	name = "Undivided Templar's Bucket Helmet (+1 Holy Steel, +1 Cured Leather)"
+	name = "Undivided Templar's Bucket Helmet (+1 Holy Steel, +1 Cured Leather, +1 Amulet of Ten)"
 	req_bar = /obj/item/ingot/steelholy
-	additional_items = list(/obj/item/ingot/steelholy, /obj/item/natural/hide/cured)
+	additional_items = list(/obj/item/ingot/steelholy, /obj/item/natural/hide/cured, /obj/item/clothing/neck/roguetown/psicross/undivided)
 	created_item = /obj/item/clothing/head/roguetown/helmet/heavy/undivided_alt
 
 // SILVER
