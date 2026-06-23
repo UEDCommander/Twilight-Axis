@@ -5,7 +5,8 @@
 	icon_state = "deck"
 	w_class = WEIGHT_CLASS_SMALL
 	var/list/card_ids = list()
-	var/leader_id = "leader_clear_weather"
+	var/faction_id = CCI_FACTION_AZURIA
+	var/leader_id = "azuria_ducal_marshal"
 	var/datum/cci_match/match
 	var/obj/item/cci_deck/match_host
 	var/inviter_ckey
@@ -16,14 +17,15 @@
 	if(!length(GLOB.cci_base_card_ids))
 		cci_build_card_registry()
 	if(!length(card_ids))
-		card_ids = GLOB.cci_base_card_ids.Copy()
+		var/list/default_cards = cci_base_cards_for_faction(faction_id)
+		card_ids = default_cards.Copy()
 		while(card_ids.len > CCI_DECK_SIZE)
 			card_ids.Cut(card_ids.len, card_ids.len + 1)
 		var/index = 1
-		while(card_ids.len < CCI_DECK_SIZE && length(GLOB.cci_base_card_ids))
-			card_ids += GLOB.cci_base_card_ids[index]
+		while(card_ids.len < CCI_DECK_SIZE && length(default_cards))
+			card_ids += default_cards[index]
 			index++
-			if(index > GLOB.cci_base_card_ids.len)
+			if(index > default_cards.len)
 				index = 1
 
 /obj/item/cci_deck/Destroy()
@@ -39,8 +41,31 @@
 /obj/item/cci_deck/proc/set_cards(list/new_cards)
 	card_ids = list()
 	for(var/card_id in new_cards)
-		if(cci_card(card_id) && card_ids.len < CCI_DECK_SIZE)
+		if(cci_card_allowed_for_faction(card_id, faction_id) && card_ids.len < CCI_DECK_SIZE)
 			card_ids += card_id
+
+/obj/item/cci_deck/proc/set_faction(new_faction_id, new_leader_id)
+	var/datum/cci_faction/faction = cci_faction(new_faction_id)
+	if(!faction)
+		return FALSE
+	faction_id = faction.id
+	var/datum/cci_leader/leader = cci_leader(new_leader_id)
+	if(!leader || leader.faction != faction_id)
+		leader_id = faction.default_leader
+	else
+		leader_id = leader.id
+	return TRUE
+
+/obj/item/cci_deck/proc/remove_cards_not_in_faction()
+	var/list/removed = list()
+	var/list/kept = list()
+	for(var/card_id in card_ids)
+		if(cci_card_allowed_for_faction(card_id, faction_id))
+			kept += card_id
+		else
+			removed += card_id
+	card_ids = kept
+	return removed
 
 /obj/item/cci_deck/attack_self(mob/user)
 	if(!user)
@@ -117,6 +142,9 @@
 		return FALSE
 	if(!cci_card(single.card_id))
 		to_chat(user, span_warning("This card cannot be added to the deck."))
+		return FALSE
+	if(!cci_card_allowed_for_faction(single.card_id, faction_id))
+		to_chat(user, span_warning("This card belongs to another deck faction."))
 		return FALSE
 	card_ids += single.card_id
 	var/datum/cci_card/card = cci_card(single.card_id)
@@ -243,6 +271,45 @@
 		qdel(src)
 	else
 		to_chat(user, span_notice("You already know this card, or it is a basic card."))
+
+/obj/item/cci_card_generator
+	name = "sealed card packet"
+	desc = "A sealed packet containing a random collectible card."
+	icon = 'icons/obj/playing_cards.dmi'
+	icon_state = "singlecard_down"
+	w_class = WEIGHT_CLASS_TINY
+	var/card_rarity = CCI_RARITY_RARE
+
+/obj/item/cci_card_generator/Initialize(mapload)
+	. = ..()
+	var/card_id = pick_random_card()
+	if(!card_id)
+		return
+	var/obj/item/cci_card_single/single = new(loc)
+	single.set_card(card_id)
+	return INITIALIZE_HINT_QDEL
+
+/obj/item/cci_card_generator/proc/pick_random_card()
+	if(!length(GLOB.cci_cards_by_id))
+		cci_build_card_registry()
+	var/list/candidates = list()
+	for(var/card_id in GLOB.cci_cards_by_id)
+		var/datum/cci_card/card = cci_card(card_id)
+		if(card?.rarity == card_rarity)
+			candidates += card_id
+	if(!length(candidates))
+		return null
+	return pick(candidates)
+
+/obj/item/cci_card_generator/rare
+	name = "sealed rare card packet"
+	desc = "A sealed packet containing a random rare collectible card."
+	card_rarity = CCI_RARITY_RARE
+
+/obj/item/cci_card_generator/unique
+	name = "sealed unique card packet"
+	desc = "A sealed packet containing a random unique collectible card."
+	card_rarity = CCI_RARITY_UNIQUE
 
 /obj/item/cci_card_single/rare_captain
 	card_id = "rare_captain"

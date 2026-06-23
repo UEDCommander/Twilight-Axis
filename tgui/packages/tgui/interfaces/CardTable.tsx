@@ -34,6 +34,14 @@ type Leader = {
   used: boolean;
 };
 
+type CciFaction = {
+  id: string;
+  name: string;
+  desc: string;
+  effect: string;
+  defaultLeader: string;
+};
+
 type Data = {
   waiting?: boolean;
   offeredName?: string;
@@ -50,6 +58,7 @@ type Data = {
   result?: string;
   message?: string;
   leader?: Leader;
+  faction?: CciFaction;
   weather?: string[];
   weatherCards?: Card[];
   rowEffects?: Record<Side, Record<CardRow, Card[]>>;
@@ -713,6 +722,14 @@ export const CardTable = () => {
                     background: 'rgba(5,7,11,0.45)',
                   }}
                 >
+                  {data.faction && (
+                    <>
+                      <div style={{ color: '#fbbf24', fontWeight: 800 }}>{data.faction.name}</div>
+                      <div style={{ color: '#94a3b8', fontSize: '11px', marginBottom: '6px' }}>
+                        {data.faction.desc}
+                      </div>
+                    </>
+                  )}
                   <div style={{ color: '#f8fafc', fontWeight: 800 }}>{data.leader.name}</div>
                   <div style={{ color: '#94a3b8', fontSize: '11px', marginBottom: '5px' }}>
                     {data.leader.desc}

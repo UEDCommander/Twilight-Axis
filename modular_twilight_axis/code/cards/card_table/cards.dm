@@ -27,10 +27,30 @@
 #define CCI_EFFECT_FOG "fog"
 #define CCI_EFFECT_RAIN "rain"
 
+#define CCI_FACTION_NEUTRAL "neutral"
+#define CCI_FACTION_AZURIA "azuria"
+#define CCI_FACTION_ENIGMA "enigma"
+#define CCI_FACTION_NALEDI "naledi"
+#define CCI_FACTION_GRENZELHOFT "grenzelhoft"
+#define CCI_FACTION_RANESHI "raneshi"
+#define CCI_FACTION_GRONN "gronn"
+#define CCI_FACTION_KAZENGUN "kazengun"
+
+#define CCI_FACTION_EFFECT_ROUND_WIN_DRAW "round_win_draw"
+#define CCI_FACTION_EFFECT_KEEP_UNIT "keep_unit"
+#define CCI_FACTION_EFFECT_WIN_DRAWS "win_draws"
+#define CCI_FACTION_EFFECT_ROUND_LOSS_DRAW "round_loss_draw"
+#define CCI_FACTION_EFFECT_REVIVE_UNIT "revive_unit"
+#define CCI_FACTION_EFFECT_EXTRA_MULLIGAN "extra_mulligan"
+#define CCI_FACTION_EFFECT_OPENING_DRAW "opening_draw"
+
+#define CCI_LEADER_EFFECT_DRAW "draw"
+
 #define CCI_COMBO_NONE "none"
 
 GLOBAL_LIST_EMPTY(cci_cards_by_id)
 GLOBAL_LIST_EMPTY(cci_base_card_ids)
+GLOBAL_LIST_EMPTY(cci_factions_by_id)
 GLOBAL_LIST_EMPTY(cci_leaders_by_id)
 
 /proc/cci_build_card_registry()
@@ -52,6 +72,38 @@ GLOBAL_LIST_EMPTY(cci_leaders_by_id)
 	if(!length(GLOB.cci_cards_by_id))
 		cci_build_card_registry()
 	return GLOB.cci_cards_by_id[card_id]
+
+/proc/cci_card_allowed_for_faction(card_id, faction_id)
+	var/datum/cci_card/card = cci_card(card_id)
+	if(!card)
+		return FALSE
+	return card.faction == CCI_FACTION_NEUTRAL || card.faction == faction_id
+
+/proc/cci_base_cards_for_faction(faction_id)
+	if(!length(GLOB.cci_base_card_ids))
+		cci_build_card_registry()
+	var/list/card_ids = list()
+	for(var/card_id in GLOB.cci_base_card_ids)
+		if(cci_card_allowed_for_faction(card_id, faction_id))
+			card_ids += card_id
+	return card_ids
+
+/proc/cci_build_faction_registry()
+	GLOB.cci_factions_by_id = list()
+	for(var/path in subtypesof(/datum/cci_faction))
+		var/datum/cci_faction/faction = new path()
+		if(!faction.id)
+			qdel(faction)
+			continue
+		if(GLOB.cci_factions_by_id[faction.id])
+			qdel(faction)
+			continue
+		GLOB.cci_factions_by_id[faction.id] = faction
+
+/proc/cci_faction(faction_id)
+	if(!length(GLOB.cci_factions_by_id))
+		cci_build_faction_registry()
+	return GLOB.cci_factions_by_id[faction_id]
 
 /proc/cci_build_leader_registry()
 	GLOB.cci_leaders_by_id = list()
@@ -77,6 +129,7 @@ GLOBAL_LIST_EMPTY(cci_leaders_by_id)
 	var/row = CCI_ROW_INFANTRY
 	var/power = 1
 	var/rarity = CCI_RARITY_BASE
+	var/faction = CCI_FACTION_NEUTRAL
 	var/effect = CCI_EFFECT_NONE
 	var/combo = CCI_COMBO_NONE
 	var/list/combo_with = list()
@@ -95,6 +148,7 @@ GLOBAL_LIST_EMPTY(cci_leaders_by_id)
 		"row" = row,
 		"power" = power,
 		"rarity" = rarity,
+		"faction" = faction,
 		"effect" = effect,
 		"combo" = combo,
 		"comboEffect" = combo_effect,
@@ -110,6 +164,7 @@ GLOBAL_LIST_EMPTY(cci_leaders_by_id)
 	var/id
 	var/name = "Unnamed Leader"
 	var/desc = ""
+	var/faction = CCI_FACTION_AZURIA
 	var/effect = CCI_EFFECT_NONE
 	var/target_row = ""
 
@@ -118,354 +173,176 @@ GLOBAL_LIST_EMPTY(cci_leaders_by_id)
 		"id" = id,
 		"name" = name,
 		"desc" = desc,
+		"faction" = faction,
 		"effect" = effect,
 		"targetRow" = target_row,
 		"used" = used
 	)
 
-/datum/cci_leader/clear_weather
-	id = "leader_clear_weather"
-	name = "Weathered Commander"
+/datum/cci_faction
+	var/id
+	var/name = "Unnamed Faction"
+	var/desc = ""
+	var/effect = CCI_EFFECT_NONE
+	var/default_leader = ""
+
+/datum/cci_faction/proc/as_ui_data()
+	return list(
+		"id" = id,
+		"name" = name,
+		"desc" = desc,
+		"effect" = effect,
+		"defaultLeader" = default_leader
+	)
+
+/datum/cci_faction/azuria
+	id = CCI_FACTION_AZURIA
+	name = "Azuria"
+	desc = "Orderly feudal ranks. Draws one card after winning a round."
+	effect = CCI_FACTION_EFFECT_ROUND_WIN_DRAW
+	default_leader = "azuria_ducal_marshal"
+
+/datum/cci_faction/enigma
+	id = CCI_FACTION_ENIGMA
+	name = "Enigma"
+	desc = "Hidden hands and prepared reserves. Starts the match with one extra card."
+	effect = CCI_FACTION_EFFECT_OPENING_DRAW
+	default_leader = "enigma_vanguard_overseer"
+
+/datum/cci_faction/naledi
+	id = CCI_FACTION_NALEDI
+	name = "Naledi"
+	desc = "Zibantian rites and desert scholarship. Revives one non-hero unit at the start of each later round."
+	effect = CCI_FACTION_EFFECT_REVIVE_UNIT
+	default_leader = "naledi_star_emir"
+
+/datum/cci_faction/grenzelhoft
+	id = CCI_FACTION_GRENZELHOFT
+	name = "Grenzelhoft"
+	desc = "Black imperial discipline. Wins drawn rounds unless the opponent has the same claim."
+	effect = CCI_FACTION_EFFECT_WIN_DRAWS
+	default_leader = "grenzelhoft_line_breaker"
+
+/datum/cci_faction/raneshi
+	id = CCI_FACTION_RANESHI
+	name = "Raneshi"
+	desc = "Zibantian sands, caravans, and ambushes. Draws one card after losing a round."
+	effect = CCI_FACTION_EFFECT_ROUND_LOSS_DRAW
+	default_leader = "raneshi_court_veil"
+
+/datum/cci_faction/gronn
+	id = CCI_FACTION_GRONN
+	name = "Gronn"
+	desc = "Northern berserkers and raiders. Keeps one random non-hero unit on the field after each round."
+	effect = CCI_FACTION_EFFECT_KEEP_UNIT
+	default_leader = "gronn_war_chief"
+
+/datum/cci_faction/kazengun
+	id = CCI_FACTION_KAZENGUN
+	name = "Kazengun"
+	desc = "Ronin, shinobi, and disciplined sword schools. Gains one extra mulligan."
+	effect = CCI_FACTION_EFFECT_EXTRA_MULLIGAN
+	default_leader = "kazengun_shadow_daimyo"
+
+/datum/cci_leader/azuria/ducal_marshal
+	id = "azuria_ducal_marshal"
+	name = "Ducal Marshal"
 	desc = "Clears all weather once per match."
+	faction = CCI_FACTION_AZURIA
 	effect = CCI_EFFECT_CLEAR_WEATHER
 
-/datum/cci_leader/infantry_horn
-	id = "leader_infantry_horn"
-	name = "Infantry Marshal"
+/datum/cci_leader/azuria/kingsfield_captain
+	id = "azuria_kingsfield_captain"
+	name = "Captain of Kingsfield"
 	desc = "Places a commander horn on your infantry row once per match."
+	faction = CCI_FACTION_AZURIA
 	effect = CCI_EFFECT_HORN
 	target_row = CCI_ROW_INFANTRY
 
-/datum/cci_leader/scorch
-	id = "leader_scorch"
-	name = "Executioner"
+/datum/cci_leader/enigma/vanguard_overseer
+	id = "enigma_vanguard_overseer"
+	name = "Vanguard Overseer"
 	desc = "Destroys the strongest unit or units once per match."
+	faction = CCI_FACTION_ENIGMA
 	effect = CCI_EFFECT_SCORCH_GLOBAL
 
-/datum/cci_leader/draw
-	id = "leader_draw"
-	name = "Quartermaster"
-	desc = "Draws one card once per match."
-	effect = "draw"
-
-// Add new cards by making another /datum/cci_card subtype with a unique id.
-/datum/cci_card/base_swordsman
-	id = "base_swordsman"
-	name = "Swordsman"
-	desc = "Reliable infantry."
-	row = CCI_ROW_INFANTRY
-	power = 4
-	combo_with = list("base_shieldman")
-	combo_effect = CCI_EFFECT_MORALE
-	art = "cci_cards/swordsman.png"
-
-/datum/cci_card/base_spearman
-	id = "base_spearman"
-	name = "Spearman"
-	desc = "Doubles with other Spearmen."
-	row = CCI_ROW_INFANTRY
-	power = 3
-	effect = CCI_EFFECT_BOND
-	art = "cci_cards/spearman.png"
-
-/datum/cci_card/base_archer
-	id = "base_archer"
-	name = "Archer"
-	desc = "Reliable ranged card."
-	row = CCI_ROW_ARCHERS
-	power = 4
-	effect = CCI_EFFECT_AGILE
-	combo_with = list("base_longbowman")
-	combo_effect = CCI_EFFECT_SCORCH
-	art = "cci_cards/young_archer.png"
-
-/datum/cci_card/base_crossbow
-	id = "base_crossbow"
-	name = "Crossbowman"
-	desc = "Ranged morale support."
-	row = CCI_ROW_ARCHERS
-	power = 3
-	effect = CCI_EFFECT_MORALE
-	art = "cci_cards/crossbowman.png"
-
-/datum/cci_card/base_catapult
-	id = "base_catapult"
-	name = "Catapult"
-	desc = "Doubles with other Catapults."
-	row = CCI_ROW_SIEGE
-	power = 5
-	effect = CCI_EFFECT_BOND
-	combo_with = list("base_ballista")
-	combo_effect = CCI_EFFECT_SCORCH
-	art = "cci_cards/trebuchet.png"
-
-/datum/cci_card/base_ballista
-	id = "base_ballista"
-	name = "Ballista"
-	desc = "Siege engine."
-	row = CCI_ROW_SIEGE
-	power = 6
-	effect = CCI_EFFECT_SCORCH_INFANTRY
-	combo_with = list("base_catapult")
-	combo_effect = CCI_EFFECT_SCORCH
-	art = "cci_cards/ballista.png"
-
-/datum/cci_card/base_frost
-	id = "base_frost"
-	name = "Biting Frost"
-	desc = "Sets infantry strength to 1."
-	row = CCI_ROW_WEATHER
-	power = 0
-	effect = CCI_EFFECT_FROST
-	art = "cci_cards/frost.png"
-
-/datum/cci_card/base_fog
-	id = "base_fog"
-	name = "Impenetrable Fog"
-	desc = "Sets archers strength to 1."
-	row = CCI_ROW_WEATHER
-	power = 0
-	effect = CCI_EFFECT_FOG
-	art = "cci_cards/fog.png"
-
-/datum/cci_card/base_rain
-	id = "base_rain"
-	name = "Torrential Rain"
-	desc = "Sets siege strength to 1."
-	row = CCI_ROW_WEATHER
-	power = 0
-	effect = CCI_EFFECT_RAIN
-	art = "cci_cards/rain.png"
-
-/datum/cci_card/base_clear
-	id = "base_clear"
-	name = "Clear Weather"
-	desc = "Removes all weather."
-	row = CCI_ROW_WEATHER
-	power = 0
+/datum/cci_leader/enigma/redoubt_keeper
+	id = "enigma_redoubt_keeper"
+	name = "Keeper of the Redoubt"
+	desc = "Clears all weather once per match."
+	faction = CCI_FACTION_ENIGMA
 	effect = CCI_EFFECT_CLEAR_WEATHER
-	art = "cci_cards/clear_weather.png"
 
-/datum/cci_card/base_shieldman
-	id = "base_shieldman"
-	name = "Shieldman"
-	desc = "Steady frontline infantry."
-	row = CCI_ROW_INFANTRY
-	power = 5
-	combo_with = list("base_swordsman")
-	combo_effect = CCI_EFFECT_MORALE
-	art = "cci_cards/shield_swordsman.png"
+/datum/cci_leader/naledi/star_emir
+	id = "naledi_star_emir"
+	name = "Star Emir"
+	desc = "Draws one card once per match."
+	faction = CCI_FACTION_NALEDI
+	effect = CCI_LEADER_EFFECT_DRAW
 
-/datum/cci_card/base_banner_bearer
-	id = "base_banner_bearer"
-	name = "Banner Bearer"
-	desc = "Morale boost for infantry."
-	row = CCI_ROW_INFANTRY
-	power = 2
-	effect = CCI_EFFECT_MORALE
-	art = "cci_cards/banner_bearer.png"
+/datum/cci_leader/naledi/sand_oracle
+	id = "naledi_sand_oracle"
+	name = "Sand Oracle"
+	desc = "Clears all weather once per match."
+	faction = CCI_FACTION_NALEDI
+	effect = CCI_EFFECT_CLEAR_WEATHER
 
-/datum/cci_card/base_guard
-	id = "base_guard"
-	name = "Guard"
-	desc = "Armored infantry."
-	row = CCI_ROW_INFANTRY
-	power = 4
-	effect = CCI_EFFECT_MUSTER
-	art = "cci_cards/shield_guard.png"
-
-/datum/cci_card/base_longbowman
-	id = "base_longbowman"
-	name = "Longbowman"
-	desc = "Doubles with other Longbowmen."
-	row = CCI_ROW_ARCHERS
-	power = 3
-	effect = CCI_EFFECT_BOND
-	combo_with = list("base_archer")
-	combo_effect = CCI_EFFECT_SCORCH
-	art = "cci_cards/hood_archer.png"
-
-/datum/cci_card/base_blacksmith
-	id = "base_blacksmith"
-	name = "Blacksmith"
-	desc = "Morale support for siege."
-	row = CCI_ROW_SIEGE
-	power = 2
-	effect = CCI_EFFECT_MORALE
-	combo_with = list("base_supply_cart")
-	combo_effect = CCI_EFFECT_MORALE
-	art = "cci_cards/blacksmith.png"
-
-/datum/cci_card/base_supply_cart
-	id = "base_supply_cart"
-	name = "Supply Cart"
-	desc = "Siege support."
-	row = CCI_ROW_SIEGE
-	power = 4
-	combo_with = list("base_blacksmith")
-	combo_effect = CCI_EFFECT_MORALE
-	art = "cci_cards/supply_cart.png"
-
-/datum/cci_card/base_scout
-	id = "base_scout"
-	name = "Scout"
-	desc = "Light ranged unit."
-	row = CCI_ROW_ARCHERS
-	power = 2
-	art = "cci_cards/scout.png"
-
-/datum/cci_card/base_militia
-	id = "base_militia"
-	name = "Militia"
-	desc = "Cheap infantry."
-	row = CCI_ROW_INFANTRY
-	power = 2
-	art = "cci_cards/swordsman.png"
-
-/datum/cci_card/base_mangonel
-	id = "base_mangonel"
-	name = "Mangonel"
-	desc = "Basic siege engine."
-	row = CCI_ROW_SIEGE
-	power = 3
-	art = "cci_cards/trebuchet.png"
-
-/datum/cci_card/base_field_medic
-	id = "base_field_medic"
-	name = "Field Medic"
-	desc = "Keeps the line together."
-	row = CCI_ROW_INFANTRY
-	power = 3
-	effect = CCI_EFFECT_MEDIC
-	art = "cci_cards/field_medic.png"
-
-/datum/cci_card/base_decoy
-	id = "base_decoy"
-	name = "Decoy"
-	desc = "Returns your strongest unit to hand."
-	row = CCI_ROW_WEATHER
-	power = 0
-	effect = CCI_EFFECT_DECOY
-	art = "cci_cards/fog.png"
-
-/datum/cci_card/base_horn_infantry
-	id = "base_horn_infantry"
-	name = "Infantry Horn"
-	desc = "Doubles all units in your infantry row."
-	row = CCI_ROW_INFANTRY
-	power = 0
-	effect = CCI_EFFECT_HORN
-	target_row = CCI_ROW_INFANTRY
-	art = "cci_cards/banner_bearer.png"
-
-/datum/cci_card/base_horn_archers
-	id = "base_horn_archers"
-	name = "Archers Horn"
-	desc = "Doubles all units in your archers row."
-	row = CCI_ROW_ARCHERS
-	power = 0
-	effect = CCI_EFFECT_HORN
-	target_row = CCI_ROW_ARCHERS
-	art = "cci_cards/field_captain.png"
-
-/datum/cci_card/base_horn_siege
-	id = "base_horn_siege"
-	name = "Siege Horn"
-	desc = "Doubles all units in your siege row."
-	row = CCI_ROW_SIEGE
-	power = 0
+/datum/cci_leader/grenzelhoft/line_breaker
+	id = "grenzelhoft_line_breaker"
+	name = "Line Breaker"
+	desc = "Places a commander horn on your siege row once per match."
+	faction = CCI_FACTION_GRENZELHOFT
 	effect = CCI_EFFECT_HORN
 	target_row = CCI_ROW_SIEGE
-	art = "cci_cards/supply_cart.png"
 
-/datum/cci_card/base_scorch
-	id = "base_scorch"
-	name = "Scorch"
-	desc = "Destroys the strongest unit or units on the battlefield."
-	row = CCI_ROW_WEATHER
-	power = 0
+/datum/cci_leader/grenzelhoft/iron_commissar
+	id = "grenzelhoft_iron_commissar"
+	name = "Iron Commissar"
+	desc = "Destroys the strongest unit or units once per match."
+	faction = CCI_FACTION_GRENZELHOFT
 	effect = CCI_EFFECT_SCORCH_GLOBAL
-	art = "cci_cards/rain.png"
 
-/datum/cci_card/base_mardroeme
-	id = "base_mardroeme"
-	name = "Mardroeme"
-	desc = "Turns Berserkers in your infantry row into bears."
-	row = CCI_ROW_INFANTRY
-	power = 0
-	effect = CCI_EFFECT_MARDROEME
+/datum/cci_leader/raneshi/court_veil
+	id = "raneshi_court_veil"
+	name = "Court Veil"
+	desc = "Clears all weather once per match."
+	faction = CCI_FACTION_RANESHI
+	effect = CCI_EFFECT_CLEAR_WEATHER
+
+/datum/cci_leader/raneshi/spice_broker
+	id = "raneshi_spice_broker"
+	name = "Spice Broker"
+	desc = "Draws one card once per match."
+	faction = CCI_FACTION_RANESHI
+	effect = CCI_LEADER_EFFECT_DRAW
+
+/datum/cci_leader/gronn/war_chief
+	id = "gronn_war_chief"
+	name = "War Chief"
+	desc = "Places a commander horn on your infantry row once per match."
+	faction = CCI_FACTION_GRONN
+	effect = CCI_EFFECT_HORN
 	target_row = CCI_ROW_INFANTRY
-	art = "cci_cards/clear_weather.png"
 
-/datum/cci_card/rare_captain
-	id = "rare_captain"
-	name = "Field Captain"
-	desc = "Morale boost for the row."
-	row = CCI_ROW_INFANTRY
-	power = 5
-	rarity = CCI_RARITY_RARE
-	effect = CCI_EFFECT_MORALE
-	art = "cci_cards/field_captain.png"
+/datum/cci_leader/gronn/bone_reader
+	id = "gronn_bone_reader"
+	name = "Bone Reader"
+	desc = "Clears all weather once per match."
+	faction = CCI_FACTION_GRONN
+	effect = CCI_EFFECT_CLEAR_WEATHER
 
-/datum/cci_card/rare_saboteur
-	id = "rare_saboteur"
-	name = "Saboteur"
-	desc = "Destroys the strongest enemy unit."
-	row = CCI_ROW_ARCHERS
-	power = 2
-	rarity = CCI_RARITY_RARE
+/datum/cci_leader/kazengun/shadow_daimyo
+	id = "kazengun_shadow_daimyo"
+	name = "Shadow Daimyo"
+	desc = "Draws one card once per match."
+	faction = CCI_FACTION_KAZENGUN
+	effect = CCI_LEADER_EFFECT_DRAW
+
+/datum/cci_leader/kazengun/ronin_master
+	id = "kazengun_ronin_master"
+	name = "Ronin Master"
+	desc = "Destroys the strongest unit or units once per match."
+	faction = CCI_FACTION_KAZENGUN
 	effect = CCI_EFFECT_SCORCH_GLOBAL
-	art = "cci_cards/siege_engineer.png"
 
-/datum/cci_card/rare_berserker
-	id = "rare_berserker"
-	name = "Berserker"
-	desc = "Turns into a bear under Mardroeme."
-	row = CCI_ROW_INFANTRY
-	power = 4
-	rarity = CCI_RARITY_RARE
-	effect = CCI_EFFECT_BERSERK
-	art = "cci_cards/shield_guard.png"
-
-/datum/cci_card/unique_avenger
-	id = "unique_avenger"
-	name = "Avenger"
-	desc = "When the round ends, calls a stronger warrior before leaving."
-	row = CCI_ROW_INFANTRY
-	power = 6
-	rarity = CCI_RARITY_UNIQUE
-	effect = CCI_EFFECT_AVENGER
-	avenger_card = "unique_avenger_bear"
-	art = "cci_cards/shield_swordsman.png"
-	hero = TRUE
-
-/datum/cci_card/unique_avenger_bear
-	id = "unique_avenger_bear"
-	name = "Avenger Bear"
-	desc = "A called avenger form."
-	row = CCI_ROW_INFANTRY
-	power = 10
-	rarity = CCI_RARITY_UNIQUE
-	art = "cci_cards/shield_guard.png"
-	hero = TRUE
-
-/datum/cci_card/unique_spy
-	id = "unique_spy"
-	name = "Court Spy"
-	desc = "Played on the enemy side; draws two cards."
-	row = CCI_ROW_INFANTRY
-	power = 1
-	rarity = CCI_RARITY_UNIQUE
-	effect = CCI_EFFECT_SPY
-	art = "cci_cards/scout.png"
-
-/datum/cci_card/unique_svinoglazka
-	id = "unique_svinoglazka"
-	name = "Svinoglazka"
-	desc = "Unique card: Svinoglazka. A grim noble warrior in blue."
-	row = CCI_ROW_INFANTRY
-	power = 7
-	rarity = CCI_RARITY_UNIQUE
-	effect = CCI_EFFECT_MORALE
-	art = "cci_cards/svinoglazka.png"
-	hero = TRUE
+// Card definitions live in cards_common.dm and cards_<faction>.dm.

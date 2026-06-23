@@ -32,8 +32,10 @@
 	var/list/combo_morale = list()
 	var/list/mulligans_left = list()
 	var/list/mulligan_ready = list()
+	var/list/faction_ids = list()
 	var/list/leader_ids = list()
 	var/list/leader_used = list()
+	var/list/carryover_cards = list()
 	var/turn = CCI_SIDE_ONE
 	var/round_number = 1
 	var/in_mulligan = TRUE
@@ -60,10 +62,18 @@
 	mulligans_left[CCI_SIDE_TWO] = CCI_MULLIGAN_COUNT
 	mulligan_ready[CCI_SIDE_ONE] = FALSE
 	mulligan_ready[CCI_SIDE_TWO] = FALSE
+	faction_ids[CCI_SIDE_ONE] = d1.faction_id
+	faction_ids[CCI_SIDE_TWO] = d2.faction_id
+	if(faction_has_effect(CCI_SIDE_ONE, CCI_FACTION_EFFECT_EXTRA_MULLIGAN))
+		mulligans_left[CCI_SIDE_ONE]++
+	if(faction_has_effect(CCI_SIDE_TWO, CCI_FACTION_EFFECT_EXTRA_MULLIGAN))
+		mulligans_left[CCI_SIDE_TWO]++
 	leader_ids[CCI_SIDE_ONE] = d1.leader_id
 	leader_ids[CCI_SIDE_TWO] = d2.leader_id
 	leader_used[CCI_SIDE_ONE] = FALSE
 	leader_used[CCI_SIDE_TWO] = FALSE
+	carryover_cards[CCI_SIDE_ONE] = list()
+	carryover_cards[CCI_SIDE_TWO] = list()
 	start_round(TRUE)
 
 /datum/cci_match/Destroy()
@@ -93,8 +103,10 @@
 	combo_morale = null
 	mulligans_left = null
 	mulligan_ready = null
+	faction_ids = null
 	leader_ids = null
 	leader_used = null
+	carryover_cards = null
 	return ..()
 
 /datum/cci_match/proc/update_deck_uis()
@@ -123,11 +135,22 @@
 	if(first_round)
 		draw_cards(CCI_SIDE_ONE, CCI_HAND_SIZE)
 		draw_cards(CCI_SIDE_TWO, CCI_HAND_SIZE)
+		for(var/side in list(CCI_SIDE_ONE, CCI_SIDE_TWO))
+			if(faction_has_effect(side, CCI_FACTION_EFFECT_OPENING_DRAW))
+				draw_cards(side, 1)
 		in_mulligan = TRUE
-		last_message = "Choose up to [CCI_MULLIGAN_COUNT] cards to redraw."
+		last_message = "Choose cards to redraw."
 	else
 		in_mulligan = FALSE
 		last_message = "Round [round_number] begins."
+		for(var/side in list(CCI_SIDE_ONE, CCI_SIDE_TWO))
+			for(var/card_id in carryover_cards[side])
+				var/datum/cci_card/card = cci_card(card_id)
+				if(card && valid_unit_row(card.row))
+					add_played_card(side, card.row, card_id, side)
+			carryover_cards[side] = list()
+			if(faction_has_effect(side, CCI_FACTION_EFFECT_REVIVE_UNIT))
+				revive_random_discard(side)
 	if(first_round)
 		turn = prob(50) ? CCI_SIDE_ONE : CCI_SIDE_TWO
 	else
@@ -194,6 +217,13 @@
 
 /datum/cci_match/proc/opposite(side)
 	return side == CCI_SIDE_ONE ? CCI_SIDE_TWO : CCI_SIDE_ONE
+
+/datum/cci_match/proc/faction_effect(side)
+	var/datum/cci_faction/faction = cci_faction(faction_ids[side])
+	return faction?.effect
+
+/datum/cci_match/proc/faction_has_effect(side, effect)
+	return faction_effect(side) == effect
 
 /datum/cci_match/proc/valid_unit_row(row)
 	return row in list(CCI_ROW_INFANTRY, CCI_ROW_ARCHERS, CCI_ROW_SIEGE)
@@ -303,7 +333,7 @@
 	else if(leader.effect == CCI_EFFECT_SCORCH_GLOBAL)
 		recalculate_board()
 		scorch_strongest_global()
-	else if(leader.effect == "draw")
+	else if(leader.effect == CCI_LEADER_EFFECT_DRAW)
 		draw_cards(side, 1)
 	last_message = "[player_names[side]] uses leader: [leader.name]."
 	recalculate_board()
@@ -320,10 +350,7 @@
 
 /datum/cci_match/proc/apply_weather_card(datum/cci_card/card, side)
 	if(card.effect == CCI_EFFECT_CLEAR_WEATHER)
-		for(var/datum/cci_played_card/played in weather_board)
-			discarded[played.owner_side] += played.card_id
-		weather_board = list()
-		weather = list()
+		clear_weather()
 		discarded[side] += card.id
 	else if(card.effect == CCI_EFFECT_FROST)
 		weather |= CCI_ROW_INFANTRY
@@ -335,11 +362,17 @@
 		weather |= CCI_ROW_SIEGE
 		weather_board += new /datum/cci_played_card(card.id, side)
 
+/datum/cci_match/proc/clear_weather()
+	for(var/datum/cci_played_card/played in weather_board)
+		discarded[played.owner_side] += played.card_id
+	weather_board = list()
+	weather = list()
+
 /datum/cci_match/proc/is_weather_card(datum/cci_card/card)
-	return card.effect in list(CCI_EFFECT_CLEAR_WEATHER, CCI_EFFECT_FROST, CCI_EFFECT_FOG, CCI_EFFECT_RAIN)
+	return card && card.row == CCI_ROW_WEATHER && (card.effect in list(CCI_EFFECT_CLEAR_WEATHER, CCI_EFFECT_FROST, CCI_EFFECT_FOG, CCI_EFFECT_RAIN))
 
 /datum/cci_match/proc/is_special_action_card(datum/cci_card/card)
-	return card.effect in list(CCI_EFFECT_DECOY, CCI_EFFECT_HORN, CCI_EFFECT_SCORCH_GLOBAL, CCI_EFFECT_MARDROEME)
+	return card && (card.row == CCI_ROW_WEATHER || card.power <= 0) && (card.effect in list(CCI_EFFECT_DECOY, CCI_EFFECT_HORN, CCI_EFFECT_SCORCH_GLOBAL, CCI_EFFECT_MARDROEME))
 
 /datum/cci_match/proc/apply_special_action_card(datum/cci_card/card, side, list/params)
 	if(card.effect == CCI_EFFECT_DECOY)
@@ -378,11 +411,29 @@
 			return TRUE
 	return FALSE
 
+/datum/cci_match/proc/row_has_unit_effect(side, row, effect)
+	for(var/check_row in list(CCI_ROW_INFANTRY, CCI_ROW_ARCHERS, CCI_ROW_SIEGE))
+		for(var/datum/cci_played_card/played in board[side][check_row])
+			var/datum/cci_card/card = cci_card(played.card_id)
+			if(card?.effect != effect)
+				continue
+			var/effect_row = card.target_row
+			if(!effect_row)
+				effect_row = card.row
+			if(effect_row == row)
+				return TRUE
+	return FALSE
+
 /datum/cci_match/proc/apply_card_effect(datum/cci_card/card, owner_side, play_side)
 	if(card.effect == CCI_EFFECT_SCORCH)
 		scorch_strongest_enemy(owner_side)
 	else if(card.effect == CCI_EFFECT_SCORCH_INFANTRY)
 		scorch_enemy_infantry(owner_side)
+	else if(card.effect == CCI_EFFECT_SCORCH_GLOBAL)
+		recalculate_board()
+		scorch_strongest_global()
+	else if(card.effect == CCI_EFFECT_CLEAR_WEATHER)
+		clear_weather()
 
 /datum/cci_match/proc/apply_combo_effect(datum/cci_card/card, owner_side, play_side)
 	if(card.combo_effect == CCI_EFFECT_NONE || !length(card.combo_with))
@@ -537,8 +588,8 @@
 						current_bond_count = 0
 					bond_counts[played.card_id] = current_bond_count + 1
 			morale += combo_morale[side][row]
-			var/horn = row_has_effect(side, row, CCI_EFFECT_HORN)
-			var/mardroeme = row_has_effect(side, row, CCI_EFFECT_MARDROEME)
+			var/horn = row_has_effect(side, row, CCI_EFFECT_HORN) || row_has_unit_effect(side, row, CCI_EFFECT_HORN)
+			var/mardroeme = row_has_effect(side, row, CCI_EFFECT_MARDROEME) || row_has_unit_effect(side, row, CCI_EFFECT_MARDROEME)
 			for(var/datum/cci_played_card/played in board[side][row])
 				var/datum/cci_card/card = cci_card(played.card_id)
 				if(!card)
@@ -568,20 +619,46 @@
 /datum/cci_match/proc/end_round()
 	var/score_one = score(CCI_SIDE_ONE)
 	var/score_two = score(CCI_SIDE_TWO)
+	var/winning_side
+	var/draw_round = FALSE
 	if(score_one > score_two)
-		round_wins[CCI_SIDE_ONE]++
+		winning_side = CCI_SIDE_ONE
 		last_message = "[player_names[CCI_SIDE_ONE]] wins the round [score_one] to [score_two]."
 	else if(score_two > score_one)
-		round_wins[CCI_SIDE_TWO]++
+		winning_side = CCI_SIDE_TWO
 		last_message = "[player_names[CCI_SIDE_TWO]] wins the round [score_two] to [score_one]."
 	else
+		if(faction_has_effect(CCI_SIDE_ONE, CCI_FACTION_EFFECT_WIN_DRAWS) && !faction_has_effect(CCI_SIDE_TWO, CCI_FACTION_EFFECT_WIN_DRAWS))
+			winning_side = CCI_SIDE_ONE
+			last_message = "[player_names[CCI_SIDE_ONE]] wins the drawn round by faction claim."
+		else if(faction_has_effect(CCI_SIDE_TWO, CCI_FACTION_EFFECT_WIN_DRAWS) && !faction_has_effect(CCI_SIDE_ONE, CCI_FACTION_EFFECT_WIN_DRAWS))
+			winning_side = CCI_SIDE_TWO
+			last_message = "[player_names[CCI_SIDE_TWO]] wins the drawn round by faction claim."
+		else
+			draw_round = TRUE
+			last_message = "The round is a draw."
+	if(winning_side)
+		round_wins[winning_side]++
+		if(faction_has_effect(winning_side, CCI_FACTION_EFFECT_ROUND_WIN_DRAW))
+			draw_cards(winning_side, 1)
+		if(score_one != score_two)
+			var/losing_side = opposite(winning_side)
+			if(faction_has_effect(losing_side, CCI_FACTION_EFFECT_ROUND_LOSS_DRAW))
+				draw_cards(losing_side, 1)
+	else if(draw_round)
 		round_wins[CCI_SIDE_ONE]++
 		round_wins[CCI_SIDE_TWO]++
-		last_message = "The round is a draw."
+	prepare_faction_carryover(CCI_SIDE_ONE)
+	prepare_faction_carryover(CCI_SIDE_TWO)
 	for(var/side in list(CCI_SIDE_ONE, CCI_SIDE_TWO))
+		var/list/carryover_for_side = carryover_cards[side] || list()
+		var/list/side_carryover = carryover_for_side.Copy()
 		for(var/row in list(CCI_ROW_INFANTRY, CCI_ROW_ARCHERS, CCI_ROW_SIEGE))
 			for(var/datum/cci_played_card/played in board[side][row])
-				discarded[side] += played.card_id
+				if(played.card_id in side_carryover)
+					side_carryover -= played.card_id
+					continue
+				discarded[played.owner_side] += played.card_id
 	for(var/datum/cci_played_card/played in weather_board)
 		discarded[played.owner_side] += played.card_id
 	for(var/side in list(CCI_SIDE_ONE, CCI_SIDE_TWO))
@@ -594,6 +671,25 @@
 		return
 	round_number++
 	start_round(FALSE)
+
+/datum/cci_match/proc/prepare_faction_carryover(side)
+	carryover_cards[side] = list()
+	if(!faction_has_effect(side, CCI_FACTION_EFFECT_KEEP_UNIT))
+		return
+	var/list/candidates = list()
+	for(var/row in list(CCI_ROW_INFANTRY, CCI_ROW_ARCHERS, CCI_ROW_SIEGE))
+		for(var/datum/cci_played_card/played in board[side][row])
+			var/datum/cci_card/card = cci_card(played.card_id)
+			if(is_unit_card(card) && !card.hero)
+				candidates += played.card_id
+	if(length(candidates))
+		carryover_cards[side] += pick(candidates)
+
+/datum/cci_match/proc/revive_random_discard(side)
+	var/list/choices = revive_choices(side)
+	if(!length(choices))
+		return FALSE
+	return revive_discard(side, pick(choices))
 
 /datum/cci_match/proc/ui_data_for(mob/user, obj/item/cci_deck/deck_context)
 	var/list/data = list()
@@ -614,6 +710,7 @@
 	data["weatherCards"] = build_weather_data()
 	data["rowEffects"] = build_row_effect_data()
 	data["leader"] = my_side ? build_leader_data(my_side) : null
+	data["faction"] = my_side ? build_faction_data(my_side) : null
 	data["hand"] = build_hand_data(my_side)
 	data["discard"] = build_discard_data(my_side)
 	data["targets"] = build_target_data(my_side)
@@ -636,6 +733,12 @@
 	if(!leader)
 		return null
 	return leader.as_ui_data(leader_used[side])
+
+/datum/cci_match/proc/build_faction_data(side)
+	var/datum/cci_faction/faction = cci_faction(faction_ids[side])
+	if(!faction)
+		return null
+	return faction.as_ui_data()
 
 /datum/cci_match/proc/build_discard_data(side)
 	var/list/out = list()

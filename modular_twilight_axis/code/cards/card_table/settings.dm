@@ -1,5 +1,7 @@
 #define CCI_DECK_SIZE 30
 #define CCI_STASH_DECK_KEY "cci_deck_cards"
+#define CCI_STASH_FACTION_KEY "cci_deck_faction"
+#define CCI_STASH_LEADER_KEY "cci_deck_leader"
 
 /datum/mind
 	var/cci_deck_requested = FALSE
@@ -8,6 +10,8 @@
 	var/list/cci_known_rare_cards = list()
 	var/list/cci_selected_deck = list()
 	var/list/cci_saved_deck_cards = list()
+	var/cci_saved_deck_faction = CCI_FACTION_AZURIA
+	var/cci_saved_deck_leader = "azuria_ducal_marshal"
 
 /datum/preferences/proc/cci_known_cards()
 	var/list/cards = list()
@@ -65,6 +69,15 @@
 		cci_selected_deck = list()
 	if(!islist(cci_saved_deck_cards))
 		cci_saved_deck_cards = list()
+	if(!cci_faction(cci_saved_deck_faction))
+		cci_saved_deck_faction = CCI_FACTION_AZURIA
+	var/datum/cci_leader/saved_leader = cci_leader(cci_saved_deck_leader)
+	var/datum/cci_faction/saved_faction = cci_faction(cci_saved_deck_faction)
+	if(!saved_faction)
+		saved_faction = cci_faction(CCI_FACTION_AZURIA)
+		cci_saved_deck_faction = saved_faction.id
+	if(!saved_leader || saved_leader.faction != cci_saved_deck_faction)
+		cci_saved_deck_leader = saved_faction.default_leader
 
 	var/list/valid_rare = list()
 	for(var/card_id in cci_known_rare_cards)
@@ -96,7 +109,7 @@
 
 	var/list/valid_saved_deck = list()
 	for(var/card_id in cci_saved_deck_cards)
-		if(cci_card(card_id) && valid_saved_deck.len < CCI_DECK_SIZE)
+		if(cci_card_allowed_for_faction(card_id, cci_saved_deck_faction) && valid_saved_deck.len < CCI_DECK_SIZE)
 			valid_saved_deck += card_id
 	cci_saved_deck_cards = valid_saved_deck
 
@@ -170,18 +183,33 @@
 				qdel(single)
 		else if(istype(thing, /obj/item/cci_deck))
 			var/obj/item/cci_deck/deck = thing
-			cci_saved_deck_cards = deck.card_ids.Copy()
+			var/datum/cci_faction/faction = cci_faction(deck.faction_id)
+			if(!faction)
+				faction = cci_faction(CCI_FACTION_AZURIA)
+			cci_saved_deck_cards = list()
+			for(var/card_id in deck.card_ids)
+				if(cci_card_allowed_for_faction(card_id, faction.id) && cci_saved_deck_cards.len < CCI_DECK_SIZE)
+					cci_saved_deck_cards += card_id
+			cci_saved_deck_faction = faction.id
+			var/datum/cci_leader/leader = cci_leader(deck.leader_id)
+			cci_saved_deck_leader = (leader && leader.faction == faction.id) ? leader.id : faction.default_leader
 			changed = TRUE
 	if(changed)
 		save_character()
 
-/datum/preferences/proc/cci_save_deck_snapshot(list/card_ids)
+/datum/preferences/proc/cci_save_deck_snapshot(list/card_ids, faction_id = CCI_FACTION_AZURIA, leader_id = null)
 	if(!islist(card_ids))
 		return FALSE
+	var/datum/cci_faction/faction = cci_faction(faction_id)
+	if(!faction)
+		faction = cci_faction(CCI_FACTION_AZURIA)
 	cci_saved_deck_cards = list()
 	for(var/card_id in card_ids)
-		if(cci_card(card_id) && cci_saved_deck_cards.len < CCI_DECK_SIZE)
+		if(cci_card_allowed_for_faction(card_id, faction.id) && cci_saved_deck_cards.len < CCI_DECK_SIZE)
 			cci_saved_deck_cards += card_id
+	cci_saved_deck_faction = faction.id
+	var/datum/cci_leader/leader = cci_leader(leader_id)
+	cci_saved_deck_leader = (leader && leader.faction == faction.id) ? leader.id : faction.default_leader
 	save_character()
 	return TRUE
 
@@ -193,8 +221,21 @@
 		var/mob/living/carbon/human/H = M
 		C.prefs.cci_sync_cards_from_inventory(H)
 
-/proc/cci_stash_deck_spec(list/card_ids)
-	return list(CCI_STASH_DECK_KEY = card_ids.Copy())
+/proc/cci_stash_deck_spec(list/card_ids, faction_id = CCI_FACTION_AZURIA, leader_id = null)
+	var/datum/cci_faction/faction = cci_faction(faction_id)
+	if(!faction)
+		faction = cci_faction(CCI_FACTION_AZURIA)
+	var/datum/cci_leader/leader = cci_leader(leader_id)
+	var/final_leader_id = (leader && leader.faction == faction.id) ? leader.id : faction.default_leader
+	var/list/final_cards = list()
+	for(var/card_id in card_ids)
+		if(cci_card_allowed_for_faction(card_id, faction.id) && final_cards.len < CCI_DECK_SIZE)
+			final_cards += card_id
+	return list(
+		CCI_STASH_DECK_KEY = final_cards,
+		CCI_STASH_FACTION_KEY = faction.id,
+		CCI_STASH_LEADER_KEY = final_leader_id
+	)
 
 /proc/cci_is_stashed_deck(value)
 	return islist(value) && islist(value[CCI_STASH_DECK_KEY])
@@ -222,6 +263,7 @@
 	var/obj/item/I
 	if(cci_is_stashed_deck(stash_value))
 		var/obj/item/cci_deck/deck = new(user.loc)
+		deck.set_faction(stash_value[CCI_STASH_FACTION_KEY], stash_value[CCI_STASH_LEADER_KEY])
 		deck.set_cards(stash_value[CCI_STASH_DECK_KEY])
 		I = deck
 	else
@@ -248,8 +290,8 @@
 	if(istype(user, /mob/living/carbon/human))
 		var/mob/living/carbon/human/H = user
 		user.client?.prefs?.cci_sync_cards_from_inventory(H)
-	user.mind.special_items["Card Battle Deck"] = cci_stash_deck_spec(deck.card_ids)
-	user.client?.prefs?.cci_save_deck_snapshot(deck.card_ids)
+	user.mind.special_items["Card Battle Deck"] = cci_stash_deck_spec(deck.card_ids, deck.faction_id, deck.leader_id)
+	user.client?.prefs?.cci_save_deck_snapshot(deck.card_ids, deck.faction_id, deck.leader_id)
 	to_chat(user, span_notice("You return the card battle deck to your stash."))
 	qdel(deck)
 	return TRUE
@@ -264,12 +306,12 @@
 	if(cci_mind_has_stashed_deck(user.mind))
 		to_chat(user, span_warning("You already have a card battle deck in your stash."))
 		return FALSE
-	var/list/deck_cards = length(cci_saved_deck_cards) ? cci_saved_deck_cards.Copy() : GLOB.cci_base_card_ids.Copy()
+	var/list/deck_cards = length(cci_saved_deck_cards) ? cci_saved_deck_cards.Copy() : cci_base_cards_for_faction(cci_saved_deck_faction)
 	while(deck_cards.len > CCI_DECK_SIZE)
 		deck_cards.Cut(deck_cards.len, deck_cards.len + 1)
 	if(!user.mind.special_items)
 		user.mind.special_items = list()
-	user.mind.special_items["Card Battle Deck"] = cci_stash_deck_spec(deck_cards)
+	user.mind.special_items["Card Battle Deck"] = cci_stash_deck_spec(deck_cards, cci_saved_deck_faction, cci_saved_deck_leader)
 	user.mind.cci_deck_requested = TRUE
 	to_chat(user, span_notice("A card battle deck is added to your stash."))
 	return TRUE
@@ -294,8 +336,15 @@
 	var/datum/preferences/P = user?.client?.prefs
 	if(!P)
 		return data
+	if(!length(GLOB.cci_cards_by_id))
+		cci_build_card_registry()
 	P.cci_clean_cards()
+	if(!length(GLOB.cci_factions_by_id))
+		cci_build_faction_registry()
+	if(!length(GLOB.cci_leaders_by_id))
+		cci_build_leader_registry()
 	var/list/selected = deck ? deck.card_ids : P.cci_saved_deck_cards
+	var/current_faction_id = deck ? deck.faction_id : P.cci_saved_deck_faction
 
 	var/list/cards = list()
 	var/list/known = P.cci_known_cards()
@@ -305,6 +354,15 @@
 			continue
 		var/list/card_data = card.as_ui_data(card_id in known, card_id in selected)
 		card_data["ownedCount"] = deck ? P.cci_available_for_deck(selected, card_id) : P.cci_card_pool_count(card_id)
+		card_data["factionAllowed"] = cci_card_allowed_for_faction(card_id, current_faction_id)
+		var/faction_name = "Common"
+		var/datum/cci_faction/card_faction
+		if(card.faction == CCI_FACTION_NEUTRAL)
+			faction_name = "Common"
+		else
+			card_faction = cci_faction(card.faction)
+			faction_name = card_faction ? card_faction.name : card.faction
+		card_data["factionName"] = faction_name
 		cards += list(card_data)
 
 	data["mode"] = deck ? "build" : "pool"
@@ -313,6 +371,20 @@
 	data["selectedCount"] = selected.len
 	data["deckSize"] = CCI_DECK_SIZE
 	data["canRequestDeck"] = !user?.mind?.cci_deck_requested
+	data["faction"] = current_faction_id
+	data["leader"] = deck ? deck.leader_id : P.cci_saved_deck_leader
+	var/list/factions = list()
+	for(var/faction_id in GLOB.cci_factions_by_id)
+		var/datum/cci_faction/faction = cci_faction(faction_id)
+		if(faction)
+			factions += list(faction.as_ui_data())
+	data["factions"] = factions
+	var/list/leaders = list()
+	for(var/leader_id in GLOB.cci_leaders_by_id)
+		var/datum/cci_leader/leader = cci_leader(leader_id)
+		if(leader)
+			leaders += list(leader.as_ui_data(FALSE))
+	data["leaders"] = leaders
 	var/known_rare_count = 0
 	for(var/card_id in P.cci_known_rare_cards)
 		known_rare_count += P.cci_known_rare_cards[card_id]
@@ -336,6 +408,8 @@
 				return TRUE
 			var/datum/cci_card/card = cci_card(card_id)
 			if(!card)
+				return TRUE
+			if(!cci_card_allowed_for_faction(card_id, deck.faction_id))
 				return TRUE
 			if(card.rarity != CCI_RARITY_BASE && !P.cci_take_pool_card(card_id))
 				return TRUE
@@ -365,6 +439,24 @@
 			for(var/removed_id in deck.card_ids)
 				P.cci_return_pool_card(removed_id)
 			deck.card_ids = list()
+			return TRUE
+		if("set_faction")
+			if(!deck)
+				return TRUE
+			var/faction_id = params["faction"]
+			var/datum/cci_faction/faction = cci_faction(faction_id)
+			if(!faction)
+				return TRUE
+			deck.set_faction(faction.id, faction.default_leader)
+			var/list/removed_cards = deck.remove_cards_not_in_faction()
+			for(var/removed_id in removed_cards)
+				P.cci_return_pool_card(removed_id)
+			return TRUE
+		if("set_leader")
+			if(!deck)
+				return TRUE
+			var/leader_id = params["leader"]
+			deck.set_faction(deck.faction_id, leader_id)
 			return TRUE
 		if("request_deck")
 			if(!deck)
@@ -397,3 +489,5 @@
 	panel.ui_interact(user)
 
 #undef CCI_STASH_DECK_KEY
+#undef CCI_STASH_FACTION_KEY
+#undef CCI_STASH_LEADER_KEY

@@ -530,6 +530,8 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	cci_selected_deck = SANITIZE_LIST(cci_selected_deck)
 	S["cci_saved_deck_cards"] >> cci_saved_deck_cards
 	cci_saved_deck_cards = SANITIZE_LIST(cci_saved_deck_cards)
+	S["cci_saved_deck_faction"] >> cci_saved_deck_faction
+	S["cci_saved_deck_leader"] >> cci_saved_deck_leader
 	if(!length(cci_saved_deck_cards) && length(cci_selected_deck))
 		cci_saved_deck_cards = cci_selected_deck.Copy()
 	cci_clean_cards()
@@ -1076,6 +1078,8 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["cci_known_rare_cards"], cci_known_rare_cards)
 	WRITE_FILE(S["cci_selected_deck"], cci_selected_deck)
 	WRITE_FILE(S["cci_saved_deck_cards"], cci_saved_deck_cards)
+	WRITE_FILE(S["cci_saved_deck_faction"], cci_saved_deck_faction)
+	WRITE_FILE(S["cci_saved_deck_leader"], cci_saved_deck_leader)
 
 	//Familiar Files
 	WRITE_FILE(S["familiar_names"] , familiar_prefs.familiar_names)
