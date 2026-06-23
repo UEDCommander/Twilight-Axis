@@ -281,6 +281,7 @@
 #define TRAIT_WOODWALKER "Woodwalker"
 #define TRAIT_MAGIC_SHIELD "Projectile Reflection" //TA EDIT
 #define TRAIT_ARCYNE "Arcyne Training"
+#define TRAIT_LEYLINE_ATTUNEMENT "Leyline Attunement"
 #define TRAIT_BITERHELM "Helmetbiter" // just use this to get helmets which are bitey.
 #define TRAIT_STRENGTH_UNCAPPED "Strength Unbound"	//ignores the STR softcap.
 #define TRAIT_MANORKEEPER "Manorkeeper" // Flavortext-related for the Absolver.
@@ -549,6 +550,7 @@ GLOBAL_LIST_INIT(roguetraits, list(
 	TRAIT_MATTHIOS_EYES = span_notice("I have a sense for what the most valuable item someone has is. I can also tell if someone is hoarding mammons, and with blessed gilded spectacles, I can even see how much they have in their bank."),
 	TRAIT_WOODWALKER = span_notice("I can climb trees quicker, and gain climbing experience twice as quickly. I can step on thorns and branches safely in the woods. I can stand on leaves in trees safely."),
 	TRAIT_ARCYNE = span_notice("I am trained in the Arcyne arts, allowing me to wield magyck."),
+	TRAIT_LEYLINE_ATTUNEMENT = span_notice("I am attuned to the leylines, allowing me to imbue enchantments into objects."),
 	TRAIT_INFINITE_ENERGY = span_notice ("I don't need rest; I won't ever feel fatigue."),
 	TRAIT_PERMAMUTE = span_notice("I am a mute. I cannot speak."),
 	TRAIT_STRENGTH_UNCAPPED = span_warning("MY STRENGTH IS UNBOUND!"),
