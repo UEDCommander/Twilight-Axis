@@ -268,9 +268,10 @@
 	var/datum/preferences/P = user?.client?.prefs
 	if(P && P.cci_add_known_card(card_id))
 		to_chat(user, span_notice("The card is added to your known collection."))
+		SStgui.update_user_uis(user)
 		qdel(src)
 	else
-		to_chat(user, span_notice("You already know this card, or it is a basic card."))
+		to_chat(user, span_warning("The card could not be added to your collection. Try again."))
 
 /obj/item/cci_card_generator
 	name = "sealed card packet"

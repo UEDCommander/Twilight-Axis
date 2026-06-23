@@ -105,7 +105,8 @@ const effectBadges: Record<string, string> = {
 const effectDescriptions: Record<string, string> = {
   morale: 'Прилив сил: +1 к силе остальных отрядов в этом ряду.',
   scorch: 'Казнь: уничтожает сильнейшую карту противника.',
-  scorch_infantry: 'Казнь: уничтожает сильнейшую пехоту врага, если его пехота имеет 10+ силы.',
+  scorch_infantry:
+    'Казнь: уничтожает сильнейшую пехоту врага, если его пехота имеет 10+ силы.',
   scorch_global: 'Казнь: уничтожает сильнейшую карту или карты на поле.',
   spy: 'Шпион: кладётся на поле врага и даёт вам две карты.',
   medic: 'Медик: возвращает сильнейшую отбитую карту на поле.',
@@ -116,7 +117,8 @@ const effectDescriptions: Record<string, string> = {
   decoy: 'Чучело: возвращает сильнейшую вашу карту с поля в руку.',
   berserk: 'Берсерк: под Мардрёмом превращается в медведя.',
   mardroeme: 'Мардрём: превращает берсерков в ряду в медведей.',
-  avenger: 'Призвание Мстителя: при уничтожении призывает сильную карту на своё место.',
+  avenger:
+    'Призвание Мстителя: при уничтожении призывает сильную карту на своё место.',
   clear_weather: 'Ясная погода: снимает всю погоду.',
   frost: 'Мороз: снижает пехоту до 1.',
   fog: 'Туман: снижает лучников до 1.',
@@ -169,7 +171,8 @@ const CardFace = ({
         padding: compact ? '4px' : '6px',
         border: `2px solid ${rarityColor[card.rarity]}`,
         borderRadius: '4px',
-        background: 'linear-gradient(180deg, rgba(35,39,48,0.98), rgba(14,16,22,0.98))',
+        background:
+          'linear-gradient(180deg, rgba(35,39,48,0.98), rgba(14,16,22,0.98))',
         boxShadow: `0 0 0 1px rgba(0,0,0,0.7), 0 0 10px ${rarityColor[card.rarity]}33`,
         cursor: onClick && !disabled ? 'pointer' : 'default',
         opacity: disabled && !unavailable ? 0.62 : 1,
@@ -189,169 +192,184 @@ const CardFace = ({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-    {!!card.art && (
-      <img
-        src={resolveAsset(card.art)}
+      {!!card.art && (
+        <img
+          src={resolveAsset(card.art)}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            filter: unavailable
+              ? 'grayscale(1) brightness(0.16) contrast(0.85)'
+              : undefined,
+            zIndex: 0,
+          }}
+        />
+      )}
+      <div
         style={{
           position: 'absolute',
           inset: 0,
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          filter: unavailable ? 'grayscale(1) brightness(0.16) contrast(0.85)' : undefined,
+          background: unavailable
+            ? 'linear-gradient(180deg, rgba(0,0,0,0.84), rgba(0,0,0,0.78) 32%, rgba(0,0,0,0.94))'
+            : 'linear-gradient(180deg, rgba(0,0,0,0.34), rgba(0,0,0,0.04) 32%, rgba(0,0,0,0.62))',
           zIndex: 0,
         }}
       />
-    )}
-    <div
-      style={{
-        position: 'absolute',
-        inset: 0,
-        background:
-          unavailable
-            ? 'linear-gradient(180deg, rgba(0,0,0,0.84), rgba(0,0,0,0.78) 32%, rgba(0,0,0,0.94))'
-            : 'linear-gradient(180deg, rgba(0,0,0,0.34), rgba(0,0,0,0.04) 32%, rgba(0,0,0,0.62))',
-        zIndex: 0,
-      }}
-    />
-    <div
-      style={{
-        position: 'relative',
-        zIndex: 1,
-        color: rarityColor[card.rarity],
-        fontSize: compact ? '7px' : '10px',
-        fontWeight: 700,
-        textAlign: 'center',
-        textTransform: 'uppercase',
-        width: '100%',
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-      }}
-    >
-      {cardType(card)}
-    </div>
-    {card.known && !!effectBadges[card.effect] && (
       <div
         style={{
-          position: 'absolute',
-          top: compact ? '18px' : '28px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          minWidth: compact ? '22px' : '30px',
-          height: compact ? '15px' : '20px',
-          padding: '0 4px',
-          borderRadius: '10px',
-          backgroundColor: 'rgba(248,250,252,0.94)',
-          color: '#0f172a',
-          fontSize: compact ? '6px' : '8px',
-          fontWeight: 900,
-          lineHeight: compact ? '15px' : '20px',
-          textAlign: 'center',
-          zIndex: 2,
-        }}
-      >
-        {effectBadges[card.effect]}
-      </div>
-    )}
-    {hovered && (
-      <div
-        style={{
-          position: 'absolute',
-          left: compact ? '10px' : '12px',
-          right: compact ? '10px' : '12px',
-          top: compact ? '38px' : '52px',
-          padding: compact ? '6px' : '8px',
-          border: '1px solid rgba(248,250,252,0.85)',
-          borderRadius: '4px',
-          backgroundColor: 'rgba(5,7,11,0.96)',
-          color: '#f8fafc',
-          fontSize: compact ? '7px' : '9px',
-          lineHeight: 1.25,
-          zIndex: 5,
-          boxShadow: '0 4px 12px rgba(0,0,0,0.75)',
-          pointerEvents: 'none',
-        }}
-      >
-        <div style={{ color: rarityColor[card.rarity], fontWeight: 900, marginBottom: '4px' }}>
-          {tooltip[0]}
-        </div>
-        {tooltip.slice(1).map((line) => (
-          <div key={line}>{line}</div>
-        ))}
-      </div>
-    )}
-
-    <div
-      style={{
-        position: 'relative',
-        zIndex: 1,
-        display: 'grid',
-        gridTemplateColumns: compact ? '22px 1fr' : '30px 1fr',
-        alignItems: 'center',
-        width: '100%',
-        minHeight: compact ? '22px' : '28px',
-      }}
-    >
-      <div
-        style={{
-          width: compact ? '22px' : '30px',
-          height: compact ? '22px' : '30px',
-          borderRadius: '50%',
-          backgroundColor: '#05070b',
-          border: `2px solid ${rarityColor[card.rarity]}`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: unavailable ? '#64748b' : '#f8fafc',
-          fontSize: compact ? '10px' : '15px',
-          fontWeight: 700,
+          position: 'relative',
           zIndex: 1,
-        }}
-      >
-        {card.power}
-      </div>
-      <div
-        style={{
-          marginLeft: compact ? '-4px' : '-5px',
-          padding: compact ? '3px 4px 3px 7px' : '4px 5px 4px 9px',
-          border: `1px solid ${rarityColor[card.rarity]}`,
-          backgroundColor: unavailable ? 'rgba(5,7,11,0.98)' : 'rgba(5,7,11,0.92)',
-          color: unavailable ? '#64748b' : '#f8fafc',
+          display: 'grid',
+          gridTemplateColumns: '1fr auto',
+          alignItems: 'center',
+          gap: compact ? '3px' : '5px',
+          color: rarityColor[card.rarity],
           fontSize: compact ? '7px' : '10px',
           fontWeight: 700,
-          lineHeight: 1.1,
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
+          textTransform: 'uppercase',
+          width: '100%',
         }}
       >
-        {card.known ? card.name : 'Unknown'}
+        <span
+          style={{
+            minWidth: 0,
+            textAlign: 'center',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+        >
+          {cardType(card)}
+        </span>
+        {card.known && !!effectBadges[card.effect] && (
+          <span
+            style={{
+              minWidth: compact ? '14px' : '18px',
+              height: compact ? '11px' : '14px',
+              padding: '0 3px',
+              borderRadius: '2px',
+              backgroundColor: 'rgba(248,250,252,0.94)',
+              color: '#0f172a',
+              fontSize: compact ? '6px' : '7px',
+              fontWeight: 900,
+              lineHeight: compact ? '11px' : '14px',
+              textAlign: 'center',
+              letterSpacing: 0,
+            }}
+            title={effectDescriptions[card.effect] || card.effect}
+          >
+            {effectBadges[card.effect]}
+          </span>
+        )}
       </div>
-    </div>
+      {!!count && (
+        <div
+          style={{
+            position: 'absolute',
+            left: '5px',
+            top: compact ? '18px' : '24px',
+            minWidth: compact ? '18px' : '20px',
+            height: compact ? '16px' : '20px',
+            borderRadius: '10px',
+            backgroundColor: '#05070b',
+            border: `1px solid ${rarityColor[card.rarity]}`,
+            color: '#f8fafc',
+            fontSize: compact ? '9px' : '11px',
+            fontWeight: 700,
+            textAlign: 'center',
+            lineHeight: compact ? '14px' : '18px',
+            zIndex: 2,
+          }}
+        >
+          x{count}
+        </div>
+      )}
+      {hovered && (
+        <div
+          style={{
+            position: 'absolute',
+            left: compact ? '10px' : '12px',
+            right: compact ? '10px' : '12px',
+            top: compact ? '38px' : '52px',
+            padding: compact ? '6px' : '8px',
+            border: '1px solid rgba(248,250,252,0.85)',
+            borderRadius: '4px',
+            backgroundColor: 'rgba(5,7,11,0.96)',
+            color: '#f8fafc',
+            fontSize: compact ? '7px' : '9px',
+            lineHeight: 1.25,
+            zIndex: 5,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.75)',
+            pointerEvents: 'none',
+          }}
+        >
+          <div
+            style={{
+              color: rarityColor[card.rarity],
+              fontWeight: 900,
+              marginBottom: '4px',
+            }}
+          >
+            {tooltip[0]}
+          </div>
+          {tooltip.slice(1).map((line) => (
+            <div key={line}>{line}</div>
+          ))}
+        </div>
+      )}
 
-    {!!count && (
       <div
         style={{
-          position: 'absolute',
-          right: '5px',
-          top: '22px',
-          minWidth: '20px',
-          height: '20px',
-          borderRadius: '10px',
-          backgroundColor: '#05070b',
-          border: `1px solid ${rarityColor[card.rarity]}`,
-          color: '#f8fafc',
-          fontSize: '11px',
-          fontWeight: 700,
-          textAlign: 'center',
-          lineHeight: '18px',
-          zIndex: 2,
+          position: 'relative',
+          zIndex: 1,
+          display: 'grid',
+          gridTemplateColumns: compact ? '22px 1fr' : '30px 1fr',
+          alignItems: 'center',
+          width: '100%',
+          minHeight: compact ? '22px' : '28px',
         }}
       >
-        x{count}
+        <div
+          style={{
+            width: compact ? '22px' : '30px',
+            height: compact ? '22px' : '30px',
+            borderRadius: '50%',
+            backgroundColor: '#05070b',
+            border: `2px solid ${rarityColor[card.rarity]}`,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: unavailable ? '#64748b' : '#f8fafc',
+            fontSize: compact ? '10px' : '15px',
+            fontWeight: 700,
+            zIndex: 1,
+          }}
+        >
+          {card.power}
+        </div>
+        <div
+          style={{
+            marginLeft: compact ? '-4px' : '-5px',
+            padding: compact ? '3px 4px 3px 7px' : '4px 5px 4px 9px',
+            border: `1px solid ${rarityColor[card.rarity]}`,
+            backgroundColor: unavailable
+              ? 'rgba(5,7,11,0.98)'
+              : 'rgba(5,7,11,0.92)',
+            color: unavailable ? '#64748b' : '#f8fafc',
+            fontSize: compact ? '7px' : '10px',
+            fontWeight: 700,
+            lineHeight: 1.1,
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+        >
+          {card.known ? card.name : 'Unknown'}
+        </div>
       </div>
-    )}
     </div>
   );
 };
@@ -380,49 +398,51 @@ export const CardDeckBuilder = () => {
     return order;
   }, [data.factions]);
 
-  const filteredCards = cards.filter((card) => {
-    if (row !== 'all' && card.row !== row) {
-      return false;
-    }
-    let factionMatches = true;
-    if (factionFilter === 'neutral') {
-      factionMatches = card.faction === 'neutral';
-    } else if (factionFilter !== 'all') {
-      factionMatches = card.faction === factionFilter;
-    }
-    if (!factionMatches) {
-      return false;
-    }
-    const terms = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
-    const haystack = [
-      card.name,
-      card.desc,
-      card.effect,
-      card.combo,
-      card.faction,
-      card.factionName || '',
-      rowLabels[card.row],
-    ]
-      .join(' ')
-      .toLowerCase();
-    return !terms.length || terms.every((term) => haystack.includes(term));
-  }).sort((a, b) => {
-    const factionDiff =
-      (factionOrder[a.faction] ?? Number.MAX_SAFE_INTEGER) -
-      (factionOrder[b.faction] ?? Number.MAX_SAFE_INTEGER);
-    if (factionDiff) {
-      return factionDiff;
-    }
-    const rarityDiff = rarityOrder[a.rarity] - rarityOrder[b.rarity];
-    if (rarityDiff) {
-      return rarityDiff;
-    }
-    const rowDiff = rowOrder[a.row] - rowOrder[b.row];
-    if (rowDiff) {
-      return rowDiff;
-    }
-    return a.name.localeCompare(b.name);
-  });
+  const filteredCards = cards
+    .filter((card) => {
+      if (row !== 'all' && card.row !== row) {
+        return false;
+      }
+      let factionMatches = true;
+      if (factionFilter === 'neutral') {
+        factionMatches = card.faction === 'neutral';
+      } else if (factionFilter !== 'all') {
+        factionMatches = card.faction === factionFilter;
+      }
+      if (!factionMatches) {
+        return false;
+      }
+      const terms = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
+      const haystack = [
+        card.name,
+        card.desc,
+        card.effect,
+        card.combo,
+        card.faction,
+        card.factionName || '',
+        rowLabels[card.row],
+      ]
+        .join(' ')
+        .toLowerCase();
+      return !terms.length || terms.every((term) => haystack.includes(term));
+    })
+    .sort((a, b) => {
+      const factionDiff =
+        (factionOrder[a.faction] ?? Number.MAX_SAFE_INTEGER) -
+        (factionOrder[b.faction] ?? Number.MAX_SAFE_INTEGER);
+      if (factionDiff) {
+        return factionDiff;
+      }
+      const rarityDiff = rarityOrder[a.rarity] - rarityOrder[b.rarity];
+      if (rarityDiff) {
+        return rarityDiff;
+      }
+      const rowDiff = rowOrder[a.row] - rowOrder[b.row];
+      if (rowDiff) {
+        return rowDiff;
+      }
+      return a.name.localeCompare(b.name);
+    });
 
   const selectedCards = selected
     .map((id) => cards.find((card) => card.id === id))
@@ -430,14 +450,22 @@ export const CardDeckBuilder = () => {
 
   const deckRatio = data.deckSize > 0 ? data.selectedCount / data.deckSize : 0;
   const isPool = data.mode === 'pool';
-  const currentFaction = data.factions?.find((faction) => faction.id === data.faction);
-  const currentLeader = data.leaders?.find((leader) => leader.id === data.leader);
+  const currentFaction = data.factions?.find(
+    (faction) => faction.id === data.faction,
+  );
+  const currentLeader = data.leaders?.find(
+    (leader) => leader.id === data.leader,
+  );
   const factionLeaders = (data.leaders || []).filter(
     (leader) => leader.faction === data.faction,
   );
 
   return (
-    <Window title={isPool ? 'Card Deck Pool' : 'Card Deck Builder'} width={980} height={720}>
+    <Window
+      title={isPool ? 'Card Deck Pool' : 'Card Deck Builder'}
+      width={980}
+      height={720}
+    >
       <Window.Content>
         <div
           style={{
@@ -455,25 +483,32 @@ export const CardDeckBuilder = () => {
                 placeholder="Search cards"
                 width="260px"
               />
-              {(['all', 'infantry', 'archers', 'siege', 'weather'] as const).map(
-                (key) => (
-                  <Button
-                    key={key}
-                    selected={row === key}
-                    onClick={() => setRow(key)}
-                  >
-                    {key === 'all' ? 'All' : rowLabels[key]}
-                  </Button>
-                ),
-              )}
+              {(
+                ['all', 'infantry', 'archers', 'siege', 'weather'] as const
+              ).map((key) => (
+                <Button
+                  key={key}
+                  selected={row === key}
+                  onClick={() => setRow(key)}
+                >
+                  {key === 'all' ? 'All' : rowLabels[key]}
+                </Button>
+              ))}
             </div>
             <div
-              style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '10px' }}
+              style={{
+                display: 'flex',
+                gap: '8px',
+                flexWrap: 'wrap',
+                marginBottom: '10px',
+              }}
             >
-              {([
-                ['all', 'Any'],
-                ['neutral', 'Common'],
-              ] as const).map(([key, label]) => (
+              {(
+                [
+                  ['all', 'Any'],
+                  ['neutral', 'Common'],
+                ] as const
+              ).map(([key, label]) => (
                 <Button
                   key={key}
                   selected={factionFilter === key}
@@ -503,8 +538,13 @@ export const CardDeckBuilder = () => {
                   fontSize: '12px',
                 }}
               >
-                <span>Rare and unique cards in pool: {data.knownRareCount}</span>
-                <Button disabled={!data.canRequestDeck} onClick={() => act('request_deck')}>
+                <span>
+                  Rare and unique cards in pool: {data.knownRareCount}
+                </span>
+                <Button
+                  disabled={!data.canRequestDeck}
+                  onClick={() => act('request_deck')}
+                >
                   Request Deck
                 </Button>
               </div>
@@ -521,7 +561,11 @@ export const CardDeckBuilder = () => {
                   <CardFace
                     key={card.id}
                     card={card}
-                    count={isPool && card.rarity !== 'base' ? ownedCount : selectedCount}
+                    count={
+                      isPool && card.rarity !== 'base'
+                        ? ownedCount
+                        : selectedCount
+                    }
                     unavailable={unavailable}
                     disabled={
                       isPool
@@ -531,7 +575,9 @@ export const CardDeckBuilder = () => {
                           selectedCount >= ownedCount ||
                           factionLocked
                     }
-                    onClick={!isPool ? () => act('add', { card: card.id }) : undefined}
+                    onClick={
+                      !isPool ? () => act('add', { card: card.id }) : undefined
+                    }
                     onRightClick={
                       !isPool && selectedCount > 0
                         ? () => act('take_card', { card: card.id })
@@ -544,95 +590,139 @@ export const CardDeckBuilder = () => {
           </Section>
 
           {!isPool && (
-          <Section title="Deck" fill scrollable>
-            <div
-              style={{
-                marginBottom: '10px',
-                padding: '8px',
-                border: '1px solid rgba(148,163,184,0.28)',
-                backgroundColor: 'rgba(5,7,11,0.35)',
-              }}
-            >
-              <div style={{ color: '#cbd5e1', fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>
-                Faction
-              </div>
-              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '8px' }}>
-                {(data.factions || []).map((faction) => (
-                  <Button
-                    key={faction.id}
-                    selected={faction.id === data.faction}
-                    onClick={() => act('set_faction', { faction: faction.id })}
+            <Section title="Deck" fill scrollable>
+              <div
+                style={{
+                  marginBottom: '10px',
+                  padding: '8px',
+                  border: '1px solid rgba(148,163,184,0.28)',
+                  backgroundColor: 'rgba(5,7,11,0.35)',
+                }}
+              >
+                <div
+                  style={{
+                    color: '#cbd5e1',
+                    fontSize: '12px',
+                    fontWeight: 800,
+                    marginBottom: '6px',
+                  }}
+                >
+                  Faction
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: '6px',
+                    flexWrap: 'wrap',
+                    marginBottom: '8px',
+                  }}
+                >
+                  {(data.factions || []).map((faction) => (
+                    <Button
+                      key={faction.id}
+                      selected={faction.id === data.faction}
+                      onClick={() =>
+                        act('set_faction', { faction: faction.id })
+                      }
+                    >
+                      {faction.name}
+                    </Button>
+                  ))}
+                </div>
+                {currentFaction && (
+                  <div
+                    style={{
+                      color: '#94a3b8',
+                      fontSize: '11px',
+                      marginBottom: '8px',
+                    }}
                   >
-                    {faction.name}
-                  </Button>
+                    {currentFaction.desc}
+                  </div>
+                )}
+                <div
+                  style={{
+                    color: '#cbd5e1',
+                    fontSize: '12px',
+                    fontWeight: 800,
+                    marginBottom: '6px',
+                  }}
+                >
+                  Leader
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: '6px',
+                    flexWrap: 'wrap',
+                    marginBottom: '8px',
+                  }}
+                >
+                  {factionLeaders.map((leader) => (
+                    <Button
+                      key={leader.id}
+                      selected={leader.id === data.leader}
+                      onClick={() => act('set_leader', { leader: leader.id })}
+                    >
+                      {leader.name}
+                    </Button>
+                  ))}
+                </div>
+                {currentLeader && (
+                  <div style={{ color: '#94a3b8', fontSize: '11px' }}>
+                    {currentLeader.desc}
+                  </div>
+                )}
+              </div>
+              <div style={{ marginBottom: '8px' }}>
+                {data.selectedCount} / {data.deckSize}
+              </div>
+              <ProgressBar
+                value={deckRatio}
+                ranges={{
+                  good: [0, 1],
+                }}
+                mb="10px"
+              />
+              <div
+                style={{
+                  color: '#94a3b8',
+                  fontSize: '12px',
+                  marginBottom: '10px',
+                }}
+              >
+                Rare and unique cards in pool: {data.knownRareCount}
+              </div>
+              <div
+                style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}
+              >
+                <Button color="bad" onClick={() => act('clear')}>
+                  Clear
+                </Button>
+              </div>
+
+              {!selectedCards.length && (
+                <div style={{ color: '#94a3b8' }}>No cards selected.</div>
+              )}
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(3, 88px)',
+                  gap: '10px',
+                }}
+              >
+                {selectedCards.map((card, index) => (
+                  <CardFace
+                    key={`${card.id}-${index}`}
+                    card={card}
+                    compact
+                    onClick={() => act('remove_one', { card: card.id })}
+                    onRightClick={() => act('take_card', { card: card.id })}
+                  />
                 ))}
               </div>
-              {currentFaction && (
-                <div style={{ color: '#94a3b8', fontSize: '11px', marginBottom: '8px' }}>
-                  {currentFaction.desc}
-                </div>
-              )}
-              <div style={{ color: '#cbd5e1', fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>
-                Leader
-              </div>
-              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '8px' }}>
-                {factionLeaders.map((leader) => (
-                  <Button
-                    key={leader.id}
-                    selected={leader.id === data.leader}
-                    onClick={() => act('set_leader', { leader: leader.id })}
-                  >
-                    {leader.name}
-                  </Button>
-                ))}
-              </div>
-              {currentLeader && (
-                <div style={{ color: '#94a3b8', fontSize: '11px' }}>
-                  {currentLeader.desc}
-                </div>
-              )}
-            </div>
-            <div style={{ marginBottom: '8px' }}>
-              {data.selectedCount} / {data.deckSize}
-            </div>
-            <ProgressBar
-              value={deckRatio}
-              ranges={{
-                good: [0, 1],
-              }}
-              mb="10px"
-            />
-            <div style={{ color: '#94a3b8', fontSize: '12px', marginBottom: '10px' }}>
-              Rare and unique cards in pool: {data.knownRareCount}
-            </div>
-            <div style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}>
-              <Button color="bad" onClick={() => act('clear')}>
-                Clear
-              </Button>
-            </div>
-
-            {!selectedCards.length && (
-              <div style={{ color: '#94a3b8' }}>No cards selected.</div>
-            )}
-
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(3, 88px)',
-                gap: '10px',
-              }}
-            >
-              {selectedCards.map((card, index) => (
-                <CardFace
-                  key={`${card.id}-${index}`}
-                  card={card}
-                  compact
-                  onClick={() => act('remove_one', { card: card.id })}
-                  onRightClick={() => act('take_card', { card: card.id })}
-                />
-              ))}
-            </div>
-          </Section>
+            </Section>
           )}
         </div>
       </Window.Content>

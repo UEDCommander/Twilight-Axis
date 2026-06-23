@@ -202,6 +202,17 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["erp_kink_prefs"] >> erp_kink_prefs
 	S["erp_organ_sensitivity"] >> erp_organ_prefs
 	// TA Addition end - new ERP SYSTEM
+	S["cci_known_rare_cards"] >> cci_known_rare_cards
+	cci_known_rare_cards = SANITIZE_LIST(cci_known_rare_cards)
+	S["cci_selected_deck"] >> cci_selected_deck
+	cci_selected_deck = SANITIZE_LIST(cci_selected_deck)
+	S["cci_saved_deck_cards"] >> cci_saved_deck_cards
+	cci_saved_deck_cards = SANITIZE_LIST(cci_saved_deck_cards)
+	S["cci_saved_deck_faction"] >> cci_saved_deck_faction
+	S["cci_saved_deck_leader"] >> cci_saved_deck_leader
+	if(!length(cci_saved_deck_cards) && length(cci_selected_deck))
+		cci_saved_deck_cards = cci_selected_deck.Copy()
+	cci_clean_cards()
 
 	//try to fix any outdated data if necessary
 	if(needs_update >= 0)
@@ -365,6 +376,12 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["erp_kink_prefs"], erp_kink_prefs)
 	WRITE_FILE(S["erp_organ_sensitivity"], erp_organ_prefs)
 	// TA Addition end - new ERP SYSTEM
+	cci_clean_cards()
+	WRITE_FILE(S["cci_known_rare_cards"], cci_known_rare_cards)
+	WRITE_FILE(S["cci_selected_deck"], cci_selected_deck)
+	WRITE_FILE(S["cci_saved_deck_cards"], cci_saved_deck_cards)
+	WRITE_FILE(S["cci_saved_deck_faction"], cci_saved_deck_faction)
+	WRITE_FILE(S["cci_saved_deck_leader"], cci_saved_deck_leader)
 	return TRUE
 
 
@@ -524,6 +541,11 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 /datum/preferences/proc/_load_loadout(S)
 	S["selected_loadout_items"] >> selected_loadout_items
 	selected_loadout_items = SANITIZE_LIST(selected_loadout_items)
+	var/list/root_cci_known_rare_cards = islist(cci_known_rare_cards) ? cci_known_rare_cards.Copy() : list()
+	var/list/root_cci_selected_deck = islist(cci_selected_deck) ? cci_selected_deck.Copy() : list()
+	var/list/root_cci_saved_deck_cards = islist(cci_saved_deck_cards) ? cci_saved_deck_cards.Copy() : list()
+	var/root_cci_saved_deck_faction = cci_saved_deck_faction
+	var/root_cci_saved_deck_leader = cci_saved_deck_leader
 	S["cci_known_rare_cards"] >> cci_known_rare_cards
 	cci_known_rare_cards = SANITIZE_LIST(cci_known_rare_cards)
 	S["cci_selected_deck"] >> cci_selected_deck
@@ -532,6 +554,16 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	cci_saved_deck_cards = SANITIZE_LIST(cci_saved_deck_cards)
 	S["cci_saved_deck_faction"] >> cci_saved_deck_faction
 	S["cci_saved_deck_leader"] >> cci_saved_deck_leader
+	if(!length(cci_known_rare_cards) && length(root_cci_known_rare_cards))
+		cci_known_rare_cards = root_cci_known_rare_cards
+	if(!length(cci_selected_deck) && length(root_cci_selected_deck))
+		cci_selected_deck = root_cci_selected_deck
+	if(!length(cci_saved_deck_cards) && length(root_cci_saved_deck_cards))
+		cci_saved_deck_cards = root_cci_saved_deck_cards
+	if(!cci_saved_deck_faction)
+		cci_saved_deck_faction = root_cci_saved_deck_faction
+	if(!cci_saved_deck_leader)
+		cci_saved_deck_leader = root_cci_saved_deck_leader
 	if(!length(cci_saved_deck_cards) && length(cci_selected_deck))
 		cci_saved_deck_cards = cci_selected_deck.Copy()
 	cci_clean_cards()

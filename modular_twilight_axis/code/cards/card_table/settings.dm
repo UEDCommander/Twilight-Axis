@@ -113,6 +113,12 @@
 			valid_saved_deck += card_id
 	cci_saved_deck_cards = valid_saved_deck
 
+/datum/preferences/proc/cci_save()
+	cci_clean_cards()
+	var/character_saved = save_character()
+	var/preferences_saved = save_preferences()
+	return character_saved || preferences_saved
+
 /datum/preferences/proc/cci_add_known_card(card_id)
 	var/datum/cci_card/card = cci_card(card_id)
 	if(!card || card.rarity == CCI_RARITY_BASE)
@@ -122,13 +128,19 @@
 	if(!count)
 		count = 0
 	cci_known_rare_cards[card_id] = count + 1
-	save_character()
+	if(!cci_save())
+		if(count > 0)
+			cci_known_rare_cards[card_id] = count
+		else
+			cci_known_rare_cards -= card_id
+		return FALSE
 	return TRUE
 
 /datum/preferences/proc/cci_remove_known_cards_from_deck(list/card_ids)
 	if(!islist(card_ids) || !length(card_ids))
-		return
+		return FALSE
 	cci_clean_cards()
+	var/list/old_known_cards = cci_known_rare_cards.Copy()
 	for(var/card_id in card_ids)
 		var/datum/cci_card/card = cci_card(card_id)
 		if(card?.rarity != CCI_RARITY_BASE)
@@ -141,7 +153,11 @@
 			else
 				cci_known_rare_cards -= card_id
 	cci_clean_cards()
-	save_character()
+	if(!cci_save())
+		cci_known_rare_cards = old_known_cards
+		cci_clean_cards()
+		return FALSE
+	return TRUE
 
 /datum/preferences/proc/cci_take_pool_card(card_id)
 	var/datum/cci_card/card = cci_card(card_id)
@@ -156,19 +172,27 @@
 		cci_known_rare_cards[card_id] = count
 	else
 		cci_known_rare_cards -= card_id
-	save_character()
+	if(!cci_save())
+		cci_known_rare_cards[card_id] = count + 1
+		cci_clean_cards()
+		return FALSE
 	return TRUE
 
 /datum/preferences/proc/cci_return_pool_card(card_id)
 	var/datum/cci_card/card = cci_card(card_id)
 	if(!card || card.rarity == CCI_RARITY_BASE)
-		return FALSE
+		return TRUE
 	cci_clean_cards()
 	var/count = cci_known_rare_cards[card_id]
 	if(!count)
 		count = 0
 	cci_known_rare_cards[card_id] = count + 1
-	save_character()
+	if(!cci_save())
+		if(count > 0)
+			cci_known_rare_cards[card_id] = count
+		else
+			cci_known_rare_cards -= card_id
+		return FALSE
 	return TRUE
 
 /datum/preferences/proc/cci_sync_cards_from_inventory(mob/living/carbon/human/H)
@@ -195,11 +219,14 @@
 			cci_saved_deck_leader = (leader && leader.faction == faction.id) ? leader.id : faction.default_leader
 			changed = TRUE
 	if(changed)
-		save_character()
+		cci_save()
 
 /datum/preferences/proc/cci_save_deck_snapshot(list/card_ids, faction_id = CCI_FACTION_AZURIA, leader_id = null)
 	if(!islist(card_ids))
 		return FALSE
+	var/list/old_saved_deck_cards = islist(cci_saved_deck_cards) ? cci_saved_deck_cards.Copy() : list()
+	var/old_saved_deck_faction = cci_saved_deck_faction
+	var/old_saved_deck_leader = cci_saved_deck_leader
 	var/datum/cci_faction/faction = cci_faction(faction_id)
 	if(!faction)
 		faction = cci_faction(CCI_FACTION_AZURIA)
@@ -210,7 +237,12 @@
 	cci_saved_deck_faction = faction.id
 	var/datum/cci_leader/leader = cci_leader(leader_id)
 	cci_saved_deck_leader = (leader && leader.faction == faction.id) ? leader.id : faction.default_leader
-	save_character()
+	if(!cci_save())
+		cci_saved_deck_cards = old_saved_deck_cards
+		cci_saved_deck_faction = old_saved_deck_faction
+		cci_saved_deck_leader = old_saved_deck_leader
+		cci_clean_cards()
+		return FALSE
 	return TRUE
 
 /proc/cci_sync_all_player_collections()
@@ -291,7 +323,10 @@
 		var/mob/living/carbon/human/H = user
 		user.client?.prefs?.cci_sync_cards_from_inventory(H)
 	user.mind.special_items["Card Battle Deck"] = cci_stash_deck_spec(deck.card_ids, deck.faction_id, deck.leader_id)
-	user.client?.prefs?.cci_save_deck_snapshot(deck.card_ids, deck.faction_id, deck.leader_id)
+	if(!user.client?.prefs?.cci_save_deck_snapshot(deck.card_ids, deck.faction_id, deck.leader_id))
+		user.mind.special_items -= "Card Battle Deck"
+		to_chat(user, span_warning("The card battle deck failed to save. It stays in your hands."))
+		return TRUE
 	to_chat(user, span_notice("You return the card battle deck to your stash."))
 	qdel(deck)
 	return TRUE
@@ -313,6 +348,11 @@
 		user.mind.special_items = list()
 	user.mind.special_items["Card Battle Deck"] = cci_stash_deck_spec(deck_cards, cci_saved_deck_faction, cci_saved_deck_leader)
 	user.mind.cci_deck_requested = TRUE
+	if(!cci_save())
+		user.mind.special_items -= "Card Battle Deck"
+		user.mind.cci_deck_requested = FALSE
+		to_chat(user, span_warning("The card battle deck request failed to save. Try again."))
+		return FALSE
 	to_chat(user, span_notice("A card battle deck is added to your stash."))
 	return TRUE
 
@@ -324,6 +364,10 @@
 
 /datum/cci_deckbuilder_panel/ui_assets(mob/user)
 	return list(get_asset_datum(/datum/asset/simple/cci_cards))
+
+/client/proc/cci_preload_card_assets()
+	var/datum/asset/simple/card_assets = get_asset_datum(/datum/asset/simple/cci_cards)
+	SSassets.transport.send_assets_slow(src, card_assets.assets)
 
 /datum/cci_deckbuilder_panel/ui_interact(mob/user, datum/tgui/ui)
 	ui = SStgui.try_update_ui(user, src, ui)
@@ -406,14 +450,18 @@
 		if("add")
 			if(!deck || deck.card_ids.len >= CCI_DECK_SIZE)
 				return TRUE
-			var/datum/cci_card/card = cci_card(card_id)
-			if(!card)
+			var/datum/cci_card/add_card = cci_card(card_id)
+			if(!add_card)
 				return TRUE
 			if(!cci_card_allowed_for_faction(card_id, deck.faction_id))
 				return TRUE
-			if(card.rarity != CCI_RARITY_BASE && !P.cci_take_pool_card(card_id))
+			if(add_card.rarity != CCI_RARITY_BASE && !P.cci_take_pool_card(card_id))
 				return TRUE
 			deck.card_ids += card_id
+			if(!P.cci_save_deck_snapshot(deck.card_ids, deck.faction_id, deck.leader_id))
+				deck.card_ids.Cut(deck.card_ids.len, deck.card_ids.len + 1)
+				P.cci_return_pool_card(card_id)
+				to_chat(user, span_warning("The card deck failed to save. The card was not added."))
 			return TRUE
 		if("remove")
 			if(!deck)
@@ -422,23 +470,36 @@
 				var/index = deck.card_ids.Find(card_id)
 				if(!index)
 					break
+				var/datum/cci_card/remove_card = cci_card(card_id)
+				if(remove_card?.rarity != CCI_RARITY_BASE && !P.cci_return_pool_card(card_id))
+					to_chat(user, span_warning("The card pool failed to save. The card was not removed."))
+					return TRUE
 				deck.card_ids.Cut(index, index + 1)
-				P.cci_return_pool_card(card_id)
+			P.cci_save_deck_snapshot(deck.card_ids, deck.faction_id, deck.leader_id)
 			return TRUE
 		if("remove_one")
 			if(!deck)
 				return TRUE
 			var/index = deck.card_ids.Find(card_id)
 			if(index)
+				var/datum/cci_card/remove_one_card = cci_card(card_id)
+				if(remove_one_card?.rarity != CCI_RARITY_BASE && !P.cci_return_pool_card(card_id))
+					to_chat(user, span_warning("The card pool failed to save. The card was not removed."))
+					return TRUE
 				deck.card_ids.Cut(index, index + 1)
-				P.cci_return_pool_card(card_id)
+				P.cci_save_deck_snapshot(deck.card_ids, deck.faction_id, deck.leader_id)
 			return TRUE
 		if("clear")
 			if(!deck)
 				return TRUE
+			var/list/remaining_cards = list()
 			for(var/removed_id in deck.card_ids)
-				P.cci_return_pool_card(removed_id)
-			deck.card_ids = list()
+				var/datum/cci_card/clear_card = cci_card(removed_id)
+				if(clear_card?.rarity != CCI_RARITY_BASE && !P.cci_return_pool_card(removed_id))
+					remaining_cards += removed_id
+					continue
+			deck.card_ids = remaining_cards
+			P.cci_save_deck_snapshot(deck.card_ids, deck.faction_id, deck.leader_id)
 			return TRUE
 		if("set_faction")
 			if(!deck)
@@ -447,16 +508,31 @@
 			var/datum/cci_faction/faction = cci_faction(faction_id)
 			if(!faction)
 				return TRUE
+			var/old_faction_id = deck.faction_id
+			var/old_leader_id = deck.leader_id
+			var/list/old_card_ids = deck.card_ids.Copy()
 			deck.set_faction(faction.id, faction.default_leader)
 			var/list/removed_cards = deck.remove_cards_not_in_faction()
 			for(var/removed_id in removed_cards)
-				P.cci_return_pool_card(removed_id)
+				if(!P.cci_return_pool_card(removed_id))
+					deck.set_faction(old_faction_id, old_leader_id)
+					deck.card_ids = old_card_ids
+					to_chat(user, span_warning("The card pool failed to save. The faction was not changed."))
+					return TRUE
+			if(!P.cci_save_deck_snapshot(deck.card_ids, deck.faction_id, deck.leader_id))
+				deck.set_faction(old_faction_id, old_leader_id)
+				deck.card_ids = old_card_ids
+				to_chat(user, span_warning("The card deck failed to save. The faction was not changed."))
 			return TRUE
 		if("set_leader")
 			if(!deck)
 				return TRUE
 			var/leader_id = params["leader"]
+			var/old_leader_id = deck.leader_id
 			deck.set_faction(deck.faction_id, leader_id)
+			if(!P.cci_save_deck_snapshot(deck.card_ids, deck.faction_id, deck.leader_id))
+				deck.set_faction(deck.faction_id, old_leader_id)
+				to_chat(user, span_warning("The card deck failed to save. The leader was not changed."))
 			return TRUE
 		if("request_deck")
 			if(!deck)
@@ -469,6 +545,7 @@
 			if(!card_index)
 				return TRUE
 			deck.card_ids.Cut(card_index, card_index + 1)
+			P.cci_save_deck_snapshot(deck.card_ids, deck.faction_id, deck.leader_id)
 			var/obj/item/cci_card_single/single = new(get_turf(user))
 			single.set_card(card_id)
 			user.put_in_hands(single)
