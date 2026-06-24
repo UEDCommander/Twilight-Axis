@@ -1,8 +1,8 @@
 /obj/item/cci_deck
 	name = "card battle deck"
 	desc = "A prepared deck for a round-based card battle."
-	icon = 'icons/obj/playing_cards.dmi'
-	icon_state = "deck"
+	icon = 'modular_twilight_axis/icons/obj/gwynt_objs.dmi'
+	icon_state = "gwint_deck"
 	w_class = WEIGHT_CLASS_SMALL
 	var/list/card_ids = list()
 	var/faction_id = CCI_FACTION_AZURIA
@@ -247,8 +247,8 @@
 /obj/item/cci_card_single
 	name = "collectible card"
 	desc = "A single collectible card."
-	icon = 'icons/obj/playing_cards.dmi'
-	icon_state = "singlecard_down"
+	icon = 'modular_twilight_axis/icons/obj/gwynt_objs.dmi'
+	icon_state = "gwint_card"
 	w_class = WEIGHT_CLASS_TINY
 	var/card_id
 
@@ -276,8 +276,8 @@
 /obj/item/cci_card_generator
 	name = "sealed card packet"
 	desc = "A sealed packet containing a random collectible card."
-	icon = 'icons/obj/playing_cards.dmi'
-	icon_state = "singlecard_down"
+	icon = 'modular_twilight_axis/icons/obj/gwynt_objs.dmi'
+	icon_state = "gwint_card"
 	w_class = WEIGHT_CLASS_TINY
 	var/card_rarity = CCI_RARITY_RARE
 
