@@ -148,6 +148,8 @@
 			round_end_music = 5 // 5%
 		if(17 to 21)
 			round_end_music = 6 // 5%
+		if(22 to 26)
+			round_end_music = 7 // 5%
 		else
 			round_end_music = rand(0, 1)
 
@@ -161,15 +163,18 @@
 				if(1)
 					C.mob.playsound_local(C.mob, 'modular_twilight_axis/sound/music/roundend.ogg', 100, FALSE)
 				if(2)
-					C.mob.playsound_local(C.mob, 'sound/music/roundend_mirthful.ogg', 100, FALSE) //Hildegard Von Blingin and Whitney Avalon's transformative cover of 'Manchild' by Sabrina Carpenter, circa 2026.
+					C.mob.playsound_local(C.mob, 'modular_twilight_axis/sound/music/roundend6.ogg', 100, FALSE) // Die Toteninsel Emptiness
 				if(3)
 					C.mob.playsound_local(C.mob, 'modular_twilight_axis/sound/music/roundend2.ogg', 100, FALSE)
 				if(4)
 					C.mob.playsound_local(C.mob, 'modular_twilight_axis/sound/music/roundend3.ogg', 100, FALSE)
 				if(5)
-					C.mob.playsound_local(C.mob, 'modular_twilight_axis/sound/music/roundend4.ogg', 100, FALSE)
+					C.mob.playsound_local(C.mob, 'modular_twilight_axis/sound/music/roundend4.ogg', 100, FALSE) // [FFXIV] Heavensward - Dragonsong
 				if(6)
 					C.mob.playsound_local(C.mob, 'modular_twilight_axis/sound/music/roundend5.ogg', 100, FALSE)
+				if(7)
+					C.mob.playsound_local(C.mob, 'modular_twilight_axis/sound/music/roundend7.ogg', 100, FALSE)
+
 		if(isliving(C.mob) && C.ckey)
 			key_list += C.ckey
 	var/favor_bonus = SSmerchant_trade ? SSmerchant_trade.favor_triumph_bonus() : 0

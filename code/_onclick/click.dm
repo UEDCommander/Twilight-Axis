@@ -190,9 +190,9 @@
 //		changeNext_move(CLICK_CD_MELEE)
 //		ShiftMiddleClickOn(A)
 //		return
-//	if(modifiers["shift"] && modifiers["ctrl"])
-//		CtrlShiftClickOn(A)
-//		return
+	if(modifiers["shift"] && modifiers["ctrl"])
+		CtrlShiftClickOn(A)
+		return
 	if(modifiers["shift"] && modifiers["right"])
 		ShiftRightClickOn(A, params)
 		return
@@ -792,6 +792,7 @@ GLOBAL_LIST_EMPTY(reach_dummy_pool)
 */
 /mob/proc/CtrlShiftClickOn(atom/A)
 	A.CtrlShiftClick(src)
+	callout_point(A)
 	return
 
 

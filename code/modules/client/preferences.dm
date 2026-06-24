@@ -198,7 +198,8 @@ GLOBAL_LIST_EMPTY(chosen_names)
 	var/family = FAMILY_NONE
 
 	var/crt = FALSE
-	var/grain = TRUE
+	var/grain = FALSE
+	var/icon_scaling = FALSE
 	var/dnr_pref = FALSE
 	var/qsr_pref = FALSE
 
@@ -274,9 +275,7 @@ GLOBAL_LIST_EMPTY(chosen_names)
 
 	var/averse_chosen_faction = "Inquisition"
 
-
 	var/datum/voicepack/temp_vp
-
 
 	var/mood_messages_in_chat
 
@@ -313,6 +312,8 @@ GLOBAL_LIST_EMPTY(chosen_names)
 				max_save_slots = get_max_save_slots(plevel)
 	var/loaded_preferences_successfully = load_preferences()
 	if(loaded_preferences_successfully)
+		if(C)
+			C.apply_saved_visual_preferences()
 		if(load_character())
 			if(check_nameban(C.ckey) || (C.blacklisted() == 1))
 				real_name = pref_species.random_name(gender,1)
@@ -2103,12 +2104,9 @@ GLOBAL_LIST_EMPTY(chosen_names)
 							to_chat(user, "<font color='red'>Your character will now audibly emote in accordance to their Voice Identity and any Racial / Class-specific voice packs.</font>")
 				if("voicepack_preview")
 					if(voice_pack != "Default")
-						var/datum/voicepack/VP = GLOB.voice_packs_list[voice_pack]
-						if(!istype(temp_vp, VP))
-							temp_vp = new VP()
-						var/voiceline = temp_vp.get_sound(pick(temp_vp.preview))
+						var/datum/voicepack/VP = GLOB.voice_packs[GLOB.voice_packs_list[voice_pack]]
+						var/voiceline = VP.get_sound(pick(VP.preview))
 						user.playsound_local(user, voiceline, 100)
-
 				if("taur_type")
 					var/list/species_taur_list = pref_species.get_taur_list()
 					if(!LAZYLEN(species_taur_list))

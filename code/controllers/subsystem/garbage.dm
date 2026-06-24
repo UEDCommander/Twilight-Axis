@@ -341,6 +341,13 @@ SUBSYSTEM_DEF(garbage)
 	if(!D || isnull(D))
 		return
 	if(!istype(D))
+		if(isnull(D))
+			return
+		else if(islist(D))
+			stack_trace("Lists should not be directly passed to qdel! You likely want either list.Cut(), QDEL_LIST(list), QDEL_LIST_ASSOC(list), or QDEL_LIST_ASSOC_VAL(list)")
+		else if(D != world)
+			stack_trace("Tried to qdel possibly invalid value: [D]")
+		del(D)
 		return
 
 	var/datum/qdel_item/I = SSgarbage.items[D.type]
