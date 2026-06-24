@@ -119,7 +119,8 @@ const effectBadges: Record<string, string> = {
 const effectDescriptions: Record<string, string> = {
   morale: 'Прилив сил: +1 к силе остальных отрядов в этом ряду.',
   scorch: 'Казнь: уничтожает сильнейшую карту противника.',
-  scorch_infantry: 'Казнь: уничтожает сильнейшую пехоту врага, если его пехота имеет 10+ силы.',
+  scorch_infantry:
+    'Казнь: уничтожает сильнейшую пехоту врага, если его пехота имеет 10+ силы.',
   scorch_global: 'Казнь: уничтожает сильнейшую карту или карты на поле.',
   spy: 'Шпион: кладётся на поле врага и даёт вам две карты.',
   medic: 'Медик: возвращает сильнейшую отбитую карту на поле.',
@@ -130,7 +131,8 @@ const effectDescriptions: Record<string, string> = {
   decoy: 'Чучело: возвращает сильнейшую вашу карту с поля в руку.',
   berserk: 'Берсерк: под Мардрёмом превращается в медведя.',
   mardroeme: 'Мардрём: превращает берсерков в ряду в медведей.',
-  avenger: 'Призвание Мстителя: при уничтожении призывает сильную карту на своё место.',
+  avenger:
+    'Призвание Мстителя: при уничтожении призывает сильную карту на своё место.',
   clear_weather: 'Ясная погода: снимает всю погоду.',
   frost: 'Мороз: снижает пехоту до 1.',
   fog: 'Туман: снижает лучников до 1.',
@@ -161,7 +163,8 @@ const cardBoxStyle = (card: Card, compact = false) => ({
   padding: compact ? '3px' : '4px',
   border: `2px solid ${rarityColor[card.rarity]}`,
   borderRadius: '4px',
-  background: 'linear-gradient(180deg, rgba(35,39,48,0.98), rgba(14,16,22,0.98))',
+  background:
+    'linear-gradient(180deg, rgba(35,39,48,0.98), rgba(14,16,22,0.98))',
   boxShadow: `0 0 0 1px rgba(0,0,0,0.7), 0 0 10px ${rarityColor[card.rarity]}33`,
   display: 'flex',
   flexDirection: 'column' as const,
@@ -190,163 +193,169 @@ const CardView = ({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-    {!!card.art && (
-      <img
-        src={resolveAsset(card.art)}
+      {!!card.art && (
+        <img
+          src={resolveAsset(card.art)}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            zIndex: 0,
+          }}
+        />
+      )}
+      <div
         style={{
           position: 'absolute',
           inset: 0,
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
+          background:
+            'linear-gradient(180deg, rgba(0,0,0,0.34), rgba(0,0,0,0.04) 32%, rgba(0,0,0,0.62))',
           zIndex: 0,
         }}
       />
-    )}
-    <div
-      style={{
-        position: 'absolute',
-        inset: 0,
-        background:
-          'linear-gradient(180deg, rgba(0,0,0,0.34), rgba(0,0,0,0.04) 32%, rgba(0,0,0,0.62))',
-        zIndex: 0,
-      }}
-    />
-    <div
-      style={{
-        position: 'relative',
-        zIndex: 1,
-        color: rarityColor[card.rarity],
-        fontSize: compact ? '6px' : '8px',
-        fontWeight: 700,
-        textAlign: 'center',
-        textTransform: 'uppercase',
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-      }}
-    >
-      {cardTypeLabels[card.row]}
-    </div>
-    {!!effectBadges[card.effect] && (
       <div
         style={{
-          position: 'absolute',
-          top: compact ? '14px' : '20px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          minWidth: compact ? '17px' : '24px',
-          height: compact ? '13px' : '17px',
-          padding: '0 3px',
-          borderRadius: '9px',
-          backgroundColor: 'rgba(248,250,252,0.94)',
-          color: '#0f172a',
-          fontSize: compact ? '5px' : '7px',
-          fontWeight: 900,
-          lineHeight: compact ? '13px' : '17px',
-          textAlign: 'center',
-          zIndex: 2,
-        }}
-      >
-        {effectBadges[card.effect]}
-      </div>
-    )}
-    {card.hero && (
-      <div
-        style={{
-          position: 'absolute',
-          right: compact ? '3px' : '5px',
-          top: compact ? '14px' : '20px',
-          width: compact ? '16px' : '22px',
-          height: compact ? '13px' : '17px',
-          borderRadius: '8px',
-          backgroundColor: 'rgba(251,191,36,0.94)',
-          color: '#111827',
-          fontSize: compact ? '5px' : '7px',
-          fontWeight: 900,
-          lineHeight: compact ? '13px' : '17px',
-          textAlign: 'center',
-          zIndex: 2,
-        }}
-      >
-        HERO
-      </div>
-    )}
-    {hovered && (
-      <div
-        style={{
-          position: 'absolute',
-          left: compact ? '8px' : '10px',
-          right: compact ? '8px' : '10px',
-          top: compact ? '30px' : '42px',
-          padding: compact ? '5px' : '7px',
-          border: '1px solid rgba(248,250,252,0.85)',
-          borderRadius: '4px',
-          backgroundColor: 'rgba(5,7,11,0.96)',
-          color: '#f8fafc',
-          fontSize: compact ? '6px' : '8px',
-          lineHeight: 1.25,
-          zIndex: 5,
-          boxShadow: '0 4px 12px rgba(0,0,0,0.75)',
-          pointerEvents: 'none',
-        }}
-      >
-        <div style={{ color: rarityColor[card.rarity], fontWeight: 900, marginBottom: '3px' }}>
-          {tooltip[0]}
-        </div>
-        {tooltip.slice(1).map((line) => (
-          <div key={line}>{line}</div>
-        ))}
-      </div>
-    )}
-
-    <div
-      style={{
-        position: 'relative',
-        zIndex: 1,
-        display: 'grid',
-        gridTemplateColumns: compact ? '16px 1fr' : '23px 1fr',
-        alignItems: 'center',
-        width: '100%',
-        minHeight: compact ? '16px' : '22px',
-      }}
-    >
-      <div
-        style={{
-          width: compact ? '16px' : '23px',
-          height: compact ? '16px' : '23px',
-          borderRadius: '50%',
-          backgroundColor: '#05070b',
-          border: `2px solid ${rarityColor[card.rarity]}`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: '#f8fafc',
-          fontSize: compact ? '8px' : '12px',
-          fontWeight: 700,
+          position: 'relative',
           zIndex: 1,
-        }}
-      >
-        {card.currentPower ?? card.power}
-      </div>
-      <div
-        style={{
-          marginLeft: compact ? '-3px' : '-4px',
-          padding: compact ? '2px 3px 2px 5px' : '3px 4px 3px 7px',
-          border: `1px solid ${rarityColor[card.rarity]}`,
-          backgroundColor: 'rgba(5,7,11,0.92)',
-          color: '#f8fafc',
+          color: rarityColor[card.rarity],
           fontSize: compact ? '6px' : '8px',
           fontWeight: 700,
-          lineHeight: 1.1,
+          textAlign: 'center',
+          textTransform: 'uppercase',
           whiteSpace: 'nowrap',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
         }}
       >
-        {card.name}
+        {cardTypeLabels[card.row]}
       </div>
-    </div>
+      {!!effectBadges[card.effect] && (
+        <div
+          style={{
+            position: 'absolute',
+            top: compact ? '14px' : '20px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            minWidth: compact ? '17px' : '24px',
+            height: compact ? '13px' : '17px',
+            padding: '0 3px',
+            borderRadius: '9px',
+            backgroundColor: 'rgba(248,250,252,0.94)',
+            color: '#0f172a',
+            fontSize: compact ? '5px' : '7px',
+            fontWeight: 900,
+            lineHeight: compact ? '13px' : '17px',
+            textAlign: 'center',
+            zIndex: 2,
+          }}
+        >
+          {effectBadges[card.effect]}
+        </div>
+      )}
+      {card.hero && (
+        <div
+          style={{
+            position: 'absolute',
+            right: compact ? '3px' : '5px',
+            top: compact ? '14px' : '20px',
+            width: compact ? '16px' : '22px',
+            height: compact ? '13px' : '17px',
+            borderRadius: '8px',
+            backgroundColor: 'rgba(251,191,36,0.94)',
+            color: '#111827',
+            fontSize: compact ? '5px' : '7px',
+            fontWeight: 900,
+            lineHeight: compact ? '13px' : '17px',
+            textAlign: 'center',
+            zIndex: 2,
+          }}
+        >
+          HERO
+        </div>
+      )}
+      {hovered && (
+        <div
+          style={{
+            position: 'absolute',
+            left: compact ? '8px' : '10px',
+            right: compact ? '8px' : '10px',
+            top: compact ? '30px' : '42px',
+            padding: compact ? '5px' : '7px',
+            border: '1px solid rgba(248,250,252,0.85)',
+            borderRadius: '4px',
+            backgroundColor: 'rgba(5,7,11,0.96)',
+            color: '#f8fafc',
+            fontSize: compact ? '6px' : '8px',
+            lineHeight: 1.25,
+            zIndex: 5,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.75)',
+            pointerEvents: 'none',
+          }}
+        >
+          <div
+            style={{
+              color: rarityColor[card.rarity],
+              fontWeight: 900,
+              marginBottom: '3px',
+            }}
+          >
+            {tooltip[0]}
+          </div>
+          {tooltip.slice(1).map((line) => (
+            <div key={line}>{line}</div>
+          ))}
+        </div>
+      )}
+
+      <div
+        style={{
+          position: 'relative',
+          zIndex: 1,
+          display: 'grid',
+          gridTemplateColumns: compact ? '16px 1fr' : '23px 1fr',
+          alignItems: 'center',
+          width: '100%',
+          minHeight: compact ? '16px' : '22px',
+        }}
+      >
+        <div
+          style={{
+            width: compact ? '16px' : '23px',
+            height: compact ? '16px' : '23px',
+            borderRadius: '50%',
+            backgroundColor: '#05070b',
+            border: `2px solid ${rarityColor[card.rarity]}`,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#f8fafc',
+            fontSize: compact ? '8px' : '12px',
+            fontWeight: 700,
+            zIndex: 1,
+          }}
+        >
+          {card.currentPower ?? card.power}
+        </div>
+        <div
+          style={{
+            marginLeft: compact ? '-3px' : '-4px',
+            padding: compact ? '2px 3px 2px 5px' : '3px 4px 3px 7px',
+            border: `1px solid ${rarityColor[card.rarity]}`,
+            backgroundColor: 'rgba(5,7,11,0.92)',
+            color: '#f8fafc',
+            fontSize: compact ? '6px' : '8px',
+            fontWeight: 700,
+            lineHeight: 1.1,
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+        >
+          {card.name}
+        </div>
+      </div>
     </div>
   );
 };
@@ -362,7 +371,10 @@ const RowView = ({
   cards: Card[];
   weathered: boolean;
 }) => {
-  const total = cards.reduce((sum, card) => sum + (card.currentPower ?? card.power), 0);
+  const total = cards.reduce(
+    (sum, card) => sum + (card.currentPower ?? card.power),
+    0,
+  );
   return (
     <div
       style={{
@@ -443,7 +455,8 @@ const RowView = ({
           textAlign: 'center',
           fontSize: '17px',
           fontWeight: 800,
-          boxShadow: '0 1px 0 rgba(255,255,255,0.15), inset 0 0 8px rgba(0,0,0,0.65)',
+          boxShadow:
+            '0 1px 0 rgba(255,255,255,0.15), inset 0 0 8px rgba(0,0,0,0.65)',
         }}
       >
         {total}
@@ -452,23 +465,20 @@ const RowView = ({
   );
 };
 
-const PlayerBoard = ({
-  side,
-  data,
-}: {
-  side: Side;
-  data: Data;
-}) => {
+const PlayerBoard = ({ side, data }: { side: Side; data: Data }) => {
   const board = data.board?.[side];
   const weather = data.weather || [];
   const score = data.scores?.[side] ?? 0;
   const rows: CardRow[] =
-    side === 'two' ? ['siege', 'archers', 'infantry'] : ['infantry', 'archers', 'siege'];
+    side === 'two'
+      ? ['siege', 'archers', 'infantry']
+      : ['infantry', 'archers', 'siege'];
   return (
     <div
       style={{
         border: `2px solid ${sideAccent[side]}99`,
-        background: 'linear-gradient(180deg, rgba(15,23,42,0.92), rgba(8,11,17,0.94))',
+        background:
+          'linear-gradient(180deg, rgba(15,23,42,0.92), rgba(8,11,17,0.94))',
         boxShadow: 'inset 0 0 18px rgba(0,0,0,0.65)',
       }}
     >
@@ -543,10 +553,18 @@ const BattleBoard = ({
         style={{
           padding: '5px 8px',
           border: '1px solid rgba(255,255,255,0.16)',
-          background: 'linear-gradient(90deg, rgba(5,7,11,0.72), rgba(30,41,59,0.55))',
+          background:
+            'linear-gradient(90deg, rgba(5,7,11,0.72), rgba(30,41,59,0.55))',
         }}
       >
-        <div style={{ color: '#cbd5e1', fontSize: '11px', fontWeight: 800, marginBottom: '4px' }}>
+        <div
+          style={{
+            color: '#cbd5e1',
+            fontSize: '11px',
+            fontWeight: 800,
+            marginBottom: '4px',
+          }}
+        >
           WEATHER
         </div>
         <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
@@ -559,13 +577,27 @@ const BattleBoard = ({
         style={{
           padding: '5px 8px',
           border: '1px solid rgba(255,255,255,0.16)',
-          background: 'linear-gradient(90deg, rgba(5,7,11,0.72), rgba(55,65,81,0.5))',
+          background:
+            'linear-gradient(90deg, rgba(5,7,11,0.72), rgba(55,65,81,0.5))',
         }}
       >
-        <div style={{ color: '#cbd5e1', fontSize: '11px', fontWeight: 800, marginBottom: '4px' }}>
+        <div
+          style={{
+            color: '#cbd5e1',
+            fontSize: '11px',
+            fontWeight: 800,
+            marginBottom: '4px',
+          }}
+        >
           ROW EFFECTS
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '5px' }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: '5px',
+          }}
+        >
           {(['infantry', 'archers', 'siege'] as CardRow[]).map((row) => (
             <div
               key={row}
@@ -581,10 +613,21 @@ const BattleBoard = ({
               }}
             >
               <div style={{ marginBottom: '4px' }}>{rowLabels[row]}</div>
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '3px', flexWrap: 'wrap' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  gap: '3px',
+                  flexWrap: 'wrap',
+                }}
+              >
                 {(['two', 'one'] as Side[]).flatMap((side) =>
                   (data.rowEffects?.[side]?.[row] || []).map((card, index) => (
-                    <CardView key={`${side}-${row}-${card.id}-${index}`} card={card} compact />
+                    <CardView
+                      key={`${side}-${row}-${card.id}-${index}`}
+                      card={card}
+                      compact
+                    />
                   )),
                 )}
               </div>
@@ -615,8 +658,8 @@ export const CardTable = () => {
       <Window title="Card Battle" width={420} height={180}>
         <Window.Content>
           <Section title="Invitation">
-            {data.offeredName || 'Someone'} is waiting for an opponent.
-            Strike this deck with your own deck to begin.
+            {data.offeredName || 'Someone'} is waiting for an opponent. Strike
+            this deck with your own deck to begin.
           </Section>
         </Window.Content>
       </Window>
@@ -625,14 +668,21 @@ export const CardTable = () => {
 
   const hand = data.hand || [];
   const weatherCards = data.weatherCards || [];
-  const myTurn = data.mySide && data.turn === data.mySide && !data.result && !data.inMulligan;
+  const myTurn =
+    data.mySide &&
+    data.turn === data.mySide &&
+    !data.result &&
+    !data.inMulligan;
+  const canUseLeader = !!data.leader && !data.leader.used && myTurn;
   const weather = data.weather?.length ? data.weather.join(', ') : 'Clear';
   const rowChoices: CardRow[] = ['infantry', 'archers', 'siege'];
   const requiresRowChoice = (card: Card) =>
     card.effect === 'agile' ||
-    ((card.effect === 'horn' || card.effect === 'mardroeme') && !card.targetRow);
+    ((card.effect === 'horn' || card.effect === 'mardroeme') &&
+      !card.targetRow);
   const requiresTargetChoice = (card: Card) =>
-    card.effect === 'decoy' || (card.effect === 'medic' && !!data.targets?.revive?.length);
+    card.effect === 'decoy' ||
+    (card.effect === 'medic' && !!data.targets?.revive?.length);
   const playCard = (card: Card) => {
     if (data.inMulligan) {
       act('mulligan', { card: card.id });
@@ -670,132 +720,68 @@ export const CardTable = () => {
   };
 
   return (
-    <Window title="Card Battle" width={1180} height={760}>
+    <Window title="Card Battle" width={1280} height={760}>
       <Window.Content scrollable>
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: '1fr 360px',
+            gridTemplateColumns: '280px minmax(560px, 1fr) 300px',
             gap: '12px',
+            alignItems: 'start',
           }}
         >
           <div>
-            <BattleBoard data={data} weatherCards={weatherCards} />
-          </div>
-
-          <div>
-            <Section title="Match">
-              <div style={{ marginBottom: '8px' }}>
-                <b>Round:</b> {data.round || 1}
-              </div>
-              {data.inMulligan && (
-                <div style={{ color: '#fbbf24', marginBottom: '8px' }}>
-                  Mulligan: {data.mulligansLeft ?? 0} redraws left.
-                </div>
-              )}
-              <div style={{ marginBottom: '8px' }}>
-                <b>Turn:</b> {data.turn ? data.players?.[data.turn] : 'None'}
-              </div>
-              <div style={{ marginBottom: '8px' }}>
-                <b>You:</b> {data.mySide ? data.players?.[data.mySide] : 'Observer'}
-              </div>
-              <div style={{ marginBottom: '8px' }}>
-                <b>Opponent hand:</b> {data.opponentHandCount ?? 0}
-              </div>
-              <div style={{ marginBottom: '8px' }}>
-                <b>Weather:</b> {weather}
-              </div>
-              {data.message && (
-                <div style={{ color: '#d9f99d', marginBottom: '8px' }}>{data.message}</div>
-              )}
-              {data.result && (
-                <div style={{ color: '#fbbf24', marginBottom: '8px', fontWeight: 700 }}>
-                  {data.result}
-                </div>
-              )}
-              {data.leader && (
+            {data.leader && (
+              <Section title="Leader Ability">
                 <div
                   style={{
-                    marginBottom: '8px',
-                    padding: '6px',
-                    border: '1px solid rgba(203,213,225,0.25)',
-                    background: 'rgba(5,7,11,0.45)',
+                    padding: '8px',
+                    border: `1px solid ${
+                      canUseLeader
+                        ? 'rgba(251,191,36,0.65)'
+                        : 'rgba(148,163,184,0.24)'
+                    }`,
+                    background: canUseLeader
+                      ? 'linear-gradient(180deg, rgba(56,35,10,0.92), rgba(12,10,8,0.88))'
+                      : 'rgba(5,7,11,0.45)',
+                    boxShadow: canUseLeader
+                      ? '0 0 14px rgba(251,191,36,0.18)'
+                      : undefined,
                   }}
                 >
-                  {data.faction && (
-                    <>
-                      <div style={{ color: '#fbbf24', fontWeight: 800 }}>{data.faction.name}</div>
-                      <div style={{ color: '#94a3b8', fontSize: '11px', marginBottom: '6px' }}>
-                        {data.faction.desc}
-                      </div>
-                    </>
-                  )}
-                  <div style={{ color: '#f8fafc', fontWeight: 800 }}>{data.leader.name}</div>
-                  <div style={{ color: '#94a3b8', fontSize: '11px', marginBottom: '5px' }}>
+                  <div
+                    style={{
+                      color: canUseLeader ? '#fbbf24' : '#cbd5e1',
+                      fontSize: '13px',
+                      fontWeight: 900,
+                      marginBottom: '4px',
+                    }}
+                  >
+                    {data.leader.name}
+                    {data.leader.used ? ' | Used' : ''}
+                  </div>
+                  <div
+                    style={{
+                      color: '#e5e7eb',
+                      fontSize: '12px',
+                      lineHeight: 1.35,
+                      marginBottom: '8px',
+                    }}
+                  >
                     {data.leader.desc}
                   </div>
                   <Button
-                    disabled={!!data.leader.used || !myTurn}
+                    fluid
+                    bold
+                    color={canUseLeader ? 'good' : undefined}
+                    disabled={!canUseLeader}
                     onClick={() => act('leader')}
                   >
-                    Use Leader
+                    Activate Leader
                   </Button>
                 </div>
-              )}
-              {selectedCard && (
-                <div
-                  style={{
-                    marginBottom: '8px',
-                    padding: '6px',
-                    border: '1px solid rgba(251,191,36,0.45)',
-                    background: 'rgba(30,20,8,0.55)',
-                  }}
-                >
-                  <div style={{ color: '#fbbf24', fontWeight: 800, marginBottom: '5px' }}>
-                    Target for {selectedCard.name}
-                  </div>
-                  {requiresRowChoice(selectedCard) && (
-                    <div style={{ display: 'flex', gap: '5px', marginBottom: '6px' }}>
-                      {rowChoices.map((row) => (
-                        <Button key={row} onClick={() => playWithRow(row)}>
-                          {rowLabels[row]}
-                        </Button>
-                      ))}
-                    </div>
-                  )}
-                  {selectedCard.effect === 'medic' && (
-                    <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
-                      {(data.targets?.revive || []).map((card, index) => (
-                        <Button key={`${card.id}-${index}`} onClick={() => playWithRevive(card)}>
-                          {card.name}
-                        </Button>
-                      ))}
-                    </div>
-                  )}
-                  {selectedCard.effect === 'decoy' && (
-                    <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
-                      {(data.targets?.decoy || []).map((card) => (
-                        <Button key={card.playId} onClick={() => playWithDecoy(card)}>
-                          {card.name}
-                        </Button>
-                      ))}
-                    </div>
-                  )}
-                  <Button onClick={() => setSelectedCard(null)}>Cancel</Button>
-                </div>
-              )}
-              {data.inMulligan && (
-                <Button disabled={!!data.mulliganReady} onClick={() => act('ready_mulligan')}>
-                  Ready
-                </Button>
-              )}
-              <Button disabled={!myTurn} onClick={() => act('pass')}>
-                Pass
-              </Button>
-              <Button disabled={!data.result} onClick={() => act('collect')}>
-                Collect Decks
-              </Button>
-            </Section>
+              </Section>
+            )}
             <Section title={`Hand | ${hand.length} cards`}>
               <div
                 style={{
@@ -816,6 +802,169 @@ export const CardTable = () => {
                   />
                 ))}
               </div>
+            </Section>
+          </div>
+
+          <div>
+            <BattleBoard data={data} weatherCards={weatherCards} />
+          </div>
+
+          <div>
+            <Section title="Match">
+              <div style={{ marginBottom: '8px' }}>
+                <b>Round:</b> {data.round || 1}
+              </div>
+              {data.inMulligan && (
+                <div style={{ color: '#fbbf24', marginBottom: '8px' }}>
+                  Mulligan: {data.mulligansLeft ?? 0} redraws left.
+                </div>
+              )}
+              <div style={{ marginBottom: '8px' }}>
+                <b>Turn:</b> {data.turn ? data.players?.[data.turn] : 'None'}
+              </div>
+              <div style={{ marginBottom: '8px' }}>
+                <b>You:</b>{' '}
+                {data.mySide ? data.players?.[data.mySide] : 'Observer'}
+              </div>
+              <div style={{ marginBottom: '8px' }}>
+                <b>Opponent hand:</b> {data.opponentHandCount ?? 0}
+              </div>
+              <div style={{ marginBottom: '8px' }}>
+                <b>Weather:</b> {weather}
+              </div>
+              {data.message && (
+                <div style={{ color: '#d9f99d', marginBottom: '8px' }}>
+                  {data.message}
+                </div>
+              )}
+              {data.result && (
+                <div
+                  style={{
+                    color: '#fbbf24',
+                    marginBottom: '8px',
+                    fontWeight: 700,
+                  }}
+                >
+                  {data.result}
+                </div>
+              )}
+              {data.leader && (
+                <div
+                  style={{
+                    marginBottom: '8px',
+                    padding: '6px',
+                    border: '1px solid rgba(203,213,225,0.25)',
+                    background: 'rgba(5,7,11,0.45)',
+                  }}
+                >
+                  {data.faction && (
+                    <>
+                      <div style={{ color: '#fbbf24', fontWeight: 800 }}>
+                        {data.faction.name}
+                      </div>
+                      <div
+                        style={{
+                          color: '#94a3b8',
+                          fontSize: '11px',
+                          marginBottom: '6px',
+                        }}
+                      >
+                        {data.faction.desc}
+                      </div>
+                    </>
+                  )}
+                  <div style={{ color: '#f8fafc', fontWeight: 800 }}>
+                    {data.leader.name}
+                  </div>
+                  <div
+                    style={{
+                      color: '#94a3b8',
+                      fontSize: '11px',
+                      marginBottom: '5px',
+                    }}
+                  >
+                    {data.leader.desc}
+                  </div>
+                </div>
+              )}
+              {selectedCard && (
+                <div
+                  style={{
+                    marginBottom: '8px',
+                    padding: '6px',
+                    border: '1px solid rgba(251,191,36,0.45)',
+                    background: 'rgba(30,20,8,0.55)',
+                  }}
+                >
+                  <div
+                    style={{
+                      color: '#fbbf24',
+                      fontWeight: 800,
+                      marginBottom: '5px',
+                    }}
+                  >
+                    Target for {selectedCard.name}
+                  </div>
+                  {requiresRowChoice(selectedCard) && (
+                    <div
+                      style={{
+                        display: 'flex',
+                        gap: '5px',
+                        marginBottom: '6px',
+                      }}
+                    >
+                      {rowChoices.map((row) => (
+                        <Button key={row} onClick={() => playWithRow(row)}>
+                          {rowLabels[row]}
+                        </Button>
+                      ))}
+                    </div>
+                  )}
+                  {selectedCard.effect === 'medic' && (
+                    <div
+                      style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}
+                    >
+                      {(data.targets?.revive || []).map((card, index) => (
+                        <Button
+                          key={`${card.id}-${index}`}
+                          onClick={() => playWithRevive(card)}
+                        >
+                          {card.name}
+                        </Button>
+                      ))}
+                    </div>
+                  )}
+                  {selectedCard.effect === 'decoy' && (
+                    <div
+                      style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}
+                    >
+                      {(data.targets?.decoy || []).map((card) => (
+                        <Button
+                          key={card.playId}
+                          onClick={() => playWithDecoy(card)}
+                        >
+                          {card.name}
+                        </Button>
+                      ))}
+                    </div>
+                  )}
+                  <Button onClick={() => setSelectedCard(null)}>Cancel</Button>
+                </div>
+              )}
+              {data.inMulligan && (
+                <Button
+                  disabled={!!data.mulliganReady}
+                  onClick={() => act('ready_mulligan')}
+                >
+                  Ready
+                </Button>
+              )}
+              <Button disabled={!myTurn} onClick={() => act('pass')}>
+                Pass
+              </Button>
+              <Button disabled={!data.result} onClick={() => act('collect')}>
+                Collect Decks
+              </Button>
             </Section>
           </div>
         </div>
