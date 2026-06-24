@@ -1116,3 +1116,68 @@
   eirenxiv:
   - bugfix: 'excluded constructs from: Black Oaks, Grudgebearer an Anthraxi'
   - bugfix: excluded gnomes from Grudgebearers
+2026-06-23:
+  Oats:
+  - rscadd: Adds a Baker's Trough, used to knead large quantities of flour and water
+      into dough.
+  - rscadd: Adds a Baker's Peel, used to take items from tables and put them into
+      ovens and vice versa, with the added benefit of having a long reach due to its
+      long handle. Effective against pie thieves, if you have the skill.
+  - qol: Adds crafting recipes for turning wheat, rice, and oats into flour so that
+      people with the necessary cooking skill to mass produce flour can do so without
+      hurting their hands due to the repeated clicking and dropping necessary of the
+      usual method. You can still do it one handful of grain the old fashioned way
+      as well.
+  Ollanius:
+  - rscadd: At last, the Baothans now have access to their Rite of Armaments. Their
+      armor is the worst out of the bunch, but they receive a potent weapon (in the
+      form of the Swordspear) and two very useful traits (in the form of Painless
+      and Dodge Expert) in exchange. Credit to Dakken and Cre77 for commissioning
+      and creating the sprites, featured here.
+  - code_imp: Touches up the descriptions, names, and miscellaneous information of
+      in-menu patrons and ritual circles.
+  - bugfix: Added missing sprites to the Hand's unique bracer.
+  - rscadd: Gemstone amulets can now be worn on the wrists, similar to how psicrosses
+      work.
+  - rscadd: Touches up sprites for gemstone amulets, lances and copper spears.
+  - balance: Holy steel recipes now require an amulet of the item's patron to complete,
+      in order to reduce the amount of cases where Templar-specific items could be
+      made by non-Templaric forces.
+  PepegaSandwich:
+  - rscadd: New drinks! Made using a pot and either premade teamix craftable in Cooking,
+      or basic ingridients. Teas have properties according to their ingridients, while
+      they are much weaker, they dont require alchemical skill to be made.
+  - rscadd: Westleach tar brick (totaly not hash), slicable, smokable, compact. Naledi
+      gamer's must.
+  - image: added icons for tea mixes
+  Rannoooo:
+  - rscadd: option for slurbow added to outlaw wretch.
+  Ratvarr:
+  - rscadd: Kazengunite god-names now work for prayers! + A few others
+  Ryan180602:
+  - admin: alists now are supported in VV.
+  ToasterStrudes:
+  - bugfix: attempting to salvage Triumph items no longer runtimes.
+  WeNeedMorePhoron:
+  - balance: Remove headhunting from contracts (Both simple and non-simple mobs) to
+      prevent double dipping on rewards.
+  - balance: Raised contract rewards back to 100%, where it was before
+  - balance: Reduced the default headeater rate to 15%.
+  - balance: Increased Blink CD from 12 seconds to 24 seconds.
+  - rscadd: Ported OV's improved loadout management of spells. Renamed "Select Loadout"
+      to "Loadout Manager"
+  changelingonberry:
+  - rscadd: wanted vice, allows non-towners to be on the EXCIDIUM
+  - rscadd: custom descriptors for everything
+  radarseas:
+  - rscadd: Added a ton of new outfit picks for Astrocrat adv
+  - rscadd: Weaker version of the desert coat, exclusive to Raneshen Astrocrats
+  - rscadd: Astrocrat adv is now based around their proficencies, vs other advs they
+      are extremely specialised leader roles without the strength of town ones and
+      still weaker than a knight errant or battlemaster.
+  - balance: Astrocrats play out massively different depending on pick
+  - balance: Astrocrats get trait_nutcracker for sovl, in practice this'll rarely
+      be used anyway but its funny.
+  - balance: Otavian Routier gets an Otavian satchel instead of a regular one
+  - balance: Grenzel + Emir get interlectual trait for free as proper envoy nobility,
+      on-par with advisor hand and the likes.
