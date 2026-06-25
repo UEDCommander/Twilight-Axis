@@ -545,7 +545,11 @@
 	if(index)
 		discard.Cut(index, index + 1)
 		var/datum/cci_card/card = cci_card(card_id)
-		add_played_card(side, card.row, card_id, side)
+		var/play_side = side
+		if(card.effect == CCI_EFFECT_SPY)
+			play_side = opposite(side)
+			draw_cards(side, 2)
+		add_played_card(play_side, card.row, card_id, side)
 		return TRUE
 	return FALSE
 
