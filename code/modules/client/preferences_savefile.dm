@@ -205,17 +205,6 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["erp_kink_prefs"] >> erp_kink_prefs
 	S["erp_organ_sensitivity"] >> erp_organ_prefs
 	// TA Addition end - new ERP SYSTEM
-	S["ccg_known_rare_cards"] >> ccg_known_rare_cards
-	ccg_known_rare_cards = SANITIZE_LIST(ccg_known_rare_cards)
-	S["ccg_selected_deck"] >> ccg_selected_deck
-	ccg_selected_deck = SANITIZE_LIST(ccg_selected_deck)
-	S["ccg_saved_deck_cards"] >> ccg_saved_deck_cards
-	ccg_saved_deck_cards = SANITIZE_LIST(ccg_saved_deck_cards)
-	S["ccg_saved_deck_faction"] >> ccg_saved_deck_faction
-	S["ccg_saved_deck_leader"] >> ccg_saved_deck_leader
-	if(!length(ccg_saved_deck_cards) && length(ccg_selected_deck))
-		ccg_saved_deck_cards = ccg_selected_deck.Copy()
-	ccg_clean_cards()
 
 	//try to fix any outdated data if necessary
 	if(needs_update >= 0)
@@ -276,6 +265,18 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	sanitize_erp_organ_prefs()
 	//TA Addition end - new ERP SYSTEM
 
+	S["ccg_known_rare_cards"] >> ccg_known_rare_cards
+	ccg_known_rare_cards = SANITIZE_LIST(ccg_known_rare_cards)
+	S["ccg_selected_deck"] >> ccg_selected_deck
+	ccg_selected_deck = SANITIZE_LIST(ccg_selected_deck)
+	S["ccg_saved_deck_cards"] >> ccg_saved_deck_cards
+	ccg_saved_deck_cards = SANITIZE_LIST(ccg_saved_deck_cards)
+	S["ccg_saved_deck_faction"] >> ccg_saved_deck_faction
+	S["ccg_saved_deck_leader"] >> ccg_saved_deck_leader
+	if(!length(ccg_saved_deck_cards) && length(ccg_selected_deck))
+		ccg_saved_deck_cards = ccg_selected_deck.Copy()
+	ccg_clean_cards()
+
 	verify_keybindings_valid()
 	return TRUE
 
@@ -299,6 +300,13 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	if(!S)
 		return FALSE
 	S.cd = "/"
+
+	ccg_clean_cards()
+	WRITE_FILE(S["ccg_known_rare_cards"], ccg_known_rare_cards)
+	WRITE_FILE(S["ccg_selected_deck"], ccg_selected_deck)
+	WRITE_FILE(S["ccg_saved_deck_cards"], ccg_saved_deck_cards)
+	WRITE_FILE(S["ccg_saved_deck_faction"], ccg_saved_deck_faction)
+	WRITE_FILE(S["ccg_saved_deck_leader"], ccg_saved_deck_leader)
 
 	WRITE_FILE(S["version"] , SAVEFILE_VERSION_MAX)		//updates (or failing that the sanity checks) will ensure data is not invalid at load. Assume up-to-date
 
@@ -386,12 +394,6 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["erp_kink_prefs"], erp_kink_prefs)
 	WRITE_FILE(S["erp_organ_sensitivity"], erp_organ_prefs)
 	// TA Addition end - new ERP SYSTEM
-	ccg_clean_cards()
-	WRITE_FILE(S["ccg_known_rare_cards"], ccg_known_rare_cards)
-	WRITE_FILE(S["ccg_selected_deck"], ccg_selected_deck)
-	WRITE_FILE(S["ccg_saved_deck_cards"], ccg_saved_deck_cards)
-	WRITE_FILE(S["ccg_saved_deck_faction"], ccg_saved_deck_faction)
-	WRITE_FILE(S["ccg_saved_deck_leader"], ccg_saved_deck_leader)
 	return TRUE
 
 

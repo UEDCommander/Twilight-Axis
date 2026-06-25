@@ -2696,10 +2696,6 @@ GLOBAL_LIST_EMPTY(chosen_names)
 				if("family_options") // TA EDIT
 					user.client?.familytree_module_open_preferences(user)
 
-				if("card_deckpool")
-					ccg_clean_cards()
-					user.client?.ccg_open_deckpool(user)
-
 				if("vampire_hair")
 					var/new_vampirehair = input(user, "Choose your character's vampire hair color:", "Character Preference","#"+vampire_hair) as color|null
 					if(new_vampirehair)
@@ -2724,6 +2720,10 @@ GLOBAL_LIST_EMPTY(chosen_names)
 					vampire_skin = null
 				if("vampire_ears_clear")
 					vampire_ears = null
+
+				if("card_deckpool")
+					ccg_clean_cards()
+					user.client?.ccg_open_deckpool(user)
 
 				if("species")
 					var/list/species = list()
