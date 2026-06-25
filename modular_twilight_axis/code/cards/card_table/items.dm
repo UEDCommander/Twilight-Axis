@@ -195,7 +195,7 @@
 		return
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
-		ui = new(user, src, "CardTable", name)
+		ui = new(user, src, "GwyntTable", name)
 		ui.open()
 
 /obj/item/cci_deck/ui_data(mob/user)

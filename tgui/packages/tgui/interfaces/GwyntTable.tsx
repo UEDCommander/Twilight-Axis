@@ -649,7 +649,7 @@ const BattleBoard = ({
   </div>
 );
 
-export const CardTable = () => {
+export const GwyntTable = () => {
   const { act, data } = useBackend<Data>();
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
 
