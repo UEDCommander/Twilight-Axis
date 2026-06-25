@@ -413,15 +413,19 @@ export const CardDeckBuilder = () => {
         return false;
       }
       const terms = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
-      const haystack = [
-        card.name,
-        card.desc,
-        card.effect,
-        card.combo,
-        card.faction,
-        card.factionName || '',
-        rowLabels[card.row],
-      ]
+      const haystack = (
+        card.known
+          ? [
+              card.name,
+              card.desc,
+              card.effect,
+              card.combo,
+              card.faction,
+              card.factionName || '',
+              rowLabels[card.row],
+            ]
+          : ['Unknown', rowLabels[card.row]]
+      )
         .join(' ')
         .toLowerCase();
       return !terms.length || terms.every((term) => haystack.includes(term));

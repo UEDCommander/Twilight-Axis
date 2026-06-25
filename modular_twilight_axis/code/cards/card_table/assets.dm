@@ -134,7 +134,6 @@
 		"cci_cards/spellsinger.png" = 'modular_twilight_axis/code/cards/card_table/assets/spellsinger.png',
 		"cci_cards/squire_errant.png" = 'modular_twilight_axis/code/cards/card_table/assets/squire_errant.png',
 		"cci_cards/supply_cart.png" = 'modular_twilight_axis/code/cards/card_table/assets/supply_cart.png',
-		"cci_cards/svinoglazka.png" = 'modular_twilight_axis/code/cards/card_table/assets/svinoglazka.png',
 		"cci_cards/swashbuckler.png" = 'modular_twilight_axis/code/cards/card_table/assets/swashbuckler.png',
 		"cci_cards/swordsman.png" = 'modular_twilight_axis/code/cards/card_table/assets/swordsman.png',
 		"cci_cards/szorendnizine_shepherd.png" = 'modular_twilight_axis/code/cards/card_table/assets/szorendnizine_shepherd.png',

@@ -321,9 +321,6 @@
 /obj/item/cci_card_single/unique_spy
 	card_id = "unique_spy"
 
-/obj/item/cci_card_single/unique_svinoglazka
-	card_id = "unique_svinoglazka"
-
 /proc/cci_find_mob_by_ckey(ckey)
 	if(!ckey)
 		return null

@@ -1,17 +1,5 @@
 // Faction cards: naledi.
 
-/datum/cci_card/unique_svinoglazka
-	id = "unique_svinoglazka"
-	name = "Svinoglazka"
-	desc = "Unique card: Svinoglazka. A grim noble warrior in blue."
-	row = CCI_ROW_INFANTRY
-	power = 7
-	rarity = CCI_RARITY_UNIQUE
-	faction = CCI_FACTION_NALEDI
-	effect = CCI_EFFECT_MORALE
-	art = "cci_cards/svinoglazka.png"
-	hero = TRUE
-
 /datum/cci_card/rare_naledi_hierophant
 	id = "rare_naledi_hierophant"
 	name = "Naledi Hierophant"
