@@ -34,7 +34,7 @@ type Leader = {
   used: boolean;
 };
 
-type CciFaction = {
+type CcgFaction = {
   id: string;
   name: string;
   desc: string;
@@ -58,7 +58,7 @@ type Data = {
   result?: string;
   message?: string;
   leader?: Leader;
-  faction?: CciFaction;
+  faction?: CcgFaction;
   weather?: string[];
   weatherCards?: Card[];
   rowEffects?: Record<Side, Record<CardRow, Card[]>>;

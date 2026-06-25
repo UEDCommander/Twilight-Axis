@@ -26,7 +26,7 @@ type Card = {
   selected: boolean;
 };
 
-type CciFaction = {
+type CcgFaction = {
   id: string;
   name: string;
   desc: string;
@@ -34,7 +34,7 @@ type CciFaction = {
   defaultLeader: string;
 };
 
-type CciLeader = {
+type CcgLeader = {
   id: string;
   name: string;
   desc: string;
@@ -53,8 +53,8 @@ type Data = {
   canRequestDeck?: boolean;
   faction?: string;
   leader?: string;
-  factions?: CciFaction[];
-  leaders?: CciLeader[];
+  factions?: CcgFaction[];
+  leaders?: CcgLeader[];
 };
 
 const rowLabels: Record<CardRow, string> = {

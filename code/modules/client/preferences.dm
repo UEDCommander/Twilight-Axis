@@ -2697,8 +2697,8 @@ GLOBAL_LIST_EMPTY(chosen_names)
 					user.client?.familytree_module_open_preferences(user)
 
 				if("card_deckpool")
-					cci_clean_cards()
-					user.client?.cci_open_deckpool(user)
+					ccg_clean_cards()
+					user.client?.ccg_open_deckpool(user)
 
 				if("vampire_hair")
 					var/new_vampirehair = input(user, "Choose your character's vampire hair color:", "Character Preference","#"+vampire_hair) as color|null
