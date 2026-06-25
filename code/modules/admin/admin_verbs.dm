@@ -109,6 +109,7 @@ GLOBAL_PROTECT(admin_verbs_admin)
 	/client/proc/resetasaycolor,
 	/client/proc/toggleadminhelpsound,
 	/client/proc/respawn_character,
+	/client/proc/clear_job_respawn_delay,
 	/client/proc/discord_id_manipulation, /* No Discord implementation? */
 	/datum/admins/proc/sleep_view,
 	/datum/admins/proc/wake_view,
@@ -536,7 +537,6 @@ GLOBAL_PROTECT(admin_verbs_hideable)
 
 /client/proc/stresstest_chat()
 	set name = "Stress Chat"
-	set category = "Debug"
 	set hidden = TRUE
 
 	if(!holder)
@@ -589,7 +589,6 @@ GLOBAL_PROTECT(admin_verbs_hideable)
 
 /client/proc/secrets()
 	set name = "Secrets"
-	set category = "Admin.Admin"
 	set hidden = 1
 	if (holder)
 		holder.Secrets()
@@ -817,7 +816,7 @@ GLOBAL_PROTECT(admin_verbs_hideable)
 /client/proc/togglebuildmodeself()
 	set name = "Toggle Build Mode"
 	set category = "Admin.Special"
-	if (!(holder.rank.rights & R_BUILD))
+	if(!holder || !(holder.rank?.rights & R_BUILD))
 		return
 	if(src.mob)
 		togglebuildmode(src.mob)
@@ -873,7 +872,6 @@ GLOBAL_PROTECT(admin_verbs_hideable)
 
 /client/proc/toggle_AI_interact()
 	set name = "Toggle Admin AI Interact"
-	set category = "Admin.Admin"
 	set desc = ""
 	set hidden = 1
 
@@ -894,7 +892,6 @@ GLOBAL_PROTECT(admin_verbs_hideable)
 	to_chat(src, span_interface("Lobby OOC visibility is now [show_lobby_ooc ? "ON" : "OFF"]."))
 
 /client/proc/end_party()
-	set category = "Game Master"
 	set name = "EndPlaytest"
 	set hidden = 1
 	if(!holder)

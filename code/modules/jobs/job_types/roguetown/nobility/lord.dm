@@ -459,6 +459,8 @@ GLOBAL_LIST_EMPTY(lord_titles)
 			recruiter.say("I HEREBY STRIP YOU, [uppertext(recruit.name)], OF NOBILITY!!")
 			REMOVE_TRAIT(recruit, TRAIT_NOBLE, TRAIT_GENERIC)
 			REMOVE_TRAIT(recruit, TRAIT_NOBLE, TRAIT_VIRTUE)
+			REMOVE_TRAIT(recruit, TRAIT_NOBLE, JOB_TRAIT)
+			REMOVE_TRAIT(recruit, TRAIT_NOBLE, ROUNDSTART_TRAIT)
 			return FALSE
 		else
 			to_chat(recruiter, span_warning("Their nobility is not mine to strip!"))
@@ -487,6 +489,9 @@ GLOBAL_LIST_EMPTY(lord_titles)
 	var/refuse_message = "I refuse."
 	ignore_los = 1 // this needs to ignore normal "range", it looks like
 	range = 3
+	/// traits to apply on recruitment - currently only used to let new maids use the vomitorium to cook
+	/// since that's an administrative thing not an innate trait
+	var/applied_traits = list()
 
 /obj/effect/proc_holder/spell/self/convertrole/cast(list/targets,mob/user = usr)
 	. = ..()
@@ -547,6 +552,9 @@ GLOBAL_LIST_EMPTY(lord_titles)
 		recruit.say(accept_message, forced = "[name]")
 	if(new_role) //We assign our role here. + log it.
 		recruit.job = new_role
+		recruit.override_advclass_examine = TRUE // makes your servants display as 'servant' instead of like. 'witch' or w/e
+		for(var/trait in applied_traits)
+			ADD_TRAIT(recruit, trait, JOB_TRAIT)
 		SEND_SIGNAL(SSdcs, COMSIG_GLOB_ROLE_CONVERTED, recruiter, recruit, new_role)
 		message_admins("ROLE RECRUITMENT: [recruiter.real_name] ([recruiter.ckey]) has converted [recruit.real_name] ([recruit.ckey]) to [new_role]")
 		log_game("ROLE RECRUITMENT: [recruiter.real_name] ([recruiter.ckey]) has converted [recruit.real_name] ([recruit.ckey]) to [new_role]")
@@ -576,6 +584,7 @@ GLOBAL_LIST_EMPTY(lord_titles)
 	accept_message = "FOR THE CROWN!"
 	refuse_message = "I refuse."
 	recharge_time = 100
+	applied_traits = list(TRAIT_FOOD_STIPEND)
 
 /obj/effect/proc_holder/spell/self/convertrole/bog
 	name = "Recruit Warden"

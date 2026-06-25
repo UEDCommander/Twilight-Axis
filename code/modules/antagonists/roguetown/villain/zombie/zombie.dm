@@ -188,9 +188,13 @@
 		for(var/trait in traits_zombie)
 			REMOVE_TRAIT(zombie, trait, "[type]")
 		zombie.remove_client_colour(/datum/client_colour/monochrome)
-		zombie.remove_language(/datum/language/undead)
+		var/underdark_drow = istype(zombie.client?.prefs?.virtue_origin, /datum/virtue/origin/racial/underdark_drow)
+		if(!underdark_drow)
+			zombie.remove_language(/datum/language/undead)
+
 		var/datum/language_holder/language_holder = zombie.get_language_holder()
-		language_holder.selected_default_language = null
+		if(!underdark_drow)
+			language_holder.selected_default_language = null
 
 		if(has_turned && become_rotman)
 			zombie.STACON = max(zombie.STACON - 2, 1) //ur rotting bro
@@ -242,8 +246,8 @@
 	if(zombie.dna?.species)
 		soundpack_m = zombie.dna.species.soundpack_m
 		soundpack_f = zombie.dna.species.soundpack_f
-		zombie.dna.species.soundpack_m = new /datum/voicepack/zombie/m()
-		zombie.dna.species.soundpack_f = new /datum/voicepack/zombie/f()
+		zombie.dna.species.soundpack_m = GLOB.voice_packs[/datum/voicepack/zombie/m]
+		zombie.dna.species.soundpack_f = GLOB.voice_packs[/datum/voicepack/zombie/f]
 	base_intents = zombie.base_intents
 	zombie.base_intents = list(INTENT_HELP, INTENT_DISARM, INTENT_GRAB, /datum/intent/unarmed/claw)
 	zombie.update_a_intents()

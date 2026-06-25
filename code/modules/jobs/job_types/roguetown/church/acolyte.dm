@@ -17,10 +17,11 @@
 	min_pq = 4 //A step above sexton, should funnel new players to the sexton role to learn miracles at a more sedate pace
 	max_pq = null
 	round_contrib_points = 5
+	same_job_respawn_delay = 20 MINUTES
 
 	//No nobility for you, being a member of the clergy means you gave UP your nobility. It says this in many of the church tutorial texts.
 	virtue_restrictions = list(/datum/virtue/utility/noble)
-	job_traits = list(TRAIT_RITUALIST, TRAIT_GRAVEROBBER, TRAIT_HOMESTEAD_EXPERT, TRAIT_CLERGY, TRAIT_MARRIAGE_CAPABLE)
+	job_traits = list(TRAIT_RITUALIST, TRAIT_GRAVEROBBER, TRAIT_HOMESTEAD_EXPERT, TRAIT_CLERGY)
 	advclass_cat_rolls = list(CTAG_ACOLYTE = 2)
 	job_subclasses = list(
 		/datum/advclass/acolyte
@@ -55,6 +56,7 @@
 	subclass_stashed_items = list(
 		"The Verses and Acts of the Ten" = /obj/item/book/rogue/bibble,
 	)
+	tempo_capable = FALSE
 
 /datum/outfit/job/roguetown/monk
 	name = "Acolyte"

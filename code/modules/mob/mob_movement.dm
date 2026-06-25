@@ -86,10 +86,15 @@
 	var/old_move_delay = move_delay
 	if(istype(mob, /mob/dead/observer))
 		var/mob/dead/observer/observer = mob
-		observer.next_gmove = world.time + (world.tick_lag * GLOB.observer_move_delay_multiplier)
+		var/observer_delay_multiplier = GLOB.observer_move_delay_multiplier
+
+		if(istype(observer, /mob/dead/observer/rogue))
+			observer_delay_multiplier = 6
+
+		observer.next_gmove = world.time + (world.tick_lag * observer_delay_multiplier)
 		move_delay = world.time
 	else
-		move_delay = world.time + world.tick_lag //this is here because Move() can now be called mutiple times per tick
+		move_delay = world.time + world.tick_lag
 	if(!mob || !mob.loc)
 		return FALSE
 	if(!n || !direct)
@@ -587,7 +592,7 @@
 
 //* Updates a mob's sneaking status, rendering them invisible or visible in accordance to their status. TODO:Fix people bypassing the sneak fade by turning, and add a proc var to have a timer after resetting visibility.
 /mob/living/update_sneak_invis(reset = FALSE) //Why isn't this in mob/living/living_movements.dm? Why, I'm glad you asked!
-	if(has_status_effect(/datum/status_effect/stealth_revealed) && !reset)
+	if(in_combat_until > world.time && !reset)
 		return
 	if(!reset && world.time < mob_timers[MT_INVISIBILITY]) // Check if the mob is affected by the invisibility spell
 		rogue_sneaking = TRUE
@@ -707,8 +712,8 @@
 		switch(intent)
 			if(MOVE_INTENT_SNEAK)
 				var/mob/living/L = src
-				if(!L.has_status_effect(/datum/status_effect/stealth_revealed))
-					m_intent = MOVE_INTENT_SNEAK
+				m_intent = MOVE_INTENT_SNEAK
+				if(L.in_combat_until < world.time)
 					update_sneak_invis()
 
 			if(MOVE_INTENT_WALK)
