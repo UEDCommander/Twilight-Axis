@@ -203,8 +203,6 @@
 #define ZTAG_TOP "top"
 
 /obj/structure/flora/newtree/attackby(obj/item/I, mob/user, params)
-	if(handle_special_items_deposit(I, user, src))
-		return TRUE
 	if(user.mind && ishuman(user) && I)
 		var/mob/living/L = user
 		if(L.used_intent && L.used_intent.blade_class == BCLASS_CHOP && I.force_dynamic >= 25)

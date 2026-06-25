@@ -29,11 +29,6 @@
 	if(handle_special_items_retrieval(user, src))
 		return
 
-/obj/structure/flora/roguetree/attackby(obj/item/I, mob/user, params)
-	if(handle_special_items_deposit(I, user, src))
-		return TRUE
-	return ..()
-
 /obj/structure/flora/roguetree/attacked_by(obj/item/I, mob/living/user)
 	var/was_destroyed = obj_destroyed
 	. = ..()
@@ -129,8 +124,6 @@
 
 /obj/structure/flora/roguetree/wise/attackby(obj/item/I, mob/user, params)
 	. = ..()
-	if(.)
-		return
 	if(activated && !cooldown)
 		retaliate(user)
 
@@ -564,11 +557,6 @@
 /obj/structure/flora/rogueshroom/attack_right(mob/user)
 	if(handle_special_items_retrieval(user, src))
 		return
-
-/obj/structure/flora/rogueshroom/attackby(obj/item/I, mob/user, params)
-	if(handle_special_items_deposit(I, user, src))
-		return TRUE
-	return ..()
 
 /obj/structure/flora/rogueshroom/Initialize()
 	. = ..()

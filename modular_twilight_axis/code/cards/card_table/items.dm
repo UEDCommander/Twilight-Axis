@@ -9,6 +9,7 @@
 	var/leader_id = "azuria_ducal_marshal"
 	var/datum/cci_match/match
 	var/obj/item/cci_deck/match_host
+	var/owner_ckey
 	var/inviter_ckey
 	var/inviter_name
 
@@ -73,7 +74,9 @@
 	if(get_active_match())
 		ui_interact(user)
 		return TRUE
-	if(inviter_ckey && inviter_ckey != user.ckey)
+	if(user.is_holding(src))
+		user.client?.cci_open_deckbuilder(src, user)
+	else if(inviter_ckey && inviter_ckey != user.ckey)
 		to_chat(user, span_notice("Strike this deck with your own card battle deck to begin."))
 	else
 		user.client?.cci_open_deckbuilder(src, user)
@@ -238,10 +241,40 @@
 /obj/item/cci_deck/attack_right(mob/user)
 	if(!user)
 		return
+	if(!user.is_holding(src))
+		return FALSE
 	if(get_active_match())
 		ui_interact(user)
 		return TRUE
-	user.client?.cci_open_deckbuilder(src, user)
+	return_to_stash(user)
+	return TRUE
+
+/obj/item/cci_deck/proc/return_to_stash(mob/user)
+	if(!user?.mind || !isliving(user))
+		return FALSE
+	if(!user.is_holding(src))
+		return FALSE
+	if(!owner_ckey || owner_ckey != user.ckey)
+		to_chat(user, span_warning("This card battle deck is not bound to your stash."))
+		return TRUE
+	if(!length(card_ids))
+		to_chat(user, span_warning("This card battle deck has no cards to stash."))
+		return TRUE
+	if(cci_mind_has_stashed_deck(user.mind))
+		to_chat(user, span_warning("You already have a card battle deck in your stash."))
+		return TRUE
+	if(istype(user, /mob/living/carbon/human))
+		var/mob/living/carbon/human/H = user
+		user.client?.prefs?.cci_sync_cards_from_inventory(H)
+	if(!user.mind.special_items)
+		user.mind.special_items = list()
+	user.mind.special_items["Card Battle Deck"] = cci_stash_deck_spec(card_ids, faction_id, leader_id)
+	if(!user.client?.prefs?.cci_save_deck_snapshot(card_ids, faction_id, leader_id))
+		user.mind.special_items -= "Card Battle Deck"
+		to_chat(user, span_warning("The card battle deck failed to save. It stays in your hands."))
+		return TRUE
+	to_chat(user, span_notice("You return the card battle deck to your stash."))
+	qdel(src)
 	return TRUE
 
 /obj/item/cci_card_single

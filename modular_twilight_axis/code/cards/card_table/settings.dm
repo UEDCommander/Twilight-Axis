@@ -297,6 +297,7 @@
 		var/obj/item/cci_deck/deck = new(user.loc)
 		deck.set_faction(stash_value[CCI_STASH_FACTION_KEY], stash_value[CCI_STASH_LEADER_KEY])
 		deck.set_cards(stash_value[CCI_STASH_DECK_KEY])
+		deck.owner_ckey = user.ckey
 		I = deck
 	else
 		var/path2item = stash_value
@@ -305,31 +306,7 @@
 	return TRUE
 
 /proc/handle_special_items_deposit(obj/item/I, mob/user, atom/host_object)
-	if(!istype(I, /obj/item/cci_deck) || !user?.mind || !isliving(user))
-		return FALSE
-	if(!user.Adjacent(host_object))
-		return FALSE
-	var/obj/item/cci_deck/deck = I
-	if(deck.get_active_match())
-		to_chat(user, span_warning("Finish the card match before stashing this deck."))
-		return TRUE
-	if(!length(deck.card_ids))
-		to_chat(user, span_warning("This card battle deck has no cards to stash."))
-		return TRUE
-	if(cci_mind_has_stashed_deck(user.mind))
-		to_chat(user, span_warning("You already have a card battle deck in your stash."))
-		return TRUE
-	if(istype(user, /mob/living/carbon/human))
-		var/mob/living/carbon/human/H = user
-		user.client?.prefs?.cci_sync_cards_from_inventory(H)
-	user.mind.special_items["Card Battle Deck"] = cci_stash_deck_spec(deck.card_ids, deck.faction_id, deck.leader_id)
-	if(!user.client?.prefs?.cci_save_deck_snapshot(deck.card_ids, deck.faction_id, deck.leader_id))
-		user.mind.special_items -= "Card Battle Deck"
-		to_chat(user, span_warning("The card battle deck failed to save. It stays in your hands."))
-		return TRUE
-	to_chat(user, span_notice("You return the card battle deck to your stash."))
-	qdel(deck)
-	return TRUE
+	return FALSE
 
 /datum/preferences/proc/cci_request_deck_item(mob/user)
 	cci_clean_cards()

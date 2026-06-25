@@ -597,11 +597,6 @@
 	if(handle_special_items_retrieval(user, src))
 		return
 
-/obj/structure/fluff/clock/attackby(obj/item/I, mob/user, params)
-	if(handle_special_items_deposit(I, user, src))
-		return TRUE
-	return ..()
-
 /obj/structure/fluff/clock/examine(mob/user)
 	. = ..()
 	if(obj_broken)
@@ -648,11 +643,6 @@
 /obj/structure/fluff/wallclock/attack_right(mob/user)
 	if(handle_special_items_retrieval(user, src))
 		return
-
-/obj/structure/fluff/wallclock/attackby(obj/item/I, mob/user, params)
-	if(handle_special_items_deposit(I, user, src))
-		return TRUE
-	return ..()
 
 /obj/structure/fluff/wallclock/Destroy()
 	if(soundloop)
@@ -856,11 +846,6 @@
 /obj/structure/fluff/statue/attack_right(mob/user)
 	if(handle_special_items_retrieval(user, src))
 		return
-
-/obj/structure/fluff/statue/attackby(obj/item/I, mob/user, params)
-	if(handle_special_items_deposit(I, user, src))
-		return TRUE
-	return ..()
 
 /obj/structure/fluff/statue/CanPass(atom/movable/mover, turf/target)
 	if(get_dir(loc, mover) == dir)
