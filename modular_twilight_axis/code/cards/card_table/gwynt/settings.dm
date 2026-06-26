@@ -258,24 +258,21 @@
 		var/mob/living/carbon/human/H = M
 		C.prefs.ccg_sync_cards_from_inventory(H)
 
-/proc/ccg_stash_deck_spec(list/card_ids, faction_id = CCG_FACTION_AZURIA, leader_id = null)
-	var/datum/ccg_faction/faction = ccg_faction(faction_id)
-	if(!faction)
-		faction = ccg_faction(CCG_FACTION_AZURIA)
-	var/datum/ccg_leader/leader = ccg_leader(leader_id)
-	var/final_leader_id = (leader && leader.faction == faction.id) ? leader.id : faction.default_leader
-	var/list/final_cards = list()
-	for(var/card_id in card_ids)
-		if(ccg_card_allowed_for_faction(card_id, faction.id) && final_cards.len < CCG_DECK_SIZE)
-			final_cards += card_id
-	return list(
-		CCG_STASH_DECK_KEY = final_cards,
-		CCG_STASH_FACTION_KEY = faction.id,
-		CCG_STASH_LEADER_KEY = final_leader_id
-	)
-
 /proc/ccg_is_stashed_deck(value)
-	return islist(value) && islist(value[CCG_STASH_DECK_KEY])
+	return value == /obj/item/ccg_deck/stashed || (islist(value) && islist(value[CCG_STASH_DECK_KEY]))
+
+/proc/ccg_migrate_stashed_deck_specs(mob/user)
+	if(!user?.mind?.special_items)
+		return FALSE
+	var/changed = FALSE
+	for(var/item_name in user.mind.special_items)
+		var/stash_value = user.mind.special_items[item_name]
+		if(!islist(stash_value) || !islist(stash_value[CCG_STASH_DECK_KEY]))
+			continue
+		user.client?.prefs?.ccg_save_deck_snapshot(stash_value[CCG_STASH_DECK_KEY], stash_value[CCG_STASH_FACTION_KEY], stash_value[CCG_STASH_LEADER_KEY])
+		user.mind.special_items[item_name] = /obj/item/ccg_deck/stashed
+		changed = TRUE
+	return changed
 
 /proc/ccg_mind_has_stashed_deck(datum/mind/mind)
 	if(!mind?.special_items)
@@ -285,38 +282,11 @@
 			return TRUE
 	return FALSE
 
-/proc/handle_special_items_retrieval(mob/user, atom/host_object)
-	if(!user?.mind || !isliving(user))
-		return FALSE
-	if(!user.mind.special_items || !user.mind.special_items.len)
-		return FALSE
-	var/item = tgui_input_list(user, "What will I take?", "STASH", user.mind.special_items)
-	if(!item)
-		return TRUE
-	if(!user.Adjacent(host_object) || !user.mind.special_items[item])
-		return TRUE
-	var/stash_value = user.mind.special_items[item]
-	user.mind.special_items -= item
-	var/obj/item/I
-	if(ccg_is_stashed_deck(stash_value))
-		var/obj/item/ccg_deck/deck = new(user.loc)
-		deck.set_faction(stash_value[CCG_STASH_FACTION_KEY], stash_value[CCG_STASH_LEADER_KEY])
-		deck.set_cards(stash_value[CCG_STASH_DECK_KEY])
-		deck.owner_ckey = user.ckey
-		I = deck
-	else
-		var/path2item = stash_value
-		I = new path2item(user.loc)
-	user.put_in_hands(I)
-	return TRUE
-
-/proc/handle_special_items_deposit(obj/item/I, mob/user, atom/host_object)
-	return FALSE
-
 /datum/preferences/proc/ccg_request_deck_item(mob/user)
 	ccg_clean_cards()
 	if(!user?.mind)
 		return FALSE
+	ccg_migrate_stashed_deck_specs(user)
 	if(user.mind.ccg_deck_requested)
 		to_chat(user, span_warning("You have already requested a card battle deck this round."))
 		return FALSE
@@ -326,15 +296,13 @@
 	var/list/deck_cards = length(ccg_saved_deck_cards) ? ccg_saved_deck_cards.Copy() : ccg_base_cards_for_faction(ccg_saved_deck_faction)
 	while(deck_cards.len > CCG_DECK_SIZE)
 		deck_cards.Cut(deck_cards.len, deck_cards.len + 1)
-	if(!user.mind.special_items)
-		user.mind.special_items = list()
-	user.mind.special_items["Card Battle Deck"] = ccg_stash_deck_spec(deck_cards, ccg_saved_deck_faction, ccg_saved_deck_leader)
-	user.mind.ccg_deck_requested = TRUE
-	if(!ccg_save())
-		user.mind.special_items -= "Card Battle Deck"
-		user.mind.ccg_deck_requested = FALSE
+	if(!ccg_save_deck_snapshot(deck_cards, ccg_saved_deck_faction, ccg_saved_deck_leader))
 		to_chat(user, span_warning("The card battle deck request failed to save. Try again."))
 		return FALSE
+	if(!user.mind.special_items)
+		user.mind.special_items = list()
+	user.mind.special_items["Card Battle Deck"] = /obj/item/ccg_deck/stashed
+	user.mind.ccg_deck_requested = TRUE
 	to_chat(user, span_notice("A card battle deck is added to your stash."))
 	return TRUE
 
@@ -348,6 +316,7 @@
 	return list(get_asset_datum(/datum/asset/simple/ccg_cards))
 
 /client/proc/ccg_preload_card_assets()
+	ccg_migrate_stashed_deck_specs(mob)
 	var/datum/asset/simple/card_assets = get_asset_datum(/datum/asset/simple/ccg_cards)
 	SSassets.transport.send_assets_slow(src, card_assets.assets)
 
@@ -369,6 +338,7 @@
 		ccg_build_faction_registry()
 	if(!length(GLOB.ccg_leaders_by_id))
 		ccg_build_leader_registry()
+	ccg_migrate_stashed_deck_specs(user)
 	var/list/selected = deck ? deck.card_ids : P.ccg_saved_deck_cards
 	var/current_faction_id = deck ? deck.faction_id : P.ccg_saved_deck_faction
 

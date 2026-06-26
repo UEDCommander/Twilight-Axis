@@ -117,6 +117,34 @@ const effectBadges: Record<string, string> = {
   avenger: 'AVG',
 };
 
+const rowIconAssets: Record<CardRow | 'weather', string> = {
+  infantry: 'ccg_cards/gwent_icons/melee.webp',
+  archers: 'ccg_cards/gwent_icons/ranged.webp',
+  siege: 'ccg_cards/gwent_icons/siege.webp',
+  weather: 'ccg_cards/gwent_icons/weather.webp',
+};
+
+const effectIconAssets: Record<string, string> = {
+  morale: 'ccg_cards/gwent_icons/add_power.webp',
+  scorch: 'ccg_cards/gwent_icons/kill_any_powerful_include_itself.webp',
+  scorch_infantry: 'ccg_cards/gwent_icons/kill_any_if_10.webp',
+  scorch_global: 'ccg_cards/gwent_icons/scorch_special.webp',
+  spy: 'ccg_cards/gwent_icons/spy.webp',
+  medic: 'ccg_cards/gwent_icons/medic.webp',
+  bond: 'ccg_cards/gwent_icons/double.webp',
+  agile: 'ccg_cards/gwent_icons/any_type_card.webp',
+  muster: 'ccg_cards/gwent_icons/double.webp',
+  horn: 'ccg_cards/gwent_icons/horn.webp',
+  decoy: 'ccg_cards/gwent_icons/maneken.webp',
+  berserk: 'ccg_cards/gwent_icons/berserk_to_bear.webp',
+  mardroeme: 'ccg_cards/gwent_icons/mardrem.webp',
+  avenger: 'ccg_cards/gwent_icons/berserk_mushroom.webp',
+  clear_weather: 'ccg_cards/gwent_icons/sun.webp',
+  frost: 'ccg_cards/gwent_icons/winter.webp',
+  fog: 'ccg_cards/gwent_icons/fog.webp',
+  rain: 'ccg_cards/gwent_icons/rain.webp',
+};
+
 const effectDescriptions: Record<string, string> = {
   morale: 'Прилив сил: +1 к силе остальных отрядов в этом ряду.',
   scorch: 'Казнь: уничтожает сильнейшую карту противника.',
@@ -138,6 +166,59 @@ const effectDescriptions: Record<string, string> = {
   frost: 'Мороз: снижает пехоту до 1.',
   fog: 'Туман: снижает лучников до 1.',
   rain: 'Дождь: снижает осаду до 1.',
+};
+
+const CardIconBadge = ({
+  asset,
+  label,
+  compact,
+  title,
+}: {
+  asset?: string;
+  label?: string;
+  compact: boolean;
+  title: string;
+}) => {
+  const size = compact ? 14 : 20;
+  return (
+    <div
+      title={title}
+      style={{
+        width: `${size}px`,
+        height: `${size}px`,
+        borderRadius: '50%',
+        backgroundColor: 'rgba(5,7,11,0.82)',
+        border: '1px solid rgba(248,250,252,0.72)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+        boxShadow: '0 1px 4px rgba(0,0,0,0.65)',
+      }}
+    >
+      {asset ? (
+        <img
+          src={resolveAsset(asset)}
+          style={{
+            width: compact ? '11px' : '16px',
+            height: compact ? '11px' : '16px',
+            objectFit: 'contain',
+          }}
+        />
+      ) : (
+        <span
+          style={{
+            color: '#f8fafc',
+            fontSize: compact ? '4px' : '6px',
+            fontWeight: 900,
+            lineHeight: 1,
+          }}
+        >
+          {label}
+        </span>
+      )}
+    </div>
+  );
 };
 
 const cardTooltip = (card: Card) => {
@@ -186,19 +267,34 @@ const CardView = ({
   onClick?: () => void;
 }) => {
   const [hovered, setHovered] = useState(false);
-  const [tooltipSide, setTooltipSide] = useState<'left' | 'center' | 'right'>(
-    'center',
-  );
+  const [tooltipPlacement, setTooltipPlacement] = useState<{
+    side: 'left' | 'center' | 'right';
+    vertical: 'above' | 'below';
+  }>({ side: 'center', vertical: 'below' });
   const tooltip = cardTooltip(card);
   const tooltipWidth = compact ? 108 : 172;
-  const updateTooltipSide = (clientX: number) => {
-    if (clientX < tooltipWidth / 2 + 16) {
-      setTooltipSide('left');
-    } else if (clientX > window.innerWidth - tooltipWidth / 2 - 16) {
-      setTooltipSide('right');
-    } else {
-      setTooltipSide('center');
+  const tooltipGap = compact ? 8 : 10;
+  const effectIcon = effectIconAssets[card.effect];
+  const effectBadge = effectBadges[card.effect];
+  const updateTooltipPlacement = (cardElement: HTMLElement) => {
+    const rect = cardElement.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const tooltipHeight = compact
+      ? Math.min(200, 42 + tooltip.length * 17)
+      : Math.min(260, 52 + tooltip.length * 22);
+    let side: 'left' | 'center' | 'right' = 'center';
+    if (centerX - tooltipWidth / 2 < 12) {
+      side = 'left';
+    } else if (centerX + tooltipWidth / 2 > window.innerWidth - 12) {
+      side = 'right';
     }
+    setTooltipPlacement({
+      side,
+      vertical:
+        rect.bottom + tooltipHeight + tooltipGap <= window.innerHeight
+          ? 'below'
+          : 'above',
+    });
   };
   return (
     <div
@@ -212,10 +308,10 @@ const CardView = ({
       }}
       onClick={onClick}
       onMouseEnter={(event) => {
-        updateTooltipSide(event.clientX);
+        updateTooltipPlacement(event.currentTarget);
         setHovered(true);
       }}
-      onMouseMove={(event) => updateTooltipSide(event.clientX)}
+      onMouseMove={(event) => updateTooltipPlacement(event.currentTarget)}
       onMouseLeave={() => setHovered(false)}
     >
       {!!card.art && (
@@ -243,48 +339,34 @@ const CardView = ({
       <div
         style={{
           position: 'relative',
-          zIndex: 1,
-          color: rarityColor[card.rarity],
-          fontSize: compact ? '6px' : '8px',
-          fontWeight: 700,
-          textAlign: 'center',
-          textTransform: 'uppercase',
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
+          zIndex: 2,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          width: '100%',
         }}
       >
-        {cardTypeLabels[card.row]}
+        <CardIconBadge
+          asset={rowIconAssets[card.row]}
+          compact={compact}
+          title={cardTypeLabels[card.row]}
+        />
+        {(!!effectIcon || !!effectBadge) && (
+          <CardIconBadge
+            asset={effectIcon}
+            label={effectBadge}
+            compact={compact}
+            title={effectDescriptions[card.effect] || card.effect}
+          />
+        )}
       </div>
-      {!!effectBadges[card.effect] && (
-        <div
-          style={{
-            position: 'absolute',
-            top: compact ? '14px' : '20px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            minWidth: compact ? '17px' : '24px',
-            height: compact ? '13px' : '17px',
-            padding: '0 3px',
-            borderRadius: '9px',
-            backgroundColor: 'rgba(248,250,252,0.94)',
-            color: '#0f172a',
-            fontSize: compact ? '5px' : '7px',
-            fontWeight: 900,
-            lineHeight: compact ? '13px' : '17px',
-            textAlign: 'center',
-            zIndex: 2,
-          }}
-        >
-          {effectBadges[card.effect]}
-        </div>
-      )}
       {card.hero && (
         <div
           style={{
             position: 'absolute',
-            right: compact ? '3px' : '5px',
-            top: compact ? '14px' : '20px',
+            left: '50%',
+            top: compact ? '4px' : '5px',
+            transform: 'translateX(-50%)',
             width: compact ? '16px' : '22px',
             height: compact ? '13px' : '17px',
             borderRadius: '8px',
@@ -305,13 +387,20 @@ const CardView = ({
           style={{
             position: 'absolute',
             left:
-              tooltipSide === 'right'
+              tooltipPlacement.side === 'right'
                 ? undefined
-                : tooltipSide === 'left'
+                : tooltipPlacement.side === 'left'
                   ? 0
                   : '50%',
-            right: tooltipSide === 'right' ? 0 : undefined,
-            top: compact ? '30px' : '42px',
+            right: tooltipPlacement.side === 'right' ? 0 : undefined,
+            top:
+              tooltipPlacement.vertical === 'below'
+                ? `calc(100% + ${tooltipGap}px)`
+                : undefined,
+            bottom:
+              tooltipPlacement.vertical === 'above'
+                ? `calc(100% + ${tooltipGap}px)`
+                : undefined,
             width: `${tooltipWidth}px`,
             maxWidth: '70vw',
             padding: compact ? '10px' : '14px',
@@ -325,7 +414,9 @@ const CardView = ({
             boxShadow: '0 8px 24px rgba(0,0,0,0.85)',
             pointerEvents: 'none',
             transform:
-              tooltipSide === 'center' ? 'translateX(-50%)' : undefined,
+              tooltipPlacement.side === 'center'
+                ? 'translateX(-50%)'
+                : undefined,
             whiteSpace: 'normal',
             overflowWrap: 'break-word',
           }}
@@ -377,19 +468,39 @@ const CardView = ({
         <div
           style={{
             marginLeft: compact ? '-3px' : '-4px',
-            padding: compact ? '2px 3px 2px 5px' : '3px 4px 3px 7px',
+            padding: compact ? '1px 3px 1px 5px' : '2px 4px 2px 7px',
             border: `1px solid ${rarityColor[card.rarity]}`,
             backgroundColor: 'rgba(5,7,11,0.92)',
             color: '#f8fafc',
-            fontSize: compact ? '6px' : '8px',
             fontWeight: 700,
             lineHeight: 1.1,
-            whiteSpace: 'nowrap',
             overflow: 'hidden',
-            textOverflow: 'ellipsis',
           }}
         >
-          {card.name}
+          <div
+            style={{
+              fontSize: compact ? '6px' : '8px',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {card.name}
+          </div>
+          <div
+            style={{
+              color: rarityColor[card.rarity],
+              fontSize: compact ? '4px' : '6px',
+              fontWeight: 900,
+              lineHeight: 1,
+              textTransform: 'uppercase',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {cardTypeLabels[card.row]}
+          </div>
         </div>
       </div>
     </div>

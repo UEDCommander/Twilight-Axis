@@ -103,6 +103,34 @@ const effectBadges: Record<string, string> = {
   avenger: 'AVG',
 };
 
+const rowIconAssets: Record<CardRow, string> = {
+  infantry: 'ccg_cards/gwent_icons/melee.webp',
+  archers: 'ccg_cards/gwent_icons/ranged.webp',
+  siege: 'ccg_cards/gwent_icons/siege.webp',
+  weather: 'ccg_cards/gwent_icons/weather.webp',
+};
+
+const effectIconAssets: Record<string, string> = {
+  morale: 'ccg_cards/gwent_icons/add_power.webp',
+  scorch: 'ccg_cards/gwent_icons/kill_any_powerful_include_itself.webp',
+  scorch_infantry: 'ccg_cards/gwent_icons/kill_any_if_10.webp',
+  scorch_global: 'ccg_cards/gwent_icons/scorch_special.webp',
+  spy: 'ccg_cards/gwent_icons/spy.webp',
+  medic: 'ccg_cards/gwent_icons/medic.webp',
+  bond: 'ccg_cards/gwent_icons/double.webp',
+  agile: 'ccg_cards/gwent_icons/any_type_card.webp',
+  muster: 'ccg_cards/gwent_icons/double.webp',
+  horn: 'ccg_cards/gwent_icons/horn.webp',
+  decoy: 'ccg_cards/gwent_icons/maneken.webp',
+  berserk: 'ccg_cards/gwent_icons/berserk_to_bear.webp',
+  mardroeme: 'ccg_cards/gwent_icons/mardrem.webp',
+  avenger: 'ccg_cards/gwent_icons/berserk_mushroom.webp',
+  clear_weather: 'ccg_cards/gwent_icons/sun.webp',
+  frost: 'ccg_cards/gwent_icons/winter.webp',
+  fog: 'ccg_cards/gwent_icons/fog.webp',
+  rain: 'ccg_cards/gwent_icons/rain.webp',
+};
+
 const effectDescriptions: Record<string, string> = {
   morale: 'Прилив сил: +1 к силе остальных отрядов в этом ряду.',
   scorch: 'Казнь: уничтожает сильнейшую карту противника.',
@@ -124,6 +152,59 @@ const effectDescriptions: Record<string, string> = {
   frost: 'Мороз: снижает пехоту до 1.',
   fog: 'Туман: снижает лучников до 1.',
   rain: 'Дождь: снижает осаду до 1.',
+};
+
+const CardIconBadge = ({
+  asset,
+  label,
+  compact,
+  title,
+}: {
+  asset?: string;
+  label?: string;
+  compact: boolean;
+  title: string;
+}) => {
+  const size = compact ? 17 : 23;
+  return (
+    <div
+      title={title}
+      style={{
+        width: `${size}px`,
+        height: `${size}px`,
+        borderRadius: '50%',
+        backgroundColor: 'rgba(5,7,11,0.82)',
+        border: '1px solid rgba(248,250,252,0.72)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+        boxShadow: '0 1px 4px rgba(0,0,0,0.65)',
+      }}
+    >
+      {asset ? (
+        <img
+          src={resolveAsset(asset)}
+          style={{
+            width: compact ? '13px' : '18px',
+            height: compact ? '13px' : '18px',
+            objectFit: 'contain',
+          }}
+        />
+      ) : (
+        <span
+          style={{
+            color: '#f8fafc',
+            fontSize: compact ? '5px' : '7px',
+            fontWeight: 900,
+            lineHeight: 1,
+          }}
+        >
+          {label}
+        </span>
+      )}
+    </div>
+  );
 };
 
 const cardTooltip = (card: Card) => {
@@ -165,19 +246,34 @@ const CardFace = ({
   onRightClick?: () => void;
 }) => {
   const [hovered, setHovered] = useState(false);
-  const [tooltipSide, setTooltipSide] = useState<'left' | 'center' | 'right'>(
-    'center',
-  );
+  const [tooltipPlacement, setTooltipPlacement] = useState<{
+    side: 'left' | 'center' | 'right';
+    vertical: 'above' | 'below';
+  }>({ side: 'center', vertical: 'below' });
   const tooltip = cardTooltip(card);
   const tooltipWidth = compact ? 136 : 188;
-  const updateTooltipSide = (clientX: number) => {
-    if (clientX < tooltipWidth / 2 + 16) {
-      setTooltipSide('left');
-    } else if (clientX > window.innerWidth - tooltipWidth / 2 - 16) {
-      setTooltipSide('right');
-    } else {
-      setTooltipSide('center');
+  const tooltipGap = compact ? 8 : 10;
+  const effectIcon = card.known ? effectIconAssets[card.effect] : undefined;
+  const effectBadge = card.known ? effectBadges[card.effect] : undefined;
+  const updateTooltipPlacement = (cardElement: HTMLElement) => {
+    const rect = cardElement.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const tooltipHeight = compact
+      ? Math.min(220, 48 + tooltip.length * 18)
+      : Math.min(280, 58 + tooltip.length * 24);
+    let side: 'left' | 'center' | 'right' = 'center';
+    if (centerX - tooltipWidth / 2 < 12) {
+      side = 'left';
+    } else if (centerX + tooltipWidth / 2 > window.innerWidth - 12) {
+      side = 'right';
     }
+    setTooltipPlacement({
+      side,
+      vertical:
+        rect.bottom + tooltipHeight + tooltipGap <= window.innerHeight
+          ? 'below'
+          : 'above',
+    });
   };
   return (
     <div
@@ -211,10 +307,10 @@ const CardFace = ({
         onRightClick();
       }}
       onMouseEnter={(event) => {
-        updateTooltipSide(event.clientX);
+        updateTooltipPlacement(event.currentTarget);
         setHovered(true);
       }}
-      onMouseMove={(event) => updateTooltipSide(event.clientX)}
+      onMouseMove={(event) => updateTooltipPlacement(event.currentTarget)}
       onMouseLeave={() => setHovered(false)}
     >
       {!!card.art && (
@@ -246,48 +342,25 @@ const CardFace = ({
       <div
         style={{
           position: 'relative',
-          zIndex: 1,
-          display: 'grid',
-          gridTemplateColumns: '1fr auto',
+          zIndex: 2,
+          display: 'flex',
+          justifyContent: 'space-between',
           alignItems: 'center',
-          gap: compact ? '3px' : '5px',
-          color: rarityColor[card.rarity],
-          fontSize: compact ? '7px' : '10px',
-          fontWeight: 700,
-          textTransform: 'uppercase',
           width: '100%',
         }}
       >
-        <span
-          style={{
-            minWidth: 0,
-            textAlign: 'center',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-          }}
-        >
-          {cardType(card)}
-        </span>
-        {card.known && !!effectBadges[card.effect] && (
-          <span
-            style={{
-              minWidth: compact ? '14px' : '18px',
-              height: compact ? '11px' : '14px',
-              padding: '0 3px',
-              borderRadius: '2px',
-              backgroundColor: 'rgba(248,250,252,0.94)',
-              color: '#0f172a',
-              fontSize: compact ? '6px' : '7px',
-              fontWeight: 900,
-              lineHeight: compact ? '11px' : '14px',
-              textAlign: 'center',
-              letterSpacing: 0,
-            }}
+        <CardIconBadge
+          asset={rowIconAssets[card.row]}
+          compact={compact}
+          title={cardType(card)}
+        />
+        {(!!effectIcon || !!effectBadge) && (
+          <CardIconBadge
+            asset={effectIcon}
+            label={effectBadge}
+            compact={compact}
             title={effectDescriptions[card.effect] || card.effect}
-          >
-            {effectBadges[card.effect]}
-          </span>
+          />
         )}
       </div>
       {!!count && (
@@ -295,7 +368,7 @@ const CardFace = ({
           style={{
             position: 'absolute',
             left: '5px',
-            top: compact ? '18px' : '24px',
+            top: compact ? '24px' : '34px',
             minWidth: compact ? '18px' : '20px',
             height: compact ? '16px' : '20px',
             borderRadius: '10px',
@@ -317,13 +390,20 @@ const CardFace = ({
           style={{
             position: 'absolute',
             left:
-              tooltipSide === 'right'
+              tooltipPlacement.side === 'right'
                 ? undefined
-                : tooltipSide === 'left'
+                : tooltipPlacement.side === 'left'
                   ? 0
                   : '50%',
-            right: tooltipSide === 'right' ? 0 : undefined,
-            top: compact ? '38px' : '52px',
+            right: tooltipPlacement.side === 'right' ? 0 : undefined,
+            top:
+              tooltipPlacement.vertical === 'below'
+                ? `calc(100% + ${tooltipGap}px)`
+                : undefined,
+            bottom:
+              tooltipPlacement.vertical === 'above'
+                ? `calc(100% + ${tooltipGap}px)`
+                : undefined,
             width: `${tooltipWidth}px`,
             maxWidth: '70vw',
             padding: compact ? '12px' : '16px',
@@ -337,7 +417,9 @@ const CardFace = ({
             boxShadow: '0 8px 24px rgba(0,0,0,0.85)',
             pointerEvents: 'none',
             transform:
-              tooltipSide === 'center' ? 'translateX(-50%)' : undefined,
+              tooltipPlacement.side === 'center'
+                ? 'translateX(-50%)'
+                : undefined,
             whiteSpace: 'normal',
             overflowWrap: 'break-word',
           }}
@@ -389,21 +471,41 @@ const CardFace = ({
         <div
           style={{
             marginLeft: compact ? '-4px' : '-5px',
-            padding: compact ? '3px 4px 3px 7px' : '4px 5px 4px 9px',
+            padding: compact ? '2px 4px 2px 7px' : '3px 5px 3px 9px',
             border: `1px solid ${rarityColor[card.rarity]}`,
             backgroundColor: unavailable
               ? 'rgba(5,7,11,0.98)'
               : 'rgba(5,7,11,0.92)',
             color: unavailable ? '#64748b' : '#f8fafc',
-            fontSize: compact ? '7px' : '10px',
             fontWeight: 700,
             lineHeight: 1.1,
-            whiteSpace: 'nowrap',
             overflow: 'hidden',
-            textOverflow: 'ellipsis',
           }}
         >
-          {card.known ? card.name : 'Unknown'}
+          <div
+            style={{
+              fontSize: compact ? '7px' : '10px',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {card.known ? card.name : 'Unknown'}
+          </div>
+          <div
+            style={{
+              color: rarityColor[card.rarity],
+              fontSize: compact ? '5px' : '7px',
+              fontWeight: 900,
+              lineHeight: 1,
+              textTransform: 'uppercase',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {cardType(card)}
+          </div>
         </div>
       </div>
     </div>

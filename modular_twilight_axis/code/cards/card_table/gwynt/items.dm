@@ -12,6 +12,8 @@
 	var/owner_ckey
 	var/inviter_ckey
 	var/inviter_name
+	var/load_from_preferences = FALSE
+	var/loaded_from_preferences = FALSE
 
 /obj/item/ccg_deck/Initialize(mapload)
 	. = ..()
@@ -56,6 +58,25 @@
 	else
 		leader_id = leader.id
 	return TRUE
+
+/obj/item/ccg_deck/proc/load_saved_deck(mob/user)
+	if(loaded_from_preferences || !user?.client?.prefs)
+		return FALSE
+	var/datum/preferences/P = user.client.prefs
+	P.ccg_clean_cards()
+	var/datum/ccg_faction/faction = ccg_faction(P.ccg_saved_deck_faction)
+	if(!faction)
+		faction = ccg_faction(CCG_FACTION_AZURIA)
+	set_faction(faction.id, P.ccg_saved_deck_leader)
+	set_cards(length(P.ccg_saved_deck_cards) ? P.ccg_saved_deck_cards : ccg_base_cards_for_faction(faction.id))
+	owner_ckey = user.ckey
+	loaded_from_preferences = TRUE
+	return TRUE
+
+/obj/item/ccg_deck/equipped(mob/user, slot, initial = FALSE)
+	. = ..()
+	if(load_from_preferences)
+		load_saved_deck(user)
 
 /obj/item/ccg_deck/proc/remove_cards_not_in_faction()
 	var/list/removed = list()
@@ -268,14 +289,16 @@
 		user.client?.prefs?.ccg_sync_cards_from_inventory(H)
 	if(!user.mind.special_items)
 		user.mind.special_items = list()
-	user.mind.special_items["Card Battle Deck"] = ccg_stash_deck_spec(card_ids, faction_id, leader_id)
 	if(!user.client?.prefs?.ccg_save_deck_snapshot(card_ids, faction_id, leader_id))
-		user.mind.special_items -= "Card Battle Deck"
 		to_chat(user, span_warning("The card battle deck failed to save. It stays in your hands."))
 		return TRUE
+	user.mind.special_items["Card Battle Deck"] = /obj/item/ccg_deck/stashed
 	to_chat(user, span_notice("You return the card battle deck to your stash."))
 	qdel(src)
 	return TRUE
+
+/obj/item/ccg_deck/stashed
+	load_from_preferences = TRUE
 
 /obj/item/ccg_card_single
 	name = "collectible card"
