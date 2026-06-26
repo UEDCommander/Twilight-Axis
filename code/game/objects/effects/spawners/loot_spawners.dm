@@ -26,6 +26,7 @@
 		/obj/item/rogueore/iron = 2,
 		/obj/item/natural/bundle/fibers = 2,
 		/obj/item/reagent_containers/food/snacks/tallow = 1,
+		/obj/item/ccg_card_generator/common = 3,
 		//clothing
 		/obj/item/clothing/head/roguetown/cap = 4,
 		/obj/item/clothing/head/roguetown/knitcap = 4,

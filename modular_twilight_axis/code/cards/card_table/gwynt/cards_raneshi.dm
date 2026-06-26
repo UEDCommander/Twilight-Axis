@@ -49,10 +49,11 @@
 	name = "Raneshi Azeb Guard"
 	desc = "Provincial desert infantry holding the line for the Sultanate."
 	row = CCG_ROW_INFANTRY
-	power = 4
+	power = 2
 	rarity = CCG_RARITY_BASE
 	faction = CCG_FACTION_RANESHI
 	effect = CCG_EFFECT_BOND
+	limited = TRUE
 	art = "ccg_cards/raneshi_azeb_guard.png"
 
 /datum/ccg_card/rare_raneshi_slaver

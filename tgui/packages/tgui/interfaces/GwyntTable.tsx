@@ -23,6 +23,7 @@ type Card = {
   targetRow?: CardRow;
   art?: string;
   hero?: boolean;
+  known?: boolean;
 };
 
 type Leader = {
@@ -140,6 +141,9 @@ const effectDescriptions: Record<string, string> = {
 };
 
 const cardTooltip = (card: Card) => {
+  if (card.known === false) {
+    return ['Unknown'];
+  }
   const lines = [
     card.name,
     `Type: ${cardTypeLabels[card.row]}`,
@@ -169,7 +173,7 @@ const cardBoxStyle = (card: Card, compact = false) => ({
   display: 'flex',
   flexDirection: 'column' as const,
   justifyContent: 'space-between',
-  overflow: 'hidden',
+  overflow: 'visible',
 });
 
 const CardView = ({
@@ -182,15 +186,36 @@ const CardView = ({
   onClick?: () => void;
 }) => {
   const [hovered, setHovered] = useState(false);
+  const [tooltipSide, setTooltipSide] = useState<'left' | 'center' | 'right'>(
+    'center',
+  );
   const tooltip = cardTooltip(card);
+  const tooltipWidth = compact ? 108 : 172;
+  const updateTooltipSide = (clientX: number) => {
+    if (clientX < tooltipWidth / 2 + 16) {
+      setTooltipSide('left');
+    } else if (clientX > window.innerWidth - tooltipWidth / 2 - 16) {
+      setTooltipSide('right');
+    } else {
+      setTooltipSide('center');
+    }
+  };
   return (
     <div
       style={{
         ...cardBoxStyle(card, compact),
         cursor: onClick ? 'pointer' : 'default',
+        transform: hovered ? 'scale(1.15)' : 'scale(1)',
+        transformOrigin: 'center center',
+        transition: 'transform 140ms ease, z-index 140ms ease',
+        zIndex: hovered ? 50 : 1,
       }}
       onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
+      onMouseEnter={(event) => {
+        updateTooltipSide(event.clientX);
+        setHovered(true);
+      }}
+      onMouseMove={(event) => updateTooltipSide(event.clientX)}
       onMouseLeave={() => setHovered(false)}
     >
       {!!card.art && (
@@ -279,26 +304,37 @@ const CardView = ({
         <div
           style={{
             position: 'absolute',
-            left: compact ? '8px' : '10px',
-            right: compact ? '8px' : '10px',
+            left:
+              tooltipSide === 'right'
+                ? undefined
+                : tooltipSide === 'left'
+                  ? 0
+                  : '50%',
+            right: tooltipSide === 'right' ? 0 : undefined,
             top: compact ? '30px' : '42px',
-            padding: compact ? '5px' : '7px',
-            border: '1px solid rgba(248,250,252,0.85)',
-            borderRadius: '4px',
+            width: `${tooltipWidth}px`,
+            maxWidth: '70vw',
+            padding: compact ? '10px' : '14px',
+            border: '2px solid rgba(248,250,252,0.85)',
+            borderRadius: '6px',
             backgroundColor: 'rgba(5,7,11,0.96)',
             color: '#f8fafc',
-            fontSize: compact ? '6px' : '8px',
+            fontSize: compact ? '12px' : '16px',
             lineHeight: 1.25,
-            zIndex: 5,
-            boxShadow: '0 4px 12px rgba(0,0,0,0.75)',
+            zIndex: 1000,
+            boxShadow: '0 8px 24px rgba(0,0,0,0.85)',
             pointerEvents: 'none',
+            transform:
+              tooltipSide === 'center' ? 'translateX(-50%)' : undefined,
+            whiteSpace: 'normal',
+            overflowWrap: 'break-word',
           }}
         >
           <div
             style={{
               color: rarityColor[card.rarity],
               fontWeight: 900,
-              marginBottom: '3px',
+              marginBottom: compact ? '6px' : '8px',
             }}
           >
             {tooltip[0]}

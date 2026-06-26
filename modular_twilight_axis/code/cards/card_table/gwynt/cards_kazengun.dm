@@ -20,6 +20,7 @@
 	rarity = CCG_RARITY_BASE
 	faction = CCG_FACTION_KAZENGUN
 	effect = CCG_EFFECT_AGILE
+	limited = TRUE
 	art = "ccg_cards/kazengun_ronin.png"
 
 /datum/ccg_card/rare_kazengun_eastern_warrior

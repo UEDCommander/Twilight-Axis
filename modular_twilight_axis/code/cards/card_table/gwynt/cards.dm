@@ -84,7 +84,8 @@ GLOBAL_LIST_EMPTY(ccg_leaders_by_id)
 		ccg_build_card_registry()
 	var/list/card_ids = list()
 	for(var/card_id in GLOB.ccg_base_card_ids)
-		if(ccg_card_allowed_for_faction(card_id, faction_id))
+		var/datum/ccg_card/card = ccg_card(card_id)
+		if(card && !card.limited && ccg_card_allowed_for_faction(card_id, faction_id))
 			card_ids += card_id
 	return card_ids
 
@@ -139,6 +140,7 @@ GLOBAL_LIST_EMPTY(ccg_leaders_by_id)
 	var/avenger_card = ""
 	var/art = ""
 	var/hero = FALSE
+	var/limited = FALSE
 
 /datum/ccg_card/proc/as_ui_data(known = TRUE, selected = FALSE)
 	return list(
@@ -156,6 +158,7 @@ GLOBAL_LIST_EMPTY(ccg_leaders_by_id)
 		"targetRow" = target_row,
 		"art" = art,
 		"hero" = hero,
+		"limited" = limited,
 		"known" = known,
 		"selected" = selected
 	)

@@ -16,7 +16,9 @@
 /datum/preferences/proc/ccg_known_cards()
 	var/list/cards = list()
 	for(var/card_id in GLOB.ccg_base_card_ids)
-		cards |= card_id
+		var/datum/ccg_card/card = ccg_card(card_id)
+		if(card && !card.limited)
+			cards |= card_id
 	if(islist(ccg_known_rare_cards))
 		for(var/card_id in ccg_known_rare_cards)
 			var/count = ccg_known_rare_cards[card_id]
@@ -24,11 +26,14 @@
 				cards |= card_id
 	return cards
 
+/proc/ccg_card_is_limited(datum/ccg_card/card)
+	return card && (card.rarity != CCG_RARITY_BASE || card.limited)
+
 /datum/preferences/proc/ccg_card_pool_count(card_id)
 	var/datum/ccg_card/card = ccg_card(card_id)
 	if(!card)
 		return 0
-	if(card.rarity == CCG_RARITY_BASE)
+	if(!ccg_card_is_limited(card))
 		return CCG_DECK_SIZE
 	if(!islist(ccg_known_rare_cards))
 		return 0
@@ -50,7 +55,7 @@
 	var/datum/ccg_card/card = ccg_card(card_id)
 	if(!card)
 		return FALSE
-	if(card.rarity == CCG_RARITY_BASE)
+	if(!ccg_card_is_limited(card))
 		return TRUE
 	return ccg_selected_count(card_id) < ccg_card_pool_count(card_id)
 
@@ -58,7 +63,7 @@
 	var/datum/ccg_card/card = ccg_card(card_id)
 	if(!card)
 		return 0
-	if(card.rarity == CCG_RARITY_BASE)
+	if(!ccg_card_is_limited(card))
 		return CCG_DECK_SIZE
 	return ccg_card_pool_count(card_id) + ccg_card_count_in_list(deck_cards, card_id)
 
@@ -82,7 +87,7 @@
 	var/list/valid_rare = list()
 	for(var/card_id in ccg_known_rare_cards)
 		var/datum/ccg_card/card = ccg_card(card_id)
-		if(card && card.rarity != CCG_RARITY_BASE)
+		if(ccg_card_is_limited(card))
 			var/count = ccg_known_rare_cards[card_id]
 			if(!isnum(count))
 				count = 1
@@ -97,7 +102,7 @@
 		var/datum/ccg_card/card = ccg_card(card_id)
 		if(!card || valid_deck.len >= CCG_DECK_SIZE)
 			continue
-		if(card.rarity != CCG_RARITY_BASE)
+		if(ccg_card_is_limited(card))
 			var/selected_count = selected_counts[card_id]
 			if(!selected_count)
 				selected_count = 0
@@ -121,7 +126,7 @@
 
 /datum/preferences/proc/ccg_add_known_card(card_id)
 	var/datum/ccg_card/card = ccg_card(card_id)
-	if(!card || card.rarity == CCG_RARITY_BASE)
+	if(!ccg_card_is_limited(card))
 		return FALSE
 	ccg_clean_cards()
 	var/count = ccg_known_rare_cards[card_id]
@@ -143,7 +148,7 @@
 	var/list/old_known_cards = ccg_known_rare_cards.Copy()
 	for(var/card_id in card_ids)
 		var/datum/ccg_card/card = ccg_card(card_id)
-		if(card?.rarity != CCG_RARITY_BASE)
+		if(ccg_card_is_limited(card))
 			var/count = ccg_known_rare_cards[card_id]
 			if(!count)
 				count = 0
@@ -161,7 +166,7 @@
 
 /datum/preferences/proc/ccg_take_pool_card(card_id)
 	var/datum/ccg_card/card = ccg_card(card_id)
-	if(!card || card.rarity == CCG_RARITY_BASE)
+	if(!ccg_card_is_limited(card))
 		return TRUE
 	ccg_clean_cards()
 	var/count = ccg_known_rare_cards[card_id]
@@ -180,7 +185,7 @@
 
 /datum/preferences/proc/ccg_return_pool_card(card_id)
 	var/datum/ccg_card/card = ccg_card(card_id)
-	if(!card || card.rarity == CCG_RARITY_BASE)
+	if(!ccg_card_is_limited(card))
 		return TRUE
 	ccg_clean_cards()
 	var/count = ccg_known_rare_cards[card_id]
@@ -432,7 +437,7 @@
 				return TRUE
 			if(!ccg_card_allowed_for_faction(card_id, deck.faction_id))
 				return TRUE
-			if(add_card.rarity != CCG_RARITY_BASE && !P.ccg_take_pool_card(card_id))
+			if(ccg_card_is_limited(add_card) && !P.ccg_take_pool_card(card_id))
 				return TRUE
 			deck.card_ids += card_id
 			if(!P.ccg_save_deck_snapshot(deck.card_ids, deck.faction_id, deck.leader_id))
@@ -448,7 +453,7 @@
 				if(!index)
 					break
 				var/datum/ccg_card/remove_card = ccg_card(card_id)
-				if(remove_card?.rarity != CCG_RARITY_BASE && !P.ccg_return_pool_card(card_id))
+				if(ccg_card_is_limited(remove_card) && !P.ccg_return_pool_card(card_id))
 					to_chat(user, span_warning("The card pool failed to save. The card was not removed."))
 					return TRUE
 				deck.card_ids.Cut(index, index + 1)
@@ -460,7 +465,7 @@
 			var/index = deck.card_ids.Find(card_id)
 			if(index)
 				var/datum/ccg_card/remove_one_card = ccg_card(card_id)
-				if(remove_one_card?.rarity != CCG_RARITY_BASE && !P.ccg_return_pool_card(card_id))
+				if(ccg_card_is_limited(remove_one_card) && !P.ccg_return_pool_card(card_id))
 					to_chat(user, span_warning("The card pool failed to save. The card was not removed."))
 					return TRUE
 				deck.card_ids.Cut(index, index + 1)
@@ -472,7 +477,7 @@
 			var/list/remaining_cards = list()
 			for(var/removed_id in deck.card_ids)
 				var/datum/ccg_card/clear_card = ccg_card(removed_id)
-				if(clear_card?.rarity != CCG_RARITY_BASE && !P.ccg_return_pool_card(removed_id))
+				if(ccg_card_is_limited(clear_card) && !P.ccg_return_pool_card(removed_id))
 					remaining_cards += removed_id
 					continue
 			deck.card_ids = remaining_cards

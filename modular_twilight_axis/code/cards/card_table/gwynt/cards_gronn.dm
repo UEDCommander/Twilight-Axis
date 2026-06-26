@@ -9,6 +9,7 @@
 	rarity = CCG_RARITY_BASE
 	faction = CCG_FACTION_GRONN
 	effect = CCG_EFFECT_BERSERK
+	limited = TRUE
 	art = "ccg_cards/gronn_berserker.png"
 
 /datum/ccg_card/unique_gronn_war_bear

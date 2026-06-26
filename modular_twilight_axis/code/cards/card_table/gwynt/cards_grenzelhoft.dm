@@ -20,6 +20,7 @@
 	rarity = CCG_RARITY_BASE
 	faction = CCG_FACTION_GRENZELHOFT
 	effect = CCG_EFFECT_MORALE
+	limited = TRUE
 	art = "ccg_cards/grenzelhoft_halberdier.png"
 
 /datum/ccg_card/rare_grenzelhoft_crossbowman

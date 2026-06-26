@@ -40,10 +40,11 @@
 	name = "Royal Guard"
 	desc = "Disciplined Enigma retinue infantry. Bonds with other Royal Guards."
 	row = CCG_ROW_INFANTRY
-	power = 5
+	power = 3
 	rarity = CCG_RARITY_BASE
 	faction = CCG_FACTION_ENIGMA
 	effect = CCG_EFFECT_BOND
+	limited = TRUE
 	art = "ccg_cards/enigma_royal_guard.png"
 
 /datum/ccg_card/rare_enigma_vanguard_archer

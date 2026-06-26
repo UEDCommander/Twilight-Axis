@@ -31,6 +31,7 @@
 	rarity = CCG_RARITY_BASE
 	faction = CCG_FACTION_NALEDI
 	effect = CCG_EFFECT_AGILE
+	limited = TRUE
 	art = "ccg_cards/naledi_sojourner.png"
 
 /datum/ccg_card/rare_naledi_zybantu_envoy

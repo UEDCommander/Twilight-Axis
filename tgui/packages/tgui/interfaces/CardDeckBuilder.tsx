@@ -22,6 +22,7 @@ type Card = {
   combo: string;
   art?: string;
   ownedCount?: number;
+  limited?: boolean;
   known: boolean;
   selected: boolean;
 };
@@ -126,15 +127,18 @@ const effectDescriptions: Record<string, string> = {
 };
 
 const cardTooltip = (card: Card) => {
+  if (!card.known) {
+    return ['Unknown'];
+  }
   const lines = [
-    card.known ? card.name : 'Unknown',
+    card.name,
     `Type: ${cardType(card)}`,
     `Group: ${card.factionName || card.faction}`,
     `Power: ${card.power}`,
   ];
-  if (card.known && effectDescriptions[card.effect]) {
+  if (effectDescriptions[card.effect]) {
     lines.push(`Effect: ${effectDescriptions[card.effect]}`);
-  } else if (card.known && card.desc) {
+  } else if (card.desc) {
     lines.push(card.desc);
   }
   if (card.rarity !== 'base') {
@@ -161,7 +165,20 @@ const CardFace = ({
   onRightClick?: () => void;
 }) => {
   const [hovered, setHovered] = useState(false);
+  const [tooltipSide, setTooltipSide] = useState<'left' | 'center' | 'right'>(
+    'center',
+  );
   const tooltip = cardTooltip(card);
+  const tooltipWidth = compact ? 136 : 188;
+  const updateTooltipSide = (clientX: number) => {
+    if (clientX < tooltipWidth / 2 + 16) {
+      setTooltipSide('left');
+    } else if (clientX > window.innerWidth - tooltipWidth / 2 - 16) {
+      setTooltipSide('right');
+    } else {
+      setTooltipSide('center');
+    }
+  };
   return (
     <div
       style={{
@@ -176,10 +193,14 @@ const CardFace = ({
         boxShadow: `0 0 0 1px rgba(0,0,0,0.7), 0 0 10px ${rarityColor[card.rarity]}33`,
         cursor: onClick && !disabled ? 'pointer' : 'default',
         opacity: disabled && !unavailable ? 0.62 : 1,
+        transform: hovered ? 'scale(1.15)' : 'scale(1)',
+        transformOrigin: 'center center',
+        transition: 'transform 140ms ease, z-index 140ms ease',
+        zIndex: hovered ? 50 : 1,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        overflow: 'hidden',
+        overflow: 'visible',
       }}
       onClick={!disabled ? onClick : undefined}
       onContextMenu={(event) => {
@@ -189,7 +210,11 @@ const CardFace = ({
         event.preventDefault();
         onRightClick();
       }}
-      onMouseEnter={() => setHovered(true)}
+      onMouseEnter={(event) => {
+        updateTooltipSide(event.clientX);
+        setHovered(true);
+      }}
+      onMouseMove={(event) => updateTooltipSide(event.clientX)}
       onMouseLeave={() => setHovered(false)}
     >
       {!!card.art && (
@@ -291,26 +316,37 @@ const CardFace = ({
         <div
           style={{
             position: 'absolute',
-            left: compact ? '10px' : '12px',
-            right: compact ? '10px' : '12px',
+            left:
+              tooltipSide === 'right'
+                ? undefined
+                : tooltipSide === 'left'
+                  ? 0
+                  : '50%',
+            right: tooltipSide === 'right' ? 0 : undefined,
             top: compact ? '38px' : '52px',
-            padding: compact ? '6px' : '8px',
-            border: '1px solid rgba(248,250,252,0.85)',
-            borderRadius: '4px',
+            width: `${tooltipWidth}px`,
+            maxWidth: '70vw',
+            padding: compact ? '12px' : '16px',
+            border: '2px solid rgba(248,250,252,0.85)',
+            borderRadius: '6px',
             backgroundColor: 'rgba(5,7,11,0.96)',
             color: '#f8fafc',
-            fontSize: compact ? '7px' : '9px',
+            fontSize: compact ? '14px' : '18px',
             lineHeight: 1.25,
-            zIndex: 5,
-            boxShadow: '0 4px 12px rgba(0,0,0,0.75)',
+            zIndex: 1000,
+            boxShadow: '0 8px 24px rgba(0,0,0,0.85)',
             pointerEvents: 'none',
+            transform:
+              tooltipSide === 'center' ? 'translateX(-50%)' : undefined,
+            whiteSpace: 'normal',
+            overflowWrap: 'break-word',
           }}
         >
           <div
             style={{
               color: rarityColor[card.rarity],
               fontWeight: 900,
-              marginBottom: '4px',
+              marginBottom: compact ? '8px' : '10px',
             }}
           >
             {tooltip[0]}
@@ -424,7 +460,7 @@ export const CardDeckBuilder = () => {
               card.factionName || '',
               rowLabels[card.row],
             ]
-          : ['Unknown', rowLabels[card.row]]
+          : ['Unknown']
       )
         .join(' ')
         .toLowerCase();
@@ -543,7 +579,7 @@ export const CardDeckBuilder = () => {
                 }}
               >
                 <span>
-                  Rare and unique cards in pool: {data.knownRareCount}
+                  Limited cards in pool: {data.knownRareCount}
                 </span>
                 <Button
                   disabled={!data.canRequestDeck}
@@ -558,7 +594,9 @@ export const CardDeckBuilder = () => {
               {filteredCards.map((card) => {
                 const selectedCount = selectedCounts[card.id] || 0;
                 const ownedCount =
-                  card.rarity === 'base' ? data.deckSize : card.ownedCount || 0;
+                  card.rarity === 'base' && !card.limited
+                    ? data.deckSize
+                    : card.ownedCount || 0;
                 const factionLocked = !isPool && !card.factionAllowed;
                 const unavailable = !card.known || factionLocked;
                 return (
@@ -566,7 +604,7 @@ export const CardDeckBuilder = () => {
                     key={card.id}
                     card={card}
                     count={
-                      isPool && card.rarity !== 'base'
+                      isPool && (card.rarity !== 'base' || card.limited)
                         ? ownedCount
                         : selectedCount
                     }
@@ -695,7 +733,7 @@ export const CardDeckBuilder = () => {
                   marginBottom: '10px',
                 }}
               >
-                Rare and unique cards in pool: {data.knownRareCount}
+                Limited cards in pool: {data.knownRareCount}
               </div>
               <div
                 style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}

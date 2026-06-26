@@ -313,6 +313,7 @@
 	icon_state = "gwint_card"
 	w_class = WEIGHT_CLASS_TINY
 	var/card_rarity = CCG_RARITY_RARE
+	var/limited_only = FALSE
 
 /obj/item/ccg_card_generator/Initialize(mapload)
 	. = ..()
@@ -329,11 +330,17 @@
 	var/list/candidates = list()
 	for(var/card_id in GLOB.ccg_cards_by_id)
 		var/datum/ccg_card/card = ccg_card(card_id)
-		if(card?.rarity == card_rarity)
+		if(card?.rarity == card_rarity && (!limited_only || card.limited))
 			candidates += card_id
 	if(!length(candidates))
 		return null
 	return pick(candidates)
+
+/obj/item/ccg_card_generator/common
+	name = "creased common card packet"
+	desc = "A battered packet containing a random common collectible card."
+	card_rarity = CCG_RARITY_BASE
+	limited_only = TRUE
 
 /obj/item/ccg_card_generator/rare
 	name = "sealed rare card packet"

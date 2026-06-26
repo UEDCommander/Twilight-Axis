@@ -6,6 +6,7 @@
 	desc = "Reliable infantry."
 	row = CCG_ROW_INFANTRY
 	power = 4
+	limited = TRUE
 	combo_with = list("base_shieldman")
 	combo_effect = CCG_EFFECT_MORALE
 	art = "ccg_cards/swordsman.png"
@@ -15,8 +16,9 @@
 	name = "Spearman"
 	desc = "Doubles with other Spearmen."
 	row = CCG_ROW_INFANTRY
-	power = 3
+	power = 2
 	effect = CCG_EFFECT_BOND
+	limited = TRUE
 	art = "ccg_cards/spearman.png"
 
 /datum/ccg_card/base_archer
@@ -24,8 +26,9 @@
 	name = "Archer"
 	desc = "Reliable ranged card."
 	row = CCG_ROW_ARCHERS
-	power = 4
+	power = 2
 	effect = CCG_EFFECT_AGILE
+	limited = TRUE
 	combo_with = list("base_longbowman")
 	combo_effect = CCG_EFFECT_SCORCH
 	art = "ccg_cards/young_archer.png"
@@ -44,8 +47,9 @@
 	name = "Catapult"
 	desc = "Doubles with other Catapults."
 	row = CCG_ROW_SIEGE
-	power = 5
+	power = 3
 	effect = CCG_EFFECT_BOND
+	limited = TRUE
 	combo_with = list("base_ballista")
 	combo_effect = CCG_EFFECT_SCORCH
 	art = "ccg_cards/trebuchet.png"
@@ -55,8 +59,9 @@
 	name = "Ballista"
 	desc = "Siege engine."
 	row = CCG_ROW_SIEGE
-	power = 6
+	power = 3
 	effect = CCG_EFFECT_SCORCH_INFANTRY
+	limited = TRUE
 	combo_with = list("base_catapult")
 	combo_effect = CCG_EFFECT_SCORCH
 	art = "ccg_cards/ballista.png"
@@ -103,6 +108,7 @@
 	desc = "Steady frontline infantry."
 	row = CCG_ROW_INFANTRY
 	power = 5
+	limited = TRUE
 	combo_with = list("base_swordsman")
 	combo_effect = CCG_EFFECT_MORALE
 	art = "ccg_cards/shield_swordsman.png"
@@ -123,6 +129,7 @@
 	row = CCG_ROW_INFANTRY
 	power = 4
 	effect = CCG_EFFECT_MUSTER
+	limited = TRUE
 	art = "ccg_cards/shield_guard.png"
 
 /datum/ccg_card/base_longbowman
@@ -130,8 +137,9 @@
 	name = "Longbowman"
 	desc = "Doubles with other Longbowmen."
 	row = CCG_ROW_ARCHERS
-	power = 3
+	power = 2
 	effect = CCG_EFFECT_BOND
+	limited = TRUE
 	combo_with = list("base_archer")
 	combo_effect = CCG_EFFECT_SCORCH
 	art = "ccg_cards/hood_archer.png"
@@ -152,7 +160,8 @@
 	name = "Supply Cart"
 	desc = "Siege support."
 	row = CCG_ROW_SIEGE
-	power = 4
+	power = 8
+	limited = TRUE
 	combo_with = list("base_blacksmith")
 	combo_effect = CCG_EFFECT_MORALE
 	art = "ccg_cards/supply_cart.png"
@@ -162,7 +171,8 @@
 	name = "Scout"
 	desc = "Light ranged unit."
 	row = CCG_ROW_ARCHERS
-	power = 2
+	power = 4
+	limited = TRUE
 	art = "ccg_cards/scout.png"
 
 /datum/ccg_card/base_militia
@@ -178,7 +188,8 @@
 	name = "Mangonel"
 	desc = "Basic siege engine."
 	row = CCG_ROW_SIEGE
-	power = 3
+	power = 6
+	limited = TRUE
 	art = "ccg_cards/mangonel.png"
 
 /datum/ccg_card/base_field_medic
