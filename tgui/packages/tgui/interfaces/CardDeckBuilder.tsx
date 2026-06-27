@@ -729,10 +729,7 @@ export const CardDeckBuilder = () => {
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
               {filteredCards.map((card) => {
                 const selectedCount = selectedCounts[card.id] || 0;
-                const ownedCount =
-                  card.rarity === 'base' && !card.limited
-                    ? data.deckSize
-                    : card.ownedCount || 0;
+                const ownedCount = card.ownedCount || 0;
                 const factionLocked = !isPool && !card.factionAllowed;
                 const unavailable = !card.known || factionLocked;
                 return (

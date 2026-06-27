@@ -43,9 +43,18 @@
 
 /obj/item/ccg_deck/proc/set_cards(list/new_cards)
 	card_ids = list()
+	var/list/card_counts = list()
 	for(var/card_id in new_cards)
-		if(ccg_card_allowed_for_faction(card_id, faction_id) && card_ids.len < CCG_DECK_SIZE)
-			card_ids += card_id
+		var/datum/ccg_card/card = ccg_card(card_id)
+		if(!card || !ccg_card_allowed_for_faction(card_id, faction_id) || card_ids.len >= CCG_DECK_SIZE)
+			continue
+		var/card_count = card_counts[card_id]
+		if(!card_count)
+			card_count = 0
+		if(card_count >= ccg_card_deck_limit(card))
+			continue
+		card_counts[card_id] = card_count + 1
+		card_ids += card_id
 
 /obj/item/ccg_deck/proc/set_faction(new_faction_id, new_leader_id)
 	var/datum/ccg_faction/faction = ccg_faction(new_faction_id)
@@ -167,11 +176,14 @@
 	if(!ccg_card(single.card_id))
 		to_chat(user, span_warning("This card cannot be added to the deck."))
 		return FALSE
+	var/datum/ccg_card/card = ccg_card(single.card_id)
+	if(ccg_card_count_in_list(card_ids, single.card_id) >= ccg_card_deck_limit(card))
+		to_chat(user, span_warning("This card battle deck cannot hold more copies of this card."))
+		return FALSE
 	if(!ccg_card_allowed_for_faction(single.card_id, faction_id))
 		to_chat(user, span_warning("This card belongs to another deck faction."))
 		return FALSE
 	card_ids += single.card_id
-	var/datum/ccg_card/card = ccg_card(single.card_id)
 	to_chat(user, span_notice("You add [card.name] to the card battle deck."))
 	qdel(single)
 	return TRUE

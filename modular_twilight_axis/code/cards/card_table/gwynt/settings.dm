@@ -29,12 +29,25 @@
 /proc/ccg_card_is_limited(datum/ccg_card/card)
 	return card && (card.rarity != CCG_RARITY_BASE || card.limited)
 
+/proc/ccg_card_deck_limit(datum/ccg_card/card)
+	if(!card)
+		return 0
+	if(card.rarity == CCG_RARITY_UNIQUE)
+		return 1
+	if(card.rarity == CCG_RARITY_RARE)
+		return 2
+	if(card.row == CCG_ROW_WEATHER || card.row == CCG_ROW_SPECIAL)
+		return 2
+	if(card.limited)
+		return 3
+	return 5
+
 /datum/preferences/proc/ccg_card_pool_count(card_id)
 	var/datum/ccg_card/card = ccg_card(card_id)
 	if(!card)
 		return 0
 	if(!ccg_card_is_limited(card))
-		return CCG_DECK_SIZE
+		return ccg_card_deck_limit(card)
 	if(!islist(ccg_known_rare_cards))
 		return 0
 	return max(0, ccg_known_rare_cards[card_id])
@@ -55,6 +68,9 @@
 	var/datum/ccg_card/card = ccg_card(card_id)
 	if(!card)
 		return FALSE
+	var/deck_limit = ccg_card_deck_limit(card)
+	if(ccg_selected_count(card_id) >= deck_limit)
+		return FALSE
 	if(!ccg_card_is_limited(card))
 		return TRUE
 	return ccg_selected_count(card_id) < ccg_card_pool_count(card_id)
@@ -63,9 +79,10 @@
 	var/datum/ccg_card/card = ccg_card(card_id)
 	if(!card)
 		return 0
+	var/deck_limit = ccg_card_deck_limit(card)
 	if(!ccg_card_is_limited(card))
-		return CCG_DECK_SIZE
-	return ccg_card_pool_count(card_id) + ccg_card_count_in_list(deck_cards, card_id)
+		return deck_limit
+	return min(deck_limit, ccg_card_pool_count(card_id) + ccg_card_count_in_list(deck_cards, card_id))
 
 /datum/preferences/proc/ccg_clean_cards()
 	if(!islist(ccg_known_rare_cards))
@@ -102,20 +119,31 @@
 		var/datum/ccg_card/card = ccg_card(card_id)
 		if(!card || valid_deck.len >= CCG_DECK_SIZE)
 			continue
+		var/selected_count = selected_counts[card_id]
+		if(!selected_count)
+			selected_count = 0
+		if(selected_count >= ccg_card_deck_limit(card))
+			continue
 		if(ccg_card_is_limited(card))
-			var/selected_count = selected_counts[card_id]
-			if(!selected_count)
-				selected_count = 0
 			if(selected_count >= ccg_card_pool_count(card_id))
 				continue
-			selected_counts[card_id] = selected_count + 1
+		selected_counts[card_id] = selected_count + 1
 		valid_deck += card_id
 	ccg_selected_deck = valid_deck
 
 	var/list/valid_saved_deck = list()
+	var/list/saved_counts = list()
 	for(var/card_id in ccg_saved_deck_cards)
-		if(ccg_card_allowed_for_faction(card_id, ccg_saved_deck_faction) && valid_saved_deck.len < CCG_DECK_SIZE)
-			valid_saved_deck += card_id
+		var/datum/ccg_card/saved_card = ccg_card(card_id)
+		if(!saved_card || !ccg_card_allowed_for_faction(card_id, ccg_saved_deck_faction) || valid_saved_deck.len >= CCG_DECK_SIZE)
+			continue
+		var/saved_count = saved_counts[card_id]
+		if(!saved_count)
+			saved_count = 0
+		if(saved_count >= ccg_card_deck_limit(saved_card))
+			continue
+		saved_counts[card_id] = saved_count + 1
+		valid_saved_deck += card_id
 	ccg_saved_deck_cards = valid_saved_deck
 
 /datum/preferences/proc/ccg_save()
@@ -216,9 +244,18 @@
 			if(!faction)
 				faction = ccg_faction(CCG_FACTION_AZURIA)
 			ccg_saved_deck_cards = list()
+			var/list/card_counts = list()
 			for(var/card_id in deck.card_ids)
-				if(ccg_card_allowed_for_faction(card_id, faction.id) && ccg_saved_deck_cards.len < CCG_DECK_SIZE)
-					ccg_saved_deck_cards += card_id
+				var/datum/ccg_card/card = ccg_card(card_id)
+				if(!card || !ccg_card_allowed_for_faction(card_id, faction.id) || ccg_saved_deck_cards.len >= CCG_DECK_SIZE)
+					continue
+				var/card_count = card_counts[card_id]
+				if(!card_count)
+					card_count = 0
+				if(card_count >= ccg_card_deck_limit(card))
+					continue
+				card_counts[card_id] = card_count + 1
+				ccg_saved_deck_cards += card_id
 			ccg_saved_deck_faction = faction.id
 			var/datum/ccg_leader/leader = ccg_leader(deck.leader_id)
 			ccg_saved_deck_leader = (leader && leader.faction == faction.id) ? leader.id : faction.default_leader
@@ -236,9 +273,18 @@
 	if(!faction)
 		faction = ccg_faction(CCG_FACTION_AZURIA)
 	ccg_saved_deck_cards = list()
+	var/list/saved_counts = list()
 	for(var/card_id in card_ids)
-		if(ccg_card_allowed_for_faction(card_id, faction.id) && ccg_saved_deck_cards.len < CCG_DECK_SIZE)
-			ccg_saved_deck_cards += card_id
+		var/datum/ccg_card/card = ccg_card(card_id)
+		if(!card || !ccg_card_allowed_for_faction(card_id, faction.id) || ccg_saved_deck_cards.len >= CCG_DECK_SIZE)
+			continue
+		var/saved_count = saved_counts[card_id]
+		if(!saved_count)
+			saved_count = 0
+		if(saved_count >= ccg_card_deck_limit(card))
+			continue
+		saved_counts[card_id] = saved_count + 1
+		ccg_saved_deck_cards += card_id
 	ccg_saved_deck_faction = faction.id
 	var/datum/ccg_leader/leader = ccg_leader(leader_id)
 	ccg_saved_deck_leader = (leader && leader.faction == faction.id) ? leader.id : faction.default_leader
@@ -406,6 +452,8 @@
 			if(!add_card)
 				return TRUE
 			if(!ccg_card_allowed_for_faction(card_id, deck.faction_id))
+				return TRUE
+			if(ccg_card_count_in_list(deck.card_ids, card_id) >= P.ccg_available_for_deck(deck.card_ids, card_id))
 				return TRUE
 			if(ccg_card_is_limited(add_card) && !P.ccg_take_pool_card(card_id))
 				return TRUE
