@@ -1312,6 +1312,9 @@
   - rscadd: Animated Runechat.
   SmthAwfl:
   - bugfix: performance issue with status tab
+  SomeDeviant:
+  - rscdel: Removed .transform check in wrestling spells to prevent sprite scale corruption
+  - bugfix: fixed runtime on interrupted timers in wrestling spells
   UEDCommander:
   - rscadd: "\u0414\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u0430 \u043C\u0435\u0445\
       \u0430\u043D\u0438\u043A\u0430 \u0438\u043C\u0435\u043D\u0438\u0439 \u0434\u043B\
@@ -1336,6 +1339,8 @@
       it is useless. It is now logged in game log for future dev investigation. And
       in addition, it give you a rough location of where the death occured. If this
       becomes a problem I will revert to the generic fallback instead.
+  changelingonberry:
+  - bugfix: gulp, faceplam and crack knuckles go into the correct categories now
   msw7007:
   - rscadd: "\u041F\u041A\u041C \u043F\u043E\u0437\u0432\u043E\u043B\u044F\u0435\u0442\
       \ \u043F\u0435\u0440\u0435\u043A\u043B\u044E\u0447\u0430\u0442\u044C \u0441\u0442\
@@ -1350,3 +1355,15 @@
       \u0430\u0446\u0438\u043E\u043D\u043D\u044B\u0445 \u0438 \u043E\u0440\u0444\u043E\
       \u0433\u0440\u0430\u0444\u0438\u0447\u0435\u0441\u043A\u0438\u0445 \u043E\u0448\
       \u0438\u0431\u043E\u043A."
+2026-06-27:
+  EvenInDeathIStillServe:
+  - rscadd: You can export your preferences/characters using the "Export Preferences"
+      verb in the "OOC" panel. It will be saved as a file on your computer.
+  Happyowl93:
+  - bugfix: Changed nicotine mood message to be valid for both smoking and eating
+  WeNeedMorePhoron:
+  - balance: Reduce Zadcote Voyeur cost from 5 to 1 to encourage more usage, maybe?
+  borneblood:
+  - bugfix: Fixed an exploit with Rituos, again
+  nauticall:
+  - rscadd: Added a donor item, Shenara's hat.

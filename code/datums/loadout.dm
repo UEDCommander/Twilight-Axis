@@ -3702,6 +3702,12 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	donatitem = TRUE
 	donat_tier = 2
 
+/datum/loadout_item/donator/crown_hat
+	name = "Donator Item - Crown Hat"
+	category = list("Головные уборы", "Донат")
+	path = /obj/item/clothing/head/roguetown/crown_hat
+	donat_tier = 2
+
 /datum/loadout_item/cap
 	name = "Cap"
 	category = "Головные уборы"
