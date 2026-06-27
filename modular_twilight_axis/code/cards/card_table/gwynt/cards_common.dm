@@ -40,6 +40,7 @@
 	row = CCG_ROW_ARCHERS
 	power = 3
 	effect = CCG_EFFECT_MORALE
+	limited = TRUE
 	art = "ccg_cards/crossbowman.png"
 
 /datum/ccg_card/base_catapult
@@ -120,6 +121,7 @@
 	row = CCG_ROW_INFANTRY
 	power = 2
 	effect = CCG_EFFECT_MORALE
+	limited = TRUE
 	art = "ccg_cards/banner_bearer.png"
 
 /datum/ccg_card/base_guard
@@ -151,6 +153,7 @@
 	row = CCG_ROW_SIEGE
 	power = 2
 	effect = CCG_EFFECT_MORALE
+	limited = TRUE
 	combo_with = list("base_supply_cart")
 	combo_effect = CCG_EFFECT_MORALE
 	art = "ccg_cards/blacksmith.png"
@@ -172,7 +175,6 @@
 	desc = "Light ranged unit."
 	row = CCG_ROW_ARCHERS
 	power = 4
-	limited = TRUE
 	art = "ccg_cards/scout.png"
 
 /datum/ccg_card/base_militia
@@ -189,7 +191,6 @@
 	desc = "Basic siege engine."
 	row = CCG_ROW_SIEGE
 	power = 6
-	limited = TRUE
 	art = "ccg_cards/mangonel.png"
 
 /datum/ccg_card/base_field_medic
@@ -205,7 +206,7 @@
 	id = "base_decoy"
 	name = "Decoy"
 	desc = "Returns your strongest unit to hand."
-	row = CCG_ROW_WEATHER
+	row = CCG_ROW_SPECIAL
 	power = 0
 	effect = CCG_EFFECT_DECOY
 	art = "ccg_cards/decoy.png"
@@ -214,7 +215,7 @@
 	id = "base_horn_infantry"
 	name = "Infantry Horn"
 	desc = "Doubles all units in your infantry row."
-	row = CCG_ROW_INFANTRY
+	row = CCG_ROW_SPECIAL
 	power = 0
 	effect = CCG_EFFECT_HORN
 	target_row = CCG_ROW_INFANTRY
@@ -224,7 +225,7 @@
 	id = "base_horn_archers"
 	name = "Archers Horn"
 	desc = "Doubles all units in your archers row."
-	row = CCG_ROW_ARCHERS
+	row = CCG_ROW_SPECIAL
 	power = 0
 	effect = CCG_EFFECT_HORN
 	target_row = CCG_ROW_ARCHERS
@@ -234,7 +235,7 @@
 	id = "base_horn_siege"
 	name = "Siege Horn"
 	desc = "Doubles all units in your siege row."
-	row = CCG_ROW_SIEGE
+	row = CCG_ROW_SPECIAL
 	power = 0
 	effect = CCG_EFFECT_HORN
 	target_row = CCG_ROW_SIEGE
@@ -244,7 +245,7 @@
 	id = "base_scorch"
 	name = "Scorch"
 	desc = "Destroys the strongest unit or units on the battlefield."
-	row = CCG_ROW_WEATHER
+	row = CCG_ROW_SPECIAL
 	power = 0
 	effect = CCG_EFFECT_SCORCH_GLOBAL
 	art = "ccg_cards/scorch.png"
@@ -253,7 +254,7 @@
 	id = "base_mardroeme"
 	name = "Mardroeme"
 	desc = "Turns Berserkers in your infantry row into bears."
-	row = CCG_ROW_INFANTRY
+	row = CCG_ROW_WEATHER
 	power = 0
 	effect = CCG_EFFECT_MARDROEME
 	target_row = CCG_ROW_INFANTRY

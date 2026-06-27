@@ -5,7 +5,7 @@ import { resolveAsset } from '../assets';
 import { useBackend } from '../backend';
 import { Window } from '../layouts';
 
-type CardRow = 'infantry' | 'archers' | 'siege' | 'weather';
+type CardRow = 'infantry' | 'archers' | 'siege' | 'weather' | 'special';
 type CardRarity = 'base' | 'rare' | 'unique';
 
 type Card = {
@@ -63,6 +63,7 @@ const rowLabels: Record<CardRow, string> = {
   archers: 'Archers',
   siege: 'Siege',
   weather: 'Weather',
+  special: 'Special',
 };
 
 const rarityColor: Record<CardRarity, string> = {
@@ -84,6 +85,7 @@ const rowOrder: Record<CardRow, number> = {
   archers: 1,
   siege: 2,
   weather: 3,
+  special: 4,
 };
 
 const effectBadges: Record<string, string> = {
@@ -107,7 +109,8 @@ const rowIconAssets: Record<CardRow, string> = {
   infantry: 'ccg_cards/gwent_icons/melee.webp',
   archers: 'ccg_cards/gwent_icons/ranged.webp',
   siege: 'ccg_cards/gwent_icons/siege.webp',
-  weather: 'ccg_cards/gwent_icons/weather.webp',
+  weather: 'ccg_cards/gwent_icons/sun.webp',
+  special: 'ccg_cards/gwent_icons/horn_special.webp',
 };
 
 const effectIconAssets: Record<string, string> = {
@@ -228,6 +231,24 @@ const cardTooltip = (card: Card) => {
   return lines;
 };
 
+const cardIconDisplay = (card: Card) => {
+  const effectIcon = card.known ? effectIconAssets[card.effect] : undefined;
+  const effectBadge = card.known ? effectBadges[card.effect] : undefined;
+  const singleTypeIcon = card.row === 'weather' || card.row === 'special';
+  return {
+    effectBadge,
+    effectIcon,
+    singleTypeIcon,
+    typeIcon: singleTypeIcon
+      ? effectIcon || rowIconAssets[card.row]
+      : rowIconAssets[card.row],
+    typeTitle:
+      singleTypeIcon && card.known
+        ? effectDescriptions[card.effect] || card.effect || cardType(card)
+        : cardType(card),
+  };
+};
+
 const CardFace = ({
   card,
   disabled = false,
@@ -253,8 +274,7 @@ const CardFace = ({
   const tooltip = cardTooltip(card);
   const tooltipWidth = compact ? 136 : 188;
   const tooltipGap = compact ? 8 : 10;
-  const effectIcon = card.known ? effectIconAssets[card.effect] : undefined;
-  const effectBadge = card.known ? effectBadges[card.effect] : undefined;
+  const iconDisplay = cardIconDisplay(card);
   const updateTooltipPlacement = (cardElement: HTMLElement) => {
     const rect = cardElement.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
@@ -350,14 +370,15 @@ const CardFace = ({
         }}
       >
         <CardIconBadge
-          asset={rowIconAssets[card.row]}
+          asset={iconDisplay.typeIcon}
           compact={compact}
-          title={cardType(card)}
+          title={iconDisplay.typeTitle}
         />
-        {(!!effectIcon || !!effectBadge) && (
+        {!iconDisplay.singleTypeIcon &&
+          (!!iconDisplay.effectIcon || !!iconDisplay.effectBadge) && (
           <CardIconBadge
-            asset={effectIcon}
-            label={effectBadge}
+            asset={iconDisplay.effectIcon}
+            label={iconDisplay.effectBadge}
             compact={compact}
             title={effectDescriptions[card.effect] || card.effect}
           />
@@ -569,6 +590,12 @@ export const CardDeckBuilder = () => {
       return !terms.length || terms.every((term) => haystack.includes(term));
     })
     .sort((a, b) => {
+      if (row === 'all') {
+        const knownDiff = Number(b.known) - Number(a.known);
+        if (knownDiff) {
+          return knownDiff;
+        }
+      }
       const factionDiff =
         (factionOrder[a.faction] ?? Number.MAX_SAFE_INTEGER) -
         (factionOrder[b.faction] ?? Number.MAX_SAFE_INTEGER);
@@ -626,7 +653,14 @@ export const CardDeckBuilder = () => {
                 width="260px"
               />
               {(
-                ['all', 'infantry', 'archers', 'siege', 'weather'] as const
+                [
+                  'all',
+                  'infantry',
+                  'archers',
+                  'siege',
+                  'weather',
+                  'special',
+                ] as const
               ).map((key) => (
                 <Button
                   key={key}

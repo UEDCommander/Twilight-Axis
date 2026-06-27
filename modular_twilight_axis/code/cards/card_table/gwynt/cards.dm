@@ -2,6 +2,7 @@
 #define CCG_ROW_ARCHERS "archers"
 #define CCG_ROW_SIEGE "siege"
 #define CCG_ROW_WEATHER "weather"
+#define CCG_ROW_SPECIAL "special"
 
 #define CCG_RARITY_BASE "base"
 #define CCG_RARITY_RARE "rare"

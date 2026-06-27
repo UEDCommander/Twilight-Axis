@@ -7,13 +7,14 @@ import { Window } from '../layouts';
 
 type Side = 'one' | 'two';
 type CardRow = 'infantry' | 'archers' | 'siege';
+type CardType = CardRow | 'weather' | 'special';
 type CardRarity = 'base' | 'rare' | 'unique';
 
 type Card = {
   id: string;
   name: string;
   desc: string;
-  row: CardRow | 'weather';
+  row: CardType;
   power: number;
   currentPower?: number;
   playId?: number;
@@ -79,9 +80,10 @@ const rowLabels: Record<CardRow, string> = {
   siege: 'Siege',
 };
 
-const cardTypeLabels: Record<CardRow | 'weather', string> = {
+const cardTypeLabels: Record<CardType, string> = {
   ...rowLabels,
   weather: 'Weather',
+  special: 'Special',
 };
 
 const rarityColor: Record<CardRarity, string> = {
@@ -117,11 +119,12 @@ const effectBadges: Record<string, string> = {
   avenger: 'AVG',
 };
 
-const rowIconAssets: Record<CardRow | 'weather', string> = {
+const rowIconAssets: Record<CardType, string> = {
   infantry: 'ccg_cards/gwent_icons/melee.webp',
   archers: 'ccg_cards/gwent_icons/ranged.webp',
   siege: 'ccg_cards/gwent_icons/siege.webp',
-  weather: 'ccg_cards/gwent_icons/weather.webp',
+  weather: 'ccg_cards/gwent_icons/sun.webp',
+  special: 'ccg_cards/gwent_icons/horn_special.webp',
 };
 
 const effectIconAssets: Record<string, string> = {
@@ -276,6 +279,13 @@ const CardView = ({
   const tooltipGap = compact ? 8 : 10;
   const effectIcon = effectIconAssets[card.effect];
   const effectBadge = effectBadges[card.effect];
+  const singleTypeIcon = card.row === 'weather' || card.row === 'special';
+  const typeIcon = singleTypeIcon
+    ? effectIcon || rowIconAssets[card.row]
+    : rowIconAssets[card.row];
+  const typeTitle = singleTypeIcon
+    ? effectDescriptions[card.effect] || card.effect || cardTypeLabels[card.row]
+    : cardTypeLabels[card.row];
   const updateTooltipPlacement = (cardElement: HTMLElement) => {
     const rect = cardElement.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
@@ -347,11 +357,11 @@ const CardView = ({
         }}
       >
         <CardIconBadge
-          asset={rowIconAssets[card.row]}
+          asset={typeIcon}
           compact={compact}
-          title={cardTypeLabels[card.row]}
+          title={typeTitle}
         />
-        {(!!effectIcon || !!effectBadge) && (
+        {!singleTypeIcon && (!!effectIcon || !!effectBadge) && (
           <CardIconBadge
             asset={effectIcon}
             label={effectBadge}
@@ -859,7 +869,13 @@ export const GwyntTable = () => {
     setSelectedCard(null);
   };
   const playWithDecoy = (card: Card) => {
-    if (!selectedCard || !card.playId || !card.row || card.row === 'weather') {
+    if (
+      !selectedCard ||
+      !card.playId ||
+      !card.row ||
+      card.row === 'weather' ||
+      card.row === 'special'
+    ) {
       return;
     }
     act('play', { card: selectedCard.id, row: card.row, target: card.playId });

@@ -18,7 +18,6 @@
 		"ccg_cards/gwent_icons/medic.webp" = 'modular_twilight_axis/code/cards/card_table/gwynt/assets/gwent icons/Unit card specials/medic.webp',
 		"ccg_cards/gwent_icons/spy.webp" = 'modular_twilight_axis/code/cards/card_table/gwynt/assets/gwent icons/Unit card specials/spy.webp',
 		"ccg_cards/gwent_icons/fog.webp" = 'modular_twilight_axis/code/cards/card_table/gwynt/assets/gwent icons/Weather/fog.webp',
-		"ccg_cards/gwent_icons/weather.webp" = 'modular_twilight_axis/code/cards/card_table/gwynt/assets/gwent icons/Weather/mushroom_special_weather.webp',
 		"ccg_cards/gwent_icons/rain.webp" = 'modular_twilight_axis/code/cards/card_table/gwynt/assets/gwent icons/Weather/rain.webp',
 		"ccg_cards/gwent_icons/sun.webp" = 'modular_twilight_axis/code/cards/card_table/gwynt/assets/gwent icons/Weather/sun.webp',
 		"ccg_cards/gwent_icons/winter.webp" = 'modular_twilight_axis/code/cards/card_table/gwynt/assets/gwent icons/Weather/winter.webp',
