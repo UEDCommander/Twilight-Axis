@@ -3417,9 +3417,16 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 /datum/loadout_item/donat/etrpants
 	name = "Wanderer's pants - (no small races)"
 	category = list("Одежда", "Донат")
-	path = /obj/item/clothing/under/roguetown/trou/leather/etrpants
+	path = /obj/item/clothing/under/roguetown/trou/leather/etrpants/donat
 	donatitem = TRUE
 	donat_tier = 1
+
+/datum/loadout_item/donat/etrpants_enchantingkit
+	name = "Donator Kit - Wanderer's pants - Required: Leather Trousers, Splinted Chausses Or Brigandine Chausses (no small races)"
+	category = list("Одежда", "Донат")
+	path = /obj/item/enchantingkit/etrpants
+	donatitem = TRUE
+	donat_tier = 2
 
 /datum/loadout_item/etrdress3
 	name = "Strapless gown - (only female, no small races)"
