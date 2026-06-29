@@ -2,6 +2,10 @@
 	//used by the basic ai controller /datum/ai_behavior/basic_melee_attack to determine how fast a mob can attack
 	var/melee_cooldown = CLICK_CD_MELEE
 	var/pain_threshold = 0
+	var/no_head_bounty = FALSE
+	var/contract_spawned = FALSE
+	var/contract_dust_scheduled = FALSE
+
 
 /mob/living/Initialize()
 	. = ..()
@@ -54,9 +58,9 @@
 	return ..()
 
 /mob/living/onZImpact(turf/T, levels)
-	if(HAS_TRAIT(src, TRAIT_NOFALLDAMAGE2))
+	if(HAS_TRAIT(src, TRAIT_NOFALLDAMAGE2) && !HAS_TRAIT(src, TRAIT_DEADITE)) //Deadites cannot benefit from fall immunity
 		return
-	if(HAS_TRAIT(src, TRAIT_NOFALLDAMAGE1))
+	if(HAS_TRAIT(src, TRAIT_NOFALLDAMAGE1) && !HAS_TRAIT(src, TRAIT_DEADITE)) //Ditto
 		if(levels <= 2)
 			Immobilize(10)
 			if(m_intent == MOVE_INTENT_RUN)
@@ -352,7 +356,7 @@
 	if(!(src.mobility_flags & MOBILITY_STAND))
 		return TRUE
 	var/list/acceptable = list(BODY_ZONE_L_LEG, BODY_ZONE_R_LEG, BODY_ZONE_R_ARM, BODY_ZONE_CHEST, BODY_ZONE_L_ARM, BODY_ZONE_PRECISE_GROIN, BODY_ZONE_PRECISE_STOMACH)
-	if(HAS_TRAIT(L, TRAIT_CIVILIZEDBARBARIAN))
+	if(HAS_TRAIT(L, TRAIT_CIVILIZEDBARBARIAN) && !HAS_TRAIT(L, TRAIT_DEADITE)) //Deadites are too stiff otherwise civilised barbs can kick head unlike everyone else.
 		acceptable.Add(BODY_ZONE_HEAD)
 	if( !(check_zone(L.zone_selected) in acceptable) )
 		to_chat(L, span_warning("I can't reach that."))
@@ -373,7 +377,7 @@
 		else
 			if(!CZ)
 				acceptable = list(BODY_ZONE_HEAD, BODY_ZONE_R_ARM, BODY_ZONE_CHEST, BODY_ZONE_PRECISE_GROIN, BODY_ZONE_PRECISE_STOMACH, BODY_ZONE_PRECISE_R_HAND, BODY_ZONE_PRECISE_L_HAND, BODY_ZONE_L_ARM, BODY_ZONE_PRECISE_NECK, BODY_ZONE_PRECISE_R_EYE,BODY_ZONE_PRECISE_L_EYE, BODY_ZONE_PRECISE_EARS, BODY_ZONE_R_LEG, BODY_ZONE_L_LEG, BODY_ZONE_PRECISE_SKULL, BODY_ZONE_PRECISE_NOSE, BODY_ZONE_PRECISE_MOUTH)
-				if(HAS_TRAIT(L, TRAIT_CIVILIZEDBARBARIAN))
+				if(HAS_TRAIT(L, TRAIT_CIVILIZEDBARBARIAN) && !HAS_TRAIT(L, TRAIT_DEADITE)) //Non-deadite monks can hit more like feet.
 					acceptable = list(BODY_ZONE_HEAD, BODY_ZONE_R_ARM, BODY_ZONE_CHEST, BODY_ZONE_PRECISE_GROIN, BODY_ZONE_PRECISE_STOMACH, BODY_ZONE_PRECISE_R_HAND, BODY_ZONE_PRECISE_L_HAND, BODY_ZONE_L_ARM, BODY_ZONE_PRECISE_NECK, BODY_ZONE_PRECISE_R_EYE,BODY_ZONE_PRECISE_L_EYE, BODY_ZONE_PRECISE_EARS, BODY_ZONE_R_LEG, BODY_ZONE_L_LEG, BODY_ZONE_PRECISE_SKULL, BODY_ZONE_PRECISE_NOSE, BODY_ZONE_PRECISE_MOUTH, BODY_ZONE_PRECISE_R_FOOT, BODY_ZONE_PRECISE_L_FOOT)
 	else if(!(L.mobility_flags & MOBILITY_STAND) && (mobility_flags & MOBILITY_STAND)) //we are prone, victim is standing
 		if(I)
@@ -699,7 +703,6 @@
 
 /mob/living/verb/stop_pulling1()
 	set name = "Stop Pulling"
-	set category = "IC"
 	set hidden = 1
 	stop_pulling()
 
@@ -751,7 +754,6 @@
 
 /mob/living/proc/mob_sleep()
 	set name = "Sleep"
-	set category = "IC"
 	set hidden = 1
 	if(IsSleeping())
 		to_chat(src, span_warning("I am already sleeping!"))
@@ -767,7 +769,6 @@
 
 /mob/living/proc/lay_down()
 	set name = "Lay down"
-	set category = "IC"
 	set hidden = 1
 	if(stat)
 		return
@@ -779,7 +780,6 @@
 
 /mob/living/proc/stand_up()
 	set name = "Stand up"
-	set category = "IC"
 	set hidden = 1
 	if(stat)
 		return
@@ -798,7 +798,6 @@
 
 /mob/living/proc/toggle_rest()
 	set name = "Rest/Stand"
-	set category = "IC"
 	set hidden = 1
 	if(stat)
 		return
@@ -919,6 +918,7 @@
 		clear_alert("not_enough_oxy")
 		reload_fullscreen()
 		remove_client_colour(/datum/client_colour/monochrome)
+		set_sunder(0) //Just in case we didn't
 		// Add message about struggling to recall death circumstances
 		to_chat(src, "<span class='notice'><b>As you return to life, you struggle to recall the circumstances of your death...</b></span>")
 		to_chat(src, "<span class='italic'>Your memories of your final moments are hazy and fragmented.</span>")
@@ -945,6 +945,7 @@
 	SetParalyzed(0, FALSE)
 	SetSleeping(0, FALSE)
 	setStaminaLoss(0)
+	set_sunder(0)
 	SetUnconscious(0, FALSE)
 	if(should_update_mobility)
 		update_mobility()
@@ -963,6 +964,7 @@
 	setCloneLoss(0, 0)
 	remove_CC(FALSE)
 	set_disgust(0)
+	set_sunder(0)
 	set_nutrition(NUTRITION_LEVEL_FED + 50)
 	bodytemperature = BODYTEMP_NORMAL
 	set_blindness(0)
@@ -1142,7 +1144,6 @@
 
 /mob/living/verb/resist()
 	set name = "Resist"
-	set category = "IC"
 	set hidden = 1
 	if(!can_resist() || surrendering)
 		return
@@ -1204,7 +1205,6 @@
 
 /mob/living/proc/submit(instant = FALSE)
 	set name = "Yield"
-	set category = "IC"
 	set hidden = 1
 	if(surrendering || stat)
 		return
@@ -1236,7 +1236,6 @@
 
 /mob/living/proc/toggle_compliance()
 	set name = "Toggle Compliance"
-	set category = "IC"
 	set hidden = 1
 
 	var/notifyme = TRUE
@@ -1473,6 +1472,7 @@
 
 	to_chat(src, span_danger("I try to remove [who]'s [what.name]..."))
 	what.add_fingerprint(src)
+
 	var/strip_delayed = what.strip_delay
 	if(enhanced_strip)
 		strip_delayed = 0.1 SECONDS
@@ -2639,6 +2639,32 @@
 		)
 	SEND_SIGNAL(offered_item, COMSIG_OBJ_HANDED_OVER, src, offerer)
 	offerer.stop_offering_item()
+
+/// Marks a freshly-spawned mob as belonging to a contract/quest: strips its head bounty so it
+/// can't be farmed at a HEADEATER, and arranges for the corpse to dust shortly after death.
+/mob/living/proc/mark_contract_spawned()
+	no_head_bounty = TRUE
+	contract_spawned = TRUE
+	RegisterSignal(src, COMSIG_LIVING_DEATH, PROC_REF(on_contract_death))
+
+/mob/living/carbon/mark_contract_spawned()
+	. = ..()
+	var/obj/item/bodypart/head/head = get_bodypart(BODY_ZONE_HEAD)
+	if(istype(head))
+		head.no_head_bounty = TRUE
+
+/mob/living/proc/on_contract_death(datum/source, gibbed)
+	SIGNAL_HANDLER
+	if(gibbed || contract_dust_scheduled) // already torn apart, or a timer is already pending
+		return
+	contract_dust_scheduled = TRUE
+	addtimer(CALLBACK(src, PROC_REF(dust_contract_corpse)), QUEST_MOB_DUST_DELAY)
+
+/mob/living/proc/dust_contract_corpse()
+	contract_dust_scheduled = FALSE
+	if(QDELETED(src) || stat != DEAD) // skip if it was somehow revived in the meantime
+		return
+	dust()
 
 /mob/living/proc/resist_leash()
 	return

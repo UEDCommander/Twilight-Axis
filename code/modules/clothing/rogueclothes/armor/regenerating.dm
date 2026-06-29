@@ -6,6 +6,7 @@
 	icon_state = null
 	slot_flags = ITEM_SLOT_SHIRT|ITEM_SLOT_ARMOR
 	unenchantable = TRUE
+	sewrepair = FALSE
 
 	/// Feedback messages
 	var/repairmsg_begin = "My armour begins to slowly mend its abuse.."
@@ -58,6 +59,7 @@
 		return
 	var/mob/living/L = loc
 	RegisterSignal(L, COMSIG_MOB_ITEM_BEING_ATTACKED, PROC_REF(process_attack))
+	RegisterSignal(L, COMSIG_MOB_ATTACKED_BY_HAND, PROC_REF(process_attack))
 
 /obj/item/clothing/suit/roguetown/armor/regenerating/proc/process_attack(mob/living/parent, mob/living/target, mob/user, obj/item/I)
 	is_disrupted = TRUE

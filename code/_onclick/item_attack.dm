@@ -16,7 +16,7 @@
 	if(!user.has_hand_for_held_index(user.active_hand_index, TRUE)) //we obviously have a hadn, but we need to check for fingers/prosthetics
 		to_chat(user, span_warning("I can't move the fingers."))
 		return
-	if(!istype(src, /obj/item/grabbing) && !istype(src, /obj/item/rogueweapon/werewolf_claw))
+	if(!istype(src, /obj/item/grabbing) && !istype(src, /obj/item/rogueweapon/werewolf_claw) && !istype(src, /obj/item/bodypart)) //Limbs/Claws are fine
 		if(HAS_TRAIT(user, TRAIT_CHUNKYFINGERS))
 			to_chat(user, span_warning("...What?"))
 			return
@@ -535,10 +535,14 @@
 				do_melt = TRUE
 				need_scrap = TRUE
 		if(do_melt)
-			user.visible_message(span_warningbig("[user] begins melting and deforming \the [src] with [I]!"))
-			if(do_after(user, 8 SECONDS, TRUE, same_direction = TRUE, no_interrupt = TRUE))
-				user.visible_message(span_warning("[user] destroys \the [src] with [I]!"))
+			playsound(user, 'sound/surgery/cautery1.ogg', 100)
+			user.visible_message(span_artery("[user] begins melting and deforming \the [src] with [I]!"))
+			var/smelting = user.get_skill_level(/datum/skill/craft/smelting)
+			var/scavenge_speed = (8 - smelting) SECONDS
+			if(do_after(user, scavenge_speed, TRUE, same_direction = TRUE, no_interrupt = TRUE))
+				user.visible_message(span_warning("[user] melts down \the [src] with [I]!"))
 				obj_destruction(need_scrap ? BRUTE : BURN)
+				playsound(user, 'sound/surgery/cautery2.ogg', 100)
 				return
 
 	var/newforce = get_complex_damage(I, user, blade_dulling)
@@ -565,6 +569,12 @@
 	if(newforce > 1)
 		I.take_damage(1, BRUTE, I.d_type)
 
+	try_damage_pushback(user)
+
+	SEND_SIGNAL(src, COMSIG_ITEM_ATTACK_OBJ, I, user)
+	return TRUE
+
+/obj/proc/try_damage_pushback(mob/user)
 	if((obj_flags & CLAMP_BREAK) && !density && !anchored && isturf(loc))
 		var/sfx = 'sound/items/hit_normalobj.ogg'
 		if(isclothing(src))	// Lazy check for fluffy sparks
@@ -588,9 +598,6 @@
 		var/target_turf = get_ranged_target_turf(current_turf, throwdir, dist)
 		playsound(current_turf, sfx, 100, TRUE)
 		throw_at(target_turf, dist, 12, user, FALSE)
-
-	SEND_SIGNAL(src, COMSIG_ITEM_ATTACK_OBJ, I, user)
-	return TRUE
 
 /turf/proc/attacked_by(obj/item/I, mob/living/user, multiplier)
 	var/newforce = get_complex_damage(I, user, blade_dulling)
