@@ -23,7 +23,7 @@
 
 /datum/supply_pack/rogue/luxury/card_booster
 	name = "Card Booster"
-	cost = 100
+	cost = 200
 	static_cost = TRUE
 	contains = list(/obj/item/ccg_card_booster)
 
