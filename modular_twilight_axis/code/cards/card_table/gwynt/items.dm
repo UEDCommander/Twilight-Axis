@@ -387,6 +387,76 @@
 	desc = "A sealed packet containing a random unique collectible card."
 	card_rarity = CCG_RARITY_UNIQUE
 
+/obj/item/ccg_card_booster
+	name = "sealed card booster"
+	desc = "A sealed booster containing three random collectible cards."
+	icon = 'modular_twilight_axis/icons/obj/gwynt_objs.dmi'
+	icon_state = "gwint_card"
+	w_class = WEIGHT_CLASS_SMALL
+	var/list/card_weights = list(
+		"common_repeatable" = 8,
+		"common_limited" = 5,
+		"rare" = 2,
+		"unique" = 1,
+	)
+
+/obj/item/ccg_card_booster/attack_self(mob/user)
+	var/turf/drop_turf = get_turf(user)
+	if(!drop_turf)
+		return
+	for(var/i in 1 to 3)
+		var/card_id = pick_random_card()
+		if(!card_id)
+			continue
+		var/obj/item/ccg_card_single/single = new(drop_turf)
+		single.set_card(card_id)
+		to_chat(user, span_notice("A [single.name] slips out of [src]."))
+	qdel(src)
+
+/obj/item/ccg_card_booster/proc/pick_random_card()
+	if(!length(GLOB.ccg_cards_by_id))
+		ccg_build_card_registry()
+	var/list/category_candidates = list()
+	var/list/available_weights = list()
+	for(var/category_key in card_weights)
+		var/list/candidates = list()
+		for(var/card_id in GLOB.ccg_cards_by_id)
+			var/datum/ccg_card/card = ccg_card(card_id)
+			if(!card)
+				continue
+			if(card_matches_category(card, category_key))
+				candidates += card_id
+		if(length(candidates))
+			category_candidates[category_key] = candidates
+			available_weights[category_key] = card_weights[category_key]
+	if(!length(available_weights))
+		return null
+	var/selected_category = pickweight(available_weights)
+	var/list/candidates = category_candidates[selected_category]
+	return pick(candidates)
+
+/obj/item/ccg_card_booster/proc/card_matches_category(datum/ccg_card/card, category)
+	switch(category)
+		if("common_repeatable")
+			return card.rarity == CCG_RARITY_BASE && !card.limited && card.row != CCG_ROW_WEATHER && card.row != CCG_ROW_SPECIAL
+		if("common_limited")
+			return card.rarity == CCG_RARITY_BASE && card.limited && card.row != CCG_ROW_WEATHER && card.row != CCG_ROW_SPECIAL
+		if("rare")
+			return card.rarity == CCG_RARITY_RARE
+		if("unique")
+			return card.rarity == CCG_RARITY_UNIQUE
+	return FALSE
+
+/obj/item/ccg_card_booster/premium
+	name = "premium sealed card booster"
+	desc = "A premium sealed booster containing three random collectible cards."
+	card_weights = list(
+		"common_repeatable" = 5,
+		"common_limited" = 8,
+		"rare" = 3,
+		"unique" = 2,
+	)
+
 /obj/item/ccg_card_single/rare_captain
 	card_id = "rare_captain"
 
