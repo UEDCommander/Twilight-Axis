@@ -142,6 +142,12 @@
 	var/datum/ccg_match/active_match = get_active_match()
 	if(!active_match?.result_text)
 		return FALSE
+	return clear_match(active_match)
+
+/obj/item/ccg_deck/proc/clear_match(datum/ccg_match/active_match)
+	if(!active_match)
+		return FALSE
+	active_match.stop_soundtracks()
 	var/obj/item/ccg_deck/host = active_match.owner
 	var/obj/item/ccg_deck/guest = active_match.challenger
 	if(host)
@@ -227,10 +233,15 @@
 	var/datum/ccg_match/active_match = get_active_match()
 	if(!active_match)
 		return
+	active_match.sync_soundtrack_for(user)
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
 		ui = new(user, src, "GwyntTable", name)
 		ui.open()
+
+/obj/item/ccg_deck/ui_close(mob/user)
+	var/datum/ccg_match/active_match = get_active_match()
+	active_match?.stop_soundtrack_for(user)
 
 /obj/item/ccg_deck/ui_data(mob/user)
 	var/datum/ccg_match/active_match = get_active_match()
@@ -269,6 +280,16 @@
 				return TRUE
 		if("collect")
 			if(collect_finished_match())
+				return TRUE
+		if("leave")
+			if(clear_match(active_match))
+				return TRUE
+		if("toggle_soundtrack")
+			if(user?.client?.prefs)
+				user.client.prefs.ccg_soundtrack_enabled = !user.client.prefs.ccg_soundtrack_enabled
+				user.client.prefs.save_preferences()
+				active_match.sync_soundtrack_for(user)
+				active_match.update_deck_uis()
 				return TRUE
 	return FALSE
 

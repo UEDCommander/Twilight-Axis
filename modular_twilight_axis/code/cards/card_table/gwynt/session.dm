@@ -2,6 +2,14 @@
 #define CCG_SIDE_TWO "two"
 #define CCG_HAND_SIZE 12
 #define CCG_MULLIGAN_COUNT 2
+#define CCG_SOUND_MULLIGAN 'modular_twilight_axis/sound/gwynt/gwynt_mulligan.wav'
+#define CCG_SOUND_ROUND_START 'modular_twilight_axis/sound/gwynt/gwynt_round_start.wav'
+#define CCG_SOUND_CARD_PLAY 'modular_twilight_axis/sound/gwynt/gwynt_card_play.wav'
+#define CCG_SOUND_WEATHER 'modular_twilight_axis/sound/gwynt/gwynt_weather.wav'
+#define CCG_SOUND_SPECIAL 'modular_twilight_axis/sound/gwynt/gwynt_special.wav'
+#define CCG_SOUND_HORN 'modular_twilight_axis/sound/gwynt/gwynt_horn.wav'
+#define CCG_SOUND_GAME_END 'modular_twilight_axis/sound/gwynt/gwynt_game_end.wav'
+#define CCG_SOUNDTRACK 'modular_twilight_axis/sound/gwynt/gwynt_soundtrack.wav'
 
 /datum/ccg_played_card
 	var/card_id
@@ -115,6 +123,36 @@
 	if(challenger)
 		SStgui.update_uis(challenger)
 
+/datum/ccg_match/proc/play_cue(sound_file)
+	if(!sound_file)
+		return
+	var/turf/source = get_turf(owner)
+	if(!source)
+		source = get_turf(challenger)
+	if(source)
+		playsound(source, sound_file, 50, FALSE)
+
+/datum/ccg_match/proc/stop_soundtrack_for(mob/user)
+	if(user)
+		user.stop_sound_channel(CHANNEL_GWYNT_MUSIC)
+
+/datum/ccg_match/proc/stop_soundtrack_for_ckey(target_ckey)
+	var/mob/player = ccg_find_mob_by_ckey(target_ckey)
+	stop_soundtrack_for(player)
+
+/datum/ccg_match/proc/stop_soundtracks()
+	stop_soundtrack_for_ckey(player_ckeys[CCG_SIDE_ONE])
+	stop_soundtrack_for_ckey(player_ckeys[CCG_SIDE_TWO])
+
+/datum/ccg_match/proc/sync_soundtrack_for(mob/user)
+	if(!user?.client?.prefs)
+		return
+	if(!user.client.prefs.ccg_soundtrack_enabled || result_text)
+		stop_soundtrack_for(user)
+		return
+	var/sound/track = sound(CCG_SOUNDTRACK, repeat = TRUE, wait = 0, channel = CHANNEL_GWYNT_MUSIC, volume = user.client.prefs.musicvol)
+	SEND_SOUND(user, track)
+
 /datum/ccg_match/proc/start_round(first_round = FALSE)
 	board = list(
 		CCG_SIDE_ONE = list(CCG_ROW_INFANTRY = list(), CCG_ROW_ARCHERS = list(), CCG_ROW_SIEGE = list()),
@@ -143,6 +181,7 @@
 	else
 		in_mulligan = FALSE
 		last_message = "Round [round_number] begins."
+		play_cue(CCG_SOUND_ROUND_START)
 		for(var/side in list(CCG_SIDE_ONE, CCG_SIDE_TWO))
 			for(var/card_id in carryover_cards[side])
 				var/datum/ccg_card/card = ccg_card(card_id)
@@ -188,6 +227,7 @@
 	draw_cards(side, 1)
 	mulligans_left[side]--
 	last_message = "[player_names[side]] redraws a card."
+	play_cue(CCG_SOUND_MULLIGAN)
 	return TRUE
 
 /datum/ccg_match/proc/ready_mulligan(mob/user, obj/item/ccg_deck/deck_context)
@@ -199,6 +239,7 @@
 	if(mulligan_ready[CCG_SIDE_ONE] && mulligan_ready[CCG_SIDE_TWO])
 		in_mulligan = FALSE
 		last_message = "Round [round_number] begins."
+		play_cue(CCG_SOUND_ROUND_START)
 	return TRUE
 
 /datum/ccg_match/proc/side_for_user(mob/user, obj/item/ccg_deck/deck_context)
@@ -272,8 +313,13 @@
 		if(!apply_special_action_card(card, side, params))
 			hand.Insert(card_index, card_id)
 			return FALSE
+		if(card.effect == CCG_EFFECT_HORN)
+			play_cue(CCG_SOUND_HORN)
+		else
+			play_cue(CCG_SOUND_SPECIAL)
 	else if(is_weather_card(card))
 		apply_weather_card(card, side)
+		play_cue(CCG_SOUND_WEATHER)
 	else
 		var/play_side = side
 		var/play_row = card.row
@@ -299,6 +345,7 @@
 			last_message = "[player_names[side]] plays [card.name]. A combo triggers."
 		else
 			last_message = "[player_names[side]] plays [card.name]."
+		play_cue(CCG_SOUND_CARD_PLAY)
 	recalculate_board()
 	if(is_weather_card(card))
 		last_message = "[player_names[side]] plays [card.name]."
@@ -327,14 +374,18 @@
 			discarded[played.owner_side] += played.card_id
 		weather_board = list()
 		weather = list()
+		play_cue(CCG_SOUND_WEATHER)
 	else if(leader.effect == CCG_EFFECT_HORN)
 		if(valid_unit_row(leader.target_row) && !row_has_effect(side, leader.target_row, CCG_EFFECT_HORN))
 			add_row_effect(side, leader.target_row, "base_horn_infantry", side)
+		play_cue(CCG_SOUND_HORN)
 	else if(leader.effect == CCG_EFFECT_SCORCH_GLOBAL)
 		recalculate_board()
 		scorch_strongest_global()
+		play_cue(CCG_SOUND_SPECIAL)
 	else if(leader.effect == CCG_LEADER_EFFECT_DRAW)
 		draw_cards(side, 1)
+		play_cue(CCG_SOUND_SPECIAL)
 	last_message = "[player_names[side]] uses leader: [leader.name]."
 	recalculate_board()
 	advance_turn()
@@ -672,6 +723,8 @@
 	if(round_wins[CCG_SIDE_ONE] >= 2 || round_wins[CCG_SIDE_TWO] >= 2)
 		var/winner = round_wins[CCG_SIDE_ONE] >= 2 ? CCG_SIDE_ONE : CCG_SIDE_TWO
 		result_text = "[player_names[winner]] wins the match."
+		play_cue(CCG_SOUND_GAME_END)
+		stop_soundtracks()
 		return
 	round_number++
 	start_round(FALSE)
@@ -718,7 +771,10 @@
 	data["hand"] = build_hand_data(my_side)
 	data["discard"] = build_discard_data(my_side)
 	data["targets"] = build_target_data(my_side)
+	data["deckCount"] = my_side ? length(decks[my_side]) : 0
+	data["discardCount"] = my_side ? length(discarded[my_side]) : 0
 	data["opponentHandCount"] = my_side ? length(hands[opposite(my_side)]) : 0
+	data["soundtrackEnabled"] = user?.client?.prefs?.ccg_soundtrack_enabled ? TRUE : FALSE
 	data["board"] = build_board_data()
 	return data
 
@@ -815,3 +871,11 @@
 #undef CCG_SIDE_TWO
 #undef CCG_HAND_SIZE
 #undef CCG_MULLIGAN_COUNT
+#undef CCG_SOUND_MULLIGAN
+#undef CCG_SOUND_ROUND_START
+#undef CCG_SOUND_CARD_PLAY
+#undef CCG_SOUND_WEATHER
+#undef CCG_SOUND_SPECIAL
+#undef CCG_SOUND_HORN
+#undef CCG_SOUND_GAME_END
+#undef CCG_SOUNDTRACK

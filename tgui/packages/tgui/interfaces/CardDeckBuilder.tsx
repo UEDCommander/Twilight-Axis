@@ -1,5 +1,18 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Button, Input, ProgressBar, Section } from 'tgui-core/components';
+import {
+  type CSSProperties,
+  type ReactNode,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import {
+  Button,
+  Dropdown,
+  Icon,
+  Input,
+  ProgressBar,
+  Section,
+} from 'tgui-core/components';
 
 import { resolveAsset } from '../assets';
 import { useBackend } from '../backend';
@@ -82,6 +95,58 @@ const rarityColor: Record<CardRarity, string> = {
   rare: '#60a5fa',
   unique: '#fbbf24',
 };
+
+const panelStyle = {
+  border: '1px solid rgba(148,163,184,0.22)',
+  borderRadius: '5px',
+  background:
+    'linear-gradient(180deg, rgba(15,18,27,0.9), rgba(5,7,12,0.72))',
+  boxShadow: 'inset 0 0 18px rgba(0,0,0,0.36)',
+};
+
+const Panel = ({
+  children,
+  style,
+}: {
+  children: ReactNode;
+  style?: CSSProperties;
+}) => <div style={{ ...panelStyle, padding: '8px', ...style }}>{children}</div>;
+
+const PanelLabel = ({ children }: { children: ReactNode }) => (
+  <div
+    style={{
+      color: '#94a3b8',
+      fontSize: '10px',
+      fontWeight: 900,
+      letterSpacing: '0.04em',
+      marginBottom: '6px',
+      textTransform: 'uppercase',
+    }}
+  >
+    {children}
+  </div>
+);
+
+const StatTile = ({
+  label,
+  value,
+}: {
+  label: string;
+  value: ReactNode;
+}) => (
+  <div
+    style={{
+      padding: '7px 8px',
+      border: '1px solid rgba(148,163,184,0.22)',
+      background: 'rgba(2,6,12,0.55)',
+    }}
+  >
+    <PanelLabel>{label}</PanelLabel>
+    <div style={{ color: '#f8fafc', fontSize: '18px', fontWeight: 900 }}>
+      {value}
+    </div>
+  </div>
+);
 
 const cardType = (card: Card) => rowLabels[card.row];
 
@@ -549,6 +614,7 @@ export const CardDeckBuilder = () => {
   const [query, setQuery] = useState('');
   const [row, setRow] = useState<CardRow | 'all'>('all');
   const [factionFilter, setFactionFilter] = useState('all');
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const activeDeck = (data.decks || []).find(
     (deck) => deck.index === data.activeDeckIndex,
   );
@@ -631,6 +697,12 @@ export const CardDeckBuilder = () => {
       }
       return a.name.localeCompare(b.name);
     });
+  const filteredKnownDistinctCount = filteredCards.filter(
+    (card) => card.known,
+  ).length;
+  const filteredDistinctRatio = filteredCards.length
+    ? filteredKnownDistinctCount / filteredCards.length
+    : 0;
 
   const selectedCards = selected
     .map((id) => cards.find((card) => card.id === id))
@@ -667,48 +739,97 @@ export const CardDeckBuilder = () => {
   const factionLeaders = (data.leaders || []).filter(
     (leader) => leader.faction === data.faction,
   );
-
+  const maxDecks = data.maxDecks || 10;
+  const deckSlots = Array.from({ length: maxDecks }, (_, index) => {
+    const slot = index + 1;
+    const deck = (data.decks || []).find((entry) => entry.index === slot);
+    return {
+      value: String(slot),
+      displayText: deck
+        ? `${slot}. ${deck.name} (${deck.count})`
+        : `${slot}. Empty slot`,
+    };
+  });
+  const activeDeckLabel =
+    deckSlots.find((slot) => slot.value === String(data.activeDeckIndex))
+      ?.displayText || 'Select deck';
   return (
-    <Window title={isPhysicalDeck ? 'Card Deck Builder' : 'Gwynt Decks'} width={1100} height={760}>
+    <Window
+      title={isPhysicalDeck ? 'Card Deck Builder' : 'Gwynt Decks'}
+      width={1100}
+      height={760}
+    >
       <Window.Content>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', height: '100%' }}>
-          <Section>
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
-              {(data.decks || []).map((deck) => (
-                <Button
-                  key={deck.index}
-                  selected={deck.index === data.activeDeckIndex}
-                  onClick={() => act('select_deck', { index: deck.index })}
-                >
-                  {deck.index}. {deck.name} ({deck.count})
-                </Button>
-              ))}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '10px',
+            height: '100%',
+          }}
+        >
+          <Panel>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '220px minmax(180px, 1fr) auto',
+                gap: '10px',
+                alignItems: 'center',
+                marginBottom: '8px',
+              }}
+            >
+              <Dropdown
+                selected={String(data.activeDeckIndex)}
+                displayText={activeDeckLabel}
+                options={deckSlots}
+                onSelected={(index) => {
+                  const deckIndex = Number(index);
+                  if (
+                    (data.decks || []).some(
+                      (deck) => deck.index === deckIndex,
+                    )
+                  ) {
+                    act('select_deck', { index: deckIndex });
+                  } else {
+                    act('create_deck');
+                  }
+                }}
+              />
+              <Input value={deckName} onChange={setDeckName} width="160px" />
               <Button
-                disabled={(data.decks || []).length >= (data.maxDecks || 10)}
+                disabled={(data.decks || []).length >= maxDecks}
                 onClick={() => act('create_deck')}
               >
-                New
+                <Icon name="plus" /> New
               </Button>
-              <Input value={deckName} onChange={setDeckName} width="160px" />
+            </div>
+            <div
+              style={{
+                display: 'flex',
+                gap: '8px',
+                flexWrap: 'wrap',
+                marginBottom: '8px',
+              }}
+            >
               <Button onClick={() => act('rename_deck', { name: deckName })}>
-                Save Name
+                <Icon name="tag" /> Save Name
               </Button>
               {isPhysicalDeck && (
-                <Button onClick={() => act('save_physical_deck')}>
-                  Save This Deck
+                <Button color="good" onClick={() => act('save_physical_deck')}>
+                  <Icon name="floppy-disk" /> Save This Deck
                 </Button>
               )}
               <Button onClick={() => act('export_deck')}>
-                Export Deck
+                <Icon name="upload" /> Export
               </Button>
               <Button onClick={() => act('import_deck')}>
-                Import Deck
+                <Icon name="download" /> Import
               </Button>
-              <Button onClick={() => act('start_solo')}>
-                Start Solo
+              <Button color="average" onClick={() => act('start_solo')}>
+                <Icon name="play" /> Start Solo
               </Button>
             </div>
-            <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+            <div style={{ display: 'flex', gap: '8px' }}>
               {(
                 [
                   ['setup', 'Setup'],
@@ -725,7 +846,7 @@ export const CardDeckBuilder = () => {
                 </Button>
               ))}
             </div>
-          </Section>
+          </Panel>
 
           <div
             style={{
@@ -739,49 +860,105 @@ export const CardDeckBuilder = () => {
           >
             {showPool && (
               <Section title="Pool" fill scrollable>
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
-                  <Input
-                    value={query}
-                    onChange={setQuery}
-                    placeholder="Search cards"
-                    width="260px"
-                  />
-                  {(
-                    ['all', 'infantry', 'archers', 'siege', 'weather', 'special'] as const
-                  ).map((key) => (
-                    <Button key={key} selected={row === key} onClick={() => setRow(key)}>
-                      {key === 'all' ? 'All' : rowLabels[key]}
-                    </Button>
-                  ))}
-                </div>
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '10px' }}>
-                  {(
-                    [
-                      ['all', 'Any'],
-                      ['neutral', 'Common'],
-                    ] as const
-                  ).map(([key, label]) => (
+                <Panel style={{ marginBottom: '10px' }}>
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'minmax(260px, 1fr) auto',
+                      gap: '10px',
+                      marginBottom: '8px',
+                    }}
+                  >
+                    <Input
+                      value={query}
+                      onChange={setQuery}
+                      placeholder="Search cards"
+                    />
                     <Button
-                      key={key}
-                      selected={factionFilter === key}
-                      onClick={() => setFactionFilter(key)}
+                      selected={filtersOpen}
+                      onClick={() => setFiltersOpen(!filtersOpen)}
                     >
-                      {label}
+                      <Icon name="filter" /> Filters
                     </Button>
-                  ))}
-                  {(data.factions || []).map((faction) => (
-                    <Button
-                      key={faction.id}
-                      selected={factionFilter === faction.id}
-                      onClick={() => setFactionFilter(faction.id)}
+                  </div>
+                  {filtersOpen && (
+                    <>
+                      <PanelLabel>Type</PanelLabel>
+                      <div
+                        style={{
+                          display: 'flex',
+                          gap: '8px',
+                          flexWrap: 'wrap',
+                          marginBottom: '8px',
+                        }}
+                      >
+                        {(
+                          [
+                            'all',
+                            'infantry',
+                            'archers',
+                            'siege',
+                            'weather',
+                            'special',
+                          ] as const
+                        ).map((key) => (
+                          <Button
+                            key={key}
+                            selected={row === key}
+                            onClick={() => setRow(key)}
+                          >
+                            {key === 'all' ? 'All' : rowLabels[key]}
+                          </Button>
+                        ))}
+                      </div>
+                      <PanelLabel>Faction</PanelLabel>
+                      <div
+                        style={{
+                          display: 'flex',
+                          gap: '8px',
+                          flexWrap: 'wrap',
+                          marginBottom: '8px',
+                        }}
+                      >
+                        {(
+                          [
+                            ['all', 'Any'],
+                            ['neutral', 'Common'],
+                          ] as const
+                        ).map(([key, label]) => (
+                          <Button
+                            key={key}
+                            selected={factionFilter === key}
+                            onClick={() => setFactionFilter(key)}
+                          >
+                            {label}
+                          </Button>
+                        ))}
+                        {(data.factions || []).map((faction) => (
+                          <Button
+                            key={faction.id}
+                            selected={factionFilter === faction.id}
+                            onClick={() => setFactionFilter(faction.id)}
+                          >
+                            {faction.name}
+                          </Button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                  <div style={{ color: '#cbd5e1', fontSize: '12px' }}>
+                    Cards in pool: {data.knownRareCount}
+                  </div>
+                  <div style={{ marginTop: '8px' }}>
+                    <PanelLabel>Collected card types</PanelLabel>
+                    <ProgressBar
+                      value={filteredDistinctRatio}
+                      ranges={{ good: [0, 1] }}
                     >
-                      {faction.name}
-                    </Button>
-                  ))}
-                </div>
-                <div style={{ color: '#94a3b8', fontSize: '12px', marginBottom: '10px' }}>
-                  Cards in pool: {data.knownRareCount}
-                </div>
+                      {filteredKnownDistinctCount} / {filteredCards.length}
+                    </ProgressBar>
+                  </div>
+                </Panel>
                 <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                   {filteredCards.map((card) => {
                     const selectedCount = selectedCounts[card.id] || 0;
@@ -792,7 +969,11 @@ export const CardDeckBuilder = () => {
                       <CardFace
                         key={card.id}
                         card={card}
-                        count={ownedCount - selectedCount > 0 ? ownedCount - selectedCount : 0}
+                        count={
+                          ownedCount - selectedCount > 0
+                            ? ownedCount - selectedCount
+                            : 0
+                        }
                         unavailable={unavailable}
                         disabled={
                           unavailable ||
@@ -809,30 +990,49 @@ export const CardDeckBuilder = () => {
 
             {showDeck && (
               <Section title="Deck" fill scrollable>
-                <div style={{ marginBottom: '10px', padding: '8px', border: '1px solid rgba(148,163,184,0.28)', backgroundColor: 'rgba(5,7,11,0.35)' }}>
-                  <div style={{ color: '#cbd5e1', fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>
-                    Faction
-                  </div>
-                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '8px' }}>
+                <Panel style={{ marginBottom: '10px' }}>
+                  <PanelLabel>Faction</PanelLabel>
+                  <div
+                    style={{
+                      display: 'flex',
+                      gap: '6px',
+                      flexWrap: 'wrap',
+                      marginBottom: '8px',
+                    }}
+                  >
                     {(data.factions || []).map((faction) => (
                       <Button
                         key={faction.id}
                         selected={faction.id === data.faction}
-                        onClick={() => act('set_faction', { faction: faction.id })}
+                        onClick={() =>
+                          act('set_faction', { faction: faction.id })
+                        }
                       >
                         {faction.name}
                       </Button>
                     ))}
                   </div>
                   {currentFaction && (
-                    <div style={{ color: '#94a3b8', fontSize: '11px', marginBottom: '8px' }}>
+                    <div
+                      style={{
+                        color: '#94a3b8',
+                        fontSize: '11px',
+                        lineHeight: 1.35,
+                        marginBottom: '8px',
+                      }}
+                    >
                       {currentFaction.desc}
                     </div>
                   )}
-                  <div style={{ color: '#cbd5e1', fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>
-                    Leader
-                  </div>
-                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '8px' }}>
+                  <PanelLabel>Leader</PanelLabel>
+                  <div
+                    style={{
+                      display: 'flex',
+                      gap: '6px',
+                      flexWrap: 'wrap',
+                      marginBottom: '8px',
+                    }}
+                  >
                     {factionLeaders.map((leader) => (
                       <Button
                         key={leader.id}
@@ -844,15 +1044,29 @@ export const CardDeckBuilder = () => {
                     ))}
                   </div>
                   {currentLeader && (
-                    <div style={{ color: '#94a3b8', fontSize: '11px' }}>
+                    <div
+                      style={{
+                        color: '#cbd5e1',
+                        fontSize: '11px',
+                        lineHeight: 1.35,
+                      }}
+                    >
                       {currentLeader.desc}
                     </div>
                   )}
-                </div>
-                <div style={{ marginBottom: '8px' }}>
-                  {data.selectedCount} / {data.deckSize}
-                </div>
-                <ProgressBar value={deckRatio} ranges={{ good: [0, 1] }} mb="10px" />
+                </Panel>
+                <Panel style={{ marginBottom: '10px' }}>
+                  <PanelLabel>Deck Fill</PanelLabel>
+                  <div style={{ marginBottom: '8px' }}>
+                    <StatTile
+                      label="Cards"
+                      value={`${data.selectedCount} / ${data.deckSize}`}
+                    />
+                  </div>
+                  <ProgressBar value={deckRatio} ranges={{ good: [0, 1] }}>
+                    {data.selectedCount} / {data.deckSize}
+                  </ProgressBar>
+                </Panel>
                 <div style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}>
                   <Button color="bad" onClick={() => act('clear')}>
                     Clear

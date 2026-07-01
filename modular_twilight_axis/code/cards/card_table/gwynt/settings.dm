@@ -19,6 +19,7 @@
 	var/list/ccg_saved_decks = list()
 	var/ccg_active_deck_index = 1
 	var/ccg_deckbuilder_view_mode = CCG_VIEW_SETUP
+	var/ccg_soundtrack_enabled = FALSE
 
 /datum/preferences/proc/ccg_known_cards()
 	var/list/cards = list()
