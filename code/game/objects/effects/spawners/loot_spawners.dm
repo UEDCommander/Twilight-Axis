@@ -27,6 +27,8 @@
 		/obj/item/natural/bundle/fibers = 2,
 		/obj/item/reagent_containers/food/snacks/tallow = 1,
 		/obj/item/ccg_card_generator/common = 3,
+		/obj/item/ccg_card_booster = 2,
+		/obj/item/ccg_card_booster/premium = 1,
 		//clothing
 		/obj/item/clothing/head/roguetown/cap = 4,
 		/obj/item/clothing/head/roguetown/knitcap = 4,
@@ -175,7 +177,10 @@
 		/obj/item/rogueore/silver = 1,
 		/obj/item/ingot/iron = 2,
 		/obj/item/reagent_containers/food/snacks/tallow = 1,
-		/obj/item/ccg_card_generator/rare = 2,
+		/obj/item/ccg_card_generator/common = 4,
+		/obj/item/ccg_card_generator/rare = 3,
+		/obj/item/ccg_card_booster = 2,
+		/obj/item/ccg_card_booster/premium = 1,
 		//clothing
 		/obj/item/clothing/head/roguetown/cap = 4,
 		/obj/item/clothing/head/roguetown/knitcap = 4,
@@ -340,7 +345,11 @@
 		/obj/item/rogueore/coal	= 1,
 		/obj/item/rogueore/silver = 1,
 		/obj/item/ingot/steel = 2,
-		/obj/item/ccg_card_generator/unique = 1,
+		/obj/item/ccg_card_generator/common = 1,
+		/obj/item/ccg_card_generator/rare = 3,
+		/obj/item/ccg_card_generator/unique = 2,
+		/obj/item/ccg_card_booster = 2,
+		/obj/item/ccg_card_booster/premium = 1,
 		//clothing
 		/obj/item/clothing/head/roguetown/fancyhat = 1,
 		/obj/item/clothing/head/roguetown/roguehood/shalal/heavyhood = 1,

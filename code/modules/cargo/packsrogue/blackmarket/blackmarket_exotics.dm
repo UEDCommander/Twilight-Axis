@@ -3,12 +3,6 @@
 	crate_name = "suspicious crate"
 	crate_type = /obj/structure/closet/crate/chest/merchant
 
-/datum/supply_pack/rogue/blackmarket_exotics/card_booster_premium
-	name = "Premium Card Booster"
-	cost = 250
-	static_cost = TRUE
-	contains = list(/obj/item/ccg_card_booster/premium)
-
 /datum/supply_pack/rogue/blackmarket_exotics/scrying
 	name = "Scrying Orb"
 	cost = 750

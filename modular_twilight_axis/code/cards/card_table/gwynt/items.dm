@@ -19,17 +19,6 @@
 	. = ..()
 	if(!length(GLOB.ccg_base_card_ids))
 		ccg_build_card_registry()
-	if(!length(card_ids))
-		var/list/default_cards = ccg_base_cards_for_faction(faction_id)
-		card_ids = default_cards.Copy()
-		while(card_ids.len > CCG_DECK_SIZE)
-			card_ids.Cut(card_ids.len, card_ids.len + 1)
-		var/index = 1
-		while(card_ids.len < CCG_DECK_SIZE && length(default_cards))
-			card_ids += default_cards[index]
-			index++
-			if(index > default_cards.len)
-				index = 1
 
 /obj/item/ccg_deck/Destroy()
 	var/datum/ccg_match/active_match = get_active_match()
@@ -77,7 +66,7 @@
 	if(!faction)
 		faction = ccg_faction(CCG_FACTION_AZURIA)
 	set_faction(faction.id, P.ccg_saved_deck_leader)
-	set_cards(length(P.ccg_saved_deck_cards) ? P.ccg_saved_deck_cards : ccg_base_cards_for_faction(faction.id))
+	set_cards(length(P.ccg_saved_deck_cards) ? P.ccg_saved_deck_cards : P.ccg_first_deck_cards(faction.id))
 	owner_ckey = user.ckey
 	loaded_from_preferences = TRUE
 	return TRUE
@@ -86,6 +75,8 @@
 	. = ..()
 	if(load_from_preferences)
 		load_saved_deck(user)
+	if(owner_ckey && owner_ckey == user?.ckey)
+		user.client?.prefs?.ccg_save_deck_snapshot(card_ids, faction_id, leader_id)
 
 /obj/item/ccg_deck/proc/remove_cards_not_in_faction()
 	var/list/removed = list()
@@ -183,7 +174,17 @@
 	if(!ccg_card_allowed_for_faction(single.card_id, faction_id))
 		to_chat(user, span_warning("This card belongs to another deck faction."))
 		return FALSE
+	var/datum/preferences/P = user.client?.prefs
+	if(single.pooled && !P?.ccg_take_pool_card(single.card_id))
+		to_chat(user, span_warning("The card pool failed to save. The card was not added."))
+		return FALSE
 	card_ids += single.card_id
+	if(!P?.ccg_save_deck_snapshot(card_ids, faction_id, leader_id))
+		card_ids.Cut(card_ids.len, card_ids.len + 1)
+		if(single.pooled)
+			P?.ccg_return_pool_card(single.card_id)
+		to_chat(user, span_warning("The card battle deck failed to save. The card was not added."))
+		return FALSE
 	to_chat(user, span_notice("You add [card.name] to the card battle deck."))
 	qdel(single)
 	return TRUE
@@ -319,6 +320,7 @@
 	icon_state = "gwint_card"
 	w_class = WEIGHT_CLASS_TINY
 	var/card_id
+	var/pooled = FALSE
 
 /obj/item/ccg_card_single/proc/set_card(new_card_id)
 	card_id = new_card_id
@@ -333,6 +335,10 @@
 		set_card(card_id)
 
 /obj/item/ccg_card_single/attack_self(mob/user)
+	if(pooled)
+		to_chat(user, span_notice("The card is already in your known collection."))
+		qdel(src)
+		return
 	var/datum/preferences/P = user?.client?.prefs
 	if(P && P.ccg_add_known_card(card_id))
 		to_chat(user, span_notice("The card is added to your known collection."))
@@ -375,7 +381,6 @@
 	name = "creased common card packet"
 	desc = "A battered packet containing a random common collectible card."
 	card_rarity = CCG_RARITY_BASE
-	limited_only = TRUE
 
 /obj/item/ccg_card_generator/rare
 	name = "sealed rare card packet"

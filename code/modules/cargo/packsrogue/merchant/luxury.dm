@@ -21,12 +21,6 @@
 	contains = list(/obj/item/reagent_containers/powder/spice)
 	not_in_public = TRUE // ditto
 
-/datum/supply_pack/rogue/luxury/card_booster
-	name = "Card Booster"
-	cost = 200
-	static_cost = TRUE
-	contains = list(/obj/item/ccg_card_booster)
-
 /datum/supply_pack/rogue/luxury/fancyteaset
 	name = "Fancy Tea Set (1 Teapot, 4 Cups)"
 	cost = 110

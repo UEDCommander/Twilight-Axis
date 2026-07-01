@@ -26,12 +26,6 @@
 	cost = 140
 	contains = list(/obj/item/lockpick/goldpin/silver)
 
-/datum/supply_pack/rogue/bath_rogue/card_booster_premium
-	name = "Premium Card Booster"
-	cost = 250
-	static_cost = TRUE
-	contains = list(/obj/item/ccg_card_booster/premium)
-
 /datum/supply_pack/rogue/bath_rogue/smokebomb
 	name = "Smoke Bomb"
 	cost = 25

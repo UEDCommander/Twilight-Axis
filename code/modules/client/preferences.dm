@@ -954,7 +954,6 @@ GLOBAL_LIST_EMPTY(chosen_names)
 
 			dat += "<br><b>Family Preferences:</b> <a href='?_src_=prefs;preference=family_options;task=input'>Change</a>" // TA EDIT
 			dat += "<br><b>Loadout Items:</b> <a href='?_src_=prefs;preference=loadout_item;task=input'>Change</a>"
-			dat += "<br><b>Card Deck:</b> <a href='?_src_=prefs;preference=card_deckpool;task=input'>Pool</a>"
 
 			dat += "<BR><BR><b>Has an Estate:</b> <a href='?_src_=prefs;preference=have_manor;task=input'>[have_manor ? "Yes" : "No"]</a><BR>" // TA EDIT
 			dat += "<b>Estate Name:</b> <a href='?_src_=prefs;preference=manor_name;task=input'>[manor_name ? manor_name : "Unknown Manor"]</a><BR>" // TA EDIT
@@ -2720,10 +2719,6 @@ GLOBAL_LIST_EMPTY(chosen_names)
 					vampire_skin = null
 				if("vampire_ears_clear")
 					vampire_ears = null
-
-				if("card_deckpool")
-					ccg_clean_cards()
-					user.client?.ccg_open_deckpool(user)
 
 				if("species")
 					var/list/species = list()

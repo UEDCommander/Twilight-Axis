@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Button, Input, ProgressBar, Section } from 'tgui-core/components';
 
 import { resolveAsset } from '../assets';
@@ -46,16 +46,27 @@ type CcgLeader = {
 
 type Data = {
   mode?: 'pool' | 'build';
+  displayMode?: 'setup' | 'deck' | 'pool';
   cards?: Card[];
   selected?: string[];
   selectedCount: number;
   deckSize: number;
   knownRareCount: number;
-  canRequestDeck?: boolean;
   faction?: string;
   leader?: string;
   factions?: CcgFaction[];
   leaders?: CcgLeader[];
+  decks?: SavedDeck[];
+  activeDeckIndex?: number;
+  maxDecks?: number;
+};
+
+type SavedDeck = {
+  index: number;
+  name: string;
+  count: number;
+  faction: string;
+  leader: string;
 };
 
 const rowLabels: Record<CardRow, string> = {
@@ -538,6 +549,14 @@ export const CardDeckBuilder = () => {
   const [query, setQuery] = useState('');
   const [row, setRow] = useState<CardRow | 'all'>('all');
   const [factionFilter, setFactionFilter] = useState('all');
+  const activeDeck = (data.decks || []).find(
+    (deck) => deck.index === data.activeDeckIndex,
+  );
+  const [deckName, setDeckName] = useState(activeDeck?.name || '');
+
+  useEffect(() => {
+    setDeckName(activeDeck?.name || '');
+  }, [activeDeck?.name, data.activeDeckIndex]);
 
   const cards = data.cards || [];
   const selected = data.selected || [];
@@ -616,9 +635,29 @@ export const CardDeckBuilder = () => {
   const selectedCards = selected
     .map((id) => cards.find((card) => card.id === id))
     .filter(Boolean) as Card[];
+  selectedCards.sort((a, b) => {
+    const factionDiff =
+      (factionOrder[a.faction] ?? Number.MAX_SAFE_INTEGER) -
+      (factionOrder[b.faction] ?? Number.MAX_SAFE_INTEGER);
+    if (factionDiff) {
+      return factionDiff;
+    }
+    const rarityDiff = rarityOrder[a.rarity] - rarityOrder[b.rarity];
+    if (rarityDiff) {
+      return rarityDiff;
+    }
+    const rowDiff = rowOrder[a.row] - rowOrder[b.row];
+    if (rowDiff) {
+      return rowDiff;
+    }
+    return a.name.localeCompare(b.name);
+  });
 
   const deckRatio = data.deckSize > 0 ? data.selectedCount / data.deckSize : 0;
-  const isPool = data.mode === 'pool';
+  const isPhysicalDeck = data.mode === 'build';
+  const displayMode = data.displayMode || 'setup';
+  const showPool = displayMode !== 'deck';
+  const showDeck = displayMode !== 'pool';
   const currentFaction = data.factions?.find(
     (faction) => faction.id === data.faction,
   );
@@ -630,275 +669,230 @@ export const CardDeckBuilder = () => {
   );
 
   return (
-    <Window
-      title={isPool ? 'Card Deck Pool' : 'Card Deck Builder'}
-      width={980}
-      height={720}
-    >
+    <Window title={isPhysicalDeck ? 'Card Deck Builder' : 'Gwynt Decks'} width={1100} height={760}>
       <Window.Content>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: isPool ? '1fr' : '1fr 330px',
-            gap: '12px',
-            height: '100%',
-          }}
-        >
-          <Section title={isPool ? 'Pool' : 'Collection'} fill scrollable>
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
-              <Input
-                value={query}
-                onChange={setQuery}
-                placeholder="Search cards"
-                width="260px"
-              />
-              {(
-                [
-                  'all',
-                  'infantry',
-                  'archers',
-                  'siege',
-                  'weather',
-                  'special',
-                ] as const
-              ).map((key) => (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', height: '100%' }}>
+          <Section>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+              {(data.decks || []).map((deck) => (
                 <Button
-                  key={key}
-                  selected={row === key}
-                  onClick={() => setRow(key)}
+                  key={deck.index}
+                  selected={deck.index === data.activeDeckIndex}
+                  onClick={() => act('select_deck', { index: deck.index })}
                 >
-                  {key === 'all' ? 'All' : rowLabels[key]}
+                  {deck.index}. {deck.name} ({deck.count})
                 </Button>
               ))}
+              <Button
+                disabled={(data.decks || []).length >= (data.maxDecks || 10)}
+                onClick={() => act('create_deck')}
+              >
+                New
+              </Button>
+              <Input value={deckName} onChange={setDeckName} width="160px" />
+              <Button onClick={() => act('rename_deck', { name: deckName })}>
+                Save Name
+              </Button>
+              {isPhysicalDeck && (
+                <Button onClick={() => act('save_physical_deck')}>
+                  Save This Deck
+                </Button>
+              )}
+              <Button onClick={() => act('export_deck')}>
+                Export Deck
+              </Button>
+              <Button onClick={() => act('import_deck')}>
+                Import Deck
+              </Button>
+              <Button onClick={() => act('start_solo')}>
+                Start Solo
+              </Button>
             </div>
-            <div
-              style={{
-                display: 'flex',
-                gap: '8px',
-                flexWrap: 'wrap',
-                marginBottom: '10px',
-              }}
-            >
+            <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
               {(
                 [
-                  ['all', 'Any'],
-                  ['neutral', 'Common'],
+                  ['setup', 'Setup'],
+                  ['deck', 'Deck Only'],
+                  ['pool', 'Pool Only'],
                 ] as const
               ).map(([key, label]) => (
                 <Button
                   key={key}
-                  selected={factionFilter === key}
-                  onClick={() => setFactionFilter(key)}
+                  selected={displayMode === key}
+                  onClick={() => act('set_view', { view: key })}
                 >
                   {label}
                 </Button>
               ))}
-              {(data.factions || []).map((faction) => (
-                <Button
-                  key={faction.id}
-                  selected={factionFilter === faction.id}
-                  onClick={() => setFactionFilter(faction.id)}
-                >
-                  {faction.name}
-                </Button>
-              ))}
-            </div>
-            {isPool && (
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  marginBottom: '10px',
-                  color: '#94a3b8',
-                  fontSize: '12px',
-                }}
-              >
-                <span>
-                  Limited cards in pool: {data.knownRareCount}
-                </span>
-                <Button
-                  disabled={!data.canRequestDeck}
-                  onClick={() => act('request_deck')}
-                >
-                  Request Deck
-                </Button>
-              </div>
-            )}
-
-            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-              {filteredCards.map((card) => {
-                const selectedCount = selectedCounts[card.id] || 0;
-                const ownedCount = card.ownedCount || 0;
-                const factionLocked = !isPool && !card.factionAllowed;
-                const unavailable = !card.known || factionLocked;
-                return (
-                  <CardFace
-                    key={card.id}
-                    card={card}
-                    count={
-                      isPool && (card.rarity !== 'base' || card.limited)
-                        ? ownedCount
-                        : selectedCount
-                    }
-                    unavailable={unavailable}
-                    disabled={
-                      isPool
-                        ? unavailable
-                        : !card.known ||
-                          data.selectedCount >= data.deckSize ||
-                          selectedCount >= ownedCount ||
-                          factionLocked
-                    }
-                    onClick={
-                      !isPool ? () => act('add', { card: card.id }) : undefined
-                    }
-                    onRightClick={
-                      !isPool && selectedCount > 0
-                        ? () => act('take_card', { card: card.id })
-                        : undefined
-                    }
-                  />
-                );
-              })}
             </div>
           </Section>
 
-          {!isPool && (
-            <Section title="Deck" fill scrollable>
-              <div
-                style={{
-                  marginBottom: '10px',
-                  padding: '8px',
-                  border: '1px solid rgba(148,163,184,0.28)',
-                  backgroundColor: 'rgba(5,7,11,0.35)',
-                }}
-              >
-                <div
-                  style={{
-                    color: '#cbd5e1',
-                    fontSize: '12px',
-                    fontWeight: 800,
-                    marginBottom: '6px',
-                  }}
-                >
-                  Faction
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns:
+                showPool && showDeck ? '2fr 1fr' : '1fr',
+              gap: '12px',
+              minHeight: 0,
+              flex: 1,
+            }}
+          >
+            {showPool && (
+              <Section title="Pool" fill scrollable>
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
+                  <Input
+                    value={query}
+                    onChange={setQuery}
+                    placeholder="Search cards"
+                    width="260px"
+                  />
+                  {(
+                    ['all', 'infantry', 'archers', 'siege', 'weather', 'special'] as const
+                  ).map((key) => (
+                    <Button key={key} selected={row === key} onClick={() => setRow(key)}>
+                      {key === 'all' ? 'All' : rowLabels[key]}
+                    </Button>
+                  ))}
                 </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    gap: '6px',
-                    flexWrap: 'wrap',
-                    marginBottom: '8px',
-                  }}
-                >
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '10px' }}>
+                  {(
+                    [
+                      ['all', 'Any'],
+                      ['neutral', 'Common'],
+                    ] as const
+                  ).map(([key, label]) => (
+                    <Button
+                      key={key}
+                      selected={factionFilter === key}
+                      onClick={() => setFactionFilter(key)}
+                    >
+                      {label}
+                    </Button>
+                  ))}
                   {(data.factions || []).map((faction) => (
                     <Button
                       key={faction.id}
-                      selected={faction.id === data.faction}
-                      onClick={() =>
-                        act('set_faction', { faction: faction.id })
-                      }
+                      selected={factionFilter === faction.id}
+                      onClick={() => setFactionFilter(faction.id)}
                     >
                       {faction.name}
                     </Button>
                   ))}
                 </div>
-                {currentFaction && (
-                  <div
-                    style={{
-                      color: '#94a3b8',
-                      fontSize: '11px',
-                      marginBottom: '8px',
-                    }}
-                  >
-                    {currentFaction.desc}
+                <div style={{ color: '#94a3b8', fontSize: '12px', marginBottom: '10px' }}>
+                  Cards in pool: {data.knownRareCount}
+                </div>
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                  {filteredCards.map((card) => {
+                    const selectedCount = selectedCounts[card.id] || 0;
+                    const ownedCount = card.ownedCount || 0;
+                    const factionLocked = !card.factionAllowed;
+                    const unavailable = !card.known || factionLocked;
+                    return (
+                      <CardFace
+                        key={card.id}
+                        card={card}
+                        count={ownedCount - selectedCount > 0 ? ownedCount - selectedCount : 0}
+                        unavailable={unavailable}
+                        disabled={
+                          unavailable ||
+                          data.selectedCount >= data.deckSize ||
+                          selectedCount >= ownedCount
+                        }
+                        onClick={() => act('add', { card: card.id })}
+                      />
+                    );
+                  })}
+                </div>
+              </Section>
+            )}
+
+            {showDeck && (
+              <Section title="Deck" fill scrollable>
+                <div style={{ marginBottom: '10px', padding: '8px', border: '1px solid rgba(148,163,184,0.28)', backgroundColor: 'rgba(5,7,11,0.35)' }}>
+                  <div style={{ color: '#cbd5e1', fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>
+                    Faction
                   </div>
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '8px' }}>
+                    {(data.factions || []).map((faction) => (
+                      <Button
+                        key={faction.id}
+                        selected={faction.id === data.faction}
+                        onClick={() => act('set_faction', { faction: faction.id })}
+                      >
+                        {faction.name}
+                      </Button>
+                    ))}
+                  </div>
+                  {currentFaction && (
+                    <div style={{ color: '#94a3b8', fontSize: '11px', marginBottom: '8px' }}>
+                      {currentFaction.desc}
+                    </div>
+                  )}
+                  <div style={{ color: '#cbd5e1', fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>
+                    Leader
+                  </div>
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '8px' }}>
+                    {factionLeaders.map((leader) => (
+                      <Button
+                        key={leader.id}
+                        selected={leader.id === data.leader}
+                        onClick={() => act('set_leader', { leader: leader.id })}
+                      >
+                        {leader.name}
+                      </Button>
+                    ))}
+                  </div>
+                  {currentLeader && (
+                    <div style={{ color: '#94a3b8', fontSize: '11px' }}>
+                      {currentLeader.desc}
+                    </div>
+                  )}
+                </div>
+                <div style={{ marginBottom: '8px' }}>
+                  {data.selectedCount} / {data.deckSize}
+                </div>
+                <ProgressBar value={deckRatio} ranges={{ good: [0, 1] }} mb="10px" />
+                <div style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}>
+                  <Button color="bad" onClick={() => act('clear')}>
+                    Clear
+                  </Button>
+                </div>
+                {!selectedCards.length && (
+                  <div style={{ color: '#94a3b8' }}>No cards selected.</div>
                 )}
                 <div
-                  style={{
-                    color: '#cbd5e1',
-                    fontSize: '12px',
-                    fontWeight: 800,
-                    marginBottom: '6px',
-                  }}
+                  style={
+                    showPool
+                      ? {
+                          display: 'grid',
+                          gridTemplateColumns: 'repeat(3, 88px)',
+                          gap: '10px',
+                        }
+                      : {
+                          display: 'flex',
+                          gap: '10px',
+                          flexWrap: 'wrap',
+                        }
+                  }
                 >
-                  Leader
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    gap: '6px',
-                    flexWrap: 'wrap',
-                    marginBottom: '8px',
-                  }}
-                >
-                  {factionLeaders.map((leader) => (
-                    <Button
-                      key={leader.id}
-                      selected={leader.id === data.leader}
-                      onClick={() => act('set_leader', { leader: leader.id })}
-                    >
-                      {leader.name}
-                    </Button>
+                  {selectedCards.map((card, index) => (
+                    <CardFace
+                      key={`${card.id}-${index}`}
+                      card={card}
+                      compact={showPool}
+                      onClick={() => act('remove_one', { card: card.id })}
+                      onRightClick={
+                        isPhysicalDeck
+                          ? () => act('take_card', { card: card.id })
+                          : undefined
+                      }
+                    />
                   ))}
                 </div>
-                {currentLeader && (
-                  <div style={{ color: '#94a3b8', fontSize: '11px' }}>
-                    {currentLeader.desc}
-                  </div>
-                )}
-              </div>
-              <div style={{ marginBottom: '8px' }}>
-                {data.selectedCount} / {data.deckSize}
-              </div>
-              <ProgressBar
-                value={deckRatio}
-                ranges={{
-                  good: [0, 1],
-                }}
-                mb="10px"
-              />
-              <div
-                style={{
-                  color: '#94a3b8',
-                  fontSize: '12px',
-                  marginBottom: '10px',
-                }}
-              >
-                Limited cards in pool: {data.knownRareCount}
-              </div>
-              <div
-                style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}
-              >
-                <Button color="bad" onClick={() => act('clear')}>
-                  Clear
-                </Button>
-              </div>
-
-              {!selectedCards.length && (
-                <div style={{ color: '#94a3b8' }}>No cards selected.</div>
-              )}
-
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(3, 88px)',
-                  gap: '10px',
-                }}
-              >
-                {selectedCards.map((card, index) => (
-                  <CardFace
-                    key={`${card.id}-${index}`}
-                    card={card}
-                    compact
-                    onClick={() => act('remove_one', { card: card.id })}
-                    onRightClick={() => act('take_card', { card: card.id })}
-                  />
-                ))}
-              </div>
-            </Section>
-          )}
+              </Section>
+            )}
+          </div>
         </div>
       </Window.Content>
     </Window>
