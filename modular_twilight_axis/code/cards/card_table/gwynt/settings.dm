@@ -361,10 +361,8 @@
 /datum/ccg_deckbuilder_panel/ui_assets(mob/user)
 	return list(get_asset_datum(/datum/asset/simple/ccg_cards))
 
-/client/proc/ccg_preload_card_assets()
+/client/proc/ccg_migrate_saved_card_deck()
 	ccg_migrate_stashed_deck_specs(mob)
-	var/datum/asset/simple/card_assets = get_asset_datum(/datum/asset/simple/ccg_cards)
-	SSassets.transport.send_assets_slow(src, card_assets.assets)
 
 /datum/ccg_deckbuilder_panel/ui_interact(mob/user, datum/tgui/ui)
 	ui = SStgui.try_update_ui(user, src, ui)
