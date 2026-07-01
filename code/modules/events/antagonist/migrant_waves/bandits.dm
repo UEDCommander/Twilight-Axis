@@ -13,14 +13,26 @@
 		TAG_COMBAT,
 		TAG_VILLIAN,
 	)
-
+// TA EDIT - DESERT TOWN
+/datum/round_event_control/antagonist/migrant_wave/banditsorgnolls/canSpawnEvent(players_amt, gamemode, fake_check)
+	if(SSmapping.config.map_name == "Desert Town")
+		return FALSE
+	return ..()
+// TA EDIT - DESERT TOWN
 /datum/round_event_control/antagonist/migrant_wave/banditsorgnolls/preRunEvent()
 	if(is_storyteller_soft_antag_blocked())
 		return EVENT_CANT_RUN
 	return ..()
 
 /datum/round_event/migrant_wave/banditsorgnolls/start()
-	var/evilmode = is_storyteller_villain_blocked() ? "gnolls" : pick("gnolls", "bandits")
+	var/gnolls_disabled = (SSgamemode.current_storyteller?.preferred_gnoll_mode == GNOLL_SCALING_NONE)
+	var/evilmode
+	if(gnolls_disabled)
+		evilmode = "bandits"
+	else if(is_storyteller_villain_blocked())
+		evilmode = "gnolls"
+	else
+		evilmode = pick("gnolls", "bandits")
 	if(evilmode == "bandits")
 		var/datum/job/bandit_job = SSjob.GetJob("Bandit")
 		var/bandit_maxcap = max(SSgamemode.story_antag_slot_cap(/datum/antagonist/bandit), bandit_job.total_positions)

@@ -2,11 +2,7 @@
 	name = "Lirvan Tithebound"
 	tutorial = "Contrary to the name, you're not indebted. Far from it. Lirvas is well-known for its economically aggressive brand of Matthiosianism, and the Tithebound are no exception to this opportunistic mammon-making. With tough scales reinforced by Matthiosian rituo, and solid armor, stand 'gainst the tide, and turn thyne WEALTH to POWER. A few rare Tithebound are more aligned towards Astrata."
 	allowed_sexes = list(MALE, FEMALE)
-	allowed_races = list(
-		/datum/species/dracon,
-		/datum/species/lizardfolk,
-		/datum/species/kobold,
-	) //no wildkin; i'd like to allow snek/liznerd wildkin, but i don't have a way of mechnaically enforcing that
+	forbidden_races = list(RACES_LIRVAS) //no wildkin; i'd like to allow snek/liznerd wildkin, but i don't have a way of mechanically enforcing that
 	outfit = /datum/outfit/job/roguetown/mercenary/lirvanmerc
 	class_select_category = CLASS_CAT_RACIAL
 	category_tags = list(CTAG_MERCENARY)
@@ -323,6 +319,7 @@ third; SUNSET, little neat ability. it may be buggy. don't quote me on that. it 
 		if(!step(H, dir_to_target))
 			landing_turf = current_turf
 			break
+		H.forceMove(next)
 
 	animate(H, pixel_z = prev_pixel_z, time = 1, easing = EASE_IN)
 	H.pass_flags = old_pass

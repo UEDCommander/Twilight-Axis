@@ -7,7 +7,7 @@
 	total_positions = 2
 	spawn_positions = 2
 	f_title = "Princess"
-	allowed_races = RACES_SHUNNED_UP //Maybe a system to force-pick lineage based on king and queen should be implemented. (No it shouldn't.)
+	forbidden_races = list(RACES_CONSTRUCT RACES_DESPISED RACES_OOZE)
 	allowed_sexes = list(MALE, FEMALE)
 	allowed_ages = list(AGE_ADULT)
 	advclass_cat_rolls = list(CTAG_HEIR = 20)
@@ -31,9 +31,12 @@
 		/datum/advclass/heir/scamp
 	)
 
+/datum/advclass/heir
+	tempo_capable = FALSE
+
 /datum/outfit/job/roguetown/heir/pre_equip(mob/living/carbon/human/H)
 	..()
-	H.verbs |= /mob/living/carbon/human/proc/declarechampion
+	add_verb(H, /mob/living/carbon/human/proc/declarechampion)
 	has_loadout = TRUE
 
 /datum/outfit/job/roguetown/heir/choose_loadout(mob/living/carbon/human/H)
@@ -53,7 +56,7 @@
 					to_chat(player, span_notice("No choice detected. Picking a random compatible origin."))
 					new_origin = pick(/datum/virtue/origin/enigma, /datum/virtue/origin/valorian, /datum/virtue/origin/zybantian)
 				change_origin(H, new_origin, "Royal line")
-		else
+		else if(SSmapping.config.map_name != "Desert Town")
 			if(!istype(player.prefs.virtue_origin, /datum/virtue/origin/azuria) && !istype(player.prefs.virtue_origin, /datum/virtue/origin/grenzelhoft) && !istype(player.prefs.virtue_origin, /datum/virtue/origin/valorian))
 				var/list/new_origins = list("Azuria" = /datum/virtue/origin/azuria, 
 				"Grenzelhoft" = /datum/virtue/origin/grenzelhoft,
@@ -159,7 +162,7 @@
 	if(should_wear_femme_clothes(H))
 		shirt = /obj/item/clothing/suit/roguetown/shirt/dress/royal/princess
 	head = /obj/item/clothing/head/roguetown/circlet
-	belt = /obj/item/storage/belt/rogue/leather/cloth/lady
+	belt = /obj/item/storage/belt/rogue/leather/cloth/upgraded/lady
 	beltr = /obj/item/storage/keyring/heir
 	beltl = /obj/item/rogueweapon/huntingknife/idagger/steel/special
 	backr = /obj/item/storage/backpack/rogue/satchel
@@ -221,7 +224,7 @@
 		belt = /obj/item/storage/belt/rogue/leather
 		shoes = /obj/item/clothing/shoes/roguetown/boots/nobleboot
 	if(should_wear_femme_clothes(H))
-		belt = /obj/item/storage/belt/rogue/leather/cloth/lady
+		belt = /obj/item/storage/belt/rogue/leather/cloth/upgraded/lady
 		head = /obj/item/clothing/head/roguetown/hennin
 		armor = /obj/item/clothing/suit/roguetown/armor/silkcoat
 		shirt = /obj/item/clothing/suit/roguetown/shirt/dress/royal/princess
@@ -265,10 +268,10 @@
 	if(should_wear_masc_clothes(H))
 		pants = /obj/item/clothing/under/roguetown/tights
 		shirt = /obj/item/clothing/suit/roguetown/shirt/dress/royal/prince
-		belt = /obj/item/storage/belt/rogue/leather/cloth/lady
+		belt = /obj/item/storage/belt/rogue/leather/cloth/upgraded/lady
 		shoes = /obj/item/clothing/shoes/roguetown/boots/nobleboot
 	if(should_wear_femme_clothes(H))
-		belt = /obj/item/storage/belt/rogue/leather/cloth/lady
+		belt = /obj/item/storage/belt/rogue/leather/cloth/upgraded/lady
 		head = /obj/item/clothing/head/roguetown/hennin
 		armor = /obj/item/clothing/suit/roguetown/armor/silkcoat
 		shirt = /obj/item/clothing/suit/roguetown/shirt/dress/royal/princess
@@ -334,7 +337,7 @@
 
 /mob/living/carbon/human/proc/declarechampion()
 	set name = "Declare Champion"
-	set category = "Noble"
+	set category = "RoleUnique.Noble"
 
 
 	if(stat)

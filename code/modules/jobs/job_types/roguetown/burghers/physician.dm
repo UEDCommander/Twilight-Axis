@@ -6,7 +6,7 @@
 	total_positions = 1
 	spawn_positions = 1
 
-	allowed_races = ACCEPTED_RACES
+	forbidden_races = list(RACES_DESPISED)
 	allowed_sexes = list(MALE, FEMALE)
 	display_order = JDO_PHYSICIAN
 	tutorial = "You are the Head Physician, master of the city clinic of Azure Peak \
@@ -70,6 +70,7 @@
 		/datum/skill/craft/sewing = SKILL_LEVEL_JOURNEYMAN,
 		/datum/skill/misc/medicine = SKILL_LEVEL_LEGENDARY,
 	)
+	tempo_capable = FALSE
 
 /datum/outfit/job/roguetown/physician
 	job_bitflag = BITFLAG_ROYALTY

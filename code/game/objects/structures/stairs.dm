@@ -1,9 +1,14 @@
 #define STAIR_TERMINATOR_AUTOMATIC 0
 #define STAIR_TERMINATOR_NO 1
 #define STAIR_TERMINATOR_YES 2
+#define STAIR_STAMINA_COST 15 // TA EDIT
+#define STAIR_STAMINA_PULLING_MULTIPLIER 2 // TA EDIT
 
 // stairs require /turf/open/transparent/openspace as the tile above them to work
 // multiple stair objects can be chained together; the Z level transition will happen on the final stair object in the chain
+
+/atom/movable // TA EDIT
+	var/tmp/stair_dragged = FALSE // TA EDIT
 
 /obj/structure/stairs
 	name = "stairs"
@@ -20,12 +25,17 @@
 	. = ..()
 	var/static/list/loc_connections = list(COMSIG_ATOM_EXIT = PROC_REF(on_exit))
 	AddElement(/datum/element/connect_loc, loc_connections)
+	if(mapload)
+		resistance_flags |= INDESTRUCTIBLE
 	return
 
 /obj/structure/stairs/proc/on_exit(datum/source, atom/movable/leaving, atom/new_location)
 	SIGNAL_HANDLER
 
 	if(isobserver(leaving))
+		return
+
+	if(leaving.stair_dragged) // TA EDIT
 		return
 
 	if(user_walk_into_target_loc(leaving, get_dir(src, new_location)))
@@ -59,15 +69,25 @@
 	return TRUE
 
 /obj/structure/stairs/proc/travel_with_stamina_cost(atom/movable/AM, turf/newtarg)
-	if(!AM || !newtarg)
+	if(!AM || QDELETED(AM) || !newtarg) // TA EDIT START
 		return
+
+	var/atom/movable/pulling
+	if(isliving(AM))
+		var/mob/living/L = AM
+		pulling = L.pulling
 
 	movable_travel_z_level(AM, newtarg)
 
-	if(ishuman(AM))
-		var/mob/living/carbon/human/H = AM
-		if(H.mind)
-			H.stamina_add(15, null, FALSE) // TA EDIT END
+	if(!ishuman(AM) || QDELETED(AM))
+		return
+
+	var/mob/living/carbon/human/H = AM
+	if(H.mind)
+		var/stamina_cost = STAIR_STAMINA_COST
+		if(pulling && !QDELETED(pulling) && isliving(pulling))
+			stamina_cost *= STAIR_STAMINA_PULLING_MULTIPLIER
+		H.stamina_add(stamina_cost, null, FALSE) // TA EDIT END
 
 /obj/structure/stairs/stone
 	name = "stone stairs"
@@ -118,6 +138,7 @@
 /obj/structure/stairs/d/OnCrafted(dirin, mob/user)
 	dir = turn(dirin, 180)
 	var/turf/partner = get_step_multiz(get_turf(src), DOWN)
+	log_craft("[user.real_name], ([user.ckey]) has built stairs at [get_turf(src)], [AREACOORD(src)]")
 	partner = get_step(partner, dirin)
 	if(isopenturf(partner))
 		var/obj/stairs = new /obj/structure/stairs(partner)
@@ -129,6 +150,7 @@
 /obj/structure/stairs/stone/d/OnCrafted(dirin, mob/user)
 	dir = turn(dirin, 180)
 	var/turf/partner = get_step_multiz(get_turf(src), DOWN)
+	log_craft("[user.real_name], ([user.ckey]) has built stairs at [get_turf(src)], [AREACOORD(src)]")
 	partner = get_step(partner, dirin)
 	if(isopenturf(partner))
 		var/obj/stairs = new /obj/structure/stairs/stone(partner)
@@ -151,11 +173,15 @@
 	L.forceMove(newtarg)
 	if(pulling)
 		L.stop_pulling()
+		pulling.stair_dragged = TRUE // TA EDIT
 		pulling.forceMove(newtarg)
+		pulling.stair_dragged = FALSE // TA EDIT
 		L.start_pulling(pulling, supress_message = TRUE)
 		if(was_pulled_buckled) // Assume this was a fireman carry since piggybacking is not a thing
 			L.buckle_mob(pulling, TRUE, TRUE, 90, 0, 0)
 
+#undef STAIR_STAMINA_COST // TA EDIT
+#undef STAIR_STAMINA_PULLING_MULTIPLIER // TA EDIT
 #undef STAIR_TERMINATOR_AUTOMATIC
 #undef STAIR_TERMINATOR_NO
 #undef STAIR_TERMINATOR_YES

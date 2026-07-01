@@ -1,14 +1,14 @@
 /datum/virtue/combat/magical_potential
 	name = "Arcyne Potential"
 	desc = "I am talented in the Arcyne arts, expanding my capacity for magic. I have become more intelligent from its studies. Other effects depends on what training I chose to focus on at a later age."
-	custom_text = "Classes that has a combat trait (Medium / Heavy Armor Training, Dodge Expert or Critical Resistance) get only prestidigitation. Everyone else get +3 utility points and Arcyne Training if they don't have any Arcyne."
-	added_skills = list(list(/datum/skill/magic/arcane, 1, 6))
+	custom_text = "Classes that has a combat trait (Medium / Heavy Armor Training, Dodge Expert, Critical Resistance, Thick Blooded, Painless or Enduring) get only prestidigitation. Everyone else get +3 utility points and Arcyne Training if they don't have any Arcyne."
+	added_skills = list(list(/datum/skill/magic/arcane, 1, 6), list(/datum/skill/misc/reading, 1, 6))
 
 /datum/virtue/combat/magical_potential/apply_to_human(mob/living/carbon/human/recipient)
 	if (!recipient.get_skill_level(/datum/skill/magic/arcane))
 		if (!recipient.mind?.has_spell(/datum/action/cooldown/spell/touch/prestidigitation))
 			recipient.mind?.AddSpell(new /datum/action/cooldown/spell/touch/prestidigitation)
-		if (!HAS_TRAIT(recipient, TRAIT_MEDIUMARMOR) && !HAS_TRAIT(recipient, TRAIT_HEAVYARMOR) && !HAS_TRAIT(recipient, TRAIT_DODGEEXPERT) && !HAS_TRAIT(recipient, TRAIT_CRITICAL_RESISTANCE))
+		if (!HAS_TRAIT(recipient, TRAIT_MEDIUMARMOR) && !HAS_TRAIT(recipient, TRAIT_HEAVYARMOR) && !HAS_TRAIT(recipient, TRAIT_DODGEEXPERT) && !HAS_TRAIT(recipient, TRAIT_CRITICAL_RESISTANCE) && !HAS_TRAIT(recipient, TRAIT_BLOOD_RESISTANCE) && !HAS_TRAIT(recipient, TRAIT_NOPAIN) && !HAS_TRAIT(recipient, TRAIT_NOPAINSTUN))
 			ADD_TRAIT(recipient, TRAIT_ARCYNE, TRAIT_GENERIC)
 			add_arcyne_potential_utilities(recipient, 3)
 	else
@@ -18,7 +18,7 @@
 	if(!recipient.mind)
 		return
 	if(!LAZYLEN(recipient.mind.mage_aspect_config))
-		recipient.mind.setup_mage_aspects(list("mastery" = FALSE, "major" = 0, "minor" = 0, "utilities" = 0))
+		recipient.mind.setup_mage_aspects(list("mastery" = FALSE, "major" = 0, "minor" = 0, "utilities" = 0), grant_attunement = FALSE)
 	recipient.mind.mage_aspect_config["utilities"] += amount
 	recipient.mind.check_learnspell()
 	
@@ -36,10 +36,7 @@
 	if (!recipient.devotion)
 		// Only give non-devotionists orison... and T0 for some reason (Bad ideas are fun!)
 		var/datum/devotion/new_faith = new /datum/devotion(recipient, recipient.patron)
-		if (!HAS_TRAIT(recipient, TRAIT_MEDIUMARMOR) && !HAS_TRAIT(recipient, TRAIT_HEAVYARMOR) && !HAS_TRAIT(recipient, TRAIT_DODGEEXPERT) && !HAS_TRAIT(recipient, TRAIT_CRITICAL_RESISTANCE))
-			new_faith.grant_miracles(recipient, cleric_tier = CLERIC_T0, passive_gain = CLERIC_REGEN_DEVOTEE, devotion_limit = (CLERIC_REQ_1 - 10)) // Passive devotion regen only for non-combat classes
-		else
-			new_faith.grant_miracles(recipient, cleric_tier = CLERIC_T0, passive_gain = FALSE, devotion_limit = (CLERIC_REQ_1 - 20))	//Capped to T0 miracles.
+		new_faith.grant_miracles(recipient, cleric_tier = CLERIC_T0, passive_gain = CLERIC_REGEN_DEVOTEE, devotion_limit = (CLERIC_REQ_1 - 10))
 	else
 		// for devotionists, give them an amount of passive devo gain.
 		var/datum/devotion/our_faith = recipient.devotion
@@ -47,34 +44,34 @@
 		START_PROCESSING(SSobj, our_faith)
 	switch(recipient.patron?.type)
 		if(/datum/patron/divine/astrata)
-			recipient.mind?.special_items["Astratan Amulet"] = /obj/item/clothing/neck/roguetown/psicross/astrata
+			recipient.mind?.special_items["Amulet of Astrata"] = /obj/item/clothing/neck/roguetown/psicross/astrata
 		if(/datum/patron/divine/abyssor)
-			recipient.mind?.special_items["Abyssor Amulet"] = /obj/item/clothing/neck/roguetown/psicross/abyssor
+			recipient.mind?.special_items["Amulet of Abyssor"] = /obj/item/clothing/neck/roguetown/psicross/abyssor
 		if(/datum/patron/divine/dendor)
-			recipient.mind?.special_items["Dendor Amulet"] = /obj/item/clothing/neck/roguetown/psicross/dendor
+			recipient.mind?.special_items["Amulet of Dendor"] = /obj/item/clothing/neck/roguetown/psicross/dendor
 		if(/datum/patron/divine/necra)
-			recipient.mind?.special_items["Necran Amulet"] = /obj/item/clothing/neck/roguetown/psicross/necra
+			recipient.mind?.special_items["Amulet of Necra"] = /obj/item/clothing/neck/roguetown/psicross/necra
 		if(/datum/patron/divine/pestra)
-			recipient.mind?.special_items["Pestran Amulet"] = /obj/item/clothing/neck/roguetown/psicross/pestra
+			recipient.mind?.special_items["Amulet of Pestra"] = /obj/item/clothing/neck/roguetown/psicross/pestra
 		if(/datum/patron/divine/eora) 
-			recipient.mind?.special_items["Eoran Amulet"] = /obj/item/clothing/neck/roguetown/psicross/eora
+			recipient.mind?.special_items["Amulet of Eora"] = /obj/item/clothing/neck/roguetown/psicross/eora
 		if(/datum/patron/divine/noc)
-			recipient.mind?.special_items["Noc Amulet"] = /obj/item/clothing/neck/roguetown/psicross/noc
+			recipient.mind?.special_items["Amulet of Noc"] = /obj/item/clothing/neck/roguetown/psicross/noc
 		if(/datum/patron/divine/ravox)
-			recipient.mind?.special_items["Ravox Amulet"] =/obj/item/clothing/neck/roguetown/psicross/ravox
+			recipient.mind?.special_items["Amulet of Ravox"] =/obj/item/clothing/neck/roguetown/psicross/ravox
 		if(/datum/patron/divine/malum)
-			recipient.mind?.special_items["Malum Amulet"] = /obj/item/clothing/neck/roguetown/psicross/malum
+			recipient.mind?.special_items["Amulet of Malum"] = /obj/item/clothing/neck/roguetown/psicross/malum
 		if(/datum/patron/old_god)
 			ADD_TRAIT(recipient, TRAIT_PSYDONITE, TRAIT_GENERIC)
 			recipient.mind?.special_items["Psycross"] = /obj/item/clothing/neck/roguetown/psicross
 		if(/datum/patron/divine/undivided)
-			recipient.mind?.special_items["Tennite Amulet"] = /obj/item/clothing/neck/roguetown/psicross/undivided
+			recipient.mind?.special_items["Amulet of the Undivided"] = /obj/item/clothing/neck/roguetown/psicross/undivided
 		if(/datum/patron/inhumen/matthios)
-			recipient.mind?.special_items["Matthios Amulet"] = /obj/item/clothing/neck/roguetown/psicross/inhumen/matthios
+			recipient.mind?.special_items["Amulet of Matthios"] = /obj/item/clothing/neck/roguetown/psicross/inhumen/matthios
 		if(/datum/patron/inhumen/graggar)
-			recipient.mind?.special_items["Graggar Amulet"] = /obj/item/clothing/neck/roguetown/psicross/inhumen/graggar
+			recipient.mind?.special_items["Amulet of Graggar"] = /obj/item/clothing/neck/roguetown/psicross/inhumen/graggar
 		if(/datum/patron/inhumen/baotha)
-			recipient.mind?.special_items["Baotha Amulet"] = /obj/item/clothing/neck/roguetown/psicross/inhumen/baotha
+			recipient.mind?.special_items["Amulet of Baotha"] = /obj/item/clothing/neck/roguetown/psicross/inhumen/baotha
 		if(/datum/patron/inhumen/zizo)
 			recipient.mind?.special_items["Inverted Psycross"] = /obj/item/clothing/neck/roguetown/psicross/inhumen/iron
 
@@ -95,8 +92,7 @@
 	max_choices = 5
 	choice_costs = list(0, 0, 0, 2, 4, 4)
 	extra_choices = list(
-		"Swords Skill (JMAN)" = /datum/skill/combat/swords,
-		"Shield Skill (JMAN)" = /datum/skill/combat/shields,
+		"Sword Skill (JMAN)" = /datum/skill/combat/swords,
 		"Dagger Skill (JMAN)" = /datum/skill/combat/knives,
 		"Unarmed Skill (JMAN)" = /datum/skill/combat/unarmed,
 		"Sling Skill (JMAN)" = /datum/skill/combat/slings,
@@ -105,12 +101,17 @@
 		"Mace Skill (JMAN)" = /datum/skill/combat/maces,
 		"Polearm Skill (JMAN)" = /datum/skill/combat/polearms,
 		"Staves Skill (JMAN)" = /datum/skill/combat/staves,
-		"Stashed Messer & Parrying Dagger" = list(/obj/item/rogueweapon/sword/short/messer/iron/virtue, /obj/item/rogueweapon/huntingknife/idagger/virtue),
-		"Stashed Shield & Arming Sword" = list(/obj/item/rogueweapon/shield/wood, /obj/item/rogueweapon/sword/iron),
-		"Stashed Quarterstaff & Sling" = list(/obj/item/rogueweapon/woodstaff/quarterstaff/iron, /obj/item/gun/ballistic/revolver/grenadelauncher/sling, /obj/item/quiver/sling/iron),
-		"Stashed Spear & Mace" = list(/obj/item/rogueweapon/spear, /obj/item/rogueweapon/mace, /obj/item/rogueweapon/scabbard/gwstrap),
-		"Stashed Katar & Knuckles" = list(/obj/item/rogueweapon/katar/bronze, /obj/item/clothing/gloves/roguetown/knuckles/bronze),
-		"Stashed Axe & Whip" = list(/obj/item/rogueweapon/stoneaxe/woodcut, /obj/item/rogueweapon/whip)
+		"Stashed Messer" = list(/obj/item/rogueweapon/sword/short/messer/iron/virtue),
+		"Stashed Parrying Dagger" = list(/obj/item/rogueweapon/huntingknife/idagger/virtue),
+		"Stashed Arming Sword" = list(/obj/item/rogueweapon/sword/iron),
+		"Stashed Quarterstaff" = list(/obj/item/rogueweapon/woodstaff/quarterstaff/iron),
+		"Stashed Sling" = list(/obj/item/gun/ballistic/revolver/grenadelauncher/sling, /obj/item/quiver/sling/iron),
+		"Stashed Spear (& Strap)" = list(/obj/item/rogueweapon/spear, /obj/item/rogueweapon/scabbard/gwstrap),
+		"Stashed Mace" = list(/obj/item/rogueweapon/mace),
+		"Stashed Katar" = list(/obj/item/rogueweapon/katar/bronze),
+		"Stashed Knuckles" = list(/obj/item/clothing/gloves/roguetown/knuckles/bronze),
+		"Stashed Axe" = list(/obj/item/rogueweapon/stoneaxe/woodcut),
+		"Stashed Whip" = list(/obj/item/rogueweapon/whip)
 	)
 
 /datum/virtue/combat/combat_virtue/apply_to_human(mob/living/carbon/human/recipient)
@@ -162,9 +163,9 @@
 
 /datum/virtue/combat/guarded/apply_to_human(mob/living/carbon/human/recipient)
 	. = ..()
-	recipient.verbs += /mob/living/carbon/human/proc/toggle_descriptors
-	recipient.verbs += /mob/living/carbon/human/proc/emote_ffsalute
-	recipient.verbs += /mob/living/carbon/human/proc/toggle_guarded
+	add_verb(recipient, /mob/living/carbon/human/proc/toggle_descriptors)
+	add_verb(recipient, /mob/living/carbon/human/proc/emote_ffsalute)
+	add_verb(recipient, /mob/living/carbon/human/proc/toggle_guarded)
 
 
 /datum/virtue/combat/rotcured
@@ -197,4 +198,4 @@
 	added_traits = list(TRAIT_COMBAT_AWARE)
 
 /datum/virtue/combat/combat_aware/apply_to_human(mob/living/carbon/human/recipient)
-	recipient.verbs += /mob/living/carbon/human/proc/togglecombatawareness
+	add_verb(recipient, /mob/living/carbon/human/proc/togglecombatawareness)

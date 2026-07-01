@@ -2,7 +2,6 @@
 	name = "Imperial Spellblade"
 	tutorial = "Зибантийские воины клинка и арканы ещё давным давно привлекли внимание Грензельхофта и вы, подражая и пародируя их манере, отточили свои навыки владения клинком и арканой в Имперской Академии Арканы в соответствии с учениями Зибантиийских орденов Нок, после чего отправились на большак зарабатывать средства к существованию за счёт применения своих незаурядных способностей."
 	allowed_sexes = list(MALE, FEMALE)
-	allowed_races = RACES_ALL_KINDS
 	allowed_patrons = list(/datum/patron/inhumen/zizo, /datum/patron/divine/noc)
 	outfit = /datum/outfit/job/roguetown/mercenary/imperial_spellblade
 	maximum_possible_slots = 1 
@@ -15,7 +14,7 @@
 		STATKEY_CON = 1,
 		STATKEY_WIL = 1,
 	)
-	subclass_mage_aspects = list("mastery" = FALSE, "major" = 0, "minor" = 0, "utilities" = 6, "ward" = TRUE) // Mama Zizo said you get 2 more points on Utility!!!
+	subclass_mage_aspects = list("mastery" = FALSE, "major" = 0, "minor" = 0, "utilities" = 6, "ward" = TRUE)
 	subclass_skills = list(
 		/datum/skill/misc/climbing = SKILL_LEVEL_JOURNEYMAN,
 		/datum/skill/combat/shields = SKILL_LEVEL_JOURNEYMAN,

@@ -90,7 +90,7 @@
 	detail_text = DETAIL_TEXT_UNIVERSITY_OF_AZURIA
 
 /area/rogue/indoors/town/shop
-	name = "Shop"
+	name = "Merchant"
 	icon_state = "shop"
 	droning_sound = 'sound/music/area/shop.ogg'
 	droning_sound_dusk = null
@@ -156,7 +156,7 @@
 	cell_area = TRUE
 
 /area/rogue/indoors/town/tavern
-	name = "tavern"
+	name = "Azurian Pint"
 	icon_state = "tavern"
 	ambientsounds = AMB_INGEN
 	ambientnight = AMB_INGEN
@@ -174,7 +174,7 @@
 	tavern_area = TRUE
 
 /area/rogue/indoors/town/church
-	name = "church"
+	name = "The House of the Ten"
 	icon_state = "church"
 	droning_sound = 'sound/music/area/church.ogg'
 	droning_sound_dusk = null
@@ -218,6 +218,11 @@
 	first_time_text = "THE OTAVAN INQUISITION"
 	detail_text = DETAIL_TEXT_INQUISITION_HQ
 
+/area/rogue/indoors/inq/embassy
+	name = "The Otavan Embassy"
+	icon_state = "chapel"
+	first_time_text = "THE OTAVAN EMBASSY"
+
 /area/rogue/indoors/inq/office
 	name = "The Inquisitor's Office"
 	icon_state = "chapel"
@@ -225,6 +230,11 @@
 /area/rogue/indoors/inq/basement
 	name = "The Inquisition's Basement"
 	icon_state = "chapel"
+
+/area/rogue/indoors/inq/chapel
+	name = "The Psydonic Chapel"
+	icon_state = "chapel"
+	first_time_text = "THE PSYDONIC CHAPEL"
 
 /area/rogue/indoors/town/warehouse/can_craft_here()
 	return FALSE
@@ -257,5 +267,11 @@
 /area/rogue/outdoors/exposed/dwarf
 	icon_state = "dwarf"
 	droning_sound = 'sound/music/area/dwarf.ogg'
+	droning_sound_dusk = null
+	droning_sound_night = null
+
+/area/rogue/indoors/town/zhurch
+	name = "Chapel of the Ecclesial"
+	droning_sound = 'sound/music/area/zhurch.ogg'
 	droning_sound_dusk = null
 	droning_sound_night = null

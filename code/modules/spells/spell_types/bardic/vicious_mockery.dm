@@ -37,6 +37,7 @@ GLOBAL_LIST_INIT(mockery_insults, list(
 
 	invocation_type = INVOCATION_SHOUT
 	charge_required = TRUE
+	weapon_cast_penalized = FALSE
 	charge_time = CHARGETIME_POKE
 	charge_slowdown = CHARGING_SLOWDOWN_NONE
 	cooldown_time = MOCKERY_COOLDOWN
@@ -76,6 +77,8 @@ GLOBAL_LIST_INIT(mockery_insults, list(
 			visible_message(span_warning("The insult falls on deaf ears!"))
 			qdel(src)
 			return BULLET_ACT_BLOCK
+		if(out_of_effective_range())
+			return
 		// Stack the debuff
 		var/datum/status_effect/debuff/mockery_stack/existing = M.has_status_effect(/datum/status_effect/debuff/mockery_stack)
 		if(existing)

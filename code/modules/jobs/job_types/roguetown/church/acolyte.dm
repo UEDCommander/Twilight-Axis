@@ -6,7 +6,7 @@
 	total_positions = 6
 	spawn_positions = 6
 
-	allowed_races = ACCEPTED_RACES
+	forbidden_races = list(RACES_DESPISED)
 	allowed_patrons = ALL_DIVINE_PATRONS
 	allowed_sexes = list(MALE, FEMALE)
 	outfit = /datum/outfit/job/roguetown/monk
@@ -17,10 +17,11 @@
 	min_pq = 4 //A step above sexton, should funnel new players to the sexton role to learn miracles at a more sedate pace
 	max_pq = null
 	round_contrib_points = 5
+	same_job_respawn_delay = 20 MINUTES
 
 	//No nobility for you, being a member of the clergy means you gave UP your nobility. It says this in many of the church tutorial texts.
 	virtue_restrictions = list(/datum/virtue/utility/noble)
-	job_traits = list(TRAIT_RITUALIST, TRAIT_GRAVEROBBER, TRAIT_HOMESTEAD_EXPERT, TRAIT_CLERGY, TRAIT_MARRIAGE_CAPABLE)
+	job_traits = list(TRAIT_RITUALIST, TRAIT_GRAVEROBBER, TRAIT_HOMESTEAD_EXPERT, TRAIT_CLERGY)
 	advclass_cat_rolls = list(CTAG_ACOLYTE = 2)
 	job_subclasses = list(
 		/datum/advclass/acolyte
@@ -40,8 +41,8 @@
 	)
 	age_mod = /datum/class_age_mod/acolyte
 	subclass_skills = list(
-		/datum/skill/combat/wrestling = SKILL_LEVEL_JOURNEYMAN,
-		/datum/skill/combat/unarmed = SKILL_LEVEL_JOURNEYMAN,
+		/datum/skill/combat/wrestling = SKILL_LEVEL_APPRENTICE,
+		/datum/skill/combat/unarmed = SKILL_LEVEL_APPRENTICE,
 		/datum/skill/combat/staves = SKILL_LEVEL_APPRENTICE,
 		/datum/skill/misc/medicine = SKILL_LEVEL_JOURNEYMAN,
 		/datum/skill/craft/alchemy = SKILL_LEVEL_APPRENTICE,
@@ -55,6 +56,7 @@
 	subclass_stashed_items = list(
 		"The Verses and Acts of the Ten" = /obj/item/book/rogue/bibble,
 	)
+	tempo_capable = FALSE
 
 /datum/outfit/job/roguetown/monk
 	name = "Acolyte"
@@ -66,7 +68,7 @@
 /datum/outfit/job/roguetown/monk/basic/pre_equip(mob/living/carbon/human/H)
 	..()
 	H.adjust_blindness(-3)
-	belt = /obj/item/storage/belt/rogue/leather/rope
+	belt = /obj/item/storage/belt/rogue/leather/rope/upgraded
 	beltr = /obj/item/storage/belt/rogue/pouch/coins/mid
 	beltl = /obj/item/storage/keyring/acolyte
 	backl = /obj/item/storage/backpack/rogue/satchel
@@ -107,7 +109,7 @@
 			neck = /obj/item/clothing/neck/roguetown/psicross/dendor
 			armor = /obj/item/clothing/suit/roguetown/shirt/robe/dendor
 			H.cmode_music = 'sound/music/cmode/garrison/combat_warden.ogg'
-			shirt = /obj/item/clothing/suit/roguetown/armor/vestments_padded
+			shirt = /obj/item/clothing/suit/roguetown/armor/vestments_padded // Kunai: I think I'll give them a weak ass skin srmor later, once that PR is merged, for the nudist theme
 		if(/datum/patron/divine/necra)
 			head = /obj/item/clothing/head/roguetown/necrahood
 			neck = /obj/item/clothing/neck/roguetown/psicross/necra
@@ -116,7 +118,14 @@
 			armor = /obj/item/clothing/suit/roguetown/shirt/robe/necra
 			shirt = /obj/item/clothing/suit/roguetown/armor/vestments_padded
 			cloak = /obj/item/clothing/cloak/raincloak/mortus
-			backr = /obj/item/rogueweapon/shovel/silver
+			var/list/necra_tools = list("Silver Shovel", "Silver Scythe")
+			var/tool_choice = input(H, "A reaper, or a digger?", "HOW WILL YOU APPEASE THE UNDERMAIDEN?") as anything in necra_tools
+			switch(tool_choice) // choose wisely... larp or effectiveness?
+				if("Silver Shovel")
+					backr = /obj/item/rogueweapon/shovel/silver
+				if("Silver Scythe") // o lawd we farmin
+					backr = /obj/item/rogueweapon/scabbard/gwstrap
+					l_hand = /obj/item/rogueweapon/scythe/silver
 		if(/datum/patron/divine/pestra)
 			neck = /obj/item/clothing/neck/roguetown/psicross/pestra
 			armor = /obj/item/clothing/suit/roguetown/shirt/robe/phys
@@ -125,14 +134,22 @@
 			pants = /obj/item/clothing/under/roguetown/trou/leather/mourning
 			cloak = /obj/item/clothing/cloak/templar/pestran
 			shirt = /obj/item/clothing/suit/roguetown/armor/vestments_padded
+			l_hand = /obj/item/storage/belt/rogue/surgery_bag
 		if(/datum/patron/divine/eora) //Eora content from Stonekeep
 			head = /obj/item/clothing/head/roguetown/eoramask
 			neck = /obj/item/clothing/neck/roguetown/psicross/eora
 			shoes = /obj/item/clothing/shoes/roguetown/sandals
-			armor = /obj/item/clothing/suit/roguetown/shirt/robe/eora
 			cloak = /obj/item/clothing/cloak/templar/eoran
 			r_hand = /obj/item/rogueweapon/huntingknife/scissors
+			l_hand = /obj/item/needle/thorn
 			shirt = /obj/item/clothing/suit/roguetown/armor/vestments_padded
+			var/robes = list("Modest","Exposed")
+			var/robe_choice = input(H, "Choose your ROBES.", "TAKE UP ROBES.") as anything in robes
+			switch(robe_choice) // This feels wrong to do but I am unsure how else to do it
+				if("Modest")
+					armor = /obj/item/clothing/suit/roguetown/shirt/robe/eora
+				if("Exposed")
+					armor = /obj/item/clothing/suit/roguetown/shirt/robe/eora/alt
 		if(/datum/patron/divine/malum)
 			head = /obj/item/clothing/head/roguetown/roguehood
 			neck = /obj/item/clothing/neck/roguetown/psicross/malum
@@ -150,6 +167,7 @@
 			shoes = /obj/item/clothing/shoes/roguetown/boots
 			armor = /obj/item/clothing/suit/roguetown/shirt/robe/ravox
 			shirt = /obj/item/clothing/suit/roguetown/armor/vestments_padded
+			l_hand = /obj/item/rope/chain
 		if(/datum/patron/divine/xylix)
 			head = /obj/item/clothing/head/roguetown/roguehood/black
 			cloak = /obj/item/clothing/cloak/templar/xylixian
@@ -162,6 +180,33 @@
 			var/datum/inspiration/I = new /datum/inspiration(H)
 			I.grant_inspiration(H, bard_tier = BARD_T2)
 			shirt = /obj/item/clothing/suit/roguetown/armor/vestments_padded
+			if(H.mind)
+				var/instruments = list("Harp","Lute","Accordion","Guitar","Hurdy-Gurdy","Viola","Vocal Talisman", "Psyaltery", "Flute", "Drum", "Shamisen")
+				var/instrument_choice = tgui_input_list(H, "Choose your instrument.", "TAKE UP ARMS", instruments)
+				H.set_blindness(0)
+				switch(instrument_choice)
+					if("Harp")
+						backr = /obj/item/rogue/instrument/harp
+					if("Lute")
+						backr = /obj/item/rogue/instrument/lute
+					if("Accordion")
+						backr = /obj/item/rogue/instrument/accord
+					if("Guitar")
+						backr = /obj/item/rogue/instrument/guitar
+					if("Hurdy-Gurdy")
+						backr = /obj/item/rogue/instrument/hurdygurdy
+					if("Viola")
+						backr = /obj/item/rogue/instrument/viola
+					if("Vocal Talisman")
+						backr = /obj/item/rogue/instrument/vocals
+					if("Psyaltery")
+						backr = /obj/item/rogue/instrument/psyaltery
+					if("Flute")
+						backr = /obj/item/rogue/instrument/flute
+					if("Drum")
+						backr = /obj/item/rogue/instrument/drum
+					if("Shamisen")
+						backr = /obj/item/rogue/instrument/shamisen
 		else
 			head = /obj/item/clothing/head/roguetown/roguehood/astrata
 			neck = /obj/item/clothing/neck/roguetown/psicross/astrata
@@ -225,6 +270,7 @@
 		H.adjust_skillrank(/datum/skill/craft/armorsmithing, SKILL_LEVEL_APPRENTICE, TRUE)
 		H.adjust_skillrank(/datum/skill/craft/weaponsmithing, SKILL_LEVEL_APPRENTICE, TRUE)
 		H.adjust_skillrank(/datum/skill/craft/smelting, SKILL_LEVEL_APPRENTICE, TRUE)
+		H.adjust_skillrank(/datum/skill/labor/lumberjacking, SKILL_LEVEL_APPRENTICE, TRUE)
 	if(H.patron?.type == /datum/patron/divine/ravox) // Justice and Honor - athletics and probably a bit better at handling the horrors of war
 		H.adjust_skillrank(/datum/skill/misc/athletics, SKILL_LEVEL_JOURNEYMAN, TRUE)
 		H.adjust_skillrank(/datum/skill/combat/staves, SKILL_LEVEL_NOVICE, TRUE) //On par with an Adventuring Monk. Seems quite fitting.
@@ -232,4 +278,4 @@
 	if(H.patron?.type == /datum/patron/divine/xylix)  // Trickery and Inspiration - muxic and rogueish skills
 		H.adjust_skillrank(/datum/skill/misc/climbing, SKILL_LEVEL_JOURNEYMAN, TRUE)
 		H.adjust_skillrank(/datum/skill/misc/lockpicking, SKILL_LEVEL_NOVICE, TRUE)
-		H.adjust_skillrank(/datum/skill/misc/music, SKILL_LEVEL_APPRENTICE, TRUE)
+		H.adjust_skillrank_up_to(/datum/skill/misc/music, SKILL_LEVEL_EXPERT, TRUE)

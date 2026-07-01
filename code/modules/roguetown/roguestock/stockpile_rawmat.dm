@@ -46,7 +46,7 @@
 /datum/roguestock/stockpile/glass
 	name = "Glass Batch"	//'Raw' glass
 	desc = "A mixture of finely ground materials that is used to make glass."
-	item_type = /obj/item/natural/clay/glassbatch
+	item_type = /obj/item/natural/glassbatch
 	trade_good_id = TRADE_GOOD_GLASS_BATCH
 	stockpile_amount = 5
 	importexport_amt = 5
@@ -156,5 +156,6 @@
 	desc = "Hide with a long winter coat from animals."
 	item_type = /obj/item/natural/fur
 	trade_good_id = TRADE_GOOD_FUR
+	stockpile_amount = 10
 	importexport_amt = 5
 	stockpile_limit = 25

@@ -3,7 +3,8 @@
 	tutorial = "A skilled blacksmith, able to forge capable weapons for warriors in the bog, \
 	only after building a forge for themselves of course"
 	allowed_sexes = list(MALE, FEMALE)
-	allowed_races = RACES_ALL_KINDS
+	forbidden_races = list(RACES_DESPISED)
+	
 	outfit = /datum/outfit/job/roguetown/adventurer/blacksmith
 
 	category_tags = list(CTAG_PILGRIM, CTAG_TOWNER)

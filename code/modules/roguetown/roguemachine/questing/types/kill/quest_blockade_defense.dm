@@ -2,7 +2,7 @@
 	quest_type = QUEST_BLOCKADE_DEFENSE
 	quest_difficulty = QUEST_DIFFICULTY_HARD
 	tp_budget = BLOCKADE_WAVE_1_TP
-	threat_bands_cleared = QUEST_BANDS_RAID * 2
+	threat_bands_cleared = QUEST_BANDS_BLOCKADE
 	required_fellowship_size = 0
 
 	var/current_wave = 0
@@ -12,7 +12,6 @@
 	var/wave_warn_30s_id
 	var/datum/weakref/wave_landmark_ref
 	var/datum/weakref/blockade_ref
-	var/failed = FALSE
 	/// TRUE after materialize() arms the quest and before the bearer has triggered wave 1
 	/// by entering the landmark's proximity. Prevents double-fire via check_arrival.
 	var/armed = FALSE
@@ -303,9 +302,16 @@
 	var/payout = reward_amount
 	if(payout > 0)
 		if(lead && SStreasury.has_account(lead))
-			SStreasury.mint(SStreasury.get_account(lead), payout, "Blockade defense reward ([quest_giver_name || "Crown"] -> [lead.real_name])")
+			var/datum/fund/lead_account = SStreasury.get_account(lead)
+			SStreasury.mint(lead_account, payout, "Blockade defense reward ([quest_giver_name || "Crown"] -> [lead.real_name])")
+			var/tax_amt = 0
+			if(!levy_exempt)
+				tax_amt = SStreasury.apply_tax(lead_account, payout, TAX_CATEGORY_CONTRACT_LEVY, "Blockade defense")
+				if(tax_amt > 0)
+					record_featured_stat(FEATURED_STATS_TAX_PAYERS, lead, tax_amt)
+					record_round_statistic(STATS_TAXES_COLLECTED, tax_amt)
 			record_round_statistic(STATS_BLOCKADE_REWARDS_PAID, payout)
-			announce_to_bearer("The final wave breaks. The rewards have been transferred to your account.")
+			announce_to_bearer("The final wave breaks. The rewards have been transferred to your account. Gross: [payout] mammons. Tax: [tax_amt] mammons. Net: [payout - tax_amt] mammons.")
 		else
 			SStreasury.mint(SStreasury.discretionary_fund, payout, "Blockade defense reward (unbanked bearer)")
 			announce_to_bearer("The final wave breaks. The Crown holds your share - return to the Nerve Master to collect.")

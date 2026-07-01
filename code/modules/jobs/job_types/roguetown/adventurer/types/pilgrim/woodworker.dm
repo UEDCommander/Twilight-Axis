@@ -3,7 +3,8 @@
 	tutorial = "You are a strong Woodworker, armed with an axe, you can gather wood \
 	either for yourself, or for others. You are an expert carpenter too, so you can bend wood into items you need."
 	allowed_sexes = list(MALE, FEMALE)
-	allowed_races = RACES_ALL_KINDS
+	forbidden_races = list(RACES_DESPISED)
+	
 	outfit = /datum/outfit/job/roguetown/adventurer/woodworker
 	traits_applied = list(TRAIT_HOMESTEAD_EXPERT)
 	cmode_music = 'sound/music/cmode/towner/combat_towner2.ogg'

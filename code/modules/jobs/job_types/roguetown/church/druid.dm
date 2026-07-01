@@ -8,7 +8,7 @@
 	spawn_positions = 2
 
 	allowed_sexes = list(MALE, FEMALE)
-	allowed_races = ACCEPTED_RACES
+	forbidden_races = list(RACES_DESPISED)
 	allowed_patrons = ALL_DIVINE_PATRONS //gets set to dendor on the outfit anyways lol
 	outfit = /datum/outfit/job/roguetown/druid
 	tutorial = "You have always been drawn to the wild, and the wild drawn to you. When your calling came, it was from Dendor. Your patron claims dominion over all nature--promising bounties to those who act in his name to bring balance to His domain. The forest is the most comfortable place for you, toiling alongside soilsons and soilbrides...although sometimes what lies beyond the gates fills your soul with a feral yearning."
@@ -20,6 +20,7 @@
 	min_pq = 5
 	max_pq = null
 	round_contrib_points = 2
+	same_job_respawn_delay = 20 MINUTES
 	cmode_music = 'sound/music/cmode/garrison/combat_warden.ogg' // this was originally druid music. i think its ok to have druids share it w/ wardens.
 
 	//You're.. not REALLY a full-on church member, but being a druid implies you became a clergy-man of some sort; even if it's non-organized. So, still shouldn't be noble.
@@ -83,7 +84,7 @@
 /datum/outfit/job/roguetown/druid/basic/pre_equip(mob/living/carbon/human/H)
 	..()
 	H.adjust_blindness(-3)
-	belt = /obj/item/storage/belt/rogue/leather/rope
+	belt = /obj/item/storage/belt/rogue/leather/rope/upgraded
 	neck = /obj/item/storage/belt/rogue/pouch/coins/poor
 	beltr = /obj/item/flashlight/flare/torch/lantern
 	beltl = /obj/item/rogueweapon/whip //The whip itself is not often associated to many jobs. Druids feel like a thematic choice to have a self-defense whip
@@ -95,7 +96,7 @@
 	H.ambushable = FALSE
 	H.AddComponent(/datum/component/wise_tree_alert)
 	H.AddSpell(new /obj/effect/proc_holder/spell/targeted/create_seed)
-//	H.AddSpell(new /obj/effect/proc_holder/spell/self/conjure_armor/vines)
+	H.mind.AddSpell(new /datum/action/cooldown/spell/conjure_arcyne_ward/druid)
 	H.AddSpell(new /obj/effect/proc_holder/spell/self/beast_claws)
 	H.AddSpell(new /obj/effect/proc_holder/spell/self/beast_rage)
 	var/datum/devotion/C = new /datum/devotion(H, H.patron)

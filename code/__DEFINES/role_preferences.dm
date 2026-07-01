@@ -24,6 +24,8 @@
 #define ROLE_UNBOUND_DEATHKNIGHT "Unbound Death Knight"
 #define ROLE_DARK_ITINERANT "Dark Itinerant"
 #define ROLE_CULT			"Cult of Ascension"
+#define ROLE_FREEMAN		"Freeman" // TA EDIT
+#define ROLE_LOSTGRENZEL	"Lost Grenzel" // TA EDIT
 
 #define ROLE_SYNDICATE			"Syndicate"
 #define ROLE_TRAITOR			"Traitor"
@@ -54,6 +56,7 @@
 #define ROLE_LAVALAND			"Lavaland"
 #define ROLE_INTERNAL_AFFAIRS	"Internal Affairs Agent"
 #define ROLE_NECRO_SKELETON		"Necromancer Skeleton"
+#define ROLE_SIEGE_SKELETON		"Siege Skeleton"
 #define ROLE_LICH_SKELETON		"Lich Skeleton"
 #define ROLE_CHOSEN				"Chosen"
 #define ROLE_VAMPIRE_SUMMON		"Vampire Summon"

@@ -31,6 +31,8 @@
 	associated_skill = /datum/skill/magic/arcane
 	spell_impact_intensity = SPELL_IMPACT_LOW
 
+	spell_requirements = SPELL_REQUIRES_NO_ANTIMAGIC | SPELL_REQUIRES_HUMAN
+
 /obj/projectile/magic/arc_bolt
 	name = "arc bolt"
 	tracer_type = /obj/effect/projectile/tracer/wormhole
@@ -66,6 +68,8 @@
 			return BULLET_ACT_BLOCK
 		if(isliving(target))
 			var/mob/living/L = target
+			if(out_of_effective_range())
+				return
 			L.electrocute_act(1, src, 1, SHOCK_NOSTUN)
 	else if(isatom(target))
 		var/atom/A = target

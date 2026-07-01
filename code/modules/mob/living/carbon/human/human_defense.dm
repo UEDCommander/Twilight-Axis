@@ -24,9 +24,14 @@
 	var/protection = 0
 	var/intdamage = damage
 	var/consume_debuff = TRUE
+	
+	if(HAS_TRAIT(src, TRAIT_IRONMAN)) // free clongo noise when hit
+		playsound(loc, get_armor_sound(PLATEHIT, blade_dulling), 100) // SOVLNUKE!!!
+
 	if(!(d_type in ARMOR_DR_TYPES))
 		// Penetration types: slash, stab, piercing
 		used = get_best_worn_armor(def_zone, d_type)
+
 		if(used)
 			protection = used.armor.getRating(d_type)
 			protection += get_trophy_armor_bonus_for_zone(def_zone, d_type)
@@ -55,7 +60,7 @@
 			if(has_status_effect(/datum/status_effect/buff/iron_skin))
 				intdamage *= 0.75
 
-			if(istype(used_weapon) && used_weapon.is_silver && ((used.smeltresult in list(/obj/item/ingot/aaslag, /obj/item/ingot/aalloy, /obj/item/ingot/purifiedaalloy)) || used.GetComponent(/datum/component/cursed_item)))
+			if(istype(used_weapon) && used_weapon.is_silver && ((used.smeltresult in list(/obj/item/ingot/aaslag, /obj/item/ingot/aalloy, /obj/item/ingot/purifiedaalloy, /obj/item/ingot/component/zizo, /obj/item/ingot/component/graggar, /obj/item/ingot/component/matthios, /obj/item/ingot/component/baotha, /obj/item/ingot/avantyne, /obj/item/ingot/vampire)) || used.GetComponent(/datum/component/cursed_item)))
 				var/datum/component/silverbless/bless = used_weapon.GetComponent(/datum/component/silverbless)
 				if(bless.is_blessed)
 					intdamage = round(intdamage * bless.cursed_item_intdamage)
@@ -373,6 +378,7 @@
 
 	if(can_inject(M, 1, affecting))//Thick suits can stop monkey bites.
 		if(..()) //successful monkey bite, this handles disease contraction.
+			M.break_invisibility_from_combat()
 			var/damage = rand(1, 3)
 			if(check_shields(M, damage, "the [M.name]"))
 				return 0
@@ -863,7 +869,7 @@
 			var/obj/item/clothing/C = bp
 			if(zone2covered(def_zone, C.body_parts_covered_dynamic))
 				if(C.max_integrity)
-					if(C.obj_integrity <= 0)
+					if(C.obj_integrity <= 0 || C.obj_broken)
 						continue
 				var/val = C.armor.getRating(d_type)
 				if(val > 0)
@@ -891,7 +897,7 @@
 			var/obj/item/clothing/C = bp
 			if(zone2covered(def_zone, C.body_parts_covered_dynamic))
 				if(C.max_integrity)
-					if(C.obj_integrity <= 0)
+					if(C.obj_integrity <= 0 || C.obj_broken)
 						continue
 				var/val = C.armor.getRating(d_type)
 				if(val > 0)

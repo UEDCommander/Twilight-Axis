@@ -6,7 +6,7 @@
 	total_positions = 0
 	spawn_positions = 0
 	antag_job = TRUE
-	allowed_races = RACES_ALL_KINDS
+
 	tutorial = "Long ago you did a crime worthy of your bounty being hung on the wall outside of the local inn. You now live with your fellow freemen in the bog, and generally get up to no good."
 
 	outfit = null
@@ -28,7 +28,7 @@
 	always_show_on_latechoices = TRUE
 	job_reopens_slots_on_death = FALSE //no endless stream of bandits, unless the migration waves deem it so
 	job_traits = list(TRAIT_SELF_SUSTENANCE, TRAIT_STEELHEARTED)//Bandits and knaves truly though
-	vice_restrictions = list(/datum/charflaw/noeyer, /datum/charflaw/noeyel, /datum/charflaw/mute, /datum/charflaw/limbloss/arm_r, /datum/charflaw/limbloss/arm_l)
+	vice_restrictions = list(/datum/charflaw/noeyer, /datum/charflaw/noeyel, /datum/charflaw/mute, /datum/charflaw/limbloss/arm_r, /datum/charflaw/limbloss/arm_l, /datum/charflaw/wanted)
 	same_job_respawn_delay = 30 MINUTES
 	cmode_music = 'sound/music/cmode/antag/combat_deadlyshadows.ogg'
 	job_subclasses = list(
@@ -52,7 +52,7 @@
 
 /datum/outfit/job/roguetown/bandit/pre_equip(mob/living/carbon/human/H)
 	. = ..()
-	H.verbs |= /mob/proc/haltyell_exhausting
+	add_verb(H, /mob/proc/haltyell_exhausting)
 
 /datum/outfit/job/roguetown/bandit/post_equip(mob/living/carbon/human/H)
 	..()
@@ -121,30 +121,74 @@
 
 	add_bounty(H.real_name, race, gender, descriptor_height, descriptor_body, descriptor_voice, bounty_total, FALSE, my_crime, bounty_poster)
 
+
 /proc/update_bandits_slots()
+	//update_lost_grenzel_slots() // Lost Grenzel comment
+
 	var/datum/job/bandit_job = SSjob.GetJob("Bandit")
 	if(!bandit_job)
 		return
 
-	if(is_storyteller_soft_antag_blocked())
+	var/is_desert_town = SSmapping?.config?.map_name == "Desert Town"
+	var/datum/job/slot_job = bandit_job
+	var/antag_path = /datum/antagonist/bandit
+	var/admin_slot_key = "Bandit"
+
+	if(is_desert_town)
+		bandit_job.always_show_on_latechoices = FALSE
 		bandit_job.total_positions = 0
 		bandit_job.spawn_positions = 0
+
+		slot_job = SSjob.GetJob("Freeman")
+		if(!slot_job)
+			return
+
+		antag_path = /datum/antagonist/bandit/freeman
+		admin_slot_key = "Freeman"
+		slot_job.always_show_on_latechoices = FALSE
+		slot_job.total_positions = 0
+		slot_job.spawn_positions = 0
+
+	if(slot_job.admin_slot_override)
 		return
 
-	var/player_count = length(GLOB.joined_player_list)
-	var/ready_player_count = length(GLOB.ready_player_list)
-	var/current_players = (SSticker.current_state == GAME_STATE_PREGAME) ? ready_player_count : player_count
+	if(!SSgamemode)
+		slot_job.total_positions = 0
+		slot_job.spawn_positions = 0
+		return
+
+	var/player_count = SSgamemode.get_correct_popcount()
+
+	slot_job.always_show_on_latechoices = TRUE
+	if(!SSgamemode.story_antag_open_slots(antag_path, player_count))
+		slot_job.total_positions = 0
+		slot_job.spawn_positions = 0
+		return
 
 	var/slots = 0
-
-	if(SSmapping.config.map_name == "Rockhill")
-		if(current_players > 60)
-			// На Рокхилле - 5 бандитов с 60 онлайна и +1 слот за каждые 40 сверху
-			slots = 5 + round((current_players - 60) / 40)
+	var/admin_slot = !SSgamemode.allow_vote ? SSgamemode.admin_slots[admin_slot_key] : null
+	if(!isnull(admin_slot))
+		slots = max(0, admin_slot)
 	else
-		// Дун ворлд - всегда 5 бандитов
-		if(current_players > 60)
-			slots = 5
+		var/storyteller_type = SSgamemode.story_policy_type(TRUE)
+		var/max_slots = SSgamemode.story_antag_slot_cap(antag_path, TRUE, storyteller_type)
+		if(max_slots <= 0)
+			slot_job.total_positions = 0
+			slot_job.spawn_positions = 0
+			return
 
-	bandit_job.total_positions = slots
-	bandit_job.spawn_positions = slots
+		var/min_players = SSgamemode.story_antag_min_players(antag_path)
+		var/slot_scaling = SSgamemode.story_antag_scaling_step(antag_path)
+		slots = SSgamemode.storyteller_scale_slots(
+			max_slots,
+			player_count,
+			FALSE,
+			slot_scaling,
+			min_players,
+			SSgamemode.hard_antag_mult(),
+		)
+
+	slots = SSgamemode.story_antag_slots(slots, antag_path, player_count)
+
+	slot_job.total_positions = max(slot_job.current_positions, slots)
+	slot_job.spawn_positions = max(slot_job.current_positions, slots)

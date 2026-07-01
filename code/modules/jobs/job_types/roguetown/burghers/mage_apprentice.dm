@@ -6,7 +6,7 @@
 	total_positions = 4
 	spawn_positions = 4
 
-	allowed_races = ACCEPTED_RACES
+	forbidden_races = list(RACES_DESPISED)
 	spells = list()
 	advclass_cat_rolls = list(CTAG_WAPPRENTICE = 20)
 
@@ -38,6 +38,9 @@
 /datum/outfit/job/roguetown/wapprentice
 	// Base gear defaults moved to each subclass pre_equip to avoid
 	// inheritance issues with adept's stoplag-based chant selection.
+
+/datum/advclass/wapprentice
+	tempo_capable = FALSE
 
 /datum/advclass/wapprentice/associate
 	name = "Magician's Associate"

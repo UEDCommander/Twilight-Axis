@@ -335,10 +335,13 @@ GLOBAL_LIST(teleport_runes)
 	can_be_scribed = FALSE
 
 /obj/effect/decal/cleanable/roguerune/arcyne/attack_hand(mob/living/user)
-	if(!isarcyne(user))
+	if(!can_use_arcyne_rune(user))
 		to_chat(user, span_warning("You aren't able to understand the words of [src]."))
 		return
 	. = ..()
+
+/obj/effect/decal/cleanable/roguerune/arcyne/proc/can_use_arcyne_rune(mob/living/user)
+	return HAS_TRAIT(user, TRAIT_LEYLINE_ATTUNEMENT)
 
 
 
@@ -358,6 +361,9 @@ GLOBAL_LIST(teleport_runes)
 /obj/effect/decal/cleanable/roguerune/arcyne/enchantment/New()
 	. = ..()
 	rituals += GLOB.t3enchantmentrunerituallist
+
+/obj/effect/decal/cleanable/roguerune/arcyne/enchantment/can_use_arcyne_rune(mob/living/user)
+	return HAS_TRAIT(user, TRAIT_LEYLINE_ATTUNEMENT)
 
 /obj/effect/decal/cleanable/roguerune/arcyne/enchantment/invoke(list/invokers, datum/runeritual/runeritual)
 	if(!..())	//VERY important. Calls parent and checks if it fails. parent/invoke has all the checks for ingredients
@@ -429,13 +435,13 @@ GLOBAL_LIST(teleport_runes)
 
 /obj/effect/decal/cleanable/roguerune/arcyne/binding/attack_hand(mob/living/user)
 	try
-		summon_mob(user)
+		if(summon_mob(user))
+			. = ..()
 	catch(var/exception/e)
 		to_chat(user, "Exception: [e] on [e.file], line [e.line]. This is a code error!")
-	. = ..()
 
 /obj/effect/decal/cleanable/roguerune/arcyne/binding/proc/summon_mob(mob/living/user)
-	if(summoned_mob && isarcyne(user))
+	if(summoned_mob && ishuman(user))
 		if(busy)
 			to_chat(user, span_warning("I am already attempting to bind this familiar! I must have patience..."))
 			return
@@ -521,6 +527,11 @@ GLOBAL_LIST(teleport_runes)
 					fam.gender=NEUTER
 				else
 					fam.gender=NEUTER
+			// needs 2 be done here because we trans the gender mid-ritual
+			if(fam.gender == MALE)
+				fam.voice_pack = GLOB.voice_packs[/datum/voicepack/male]
+			else
+				fam.voice_pack = GLOB.voice_packs[/datum/voicepack/female]
 			src.visible_message(span_notice("[fam.summoning_emote]"))
 
 			if(isnewplayer(chosen))
@@ -536,6 +547,9 @@ GLOBAL_LIST(teleport_runes)
 				to_chat(user, span_warning("Summoning failed: mind transfer failed"))
 				busy = FALSE
 				return
+			if(fam.client)
+				remove_verb(fam.client, GLOB.ghost_verbs)
+			fam.client?.init_verbs()
 			mind_datum.RemoveAllSpells()
 			mind_datum.AddSpell(new /datum/action/cooldown/spell/message_summoner())
 			mind_datum.AddSpell(new /datum/action/cooldown/spell/familiar_transform())
@@ -584,25 +598,18 @@ GLOBAL_LIST(teleport_runes)
 		if(!S || QDELETED(S))
 			summoned_mob = null
 			return
+	return TRUE
 
 /obj/effect/decal/cleanable/roguerune/arcyne/binding/attack_right(mob/user)
 	. = ..()
-	if((input(user,"Would you like to cancel this summoning attempt?","Fallback","No") as anything in list("Yes","No") | null)=="Yes")
+	if(summoned_mob && (input(user,"Would you like to cancel this summoning attempt?","Fallback","No") as anything in list("Yes","No") | null)=="Yes")
 		busy = FALSE
-		if(summoned_mob)
-			var/list/refund_costs = list()
-			if(istype(summoned_mob,/mob/living/simple_animal/pet/familiar/fae))
-				refund_costs = list(/obj/item/magic/fae/iridescentscale = 2)
-			else if(istype(summoned_mob,/mob/living/simple_animal/pet/familiar/infernal))
-				refund_costs = list(/obj/item/magic/infernal/fang = 2)
-			else if(istype(summoned_mob,/mob/living/simple_animal/pet/familiar/elemental))
-				refund_costs = list(/obj/item/magic/elemental/shard = 2)
-			else
-				refund_costs = list(/obj/item/magic/artifact = 1, /obj/item/magic/voidstone = 2, /obj/item/magic/leyline = 1)
+		if(istype(summoned_mob,/mob/living/simple_animal/pet/familiar/void))
+			var/list/refund_costs = list(/obj/item/magic/artifact = 1, /obj/item/magic/voidstone = 2, /obj/item/magic/leyline = 1)
 			for(var/index in refund_costs)
 				for(var/i in 1 to refund_costs[index])
 					new index(loc)
-			QDEL_NULL(summoned_mob)
+		QDEL_NULL(summoned_mob)
 
 /obj/effect/decal/cleanable/roguerune/arcyne/binding/proc/clear_obstacles(mob/living/user)
 	for(var/turf/closed/wall/anticheese in range(loc, runesize))
@@ -820,7 +827,7 @@ GLOBAL_LIST(teleport_runes)
 	LAZYADD(GLOB.teleport_runes, src)
 
 /obj/effect/decal/cleanable/roguerune/arcyne/teleport/attack_hand(mob/living/user)
-	if(!isarcyne(user))
+	if(!can_use_arcyne_rune(user))
 		to_chat(user, span_warning("You aren't able to understand the words of [src]."))
 		return
 	if(rune_in_use)
