@@ -249,11 +249,10 @@
 	name = "Penitent"
 	tutorial = "The All-Father was struck - and yet endured. You are sworn to mirror His wound. Violence is beneath you; endurance is not. Flesh fails. Faith does not."
 	outfit = /datum/outfit/job/roguetown/adventurer/penitent
-	allowed_races = RACES_NO_CONSTRUCT
+	forbidden_races = list(RACES_OOZE)
 	allowed_patrons = list(/datum/patron/old_god)
 	subclass_languages = list(/datum/language/otavan)
 	min_pq = 10
-
 	traits_applied = list(
 		TRAIT_PACIFISM,
 		TRAIT_EMPATH,
@@ -261,9 +260,10 @@
 		TRAIT_STEELHEARTED
 	)
 	subclass_stats = list(
-		STATKEY_CON = 5,
-		STATKEY_WIL = 3,
-		STATKEY_SPD = 2,
+		STATKEY_CON = 4,
+		STATKEY_WIL = 4,
+		STATKEY_INT = 1,
+		STATKEY_SPD = -2,
 		STATKEY_STR = -1,
 	)
 	subclass_skills = list(
@@ -282,41 +282,39 @@
 	subclass_stashed_items = list(
 		"Tome of Psydon" = /obj/item/book/rogue/bibble/psy
 	)
-	extra_context = "This is a psydonite only subclass. You will be a pacifist and are able to draw upon a weaker version of the abilities known by a Psydonic Absolver."
+	extra_context = "This is a psydonite only subclass. You will be a pacifist and are able to draw upon a weaker version of the abilities known by a Absolver."
 
 /datum/outfit/job/roguetown/adventurer/penitent/pre_equip(mob/living/carbon/human/H, visualsOnly)
 	. = ..()
 	H.adjust_blindness(-3)
-	wrists = /obj/item/clothing/neck/roguetown/psicross/silver
 	gloves = /obj/item/clothing/gloves/roguetown/otavan/psygloves
-	beltr = /obj/item/flashlight/flare/torch/lantern
 	beltl = /obj/item/storage/belt/rogue/pouch/coins/poor
-	neck = /obj/item/clothing/neck/roguetown/gorget
+	neck = /obj/item/clothing/neck/roguetown/psicross/silver
 	backr = /obj/item/storage/backpack/rogue/satchel/otavan
-	belt = /obj/item/storage/belt/rogue/leather
+	belt = /obj/item/storage/belt/rogue/leather/black
 	pants = /obj/item/clothing/under/roguetown/heavy_leather_pants/otavan
-	shirt = /obj/item/clothing/cloak/tabard/psydontabard
-	head = /obj/item/clothing/head/roguetown/helmet/blacksteel/psythorns
+	shirt = /obj/item/clothing/cloak/absolutionistrobe/black
+	head = /obj/item/clothing/head/roguetown/helmet/blacksteel/psychains
 	backpack_contents = list(
 		/obj/item/rogueweapon/huntingknife = 1,
 		/obj/item/storage/belt/rogue/pouch/medicine = 1
 		)
 	if(H.pronouns == SHE_HER || H.pronouns == THEY_THEM)
-		mask = /obj/item/clothing/mask/rogue/blindfold/psy
+		mask = /obj/item/clothing/mask/rogue/blindfold/psydon
 	else
-		mask = /obj/item/clothing/mask/rogue/sack/psy
+		mask = /obj/item/clothing/head/roguetown/roguehood/psydon/black
 	if(H.mind)
 		H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/diagnose/secular)
-		H.mind.RemoveSpell(/obj/effect/proc_holder/spell/self/psydonrespite)
-		H.mind.AddSpell(new /obj/effect/proc_holder/spell/self/psydonpersist)
+		H.mind.RemoveSpell(/datum/action/cooldown/spell/psydon/respite)
+		H.mind.AddSpell(new /datum/action/cooldown/spell/psydon/persist)
 		H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/psydonlux_tamper) // absolver's bleed transfer
 		H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/psydonvicariate) // nerfed no-rez version of absolver's absolve
 
 	var/datum/devotion/C = new /datum/devotion(H, H.patron)
 	C.grant_miracles(H, cleric_tier = CLERIC_T3, passive_gain = (CLERIC_REGEN_ABSOLVER / 2), start_maxed = TRUE)
 
-/obj/item/clothing/mask/rogue/blindfold/psy
-	name = "penitent's blindfold"
+/obj/item/clothing/mask/rogue/blindfold/psydon
+	name = "blessed blindfold"
 	desc = "You will not conquer. You will endure. In pain, you affirm the Architect's design."
 	icon = 'modular_twilight_axis/icons/roguetown/clothing/masks.dmi'
 	mob_overlay_icon = 'modular_twilight_axis/icons/roguetown/clothing/onmob/masks.dmi'
