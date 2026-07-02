@@ -278,6 +278,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["ccg_active_deck_index"] >> ccg_active_deck_index
 	S["ccg_deckbuilder_view_mode"] >> ccg_deckbuilder_view_mode
 	S["ccg_soundtrack_enabled"] >> ccg_soundtrack_enabled
+	S["ccg_presets_are_virtual"] >> ccg_presets_are_virtual
 	if(!length(ccg_saved_deck_cards) && length(ccg_selected_deck))
 		ccg_saved_deck_cards = ccg_selected_deck.Copy()
 	ccg_clean_cards()
@@ -335,6 +336,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["ccg_active_deck_index"], ccg_active_deck_index)
 	WRITE_FILE(S["ccg_deckbuilder_view_mode"], ccg_deckbuilder_view_mode)
 	WRITE_FILE(S["ccg_soundtrack_enabled"], ccg_soundtrack_enabled)
+	WRITE_FILE(S["ccg_presets_are_virtual"], ccg_presets_are_virtual)
 
 	WRITE_FILE(S["version"] , SAVEFILE_VERSION_MAX)		//updates (or failing that the sanity checks) will ensure data is not invalid at load. Assume up-to-date
 
@@ -590,6 +592,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	var/root_ccg_active_deck_index = ccg_active_deck_index
 	var/root_ccg_deckbuilder_view_mode = ccg_deckbuilder_view_mode
 	var/root_ccg_soundtrack_enabled = ccg_soundtrack_enabled
+	var/root_ccg_presets_are_virtual = ccg_presets_are_virtual
 	S["ccg_known_rare_cards"] >> ccg_known_rare_cards
 	ccg_known_rare_cards = SANITIZE_LIST(ccg_known_rare_cards)
 	S["ccg_selected_deck"] >> ccg_selected_deck
@@ -603,6 +606,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["ccg_active_deck_index"] >> ccg_active_deck_index
 	S["ccg_deckbuilder_view_mode"] >> ccg_deckbuilder_view_mode
 	S["ccg_soundtrack_enabled"] >> ccg_soundtrack_enabled
+	S["ccg_presets_are_virtual"] >> ccg_presets_are_virtual
 	if(!length(ccg_known_rare_cards) && length(root_ccg_known_rare_cards))
 		ccg_known_rare_cards = root_ccg_known_rare_cards
 	if(!length(ccg_selected_deck) && length(root_ccg_selected_deck))
@@ -621,6 +625,8 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		ccg_deckbuilder_view_mode = root_ccg_deckbuilder_view_mode
 	if(isnull(ccg_soundtrack_enabled))
 		ccg_soundtrack_enabled = root_ccg_soundtrack_enabled
+	if(isnull(ccg_presets_are_virtual))
+		ccg_presets_are_virtual = root_ccg_presets_are_virtual
 	if(!length(ccg_saved_deck_cards) && length(ccg_selected_deck))
 		ccg_saved_deck_cards = ccg_selected_deck.Copy()
 	ccg_clean_cards()
@@ -1180,6 +1186,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["ccg_active_deck_index"], ccg_active_deck_index)
 	WRITE_FILE(S["ccg_deckbuilder_view_mode"], ccg_deckbuilder_view_mode)
 	WRITE_FILE(S["ccg_soundtrack_enabled"], ccg_soundtrack_enabled)
+	WRITE_FILE(S["ccg_presets_are_virtual"], ccg_presets_are_virtual)
 
 	//Familiar Files
 	WRITE_FILE(S["familiar_names"] , familiar_prefs.familiar_names)

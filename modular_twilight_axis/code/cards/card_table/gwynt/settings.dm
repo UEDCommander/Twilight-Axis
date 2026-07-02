@@ -20,6 +20,7 @@
 	var/ccg_active_deck_index = 1
 	var/ccg_deckbuilder_view_mode = CCG_VIEW_SETUP
 	var/ccg_soundtrack_enabled = FALSE
+	var/ccg_presets_are_virtual = FALSE
 
 /datum/preferences/proc/ccg_known_cards()
 	var/list/cards = list()
@@ -80,7 +81,7 @@
 	if(!card)
 		return 0
 	var/deck_limit = ccg_card_deck_limit(card)
-	return min(deck_limit, ccg_card_pool_count(card_id) + ccg_card_count_in_list(deck_cards, card_id))
+	return min(deck_limit, ccg_card_pool_count(card_id))
 
 /datum/preferences/proc/ccg_default_deck_spec(index = 1)
 	var/datum/ccg_faction/faction = ccg_faction(CCG_FACTION_AZURIA)
@@ -193,6 +194,7 @@
 	if(!saved_leader || saved_leader.faction != ccg_saved_deck_faction)
 		ccg_saved_deck_leader = saved_faction.default_leader
 	ccg_normalize_saved_decks()
+	ccg_virtualize_saved_deck_pool()
 
 	var/list/valid_rare = list()
 	for(var/card_id in ccg_known_rare_cards)
@@ -237,6 +239,22 @@
 	ccg_saved_deck_cards = valid_saved_deck
 	ccg_store_active_deck(ccg_saved_deck_cards, ccg_saved_deck_faction, ccg_saved_deck_leader)
 
+/datum/preferences/proc/ccg_virtualize_saved_deck_pool()
+	if(ccg_presets_are_virtual)
+		return FALSE
+	if(islist(ccg_saved_decks))
+		for(var/spec in ccg_saved_decks)
+			if(!islist(spec))
+				continue
+			var/list/cards = spec["cards"]
+			if(!islist(cards))
+				continue
+			for(var/card_id in cards)
+				if(ccg_card(card_id))
+					ccg_known_rare_cards[card_id] = (ccg_known_rare_cards[card_id] || 0) + 1
+	ccg_presets_are_virtual = TRUE
+	return TRUE
+
 /datum/preferences/proc/ccg_save()
 	ccg_clean_cards()
 	var/character_saved = save_character()
@@ -262,6 +280,7 @@
 	ccg_saved_deck_leader = "azuria_ducal_marshal"
 	ccg_saved_decks = list()
 	ccg_active_deck_index = 1
+	ccg_presets_are_virtual = TRUE
 	if(seed_base_pool)
 		ccg_seed_base_pool()
 	ccg_normalize_saved_decks()
@@ -350,6 +369,9 @@
 	for(var/atom/movable/thing in H.get_all_contents())
 		if(istype(thing, /obj/item/ccg_card_single))
 			var/obj/item/ccg_card_single/single = thing
+			if(single.pooled)
+				qdel(single)
+				continue
 			if(ccg_add_known_card(single.card_id))
 				changed = TRUE
 				qdel(single)
@@ -418,7 +440,6 @@
 	if(!islist(card_ids))
 		return FALSE
 	ccg_clean_cards()
-	var/list/old_known_cards = islist(ccg_known_rare_cards) ? ccg_known_rare_cards.Copy() : list()
 	var/list/old_saved_deck_cards = islist(ccg_saved_deck_cards) ? ccg_saved_deck_cards.Copy() : list()
 	var/old_saved_deck_faction = ccg_saved_deck_faction
 	var/old_saved_deck_leader = ccg_saved_deck_leader
@@ -426,8 +447,6 @@
 	var/list/old_active_spec = ccg_saved_decks[ccg_active_deck_index]
 	if(!istext(deck_name) || !length(deck_name))
 		deck_name = islist(old_active_spec) ? old_active_spec["name"] : "Deck [ccg_active_deck_index]"
-	for(var/old_card_id in old_saved_deck_cards)
-		ccg_known_rare_cards[old_card_id] = (ccg_known_rare_cards[old_card_id] || 0) + 1
 	var/list/spec = ccg_normalize_deck_spec(list(
 		"name" = deck_name,
 		"cards" = card_ids,
@@ -440,29 +459,13 @@
 		needed_counts[card_id] = (needed_counts[card_id] || 0) + 1
 	for(var/card_id in needed_counts)
 		if(needed_counts[card_id] > ccg_card_pool_count(card_id))
-			ccg_known_rare_cards = old_known_cards
 			ccg_saved_deck_cards = old_saved_deck_cards
 			ccg_saved_deck_faction = old_saved_deck_faction
 			ccg_saved_deck_leader = old_saved_deck_leader
 			ccg_saved_decks = old_saved_decks
 			return FALSE
-	for(var/card_id in import_cards)
-		var/count = ccg_known_rare_cards[card_id]
-		if(!count)
-			ccg_known_rare_cards = old_known_cards
-			ccg_saved_deck_cards = old_saved_deck_cards
-			ccg_saved_deck_faction = old_saved_deck_faction
-			ccg_saved_deck_leader = old_saved_deck_leader
-			ccg_saved_decks = old_saved_decks
-			return FALSE
-		count--
-		if(count > 0)
-			ccg_known_rare_cards[card_id] = count
-		else
-			ccg_known_rare_cards -= card_id
 	ccg_store_active_deck(import_cards, spec["faction"], spec["leader"], spec["name"])
 	if(!ccg_save())
-		ccg_known_rare_cards = old_known_cards
 		ccg_saved_deck_cards = old_saved_deck_cards
 		ccg_saved_deck_faction = old_saved_deck_faction
 		ccg_saved_deck_leader = old_saved_deck_leader
@@ -756,8 +759,6 @@
 				return TRUE
 			if(ccg_card_count_in_list(target_cards, card_id) >= P.ccg_available_for_deck(target_cards, card_id))
 				return TRUE
-			if(ccg_card_is_limited(add_card) && !P.ccg_take_pool_card(card_id))
-				return TRUE
 			target_cards += card_id
 			if(deck)
 				deck.card_ids = target_cards
@@ -765,7 +766,6 @@
 				target_cards.Cut(target_cards.len, target_cards.len + 1)
 				if(deck)
 					deck.card_ids = target_cards
-				P.ccg_return_pool_card(card_id)
 				to_chat(user, span_warning("The card deck failed to save. The card was not added."))
 			return TRUE
 		if("remove")
@@ -775,10 +775,6 @@
 				var/index = target_cards.Find(card_id)
 				if(!index)
 					break
-				var/datum/ccg_card/remove_card = ccg_card(card_id)
-				if(ccg_card_is_limited(remove_card) && !P.ccg_return_pool_card(card_id))
-					to_chat(user, span_warning("The card pool failed to save. The card was not removed."))
-					return TRUE
 				target_cards.Cut(index, index + 1)
 			if(deck)
 				deck.card_ids = target_cards
@@ -789,10 +785,6 @@
 				return TRUE
 			var/index = target_cards.Find(card_id)
 			if(index)
-				var/datum/ccg_card/remove_one_card = ccg_card(card_id)
-				if(ccg_card_is_limited(remove_one_card) && !P.ccg_return_pool_card(card_id))
-					to_chat(user, span_warning("The card pool failed to save. The card was not removed."))
-					return TRUE
 				target_cards.Cut(index, index + 1)
 				if(deck)
 					deck.card_ids = target_cards
@@ -801,13 +793,7 @@
 		if("clear")
 			if(!islist(target_cards))
 				return TRUE
-			var/list/remaining_cards = list()
-			for(var/removed_id in target_cards)
-				var/datum/ccg_card/clear_card = ccg_card(removed_id)
-				if(ccg_card_is_limited(clear_card) && !P.ccg_return_pool_card(removed_id))
-					remaining_cards += removed_id
-					continue
-			target_cards = remaining_cards
+			target_cards = list()
 			if(deck)
 				deck.card_ids = target_cards
 			P.ccg_save_deck_snapshot(target_cards, target_faction_id, target_leader_id)
@@ -820,20 +806,10 @@
 			var/old_faction_id = target_faction_id
 			var/old_leader_id = target_leader_id
 			var/list/old_card_ids = target_cards.Copy()
-			var/list/removed_cards = list()
 			var/list/kept_cards = list()
 			for(var/checked_id in target_cards)
 				if(ccg_card_allowed_for_faction(checked_id, faction.id))
 					kept_cards += checked_id
-				else
-					removed_cards += checked_id
-			for(var/removed_id in removed_cards)
-				if(!P.ccg_return_pool_card(removed_id))
-					if(deck)
-						deck.set_faction(old_faction_id, old_leader_id)
-						deck.card_ids = old_card_ids
-					to_chat(user, span_warning("The card pool failed to save. The faction was not changed."))
-					return TRUE
 			if(deck)
 				deck.set_faction(faction.id, faction.default_leader)
 				deck.card_ids = kept_cards
@@ -915,12 +891,7 @@
 			if(!card_index)
 				return TRUE
 			deck.card_ids.Cut(card_index, card_index + 1)
-			if(!P.ccg_return_pool_card(card_id))
-				deck.card_ids.Insert(card_index, card_id)
-				to_chat(user, span_warning("The card pool failed to save. The card was not removed."))
-				return TRUE
 			if(!P.ccg_save_deck_snapshot(deck.card_ids, deck.faction_id, deck.leader_id))
-				P.ccg_take_pool_card(card_id)
 				deck.card_ids.Insert(card_index, card_id)
 				to_chat(user, span_warning("The card deck failed to save. The card was not removed."))
 				return TRUE

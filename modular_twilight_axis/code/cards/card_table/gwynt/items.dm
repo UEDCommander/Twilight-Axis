@@ -184,14 +184,9 @@
 		to_chat(user, span_warning("This card belongs to another deck faction."))
 		return FALSE
 	var/datum/preferences/P = user.client?.prefs
-	if(single.pooled && !P?.ccg_take_pool_card(single.card_id))
-		to_chat(user, span_warning("The card pool failed to save. The card was not added."))
-		return FALSE
 	card_ids += single.card_id
 	if(!P?.ccg_save_deck_snapshot(card_ids, faction_id, leader_id))
 		card_ids.Cut(card_ids.len, card_ids.len + 1)
-		if(single.pooled)
-			P?.ccg_return_pool_card(single.card_id)
 		to_chat(user, span_warning("The card battle deck failed to save. The card was not added."))
 		return FALSE
 	to_chat(user, span_notice("You add [card.name] to the card battle deck."))
