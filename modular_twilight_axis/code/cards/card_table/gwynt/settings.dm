@@ -573,6 +573,9 @@
 	new_deck.set_faction(ccg_saved_deck_faction, ccg_saved_deck_leader)
 	new_deck.set_cards(deck_cards)
 	new_deck.owner_ckey = user.ckey
+	var/owner_name = user.real_name || user.name
+	if(owner_name)
+		new_deck.name = "Card Deck of [owner_name]"
 	new_deck.loaded_from_preferences = TRUE
 	user.put_in_hands(new_deck)
 	user.mind.ccg_deck_requested = TRUE
@@ -649,7 +652,7 @@
 /datum/ccg_deckbuilder_panel/ui_interact(mob/user, datum/tgui/ui)
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
-		ui = new(user, src, "CardDeckBuilder", deck ? "Card Deck Builder" : "Gwynt Decks")
+		ui = new(user, src, "CardDeckBuilder", deck ? "Card Deck Builder" : "CCG Deck")
 		ui.open()
 
 /datum/ccg_deckbuilder_panel/ui_data(mob/user)
@@ -928,8 +931,8 @@
 			return TRUE
 	return FALSE
 
-/mob/living/verb/open_gwynt_decks()
-	set name = "Gwynt Decks"
+/mob/living/verb/open_ccg_deck()
+	set name = "CCG Deck"
 	set category = "IC"
 	if(!client)
 		return

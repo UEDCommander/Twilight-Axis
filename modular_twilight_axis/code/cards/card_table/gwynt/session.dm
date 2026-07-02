@@ -9,7 +9,12 @@
 #define CCG_SOUND_SPECIAL 'modular_twilight_axis/sound/gwynt/gwynt_special.wav'
 #define CCG_SOUND_HORN 'modular_twilight_axis/sound/gwynt/gwynt_horn.wav'
 #define CCG_SOUND_GAME_END 'modular_twilight_axis/sound/gwynt/gwynt_game_end.wav'
-#define CCG_SOUNDTRACK 'modular_twilight_axis/sound/gwynt/gwynt_soundtrack.wav'
+#define CCG_SOUNDTRACK_VOLUME 50
+#define CCG_SOUNDTRACK_DEFAULT 'modular_twilight_axis/sound/gwynt/gwynt_soundtrack.wav'
+#define CCG_SOUNDTRACK_HARD_CARDS 'modular_twilight_axis/sound/gwynt/gwynt_soundtrack.wav'
+#define CCG_SOUNDTRACK_BANDIT_CONFRONTATION 'modular_twilight_axis/sound/gwynt/gwynt_soundtrack.wav'
+#define CCG_SOUNDTRACK_VAMPIRE_NEGOTIATIONS 'modular_twilight_axis/sound/gwynt/gwynt_soundtrack.wav'
+#define CCG_SOUNDTRACK_LAST_STAND 'modular_twilight_axis/sound/gwynt/gwynt_soundtrack.wav'
 
 /datum/ccg_played_card
 	var/card_id
@@ -44,6 +49,8 @@
 	var/list/leader_ids = list()
 	var/list/leader_used = list()
 	var/list/carryover_cards = list()
+	var/soundtrack_file = CCG_SOUNDTRACK_DEFAULT
+	var/soundtrack_title = "Default"
 	var/turn = CCG_SIDE_ONE
 	var/round_number = 1
 	var/in_mulligan = TRUE
@@ -82,6 +89,7 @@
 	leader_used[CCG_SIDE_TWO] = FALSE
 	carryover_cards[CCG_SIDE_ONE] = list()
 	carryover_cards[CCG_SIDE_TWO] = list()
+	select_soundtrack(p1, p2)
 	start_round(TRUE)
 
 /datum/ccg_match/Destroy()
@@ -117,6 +125,37 @@
 	carryover_cards = null
 	return ..()
 
+/datum/ccg_match/proc/select_soundtrack(mob/player_one, mob/player_two)
+	soundtrack_file = CCG_SOUNDTRACK_DEFAULT
+	soundtrack_title = "Default"
+	if(!prob(10))
+		return
+	if(ccg_soundtrack_has_antag(player_one, /datum/antagonist/lich) || ccg_soundtrack_has_antag(player_two, /datum/antagonist/lich))
+		soundtrack_file = CCG_SOUNDTRACK_LAST_STAND
+		soundtrack_title = "Last Stand"
+		return
+	if(ccg_soundtrack_is_open_vampire_lord(player_one) || ccg_soundtrack_is_open_vampire_lord(player_two))
+		soundtrack_file = CCG_SOUNDTRACK_VAMPIRE_NEGOTIATIONS
+		soundtrack_title = "Vampire Negotiations"
+		return
+	if(ccg_soundtrack_has_antag(player_one, /datum/antagonist/bandit) || ccg_soundtrack_has_antag(player_two, /datum/antagonist/bandit))
+		soundtrack_file = CCG_SOUNDTRACK_BANDIT_CONFRONTATION
+		soundtrack_title = "Bandit Confrontation"
+		return
+	soundtrack_file = CCG_SOUNDTRACK_HARD_CARDS
+	soundtrack_title = "Hard Cards"
+
+/proc/ccg_soundtrack_has_antag(mob/player, antag_path)
+	return !!player?.mind?.has_antag_datum(antag_path)
+
+/proc/ccg_soundtrack_is_open_vampire_lord(mob/player)
+	if(!player?.mind?.has_antag_datum(/datum/antagonist/vampire/lord))
+		return FALSE
+	var/datum/component/vampire_disguise/disguise_comp = player.GetComponent(/datum/component/vampire_disguise)
+	if(disguise_comp?.disguised)
+		return FALSE
+	return TRUE
+
 /datum/ccg_match/proc/update_deck_uis()
 	if(owner)
 		SStgui.update_uis(owner)
@@ -150,7 +189,7 @@
 	if(!user.client.prefs.ccg_soundtrack_enabled || result_text)
 		stop_soundtrack_for(user)
 		return
-	var/sound/track = sound(CCG_SOUNDTRACK, repeat = TRUE, wait = 0, channel = CHANNEL_GWYNT_MUSIC, volume = user.client.prefs.musicvol)
+	var/sound/track = sound(soundtrack_file, repeat = TRUE, wait = 0, channel = CHANNEL_GWYNT_MUSIC, volume = CCG_SOUNDTRACK_VOLUME)
 	SEND_SOUND(user, track)
 
 /datum/ccg_match/proc/start_round(first_round = FALSE)
@@ -775,6 +814,7 @@
 	data["discardCount"] = my_side ? length(discarded[my_side]) : 0
 	data["opponentHandCount"] = my_side ? length(hands[opposite(my_side)]) : 0
 	data["soundtrackEnabled"] = user?.client?.prefs?.ccg_soundtrack_enabled ? TRUE : FALSE
+	data["soundtrackTitle"] = soundtrack_title
 	data["board"] = build_board_data()
 	return data
 
@@ -878,4 +918,9 @@
 #undef CCG_SOUND_SPECIAL
 #undef CCG_SOUND_HORN
 #undef CCG_SOUND_GAME_END
-#undef CCG_SOUNDTRACK
+#undef CCG_SOUNDTRACK_VOLUME
+#undef CCG_SOUNDTRACK_DEFAULT
+#undef CCG_SOUNDTRACK_HARD_CARDS
+#undef CCG_SOUNDTRACK_BANDIT_CONFRONTATION
+#undef CCG_SOUNDTRACK_VAMPIRE_NEGOTIATIONS
+#undef CCG_SOUNDTRACK_LAST_STAND

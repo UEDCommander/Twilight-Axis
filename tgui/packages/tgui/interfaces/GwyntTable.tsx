@@ -69,6 +69,7 @@ type Data = {
   deckCount?: number;
   discardCount?: number;
   soundtrackEnabled?: boolean;
+  soundtrackTitle?: string;
   targets?: {
     revive?: Card[];
     decoy?: Card[];
@@ -1627,7 +1628,10 @@ export const GwyntTable = () => {
                 onClick={() => act('toggle_soundtrack')}
                 mb="8px"
               >
-                Soundtrack: {data.soundtrackEnabled ? 'On' : 'Off'}
+                Soundtrack:{' '}
+                {data.soundtrackEnabled
+                  ? data.soundtrackTitle || 'On'
+                  : 'Off'}
               </Button>
               <MatchInfoPanel data={data} phase={phase} weather={weather} />
               {selectedCard && (

@@ -68,6 +68,9 @@
 	set_faction(faction.id, P.ccg_saved_deck_leader)
 	set_cards(length(P.ccg_saved_deck_cards) ? P.ccg_saved_deck_cards : P.ccg_first_deck_cards(faction.id))
 	owner_ckey = user.ckey
+	var/owner_name = user.real_name || user.name
+	if(owner_name)
+		name = "Card Deck of [owner_name]"
 	loaded_from_preferences = TRUE
 	return TRUE
 
@@ -326,12 +329,14 @@
 	if(!user.client?.prefs?.ccg_save_deck_snapshot(card_ids, faction_id, leader_id))
 		to_chat(user, span_warning("The card battle deck failed to save. It stays in your hands."))
 		return TRUE
-	user.mind.special_items["Card Battle Deck"] = /obj/item/ccg_deck/stashed
+	var/owner_name = user.real_name || user.name
+	user.mind.special_items["Card Deck of [owner_name]"] = /obj/item/ccg_deck/stashed
 	to_chat(user, span_notice("You return the card battle deck to your stash."))
 	qdel(src)
 	return TRUE
 
 /obj/item/ccg_deck/stashed
+	name = "card deck"
 	load_from_preferences = TRUE
 
 /obj/item/ccg_card_single
