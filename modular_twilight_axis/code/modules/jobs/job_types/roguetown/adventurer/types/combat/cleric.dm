@@ -247,7 +247,7 @@
 //Penitent
 /datum/advclass/cleric/penitent
 	name = "Penitent"
-	tutorial = "The All-Father was struck - and yet endured. You are sworn to mirror His wound. Violence is beneath you; endurance is not. Flesh fails. Faith does not."
+	tutorial = "The Psydon was struck - and yet endured. You are sworn to mirror His wound. Violence is beneath you; endurance is not. Flesh fails. Faith does not."
 	outfit = /datum/outfit/job/roguetown/adventurer/penitent
 	forbidden_races = list(RACES_OOZE)
 	allowed_patrons = list(/datum/patron/old_god)
@@ -293,23 +293,25 @@
 	backr = /obj/item/storage/backpack/rogue/satchel/otavan
 	belt = /obj/item/storage/belt/rogue/leather/black
 	pants = /obj/item/clothing/under/roguetown/heavy_leather_pants/otavan
-	shirt = /obj/item/clothing/cloak/absolutionistrobe/black
+	armor = /obj/item/clothing/suit/roguetown/armor/regenerating/skin/penitent
+	shoes = /obj/item/clothing/shoes/roguetown/boots/psydonboots
+	cloak = /obj/item/clothing/cloak/absolutionistrobe/black
 	head = /obj/item/clothing/head/roguetown/helmet/blacksteel/psychains
 	backpack_contents = list(
 		/obj/item/storage/belt/rogue/pouch/coins/poor = 1,
 		/obj/item/flashlight/flare/torch = 1,
 		/obj/item/storage/belt/rogue/pouch/medicine = 1
 		)
-	if(should_wear_femme_clothes(H))
-		mask = /obj/item/clothing/head/roguetown/roguehood/psydon/black
 	if(should_wear_masc_clothes(H))
+		mask = /obj/item/clothing/head/roguetown/roguehood/psydon/black
+	if(should_wear_femme_clothes(H))
 		mask = /obj/item/clothing/mask/rogue/blindfold/psydon
 	if(H.mind)
-		H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/diagnose/secular)
 		H.mind.RemoveSpell(/datum/action/cooldown/spell/psydon/respite)
 		H.mind.AddSpell(new /datum/action/cooldown/spell/psydon/persist)
 		H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/psydonlux_tamper) // absolver's bleed transfer
 		H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/psydonvicariate) // nerfed no-rez version of absolver's absolve
+		H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/diagnose/secular)
 
 	var/datum/devotion/C = new /datum/devotion(H, H.patron)
 	C.grant_miracles(H, cleric_tier = CLERIC_T3, passive_gain = (CLERIC_REGEN_ABSOLVER / 2), start_maxed = TRUE)
@@ -322,3 +324,9 @@
 	icon_state = "psyblindfold"
 	item_state = "psyblindfold"
 	tint = 1
+
+/obj/item/clothing/suit/roguetown/armor/regenerating/skin/penitent
+	name = "vicarious skin"
+	desc = "You do not strike back; you merely endure, a living monument to His eternal sacrifice."
+	max_integrity = 250
+	repair_time = 30 SECONDS
