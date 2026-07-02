@@ -2,19 +2,24 @@
 #define CCG_SIDE_TWO "two"
 #define CCG_HAND_SIZE 12
 #define CCG_MULLIGAN_COUNT 2
-#define CCG_SOUND_MULLIGAN 'modular_twilight_axis/sound/gwynt/gwynt_mulligan.wav'
-#define CCG_SOUND_ROUND_START 'modular_twilight_axis/sound/gwynt/gwynt_round_start.wav'
-#define CCG_SOUND_CARD_PLAY 'modular_twilight_axis/sound/gwynt/gwynt_card_play.wav'
-#define CCG_SOUND_WEATHER 'modular_twilight_axis/sound/gwynt/gwynt_weather.wav'
-#define CCG_SOUND_SPECIAL 'modular_twilight_axis/sound/gwynt/gwynt_special.wav'
-#define CCG_SOUND_HORN 'modular_twilight_axis/sound/gwynt/gwynt_horn.wav'
-#define CCG_SOUND_GAME_END 'modular_twilight_axis/sound/gwynt/gwynt_game_end.wav'
+#define CCG_SOUND_MULLIGAN 'sound/items/cardshuffle.ogg'
+#define CCG_SOUND_ROUND_START 'sound/items/blackeye_warn.ogg'
+#define CCG_SOUND_CARD_PLAY 'sound/items/book_page.ogg'
+#define CCG_SOUND_WEATHER 'sound/items/gem.ogg'
+#define CCG_SOUND_SPECIAL 'sound/items/firelight.ogg'
+#define CCG_SOUND_HORN 'sound/items/horn/signalhorn.ogg'
+#define CCG_SOUND_GAME_END 'sound/items/horn/rghorn.ogg'
 #define CCG_SOUNDTRACK_VOLUME 50
-#define CCG_SOUNDTRACK_DEFAULT 'modular_twilight_axis/sound/gwynt/gwynt_soundtrack.wav'
-#define CCG_SOUNDTRACK_HARD_CARDS 'modular_twilight_axis/sound/gwynt/gwynt_soundtrack.wav'
-#define CCG_SOUNDTRACK_BANDIT_CONFRONTATION 'modular_twilight_axis/sound/gwynt/gwynt_soundtrack.wav'
-#define CCG_SOUNDTRACK_VAMPIRE_NEGOTIATIONS 'modular_twilight_axis/sound/gwynt/gwynt_soundtrack.wav'
-#define CCG_SOUNDTRACK_LAST_STAND 'modular_twilight_axis/sound/gwynt/gwynt_soundtrack.wav'
+#define CCG_SOUNDTRACK_DEFAULT 'modular_twilight_axis/sound/gwynt/gwynt_slow_tension.ogg'
+#define CCG_SOUNDTRACK_HARD_CARDS 'modular_twilight_axis/sound/gwynt/gwynt_hard_cards.ogg'
+#define CCG_SOUNDTRACK_BANDIT_CONFRONTATION 'modular_twilight_axis/sound/gwynt/gwynt_bandit_confrontation.ogg'
+#define CCG_SOUNDTRACK_VAMPIRE_NEGOTIATIONS 'modular_twilight_axis/sound/gwynt/gwynt_vampire_negotiations.ogg'
+#define CCG_SOUNDTRACK_LAST_SIEGE 'modular_twilight_axis/sound/gwynt/gwynt_last_siege.ogg'
+#define CCG_SOUNDTRACK_DEFAULT_LENGTH 1950
+#define CCG_SOUNDTRACK_HARD_CARDS_LENGTH 1645
+#define CCG_SOUNDTRACK_BANDIT_CONFRONTATION_LENGTH 1498
+#define CCG_SOUNDTRACK_VAMPIRE_NEGOTIATIONS_LENGTH 1433
+#define CCG_SOUNDTRACK_LAST_SIEGE_LENGTH 1296
 
 /datum/ccg_played_card
 	var/card_id
@@ -49,8 +54,10 @@
 	var/list/leader_ids = list()
 	var/list/leader_used = list()
 	var/list/carryover_cards = list()
-	var/soundtrack_file = CCG_SOUNDTRACK_DEFAULT
-	var/soundtrack_title = "Default"
+	var/list/soundtrack_timers = list()
+	var/list/soundtrack_files = list()
+	var/list/soundtrack_titles = list()
+	var/list/soundtrack_repeats = list()
 	var/turn = CCG_SIDE_ONE
 	var/round_number = 1
 	var/in_mulligan = TRUE
@@ -89,10 +96,12 @@
 	leader_used[CCG_SIDE_TWO] = FALSE
 	carryover_cards[CCG_SIDE_ONE] = list()
 	carryover_cards[CCG_SIDE_TWO] = list()
-	select_soundtrack(p1, p2)
+	select_soundtrack_for(p1, p1, p2)
+	select_soundtrack_for(p2, p1, p2)
 	start_round(TRUE)
 
 /datum/ccg_match/Destroy()
+	stop_soundtracks()
 	if(owner)
 		if(owner.match == src)
 			owner.match = null
@@ -123,27 +132,41 @@
 	leader_ids = null
 	leader_used = null
 	carryover_cards = null
+	soundtrack_timers = null
+	soundtrack_files = null
+	soundtrack_titles = null
+	soundtrack_repeats = null
 	return ..()
 
-/datum/ccg_match/proc/select_soundtrack(mob/player_one, mob/player_two)
-	soundtrack_file = CCG_SOUNDTRACK_DEFAULT
-	soundtrack_title = "Default"
+/datum/ccg_match/proc/select_soundtrack_for(mob/listener, mob/player_one, mob/player_two)
+	if(!listener?.ckey)
+		return
+	var/target_ckey = listener.ckey
+	soundtrack_files[target_ckey] = ccg_combat_soundtrack_file(listener)
+	soundtrack_titles[target_ckey] = ccg_combat_soundtrack_title(listener)
+	soundtrack_repeats[target_ckey] = TRUE
 	if(!prob(10))
 		return
 	if(ccg_soundtrack_has_antag(player_one, /datum/antagonist/lich) || ccg_soundtrack_has_antag(player_two, /datum/antagonist/lich))
-		soundtrack_file = CCG_SOUNDTRACK_LAST_STAND
-		soundtrack_title = "Last Stand"
+		soundtrack_files[target_ckey] = CCG_SOUNDTRACK_LAST_SIEGE
+		soundtrack_titles[target_ckey] = "Last Siege"
+		soundtrack_repeats[target_ckey] = FALSE
 		return
 	if(ccg_soundtrack_is_open_vampire_lord(player_one) || ccg_soundtrack_is_open_vampire_lord(player_two))
-		soundtrack_file = CCG_SOUNDTRACK_VAMPIRE_NEGOTIATIONS
-		soundtrack_title = "Vampire Negotiations"
+		soundtrack_files[target_ckey] = CCG_SOUNDTRACK_VAMPIRE_NEGOTIATIONS
+		soundtrack_titles[target_ckey] = "Vampire Negotiations"
+		soundtrack_repeats[target_ckey] = FALSE
 		return
 	if(ccg_soundtrack_has_antag(player_one, /datum/antagonist/bandit) || ccg_soundtrack_has_antag(player_two, /datum/antagonist/bandit))
-		soundtrack_file = CCG_SOUNDTRACK_BANDIT_CONFRONTATION
-		soundtrack_title = "Bandit Confrontation"
+		soundtrack_files[target_ckey] = CCG_SOUNDTRACK_BANDIT_CONFRONTATION
+		soundtrack_titles[target_ckey] = "Bandit Confrontation"
+		soundtrack_repeats[target_ckey] = FALSE
 		return
-	soundtrack_file = CCG_SOUNDTRACK_HARD_CARDS
-	soundtrack_title = "Hard Cards"
+
+/datum/ccg_match/proc/soundtrack_title_for(mob/user)
+	if(user?.ckey && soundtrack_titles[user.ckey])
+		return soundtrack_titles[user.ckey]
+	return "Combat Music"
 
 /proc/ccg_soundtrack_has_antag(mob/player, antag_path)
 	return !!player?.mind?.has_antag_datum(antag_path)
@@ -172,12 +195,15 @@
 		playsound(source, sound_file, 50, FALSE)
 
 /datum/ccg_match/proc/stop_soundtrack_for(mob/user)
-	if(user)
-		user.stop_sound_channel(CHANNEL_GWYNT_MUSIC)
+	stop_soundtrack_for_ckey(user?.ckey)
 
 /datum/ccg_match/proc/stop_soundtrack_for_ckey(target_ckey)
+	if(target_ckey && soundtrack_timers[target_ckey])
+		deltimer(soundtrack_timers[target_ckey])
+		soundtrack_timers -= target_ckey
 	var/mob/player = ccg_find_mob_by_ckey(target_ckey)
-	stop_soundtrack_for(player)
+	if(player)
+		player.stop_sound_channel(CHANNEL_GWYNT_MUSIC)
 
 /datum/ccg_match/proc/stop_soundtracks()
 	stop_soundtrack_for_ckey(player_ckeys[CCG_SIDE_ONE])
@@ -189,8 +215,84 @@
 	if(!user.client.prefs.ccg_soundtrack_enabled || result_text)
 		stop_soundtrack_for(user)
 		return
-	var/sound/track = sound(soundtrack_file, repeat = TRUE, wait = 0, channel = CHANNEL_GWYNT_MUSIC, volume = CCG_SOUNDTRACK_VOLUME)
+	if(!soundtrack_files[user.ckey])
+		select_soundtrack_for(user, ccg_find_mob_by_ckey(player_ckeys[CCG_SIDE_ONE]), ccg_find_mob_by_ckey(player_ckeys[CCG_SIDE_TWO]))
+	if(!soundtrack_files[user.ckey])
+		return
+	if(ccg_is_soundtrack_playing(user))
+		return
+	stop_soundtrack_for(user)
+	var/soundtrack_file = soundtrack_files[user.ckey]
+	var/repeat_track = soundtrack_repeats[user.ckey] ? TRUE : FALSE
+	var/sound/track = sound(soundtrack_file, repeat = repeat_track, wait = 0, channel = CHANNEL_GWYNT_MUSIC, volume = ccg_soundtrack_volume(user))
 	SEND_SOUND(user, track)
+	if(!repeat_track)
+		soundtrack_timers[user.ckey] = addtimer(CALLBACK(src, PROC_REF(restart_soundtrack_for_ckey), user.ckey), ccg_soundtrack_length(soundtrack_file), TIMER_STOPPABLE)
+
+/datum/ccg_match/proc/restart_soundtrack_for_ckey(target_ckey)
+	if(soundtrack_timers[target_ckey])
+		soundtrack_timers -= target_ckey
+	if(result_text)
+		return
+	var/mob/player = ccg_find_mob_by_ckey(target_ckey)
+	if(player?.client?.prefs?.ccg_soundtrack_enabled)
+		player.stop_sound_channel(CHANNEL_GWYNT_MUSIC)
+		select_soundtrack_for(player, ccg_find_mob_by_ckey(player_ckeys[CCG_SIDE_ONE]), ccg_find_mob_by_ckey(player_ckeys[CCG_SIDE_TWO]))
+		sync_soundtrack_for(player)
+
+/proc/ccg_soundtrack_length(soundtrack_file)
+	switch(soundtrack_file)
+		if(CCG_SOUNDTRACK_HARD_CARDS)
+			return CCG_SOUNDTRACK_HARD_CARDS_LENGTH
+		if(CCG_SOUNDTRACK_BANDIT_CONFRONTATION)
+			return CCG_SOUNDTRACK_BANDIT_CONFRONTATION_LENGTH
+		if(CCG_SOUNDTRACK_VAMPIRE_NEGOTIATIONS)
+			return CCG_SOUNDTRACK_VAMPIRE_NEGOTIATIONS_LENGTH
+		if(CCG_SOUNDTRACK_LAST_SIEGE)
+			return CCG_SOUNDTRACK_LAST_SIEGE_LENGTH
+	return CCG_SOUNDTRACK_DEFAULT_LENGTH
+
+/proc/ccg_is_soundtrack_playing(mob/user)
+	if(!user?.client)
+		return FALSE
+	for(var/sound/S in user.client.SoundQuery())
+		if(S.channel == CHANNEL_GWYNT_MUSIC)
+			return TRUE
+	return FALSE
+
+/proc/ccg_soundtrack_volume(mob/user)
+	if(user?.client?.prefs)
+		return user.client.prefs.musicvol
+	return CCG_SOUNDTRACK_VOLUME
+
+/proc/ccg_combat_soundtrack_file(mob/user)
+	var/soundtrack_file
+	if(isliving(user))
+		var/mob/living/L = user
+		soundtrack_file = ccg_pick_soundtrack_file(L.cmode_music_override)
+	if(!soundtrack_file)
+		soundtrack_file = ccg_pick_soundtrack_file(user?.cmode_music)
+	if(!soundtrack_file)
+		soundtrack_file = ccg_pick_soundtrack_file(user?.client?.prefs?.combat_music?.musicpath)
+	return soundtrack_file || CCG_SOUNDTRACK_DEFAULT
+
+/proc/ccg_combat_soundtrack_title(mob/user)
+	if(isliving(user))
+		var/mob/living/L = user
+		if(length(L.cmode_music_override) && L.cmode_music_override_name)
+			return L.cmode_music_override_name
+	if(user?.client?.prefs?.combat_music?.name && length(user.client.prefs.combat_music.musicpath))
+		return user.client.prefs.combat_music.name
+	return "Combat Music"
+
+/proc/ccg_pick_soundtrack_file(soundtrack_source)
+	if(islist(soundtrack_source))
+		var/list/soundtrack_list = soundtrack_source
+		if(length(soundtrack_list))
+			return pick(soundtrack_list)
+	if(isfile(soundtrack_source) || istext(soundtrack_source))
+		return soundtrack_source
+	return null
 
 /datum/ccg_match/proc/start_round(first_round = FALSE)
 	board = list(
@@ -814,7 +916,7 @@
 	data["discardCount"] = my_side ? length(discarded[my_side]) : 0
 	data["opponentHandCount"] = my_side ? length(hands[opposite(my_side)]) : 0
 	data["soundtrackEnabled"] = user?.client?.prefs?.ccg_soundtrack_enabled ? TRUE : FALSE
-	data["soundtrackTitle"] = soundtrack_title
+	data["soundtrackTitle"] = soundtrack_title_for(user)
 	data["board"] = build_board_data()
 	return data
 
@@ -923,4 +1025,9 @@
 #undef CCG_SOUNDTRACK_HARD_CARDS
 #undef CCG_SOUNDTRACK_BANDIT_CONFRONTATION
 #undef CCG_SOUNDTRACK_VAMPIRE_NEGOTIATIONS
-#undef CCG_SOUNDTRACK_LAST_STAND
+#undef CCG_SOUNDTRACK_LAST_SIEGE
+#undef CCG_SOUNDTRACK_DEFAULT_LENGTH
+#undef CCG_SOUNDTRACK_HARD_CARDS_LENGTH
+#undef CCG_SOUNDTRACK_BANDIT_CONFRONTATION_LENGTH
+#undef CCG_SOUNDTRACK_VAMPIRE_NEGOTIATIONS_LENGTH
+#undef CCG_SOUNDTRACK_LAST_SIEGE_LENGTH

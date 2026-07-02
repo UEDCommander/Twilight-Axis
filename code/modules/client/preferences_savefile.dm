@@ -281,7 +281,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["ccg_presets_are_virtual"] >> ccg_presets_are_virtual
 	if(!length(ccg_saved_deck_cards) && length(ccg_selected_deck))
 		ccg_saved_deck_cards = ccg_selected_deck.Copy()
-	ccg_clean_cards()
+	ccg_load_or_migrate_sql()
 
 	verify_keybindings_valid()
 	return TRUE
@@ -629,7 +629,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		ccg_presets_are_virtual = root_ccg_presets_are_virtual
 	if(!length(ccg_saved_deck_cards) && length(ccg_selected_deck))
 		ccg_saved_deck_cards = ccg_selected_deck.Copy()
-	ccg_clean_cards()
+	ccg_load_or_migrate_sql()
 
 /datum/preferences/proc/_load_loadout_colours(S)
 	S["loadout_1_hex"] >> loadout_1_hex

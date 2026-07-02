@@ -6,6 +6,11 @@
 #define CCG_STASH_DECK_KEY "ccg_deck_cards"
 #define CCG_STASH_FACTION_KEY "ccg_deck_faction"
 #define CCG_STASH_LEADER_KEY "ccg_deck_leader"
+#define CCG_SQL_LOAD_FAILED 0
+#define CCG_SQL_LOAD_EMPTY 1
+#define CCG_SQL_LOAD_LOADED 2
+#define CCG_STARTER_ARCHER_CARD "base_crossbow"
+#define CCG_STARTER_SIEGE_CARD "base_blacksmith"
 
 /datum/mind
 	var/ccg_deck_requested = FALSE
@@ -160,7 +165,8 @@
 	if(!islist(ccg_saved_decks) || !length(ccg_saved_decks))
 		return FALSE
 	var/list/spec = ccg_saved_decks[clamp(ccg_active_deck_index, 1, length(ccg_saved_decks))]
-	ccg_saved_deck_cards = islist(spec["cards"]) ? spec["cards"].Copy() : list()
+	var/list/cards = spec["cards"]
+	ccg_saved_deck_cards = islist(cards) ? cards.Copy() : list()
 	ccg_saved_deck_faction = spec["faction"]
 	ccg_saved_deck_leader = spec["leader"]
 	return TRUE
@@ -194,7 +200,6 @@
 	if(!saved_leader || saved_leader.faction != ccg_saved_deck_faction)
 		ccg_saved_deck_leader = saved_faction.default_leader
 	ccg_normalize_saved_decks()
-	ccg_virtualize_saved_deck_pool()
 
 	var/list/valid_rare = list()
 	for(var/card_id in ccg_known_rare_cards)
@@ -255,8 +260,225 @@
 	ccg_presets_are_virtual = TRUE
 	return TRUE
 
+/datum/preferences/proc/ccg_account_ckey()
+	return parent?.ckey
+
+/datum/preferences/proc/ccg_has_legacy_savefile_data()
+	return length(ccg_known_rare_cards) || length(ccg_selected_deck) || length(ccg_saved_deck_cards) || length(ccg_saved_decks)
+
+/datum/preferences/proc/ccg_execute_sql(sql, list/arguments = null)
+	var/datum/DBQuery/query = SSdbcore.NewQuery(sql, arguments)
+	if(!query)
+		return FALSE
+	var/success = query.Execute(async = FALSE)
+	qdel(query)
+	return success
+
+/datum/preferences/proc/ccg_load_or_migrate_sql()
+	var/legacy_data = ccg_has_legacy_savefile_data()
+	var/load_result = ccg_load_sql()
+	if(load_result == CCG_SQL_LOAD_LOADED)
+		ccg_clean_cards()
+		var/changed = ccg_virtualize_saved_deck_pool()
+		if(!length(ccg_known_rare_cards))
+			ccg_seed_base_pool()
+			ccg_clean_cards()
+			changed = TRUE
+		if(changed)
+			ccg_save_sql()
+		return TRUE
+	ccg_clean_cards()
+	if(legacy_data)
+		if(ccg_virtualize_saved_deck_pool())
+			ccg_clean_cards()
+		if(load_result == CCG_SQL_LOAD_EMPTY)
+			return ccg_save_sql()
+	else if(load_result == CCG_SQL_LOAD_EMPTY)
+		ccg_seed_base_pool()
+		ccg_clean_cards()
+		return ccg_save_sql()
+	return FALSE
+
+/datum/preferences/proc/ccg_load_sql()
+	var/account_ckey = ccg_account_ckey()
+	if(!account_ckey || !SSdbcore.Connect())
+		return CCG_SQL_LOAD_FAILED
+	var/loaded_data = FALSE
+
+	var/list/settings = null
+	var/datum/DBQuery/settings_query = SSdbcore.NewQuery({"
+		SELECT active_deck_index, deckbuilder_view_mode, soundtrack_enabled, presets_are_virtual
+		FROM [format_table_name("ccg_settings")]
+		WHERE ckey = :ckey
+	"}, list("ckey" = account_ckey))
+	if(!settings_query || !settings_query.Execute(async = FALSE, log_error = FALSE))
+		if(settings_query)
+			qdel(settings_query)
+		return CCG_SQL_LOAD_FAILED
+	if(settings_query.NextRow())
+		settings = settings_query.item
+		loaded_data = TRUE
+	qdel(settings_query)
+
+	var/list/collection = list()
+	var/datum/DBQuery/collection_query = SSdbcore.NewQuery({"
+		SELECT card_id, amount
+		FROM [format_table_name("ccg_collection")]
+		WHERE ckey = :ckey
+	"}, list("ckey" = account_ckey))
+	if(!collection_query || !collection_query.Execute(async = FALSE, log_error = FALSE))
+		if(collection_query)
+			qdel(collection_query)
+		return CCG_SQL_LOAD_FAILED
+	while(collection_query.NextRow())
+		var/card_id = collection_query.item[1]
+		var/amount = round(text2num("[collection_query.item[2]]") || 0)
+		if(istext(card_id) && amount > 0)
+			collection[card_id] = amount
+			loaded_data = TRUE
+	qdel(collection_query)
+
+	var/list/loaded_decks = list()
+	var/list/deck_by_slot = list()
+	var/datum/DBQuery/deck_query = SSdbcore.NewQuery({"
+		SELECT deck_slot, name, faction, leader
+		FROM [format_table_name("ccg_decks")]
+		WHERE ckey = :ckey
+		ORDER BY deck_slot ASC
+	"}, list("ckey" = account_ckey))
+	if(!deck_query || !deck_query.Execute(async = FALSE, log_error = FALSE))
+		if(deck_query)
+			qdel(deck_query)
+		return CCG_SQL_LOAD_FAILED
+	while(deck_query.NextRow())
+		var/slot = round(text2num("[deck_query.item[1]]") || 0)
+		if(slot <= 0 || slot > CCG_MAX_SAVED_DECKS)
+			continue
+		var/list/spec = list(
+			"name" = deck_query.item[2],
+			"cards" = list(),
+			"faction" = deck_query.item[3],
+			"leader" = deck_query.item[4],
+		)
+		deck_by_slot["[slot]"] = spec
+		loaded_decks += list(spec)
+		loaded_data = TRUE
+	qdel(deck_query)
+
+	var/datum/DBQuery/card_query = SSdbcore.NewQuery({"
+		SELECT deck_slot, card_id
+		FROM [format_table_name("ccg_deck_cards")]
+		WHERE ckey = :ckey
+		ORDER BY deck_slot ASC, card_position ASC
+	"}, list("ckey" = account_ckey))
+	if(!card_query || !card_query.Execute(async = FALSE, log_error = FALSE))
+		if(card_query)
+			qdel(card_query)
+		return CCG_SQL_LOAD_FAILED
+	while(card_query.NextRow())
+		var/slot = round(text2num("[card_query.item[1]]") || 0)
+		var/list/spec = deck_by_slot["[slot]"]
+		if(!islist(spec))
+			continue
+		var/list/cards = spec["cards"]
+		cards += card_query.item[2]
+		loaded_data = TRUE
+	qdel(card_query)
+
+	if(!loaded_data)
+		return CCG_SQL_LOAD_EMPTY
+
+	ccg_known_rare_cards = collection
+	ccg_saved_decks = loaded_decks
+	if(settings)
+		ccg_active_deck_index = round(text2num("[settings[1]]") || 1)
+		ccg_deckbuilder_view_mode = settings[2]
+		ccg_soundtrack_enabled = text2num("[settings[3]]") ? TRUE : FALSE
+		ccg_presets_are_virtual = text2num("[settings[4]]") ? TRUE : FALSE
+	return CCG_SQL_LOAD_LOADED
+
+/datum/preferences/proc/ccg_save_sql()
+	var/account_ckey = ccg_account_ckey()
+	if(!account_ckey || !SSdbcore.Connect())
+		return FALSE
+	ccg_clean_cards()
+
+	if(!ccg_execute_sql("START TRANSACTION"))
+		return FALSE
+
+	var/success = TRUE
+	success = success && ccg_execute_sql("DELETE FROM [format_table_name("ccg_deck_cards")] WHERE ckey = :ckey", list("ckey" = account_ckey))
+	success = success && ccg_execute_sql("DELETE FROM [format_table_name("ccg_decks")] WHERE ckey = :ckey", list("ckey" = account_ckey))
+	success = success && ccg_execute_sql("DELETE FROM [format_table_name("ccg_collection")] WHERE ckey = :ckey", list("ckey" = account_ckey))
+	success = success && ccg_execute_sql({"
+		INSERT INTO [format_table_name("ccg_settings")] (ckey, active_deck_index, deckbuilder_view_mode, soundtrack_enabled, presets_are_virtual)
+		VALUES (:ckey, :active_deck_index, :deckbuilder_view_mode, :soundtrack_enabled, :presets_are_virtual)
+		ON DUPLICATE KEY UPDATE
+			active_deck_index = :active_deck_index,
+			deckbuilder_view_mode = :deckbuilder_view_mode,
+			soundtrack_enabled = :soundtrack_enabled,
+			presets_are_virtual = :presets_are_virtual
+	"}, list(
+		"ckey" = account_ckey,
+		"active_deck_index" = ccg_active_deck_index,
+		"deckbuilder_view_mode" = ccg_deckbuilder_view_mode,
+		"soundtrack_enabled" = ccg_soundtrack_enabled ? 1 : 0,
+		"presets_are_virtual" = ccg_presets_are_virtual ? 1 : 0,
+	))
+
+	var/list/collection_rows = list()
+	for(var/card_id in ccg_known_rare_cards)
+		var/amount = round(ccg_known_rare_cards[card_id] || 0)
+		if(amount <= 0)
+			continue
+		collection_rows += list(list(
+			"ckey" = account_ckey,
+			"card_id" = card_id,
+			"amount" = amount,
+		))
+	if(success && length(collection_rows))
+		success = SSdbcore.MassInsert(format_table_name("ccg_collection"), collection_rows, async = FALSE)
+
+	var/list/deck_rows = list()
+	var/list/card_rows = list()
+	var/deck_slot = 1
+	for(var/spec in ccg_saved_decks)
+		if(!islist(spec) || deck_slot > CCG_MAX_SAVED_DECKS)
+			continue
+		var/list/normalized = ccg_normalize_deck_spec(spec, deck_slot)
+		deck_rows += list(list(
+			"ckey" = account_ckey,
+			"deck_slot" = deck_slot,
+			"name" = normalized["name"],
+			"faction" = normalized["faction"],
+			"leader" = normalized["leader"],
+		))
+		var/card_position = 1
+		var/list/cards = normalized["cards"]
+		for(var/card_id in cards)
+			card_rows += list(list(
+				"ckey" = account_ckey,
+				"deck_slot" = deck_slot,
+				"card_position" = card_position,
+				"card_id" = card_id,
+			))
+			card_position++
+		deck_slot++
+	if(success && length(deck_rows))
+		success = SSdbcore.MassInsert(format_table_name("ccg_decks"), deck_rows, async = FALSE)
+	if(success && length(card_rows))
+		success = SSdbcore.MassInsert(format_table_name("ccg_deck_cards"), card_rows, async = FALSE)
+
+	if(success)
+		success = ccg_execute_sql("COMMIT")
+	else
+		ccg_execute_sql("ROLLBACK")
+	return success
+
 /datum/preferences/proc/ccg_save()
 	ccg_clean_cards()
+	if(ccg_save_sql())
+		return TRUE
 	var/character_saved = save_character()
 	var/preferences_saved = save_preferences()
 	return character_saved || preferences_saved
@@ -264,13 +486,29 @@
 /datum/preferences/proc/ccg_seed_base_pool()
 	if(!length(GLOB.ccg_base_card_ids))
 		ccg_build_card_registry()
+	ccg_add_seed_card(ccg_starter_infantry_card_id(), 2)
+	ccg_add_seed_card(CCG_STARTER_ARCHER_CARD, 2)
+	ccg_add_seed_card(CCG_STARTER_SIEGE_CARD, 1)
+	for(var/card_id in list("base_frost", "base_fog", "base_rain", "base_clear"))
+		ccg_add_seed_card(card_id, 1)
+
+/datum/preferences/proc/ccg_add_seed_card(card_id, amount = 1)
+	var/datum/ccg_card/card = ccg_card(card_id)
+	if(!card)
+		return FALSE
+	amount = clamp(round(amount || 0), 0, ccg_card_deck_limit(card))
+	if(amount <= 0)
+		return FALSE
+	ccg_known_rare_cards[card_id] = max(ccg_known_rare_cards[card_id] || 0, amount)
+	return TRUE
+
+/datum/preferences/proc/ccg_starter_infantry_card_id()
+	var/faction_id = ccg_saved_deck_faction || CCG_FACTION_AZURIA
 	for(var/card_id in GLOB.ccg_base_card_ids)
 		var/datum/ccg_card/card = ccg_card(card_id)
-		if(!card)
-			continue
-		if(ccg_known_rare_cards[card_id])
-			continue
-		ccg_known_rare_cards[card_id] = ccg_card_deck_limit(card)
+		if(card && card.faction == faction_id && card.row == CCG_ROW_INFANTRY)
+			return card_id
+	return "base_militia"
 
 /datum/preferences/proc/ccg_reset_collection(seed_base_pool = TRUE)
 	ccg_known_rare_cards = list()
@@ -919,3 +1157,5 @@
 #undef CCG_STASH_DECK_KEY
 #undef CCG_STASH_FACTION_KEY
 #undef CCG_STASH_LEADER_KEY
+#undef CCG_STARTER_ARCHER_CARD
+#undef CCG_STARTER_SIEGE_CARD

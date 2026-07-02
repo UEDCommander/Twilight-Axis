@@ -99,8 +99,7 @@ const rarityColor: Record<CardRarity, string> = {
 const panelStyle = {
   border: '1px solid rgba(148,163,184,0.22)',
   borderRadius: '5px',
-  background:
-    'linear-gradient(180deg, rgba(15,18,27,0.9), rgba(5,7,12,0.72))',
+  background: 'linear-gradient(180deg, rgba(15,18,27,0.9), rgba(5,7,12,0.72))',
   boxShadow: 'inset 0 0 18px rgba(0,0,0,0.36)',
 };
 
@@ -127,13 +126,7 @@ const PanelLabel = ({ children }: { children: ReactNode }) => (
   </div>
 );
 
-const StatTile = ({
-  label,
-  value,
-}: {
-  label: string;
-  value: ReactNode;
-}) => (
+const StatTile = ({ label, value }: { label: string; value: ReactNode }) => (
   <div
     style={{
       padding: '7px 8px',
@@ -325,6 +318,75 @@ const cardIconDisplay = (card: Card) => {
   };
 };
 
+const CardTooltip = ({
+  card,
+  compact,
+  tooltip,
+  tooltipGap,
+  tooltipPlacement,
+  tooltipWidth,
+}: {
+  card: Card;
+  compact: boolean;
+  tooltip: string[];
+  tooltipGap: number;
+  tooltipPlacement: {
+    side: 'left' | 'center' | 'right';
+    vertical: 'above' | 'below';
+  };
+  tooltipWidth: number;
+}) => (
+  <div
+    style={{
+      position: 'absolute',
+      left:
+        tooltipPlacement.side === 'right'
+          ? undefined
+          : tooltipPlacement.side === 'left'
+            ? 0
+            : '50%',
+      right: tooltipPlacement.side === 'right' ? 0 : undefined,
+      top:
+        tooltipPlacement.vertical === 'below'
+          ? `calc(100% + ${tooltipGap}px)`
+          : undefined,
+      bottom:
+        tooltipPlacement.vertical === 'above'
+          ? `calc(100% + ${tooltipGap}px)`
+          : undefined,
+      width: `${tooltipWidth}px`,
+      maxWidth: '70vw',
+      padding: compact ? '12px' : '16px',
+      border: '2px solid rgba(248,250,252,0.85)',
+      borderRadius: '6px',
+      backgroundColor: 'rgba(5,7,11,0.96)',
+      color: '#f8fafc',
+      fontSize: compact ? '14px' : '18px',
+      lineHeight: 1.25,
+      zIndex: 1000,
+      boxShadow: '0 8px 24px rgba(0,0,0,0.85)',
+      pointerEvents: 'none',
+      transform:
+        tooltipPlacement.side === 'center' ? 'translateX(-50%)' : undefined,
+      whiteSpace: 'normal',
+      overflowWrap: 'break-word',
+    }}
+  >
+    <div
+      style={{
+        color: rarityColor[card.rarity],
+        fontWeight: 900,
+        marginBottom: compact ? '8px' : '10px',
+      }}
+    >
+      {tooltip[0]}
+    </div>
+    {tooltip.slice(1).map((line) => (
+      <div key={line}>{line}</div>
+    ))}
+  </div>
+);
+
 const CardFace = ({
   card,
   disabled = false,
@@ -351,6 +413,7 @@ const CardFace = ({
   const tooltipWidth = compact ? 136 : 188;
   const tooltipGap = compact ? 8 : 10;
   const iconDisplay = cardIconDisplay(card);
+  const dimmed = disabled && !unavailable;
   const updateTooltipPlacement = (cardElement: HTMLElement) => {
     const rect = cardElement.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
@@ -384,7 +447,6 @@ const CardFace = ({
           'linear-gradient(180deg, rgba(35,39,48,0.98), rgba(14,16,22,0.98))',
         boxShadow: `0 0 0 1px rgba(0,0,0,0.7), 0 0 10px ${rarityColor[card.rarity]}33`,
         cursor: onClick && !disabled ? 'pointer' : 'default',
-        opacity: disabled && !unavailable ? 0.62 : 1,
         transform: hovered ? 'scale(1.15)' : 'scale(1)',
         transformOrigin: 'center center',
         transition: 'transform 140ms ease, z-index 140ms ease',
@@ -409,32 +471,42 @@ const CardFace = ({
       onMouseMove={(event) => updateTooltipPlacement(event.currentTarget)}
       onMouseLeave={() => setHovered(false)}
     >
-      {!!card.art && (
-        <img
-          src={resolveAsset(card.art)}
-          style={{
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            filter: unavailable
-              ? 'grayscale(1) brightness(0.16) contrast(0.85)'
-              : undefined,
-            zIndex: 0,
-          }}
-        />
-      )}
       <div
         style={{
           position: 'absolute',
           inset: 0,
-          background: unavailable
-            ? 'linear-gradient(180deg, rgba(0,0,0,0.84), rgba(0,0,0,0.78) 32%, rgba(0,0,0,0.94))'
-            : 'linear-gradient(180deg, rgba(0,0,0,0.34), rgba(0,0,0,0.04) 32%, rgba(0,0,0,0.62))',
+          opacity: dimmed ? 0.62 : 1,
+          pointerEvents: 'none',
           zIndex: 0,
         }}
-      />
+      >
+        {!!card.art && (
+          <img
+            src={resolveAsset(card.art)}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              filter: unavailable
+                ? 'grayscale(1) brightness(0.16) contrast(0.85)'
+                : undefined,
+              zIndex: 0,
+            }}
+          />
+        )}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: unavailable
+              ? 'linear-gradient(180deg, rgba(0,0,0,0.84), rgba(0,0,0,0.78) 32%, rgba(0,0,0,0.94))'
+              : 'linear-gradient(180deg, rgba(0,0,0,0.34), rgba(0,0,0,0.04) 32%, rgba(0,0,0,0.62))',
+            zIndex: 1,
+          }}
+        />
+      </div>
       <div
         style={{
           position: 'relative',
@@ -443,6 +515,7 @@ const CardFace = ({
           justifyContent: 'space-between',
           alignItems: 'center',
           width: '100%',
+          opacity: dimmed ? 0.62 : 1,
         }}
       >
         <CardIconBadge
@@ -452,13 +525,13 @@ const CardFace = ({
         />
         {!iconDisplay.singleTypeIcon &&
           (!!iconDisplay.effectIcon || !!iconDisplay.effectBadge) && (
-          <CardIconBadge
-            asset={iconDisplay.effectIcon}
-            label={iconDisplay.effectBadge}
-            compact={compact}
-            title={effectDescriptions[card.effect] || card.effect}
-          />
-        )}
+            <CardIconBadge
+              asset={iconDisplay.effectIcon}
+              label={iconDisplay.effectBadge}
+              compact={compact}
+              title={effectDescriptions[card.effect] || card.effect}
+            />
+          )}
       </div>
       {!!count && (
         <div
@@ -477,63 +550,21 @@ const CardFace = ({
             textAlign: 'center',
             lineHeight: compact ? '14px' : '18px',
             zIndex: 2,
+            opacity: dimmed ? 0.62 : 1,
           }}
         >
           x{count}
         </div>
       )}
       {hovered && (
-        <div
-          style={{
-            position: 'absolute',
-            left:
-              tooltipPlacement.side === 'right'
-                ? undefined
-                : tooltipPlacement.side === 'left'
-                  ? 0
-                  : '50%',
-            right: tooltipPlacement.side === 'right' ? 0 : undefined,
-            top:
-              tooltipPlacement.vertical === 'below'
-                ? `calc(100% + ${tooltipGap}px)`
-                : undefined,
-            bottom:
-              tooltipPlacement.vertical === 'above'
-                ? `calc(100% + ${tooltipGap}px)`
-                : undefined,
-            width: `${tooltipWidth}px`,
-            maxWidth: '70vw',
-            padding: compact ? '12px' : '16px',
-            border: '2px solid rgba(248,250,252,0.85)',
-            borderRadius: '6px',
-            backgroundColor: 'rgba(5,7,11,0.96)',
-            color: '#f8fafc',
-            fontSize: compact ? '14px' : '18px',
-            lineHeight: 1.25,
-            zIndex: 1000,
-            boxShadow: '0 8px 24px rgba(0,0,0,0.85)',
-            pointerEvents: 'none',
-            transform:
-              tooltipPlacement.side === 'center'
-                ? 'translateX(-50%)'
-                : undefined,
-            whiteSpace: 'normal',
-            overflowWrap: 'break-word',
-          }}
-        >
-          <div
-            style={{
-              color: rarityColor[card.rarity],
-              fontWeight: 900,
-              marginBottom: compact ? '8px' : '10px',
-            }}
-          >
-            {tooltip[0]}
-          </div>
-          {tooltip.slice(1).map((line) => (
-            <div key={line}>{line}</div>
-          ))}
-        </div>
+        <CardTooltip
+          card={card}
+          compact={compact}
+          tooltip={tooltip}
+          tooltipGap={tooltipGap}
+          tooltipPlacement={tooltipPlacement}
+          tooltipWidth={tooltipWidth}
+        />
       )}
 
       <div
@@ -545,6 +576,7 @@ const CardFace = ({
           alignItems: 'center',
           width: '100%',
           minHeight: compact ? '22px' : '28px',
+          opacity: dimmed ? 0.62 : 1,
         }}
       >
         <div
@@ -785,9 +817,7 @@ export const CardDeckBuilder = () => {
                 onSelected={(index) => {
                   const deckIndex = Number(index);
                   if (
-                    (data.decks || []).some(
-                      (deck) => deck.index === deckIndex,
-                    )
+                    (data.decks || []).some((deck) => deck.index === deckIndex)
                   ) {
                     act('select_deck', { index: deckIndex });
                   } else {
@@ -851,8 +881,7 @@ export const CardDeckBuilder = () => {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns:
-                showPool && showDeck ? '2fr 1fr' : '1fr',
+              gridTemplateColumns: showPool && showDeck ? '2fr 1fr' : '1fr',
               gap: '12px',
               minHeight: 0,
               flex: 1,
@@ -1067,7 +1096,9 @@ export const CardDeckBuilder = () => {
                     {data.selectedCount} / {data.deckSize}
                   </ProgressBar>
                 </Panel>
-                <div style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}>
+                <div
+                  style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}
+                >
                   <Button color="bad" onClick={() => act('clear')}>
                     Clear
                   </Button>
