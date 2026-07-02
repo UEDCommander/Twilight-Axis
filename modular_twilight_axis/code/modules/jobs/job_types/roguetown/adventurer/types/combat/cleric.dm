@@ -252,12 +252,13 @@
 	forbidden_races = list(RACES_OOZE)
 	allowed_patrons = list(/datum/patron/old_god)
 	subclass_languages = list(/datum/language/otavan)
-	min_pq = 10
+	min_pq = 9
 	traits_applied = list(
+		TRAIT_IGNOREDAMAGESLOWDOWN,
 		TRAIT_PACIFISM,
 		TRAIT_EMPATH,
 		TRAIT_CRITICAL_RESISTANCE,
-		TRAIT_STEELHEARTED
+		TRAIT_STEELHEARTED,
 	)
 	subclass_stats = list(
 		STATKEY_CON = 4,
@@ -267,20 +268,19 @@
 		STATKEY_STR = -1,
 	)
 	subclass_skills = list(
-		/datum/skill/misc/athletics = SKILL_LEVEL_APPRENTICE,
-		/datum/skill/misc/climbing = SKILL_LEVEL_JOURNEYMAN,
-		/datum/skill/craft/sewing = SKILL_LEVEL_JOURNEYMAN,
+		/datum/skill/misc/medicine = SKILL_LEVEL_JOURNEYMAN,
 		/datum/skill/misc/reading = SKILL_LEVEL_JOURNEYMAN,
-		/datum/skill/combat/unarmed = SKILL_LEVEL_NOVICE,
-		/datum/skill/misc/medicine = SKILL_LEVEL_EXPERT,
-		/datum/skill/craft/cooking = SKILL_LEVEL_APPRENTICE,
-		/datum/skill/labor/fishing = SKILL_LEVEL_APPRENTICE,
-		/datum/skill/misc/swimming = SKILL_LEVEL_APPRENTICE,
-		/datum/skill/craft/crafting = SKILL_LEVEL_APPRENTICE,
 		/datum/skill/magic/holy = SKILL_LEVEL_JOURNEYMAN,
+		/datum/skill/craft/sewing = SKILL_LEVEL_APPRENTICE,
+		/datum/skill/craft/cooking = SKILL_LEVEL_APPRENTICE,
+		/datum/skill/craft/sewing = SKILL_LEVEL_APPRENTICE,
+		/datum/skill/labor/fishing = SKILL_LEVEL_APPRENTICE,
+		/datum/skill/misc/athletics = SKILL_LEVEL_APPRENTICE,
+		/datum/skill/misc/climbing = SKILL_LEVEL_APPRENTICE,
+		/datum/skill/misc/swimming = SKILL_LEVEL_NOVICE,
 	)
 	subclass_stashed_items = list(
-		"Tome of Psydon" = /obj/item/book/rogue/bibble/psy
+		"The Book" = /obj/item/book/rogue/bibble/psy
 	)
 	extra_context = "This is a psydonite only subclass. You will be a pacifist and are able to draw upon a weaker version of the abilities known by a Absolver."
 
@@ -296,13 +296,14 @@
 	shirt = /obj/item/clothing/cloak/absolutionistrobe/black
 	head = /obj/item/clothing/head/roguetown/helmet/blacksteel/psychains
 	backpack_contents = list(
-		/obj/item/rogueweapon/huntingknife = 1,
+		/obj/item/storage/belt/rogue/pouch/coins/poor = 1,
+		/obj/item/flashlight/flare/torch = 1,
 		/obj/item/storage/belt/rogue/pouch/medicine = 1
 		)
-	if(H.pronouns == SHE_HER || H.pronouns == THEY_THEM)
-		mask = /obj/item/clothing/mask/rogue/blindfold/psydon
-	else
+	if(should_wear_femme_clothes(H))
 		mask = /obj/item/clothing/head/roguetown/roguehood/psydon/black
+	if(should_wear_masc_clothes(H))
+		mask = /obj/item/clothing/mask/rogue/blindfold/psydon
 	if(H.mind)
 		H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/diagnose/secular)
 		H.mind.RemoveSpell(/datum/action/cooldown/spell/psydon/respite)
