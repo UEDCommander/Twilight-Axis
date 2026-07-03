@@ -88,7 +88,7 @@
 
 /obj/item/clothing/suit/roguetown/shirt/robe/hierophant/warscholar
 	name = "warscholar's kandys"
-	desc = "A thin piece of fabric worn under a robe to stop chafing and keep ones dignity if a harsh blow of wind comes through. Despite the light fabric, it offers decent protection."
+	desc = "A thin piece of fabric worn under a robe to stop chafing and keep one's dignity if a harsh blow of wind comes through. Despite the light fabric, it offers decent protection."
 	icon = 'modular_twilight_axis/icons/roguetown/clothing/armor.dmi'
 	mob_overlay_icon = 'modular_twilight_axis/icons/roguetown/clothing/onmob/armor.dmi'
 	icon_state = "psydongown"
@@ -103,7 +103,7 @@
 
 /obj/item/clothing/head/roguetown/roguehood/psydon/warscholar
 	name = "warscholar's pashmina"
-	desc = "A protective hood, favored by Golden Order. It offers reliable defense while allowing the wearer to remain focused amidst the chaos of battle."
+	desc = "A protective hood, favored by the Golden Order. It offers reliable defense while allowing the wearer to remain focused amidst the chaos of battle."
 	icon = 'modular_twilight_axis/icons/roguetown/clothing/head.dmi'
 	mob_overlay_icon = 'modular_twilight_axis/icons/roguetown/clothing/onmob/head.dmi'
 	icon_state = "psydonhijab"
