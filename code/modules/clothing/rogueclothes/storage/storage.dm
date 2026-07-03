@@ -127,10 +127,24 @@
 	sewrepair = FALSE
 	anvilrepair = /datum/skill/craft/armorsmithing
 
+/obj/item/storage/belt/rogue/leather/iron
+	name = "iron belt"
+	desc = "A fine leather belt that's been sleeved within many segments of iron, protecting its delicate innards from prying hands-and-blades."
+	icon_state = "ironplaque"
+	sewrepair = FALSE
+	anvilrepair = /datum/skill/craft/armorsmithing
+
 /obj/item/storage/belt/rogue/leather/steel/tasset
 	name = "tasseted belt"
 	desc = "A fine leather belt that's been sleeved within many segments of steel, and further reinforced with the tassets of a fluted cuirass."
 	icon_state = "steeltasset"
+	sewrepair = FALSE
+	anvilrepair = /datum/skill/craft/armorsmithing
+
+/obj/item/storage/belt/rogue/leather/iron/tasset
+	name = "tasseted iron belt"
+	desc = "A fine leather belt that's been sleeved within many segments of iron, and further reinforced with the tassets of a fluted cuirass."
+	icon_state = "irontasset"
 	sewrepair = FALSE
 	anvilrepair = /datum/skill/craft/armorsmithing
 

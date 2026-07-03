@@ -1734,8 +1734,8 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/enchantingkit/bigfoot_axe
 	donatitem = TRUE
 
-/datum/loadout_item/donator/aisuwand
-	name = "Donator Kit - Crystalline Wand - Required: Wand"
+/datum/loadout_item/donator/aisurapier
+	name = "Donator Kit - Crystalline Rapier - Required: Rapier"
 	category = list("Оружие", "Донат")
 	path = /obj/item/enchantingkit/aisuwand
 	donatitem = TRUE
@@ -2036,13 +2036,13 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	category = list("Оружие", "Донат")
 	path = /obj/item/enchantingkit/triumph_weaponkit_psy
 	donatitem = TRUE
-
+/*
 /datum/loadout_item/donator_nerocavalier
 	name = "Donator Kit - Blacksteel Longsword - Required: Longsword"
 	category = list("Оружие", "Донат")
 	path = /obj/item/enchantingkit/weapon/noire_flsword
 	donatitem = TRUE
-
+*/
 /datum/loadout_item/donator/nero_sword
 	name = "Donator Kit - Sylvan Longsword - Required: Longsword"
 	category = list("Оружие", "Донат")
@@ -3444,6 +3444,12 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	donatitem = TRUE
 	donat_tier = 1
 
+/datum/loadout_item/donator/bobby
+	name = "Donator Kit - Holy Astratan Bascinet - Required: Pigface Bascinet"
+	path = /obj/item/enchantingkit/bobby_helm
+	category = list("Броня", "Донат")
+	donat_tier = 2
+
 /datum/loadout_item/leathergloves
 	name = "Leather Gloves"
 	category = "Аксессуары"
@@ -3473,6 +3479,12 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	name = "Belt with Breechcloth"
 	category = list("Аксессуары", "Триумфы")
 	path = /obj/item/storage/belt/rogue/leather/battleskirt/breechcloth
+	triumph_cost = 3
+
+/datum/loadout_item/greatplumestandalone
+	name = "Helmet Decoration, Greatplume"
+	category = list("Аксессуары", "Триумфы")
+	path = /obj/item/clothing/head/roguetown/decoration/greatplume
 	triumph_cost = 3
 
 /datum/loadout_item/breechclothbeltalt
@@ -3977,3 +3989,10 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	category = list("Триумфы")
 	path = /obj/item/rogueweapon/scabbard/sheath/royal
 	triumph_cost = 13
+
+/datum/loadout_item/donat/sagesbighat
+	name = "Большая шляпа мудреца"
+	category = list("Головные уборы", "Донат")
+	path = /obj/item/clothing/head/roguetown/sagesbighat
+	donatitem = TRUE
+	ckeywhitelist = list("somethingawful917")
