@@ -3,7 +3,7 @@
 	tutorial = "You are a Warscholar of the Golden Cross Order, reluctantly attached to the Otavan Inquisition. \
 	Grounded in the unique Naledian Psydonite faith, you blend unwavering devotion with esoteric arts that orthodox Inquisitors view with profound suspicion. \
 	Your expertise lies in the Arcana of Reversed Decay—manipulating the very fabric of time to mend catastrophic wounds and purge demonic blights—alongside powerful protective wards designed to cast out ifrits and djinn. \
-	Though the Inquisition questions your methods and your dual veneration of the Allfather and Noc, they cannot deny your indispensability."
+	Though the Inquisition questions your methods and your dual veneration of the Psydon and Noc, they cannot deny your indispensability."
 	allowed_sexes = list(MALE, FEMALE)
 	outfit = /datum/outfit/job/roguetown/psydonianwarscholar
 	subclass_languages = list(/datum/language/otavan, /datum/language/raneshi)
