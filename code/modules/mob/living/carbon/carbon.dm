@@ -782,9 +782,6 @@
 
 		used_damage = avg_burn_factor * hardcrit_divisor
 
-		if((HAS_TRAIT(src, TRAIT_NOPAIN) || HAS_TRAIT(src, TRAIT_NOPAINSTUN)) && !HAS_TRAIT(src, TRAIT_NOBURN_RESIST))
-			used_damage /= FIRE_HARDCRIT_NOPAIN_MULT
-
 	if(used_damage < total_tox)
 		used_damage = total_tox
 	if(used_damage < total_oxy)

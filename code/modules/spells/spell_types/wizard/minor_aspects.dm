@@ -51,6 +51,7 @@
 	)
 	fixed_spells = list(
 		/datum/action/cooldown/spell/phase,
+		/datum/action/cooldown/spell/blink,
 	)
 
 /datum/magic_aspect/autowardry
