@@ -403,6 +403,9 @@
 		else if(W.charges < powder_per_reload)
 			user.visible_message("<span class='notice'>The [W.name] doesn't contain enough gunpowder to reload [src]!</span>")
 			return
+		else if(locktype == "Breech" && !(breech_open))
+			user.visible_message("You must open the breech first!")
+			return
 		else
 			switch(W.gunpowder)
 				if("fyrepowder", "holy fyrepowder", "psypowder")
