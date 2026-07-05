@@ -215,7 +215,7 @@
 /obj/item/quiver/twilight_bullet/paper/attackby(obj/A, loc, params)
 	if(istype(A, /obj/item/gun/ballistic/twilight_firearm/arquebus_pistol/puffer))
 		var/obj/item/gun/ballistic/twilight_firearm/arquebus_pistol/puffer/B = A
-		if(arrows.len && !B.chambered && B.cocked)
+		if(arrows.len && !B.chambered && B.breech_open)
 			for(var/AR in arrows)
 				if(istype(AR, /obj/item/ammo_casing/caseless/rogue/twilight_lead/paper))
 					arrows -= AR
