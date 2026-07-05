@@ -57,6 +57,15 @@
 		if(!eatarrow(A, loc))
 			to_chat(loc, span_warning("Full!"))
 		return
+	if(istype(A, /obj/item/gun/ballistic/twilight_firearm/arquebus_pistol/puffer) && istype(src, /obj/item/quiver/twilight_bullet/paper))
+		var/obj/item/gun/ballistic/twilight_firearm/arquebus_pistol/puffer/B = A
+		if(arrows.len && !B.chambered && B.breech_open)
+			for(var/AR in arrows)
+				if(istype(AR, /obj/item/ammo_casing/caseless/rogue/twilight_lead/paper))
+					arrows -= AR
+					B.attackby(AR, loc, params)
+					break
+		return
 	..()
 
 /obj/item/quiver/twilight_bullet/runed/Initialize()
@@ -212,17 +221,11 @@
 	max_storage = 20
 	ammo_type = /obj/item/ammo_casing/caseless/rogue/twilight_lead/paper
 
-/obj/item/quiver/twilight_bullet/paper/attackby(obj/A, loc, params)
-	if(istype(A, /obj/item/gun/ballistic/twilight_firearm/arquebus_pistol/puffer))
-		var/obj/item/gun/ballistic/twilight_firearm/arquebus_pistol/puffer/B = A
-		if(arrows.len && !B.chambered && B.breech_open)
-			for(var/AR in arrows)
-				if(istype(AR, /obj/item/ammo_casing/caseless/rogue/twilight_lead/paper))
-					arrows -= AR
-					B.attackby(AR, loc, params)
-					break
-		return
-	..()
+/obj/item/quiver/twilight_bullet/paper/update_icon()
+	if(arrows.len)
+		icon_state = "merc_pouch1"
+	else
+		icon_state = "merc_pouch0"
 
 /obj/item/quiver/twilight_bullet/paper/lead/Initialize()
 	. = ..()

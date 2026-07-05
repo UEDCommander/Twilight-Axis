@@ -302,6 +302,7 @@
 					playsound(src, "modular_twilight_axis/firearms/sound/musketcock.ogg",  100, FALSE)
 					user.visible_message("<span class='notice'>[user] has finished reloading [src].</span>")
 					reloaded = TRUE
+					breech_open = FALSE
 					if(advanced_icon)
 						icon = advanced_icon
 			else if(breech_open == TRUE)
@@ -602,7 +603,7 @@
 		else
 			icon = advanced_icon
 	spark_act()
-	if(locktype == "Matchlock" || locktype == "Wheellock")
+	if(locktype == "Matchlock" || locktype == "Wheellock" || locktype == "Breech")
 		..()
 		if(!silenced)
 			switch(gunpowder)
@@ -1090,6 +1091,8 @@
 	advanced_icon = 'modular_twilight_axis/firearms/icons/puffer/pistol.dmi'
 	advanced_icon_r = 'modular_twilight_axis/firearms/icons/puffer/pistol_r.dmi'
 	advanced_icon_f = 'modular_twilight_axis/firearms/icons/puffer/pistol_f.dmi'
+	advanced_icon_norod	= null
+	advanced_icon_r_norod = null
 	effective_range = 5
 	cartridge_wording = "bullet"
 	locktype = "Breech"
