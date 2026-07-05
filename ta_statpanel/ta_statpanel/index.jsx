@@ -158,19 +158,6 @@ function updateVerbs() {
   Byond.sendMessage('Update-Verbs');
 }
 
-function resetRuntimeTabs() {
-  byondTabs.clear();
-  const patch = {
-    hrefToken: null,
-    permanentTabs: [defaultTab],
-  };
-  if (state.currentTab !== defaultTab) {
-    patch.currentTab = defaultTab;
-    setByondTab(defaultTab);
-  }
-  setState(patch);
-}
-
 function tabChange(tab) {
   if (tab === state.currentTab) return;
   setByondTab(tab);
@@ -679,7 +666,6 @@ Byond.subscribeTo('remove_verb_list', (toRemove) => {
 
 Byond.subscribeTo('init_verbs', (payload) => {
   wipeVerbs();
-  resetRuntimeTabs();
   let verbTabs = [...payload.panel_tabs].sort();
   setState({ verbTabs });
   if (payload.verblist) {

@@ -1432,7 +1432,6 @@ GLOBAL_LIST_EMPTY(respawncounts)
 			continue
 		panel_tabs |= verb_to_init.category
 		verblist[++verblist.len] = list(verb_to_init.category, verb_to_init.name)
-	statbrowser_stats_shown = FALSE
 	stat_panel.send_message("init_verbs", list(panel_tabs = panel_tabs, verblist = verblist))
 
 /client/verb/fix_stat_panel()
