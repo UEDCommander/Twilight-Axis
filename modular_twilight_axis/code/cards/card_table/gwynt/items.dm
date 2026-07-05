@@ -78,8 +78,6 @@
 	. = ..()
 	if(load_from_preferences)
 		load_saved_deck(user)
-	if(owner_ckey && owner_ckey == user?.ckey)
-		user.client?.prefs?.ccg_save_deck_snapshot(card_ids, faction_id, leader_id)
 
 /obj/item/ccg_deck/proc/remove_cards_not_in_faction()
 	var/list/removed = list()
@@ -285,7 +283,7 @@
 		if("toggle_soundtrack")
 			if(user?.client?.prefs)
 				user.client.prefs.ccg_soundtrack_enabled = !user.client.prefs.ccg_soundtrack_enabled
-				user.client.prefs.save_preferences()
+				user.client.prefs.ccg_save()
 				active_match.sync_soundtrack_for(user)
 				active_match.update_deck_uis()
 				return TRUE
@@ -321,9 +319,6 @@
 		user.client?.prefs?.ccg_sync_cards_from_inventory(H)
 	if(!user.mind.special_items)
 		user.mind.special_items = list()
-	if(!user.client?.prefs?.ccg_save_deck_snapshot(card_ids, faction_id, leader_id))
-		to_chat(user, span_warning("The card battle deck failed to save. It stays in your hands."))
-		return TRUE
 	var/owner_name = user.real_name || user.name
 	user.mind.special_items["Card Deck of [owner_name]"] = /obj/item/ccg_deck/stashed
 	to_chat(user, span_notice("You return the card battle deck to your stash."))

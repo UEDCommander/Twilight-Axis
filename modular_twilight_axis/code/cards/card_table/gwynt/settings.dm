@@ -299,6 +299,13 @@
 		return ccg_save_sql()
 	return FALSE
 
+/datum/preferences/proc/ccg_require_sql(mob/user = null)
+	if(ccg_load_or_migrate_sql())
+		return TRUE
+	if(user)
+		to_chat(user, span_warning("The card collection database is unavailable. Try again later."))
+	return FALSE
+
 /datum/preferences/proc/ccg_load_sql()
 	var/account_ckey = ccg_account_ckey()
 	if(!account_ckey || !SSdbcore.Connect())
@@ -538,62 +545,12 @@
 	return TRUE
 
 /datum/preferences/proc/ccg_remove_known_cards_from_deck(list/card_ids)
-	if(!islist(card_ids) || !length(card_ids))
-		return FALSE
-	ccg_clean_cards()
-	var/list/old_known_cards = ccg_known_rare_cards.Copy()
-	for(var/card_id in card_ids)
-		var/datum/ccg_card/card = ccg_card(card_id)
-		if(ccg_card_is_limited(card))
-			var/count = ccg_known_rare_cards[card_id]
-			if(!count)
-				count = 0
-			count--
-			if(count > 0)
-				ccg_known_rare_cards[card_id] = count
-			else
-				ccg_known_rare_cards -= card_id
-	ccg_clean_cards()
-	if(!ccg_save())
-		ccg_known_rare_cards = old_known_cards
-		ccg_clean_cards()
-		return FALSE
 	return TRUE
 
 /datum/preferences/proc/ccg_take_pool_card(card_id)
-	var/datum/ccg_card/card = ccg_card(card_id)
-	if(!ccg_card_is_limited(card))
-		return TRUE
-	ccg_clean_cards()
-	var/count = ccg_known_rare_cards[card_id]
-	if(!count)
-		return FALSE
-	count--
-	if(count > 0)
-		ccg_known_rare_cards[card_id] = count
-	else
-		ccg_known_rare_cards -= card_id
-	if(!ccg_save())
-		ccg_known_rare_cards[card_id] = count + 1
-		ccg_clean_cards()
-		return FALSE
 	return TRUE
 
 /datum/preferences/proc/ccg_return_pool_card(card_id)
-	var/datum/ccg_card/card = ccg_card(card_id)
-	if(!ccg_card_is_limited(card))
-		return TRUE
-	ccg_clean_cards()
-	var/count = ccg_known_rare_cards[card_id]
-	if(!count)
-		count = 0
-	ccg_known_rare_cards[card_id] = count + 1
-	if(!ccg_save())
-		if(count > 0)
-			ccg_known_rare_cards[card_id] = count
-		else
-			ccg_known_rare_cards -= card_id
-		return FALSE
 	return TRUE
 
 /datum/preferences/proc/ccg_sync_cards_from_inventory(mob/living/carbon/human/H)
@@ -609,28 +566,6 @@
 			if(ccg_add_known_card(single.card_id))
 				changed = TRUE
 				qdel(single)
-		else if(istype(thing, /obj/item/ccg_deck))
-			var/obj/item/ccg_deck/deck = thing
-			var/datum/ccg_faction/faction = ccg_faction(deck.faction_id)
-			if(!faction)
-				faction = ccg_faction(CCG_FACTION_AZURIA)
-			ccg_saved_deck_cards = list()
-			var/list/card_counts = list()
-			for(var/card_id in deck.card_ids)
-				var/datum/ccg_card/card = ccg_card(card_id)
-				if(!card || !ccg_card_allowed_for_faction(card_id, faction.id) || ccg_saved_deck_cards.len >= CCG_DECK_SIZE)
-					continue
-				var/card_count = card_counts[card_id]
-				if(!card_count)
-					card_count = 0
-				if(card_count >= ccg_card_deck_limit(card))
-					continue
-				card_counts[card_id] = card_count + 1
-				ccg_saved_deck_cards += card_id
-			ccg_saved_deck_faction = faction.id
-			var/datum/ccg_leader/leader = ccg_leader(deck.leader_id)
-			ccg_saved_deck_leader = (leader && leader.faction == faction.id) ? leader.id : faction.default_leader
-			changed = TRUE
 	if(changed)
 		ccg_save()
 
@@ -780,7 +715,6 @@
 		var/stash_value = user.mind.special_items[item_name]
 		if(!islist(stash_value) || !islist(stash_value[CCG_STASH_DECK_KEY]))
 			continue
-		user.client?.prefs?.ccg_save_deck_snapshot(stash_value[CCG_STASH_DECK_KEY], stash_value[CCG_STASH_FACTION_KEY], stash_value[CCG_STASH_LEADER_KEY])
 		user.mind.special_items[item_name] = /obj/item/ccg_deck/stashed
 		changed = TRUE
 	return changed
@@ -794,6 +728,8 @@
 	return FALSE
 
 /datum/preferences/proc/ccg_give_deck_item(mob/user)
+	if(!ccg_require_sql(user))
+		return FALSE
 	ccg_clean_cards()
 	if(!user?.mind)
 		return FALSE
@@ -887,6 +823,9 @@
 	ccg_migrate_stashed_deck_specs(mob)
 
 /datum/ccg_deckbuilder_panel/ui_interact(mob/user, datum/tgui/ui)
+	var/datum/preferences/P = user?.client?.prefs
+	if(!P || !P.ccg_require_sql(user))
+		return
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
 		ui = new(user, src, "CardDeckBuilder", deck ? "Card Deck Builder" : "CCG Deck")
@@ -1005,6 +944,7 @@
 		if("remove")
 			if(!islist(target_cards))
 				return TRUE
+			var/list/remove_old_cards = target_cards.Copy()
 			while(card_id in target_cards)
 				var/index = target_cards.Find(card_id)
 				if(!index)
@@ -1012,25 +952,39 @@
 				target_cards.Cut(index, index + 1)
 			if(deck)
 				deck.card_ids = target_cards
-			P.ccg_save_deck_snapshot(target_cards, target_faction_id, target_leader_id)
+			if(!P.ccg_save_deck_snapshot(target_cards, target_faction_id, target_leader_id))
+				target_cards = remove_old_cards
+				if(deck)
+					deck.card_ids = target_cards
+				to_chat(user, span_warning("The card deck failed to save. The card was not removed."))
 			return TRUE
 		if("remove_one")
 			if(!islist(target_cards))
 				return TRUE
 			var/index = target_cards.Find(card_id)
 			if(index)
+				var/list/remove_one_old_cards = target_cards.Copy()
 				target_cards.Cut(index, index + 1)
 				if(deck)
 					deck.card_ids = target_cards
-				P.ccg_save_deck_snapshot(target_cards, target_faction_id, target_leader_id)
+				if(!P.ccg_save_deck_snapshot(target_cards, target_faction_id, target_leader_id))
+					target_cards = remove_one_old_cards
+					if(deck)
+						deck.card_ids = target_cards
+					to_chat(user, span_warning("The card deck failed to save. The card was not removed."))
 			return TRUE
 		if("clear")
 			if(!islist(target_cards))
 				return TRUE
+			var/list/clear_old_cards = target_cards.Copy()
 			target_cards = list()
 			if(deck)
 				deck.card_ids = target_cards
-			P.ccg_save_deck_snapshot(target_cards, target_faction_id, target_leader_id)
+			if(!P.ccg_save_deck_snapshot(target_cards, target_faction_id, target_leader_id))
+				target_cards = clear_old_cards
+				if(deck)
+					deck.card_ids = target_cards
+				to_chat(user, span_warning("The card deck failed to save. The deck was not cleared."))
 			return TRUE
 		if("set_faction")
 			var/faction_id = params["faction"]
@@ -1145,6 +1099,9 @@
 
 /client/proc/ccg_open_deckbuilder(obj/item/ccg_deck/deck, mob/user = mob)
 	if(!user || !deck)
+		return
+	var/datum/preferences/P = prefs
+	if(!P || !P.ccg_require_sql(user))
 		return
 	var/datum/ccg_deckbuilder_panel/panel = new()
 	panel.deck = deck
