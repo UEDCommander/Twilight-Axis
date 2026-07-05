@@ -162,7 +162,7 @@
 		return
 
 	var/mob/living/carbon/human/target = victim
-	var/drug = pick(list(/datum/reagent/neurotoxin))
+	var/drug = /datum/reagent/neurotoxin 
 	var/selected_hallucination = pick(list(
 		"Is this TRVE??", "IDDQD", "DAFUQ?", "I am NOT meant to see this.",
 		"What... WHAT is this?", "This doesn't make SENSE.", "I don't UNDERSTAND.",
