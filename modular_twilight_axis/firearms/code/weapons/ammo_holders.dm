@@ -211,3 +211,19 @@
 		arrows += R
 		R.linked_bag = src
 	update_icon()
+
+/obj/item/quiver/twilight_bullet/paper
+	name = "cartridge bag"
+	desc = "Поясная сумка для хранения бумажных патронов. Благодаря легко открывающемуся клапану и широкой горловине, весьма удобна для перезарядки одной рукой."
+	icon_state = "merc_pouch1"
+	item_state = "merc_pouch1"
+	slot_flags = ITEM_SLOT_HIP|ITEM_SLOT_CLOAK|ITEM_SLOT_BELT
+	max_storage = 20
+	ammo_type = /obj/item/ammo_casing/caseless/rogue/twilight_lead/paper
+
+/obj/item/quiver/twilight_bullet/paper/lead/Initialize()
+	. = ..()
+	for(var/i in 1 to max_storage)
+		var/obj/item/ammo_casing/caseless/rogue/twilight_lead/paper/B = new()
+		arrows += B
+	update_icon()
