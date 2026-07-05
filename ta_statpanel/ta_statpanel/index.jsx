@@ -270,9 +270,6 @@ function StatusRow({ part }) {
 
 function RoundInfoPanel() {
   const s = useStatState();
-
-      sentFixRef.current = false;
-
   return (
     <table>
       {s.statusTabParts.map((part, i) => (
