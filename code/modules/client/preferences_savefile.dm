@@ -326,18 +326,6 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		return FALSE
 	S.cd = "/"
 
-	ccg_clean_cards()
-	WRITE_FILE(S["ccg_known_rare_cards"], ccg_known_rare_cards)
-	WRITE_FILE(S["ccg_selected_deck"], ccg_selected_deck)
-	WRITE_FILE(S["ccg_saved_deck_cards"], ccg_saved_deck_cards)
-	WRITE_FILE(S["ccg_saved_deck_faction"], ccg_saved_deck_faction)
-	WRITE_FILE(S["ccg_saved_deck_leader"], ccg_saved_deck_leader)
-	WRITE_FILE(S["ccg_saved_decks"], ccg_saved_decks)
-	WRITE_FILE(S["ccg_active_deck_index"], ccg_active_deck_index)
-	WRITE_FILE(S["ccg_deckbuilder_view_mode"], ccg_deckbuilder_view_mode)
-	WRITE_FILE(S["ccg_soundtrack_enabled"], ccg_soundtrack_enabled)
-	WRITE_FILE(S["ccg_presets_are_virtual"], ccg_presets_are_virtual)
-
 	WRITE_FILE(S["version"] , SAVEFILE_VERSION_MAX)		//updates (or failing that the sanity checks) will ensure data is not invalid at load. Assume up-to-date
 
 	//general preferences
@@ -1176,17 +1164,6 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["img_gallery"] , img_gallery)
 	WRITE_FILE(S["nsfw_img_gallery"] , nsfw_img_gallery)
 	WRITE_FILE(S["selected_loadout_items"], selected_loadout_items)
-	ccg_clean_cards()
-	WRITE_FILE(S["ccg_known_rare_cards"], ccg_known_rare_cards)
-	WRITE_FILE(S["ccg_selected_deck"], ccg_selected_deck)
-	WRITE_FILE(S["ccg_saved_deck_cards"], ccg_saved_deck_cards)
-	WRITE_FILE(S["ccg_saved_deck_faction"], ccg_saved_deck_faction)
-	WRITE_FILE(S["ccg_saved_deck_leader"], ccg_saved_deck_leader)
-	WRITE_FILE(S["ccg_saved_decks"], ccg_saved_decks)
-	WRITE_FILE(S["ccg_active_deck_index"], ccg_active_deck_index)
-	WRITE_FILE(S["ccg_deckbuilder_view_mode"], ccg_deckbuilder_view_mode)
-	WRITE_FILE(S["ccg_soundtrack_enabled"], ccg_soundtrack_enabled)
-	WRITE_FILE(S["ccg_presets_are_virtual"], ccg_presets_are_virtual)
 
 	//Familiar Files
 	WRITE_FILE(S["familiar_names"] , familiar_prefs.familiar_names)

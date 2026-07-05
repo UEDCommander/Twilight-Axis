@@ -477,11 +477,7 @@
 
 /datum/preferences/proc/ccg_save()
 	ccg_clean_cards()
-	if(ccg_save_sql())
-		return TRUE
-	var/character_saved = save_character()
-	var/preferences_saved = save_preferences()
-	return character_saved || preferences_saved
+	return ccg_save_sql()
 
 /datum/preferences/proc/ccg_seed_base_pool()
 	if(!length(GLOB.ccg_base_card_ids))
