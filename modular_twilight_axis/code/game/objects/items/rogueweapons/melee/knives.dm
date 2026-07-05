@@ -223,13 +223,13 @@
         M.apply_status_effect(/datum/status_effect/debuff/exposed)
         M.Slowdown(5)
 
-    else if(amt >= 6)
+    else if(amt >= 5)
         M.energy_add(-20)
         M.blur_eyes(4)
         if(prob(15))
             to_chat(M, span_warning("THIS ACID!! I.. Im really getting weaker a lot.. "))
 
-    else if(amt >= 3.1)
+    else if(amt >= 2.1)
         M.energy_add(-15)
         if(prob(15))
             to_chat(M, span_warning("I feel myself weaker.."))
