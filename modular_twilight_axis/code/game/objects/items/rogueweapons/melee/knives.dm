@@ -209,33 +209,33 @@
 	metabolization_rate = 0.05
 
 /datum/reagent/neurotoxin/on_mob_life(mob/living/carbon/M)
-    var/amt = volume 
+	var/amt = volume 
 
-    if(amt >= 12)
-        if(prob(30))
-            to_chat(M, span_warning("WHAT THE-.. I CANT FEEL MY BODY!"))
-        M.Paralyze(600, 0)
-        M.emote("agony")
+	if(amt >= 12)
+		if(prob(30))
+			to_chat(M, span_warning("WHAT THE-.. I CANT FEEL MY BODY!"))
+		M.Paralyze(600, 0)
+		M.emote("agony")
 
-    else if(amt >= 11)
-        if(prob(15))
-            to_chat(M, span_warning("I LOST MY BALANCE! STOP IT!!.."))
-        M.apply_status_effect(/datum/status_effect/debuff/exposed)
-        M.Slowdown(5)
+	else if(amt >= 11)
+		if(prob(15))
+			to_chat(M, span_warning("I LOST MY BALANCE! STOP IT!!.."))
+		M.apply_status_effect(/datum/status_effect/debuff/exposed)
+		M.Slowdown(5)
 
-    else if(amt >= 5)
-        M.energy_add(-20)
-        M.blur_eyes(4)
-        if(prob(15))
-            to_chat(M, span_warning("THIS ACID!! I.. Im really getting weaker a lot.. "))
+	else if(amt >= 5)
+		M.energy_add(-20)
+		M.blur_eyes(4)
+		if(prob(15))
+			to_chat(M, span_warning("THIS ACID!! I.. Im really getting weaker a lot.. "))
 
-    else if(amt >= 2.1)
-        M.energy_add(-15)
-        if(prob(15))
-            to_chat(M, span_warning("I feel myself weaker.."))
+	else if(amt >= 2.1)
+		M.energy_add(-15)
+		if(prob(15))
+			to_chat(M, span_warning("I feel myself weaker.."))
 
-    else if(amt >= 1.1)
-        if(prob(12))
-            to_chat(M, span_warning("Agh.. I feel weak in my body.."))
+	else if(amt >= 1.1)
+		if(prob(12))
+			to_chat(M, span_warning("Agh.. I feel weak in my body.."))
 
-    return ..()
+	return ..()
