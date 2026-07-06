@@ -1162,19 +1162,12 @@
 /turf/closed/wall/mineral/rogue/stone/moss,
 /area/rogue/outdoors/bograt/sunken)
 "amn" = (
-/obj/structure/fluff/railing/border{
-	dir = 10;
-	pixel_x = -7;
-	pixel_y = 0
-	},
-/obj/structure/fluff/railing/border{
-	dir = 6;
-	pixel_x = 7;
-	pixel_y = 0
-	},
 /obj/effect/decal/cobbleedge{
 	icon_state = "borderfall";
 	pixel_y = -10
+	},
+/obj/machinery/light/rogue/candle{
+	pixel_y = -32
 	},
 /turf/open/floor/rogue/wood,
 /area/rogue/indoors/town/manor/rockhill)
@@ -8071,6 +8064,8 @@
 	pixel_x = 24
 	},
 /obj/structure/rack/rogue/shelf/biggest,
+/obj/item/rogueweapon/sword/decorated,
+/obj/item/rogueweapon/scabbard,
 /turf/open/floor/rogue/wood/herringbone,
 /area/rogue/indoors/town/manor/rockhill)
 "bGB" = (
@@ -13373,6 +13368,11 @@
 	dir = 4;
 	pixel_x = -8;
 	pixel_y = 11
+	},
+/obj/effect/decal/cobbleedge{
+	dir = 8;
+	icon_state = "borderfall";
+	pixel_x = -8
 	},
 /turf/open/floor/rogue/wood,
 /area/rogue/indoors/town/manor/rockhill)
@@ -19676,6 +19676,8 @@
 /obj/machinery/light/rogue/candle,
 /obj/item/clothing/cloak/hierophant,
 /obj/item/storage/belt/rogue/leather/steel/tasset,
+/obj/item/clothing/head/roguetown/chaperon/noble,
+/obj/item/clothing/shoes/roguetown/boots/nobleboot,
 /turf/open/floor/rogue/carpet/lord/left{
 	dir = 1
 	},
@@ -24179,6 +24181,7 @@
 	pixel_x = -8
 	},
 /obj/item/flashlight/flare/torch/lantern,
+/obj/item/clothing/head/roguetown/chaperon/noble,
 /turf/open/floor/rogue/wood/herringbone,
 /area/rogue/indoors/town/manor/rockhill)
 "eOk" = (
@@ -24707,6 +24710,7 @@
 	dir = 10;
 	pixel_y = -8
 	},
+/obj/machinery/light/rogue/candle,
 /turf/open/floor/rogue/tile,
 /area/rogue/indoors/town/manor/rockhill)
 "eUD" = (
@@ -35368,6 +35372,21 @@
 "heX" = (
 /obj/structure/closet/crate/roguecloset/inn,
 /obj/effect/decal/cobbleedge{
+	dir = 8;
+	icon_state = "borderfall";
+	pixel_x = -8
+	},
+/obj/item/perfume/random,
+/obj/item/clothing/suit/roguetown/shirt/dress/royal/princess,
+/obj/item/clothing/wrists/roguetown/royalsleeves,
+/obj/item/clothing/cloak/half,
+/obj/item/clothing/shoes/roguetown/shortboots,
+/obj/item/clothing/suit/roguetown/shirt/tunic,
+/obj/item/clothing/suit/roguetown/shirt/tunic/noblecoat,
+/obj/item/clothing/suit/roguetown/armor/silkcoat,
+/obj/item/clothing/suit/roguetown/shirt/dress/silkdress/princess,
+/obj/item/clothing/suit/roguetown/shirt/undershirt/puritan,
+/obj/effect/decal/cobbleedge{
 	dir = 1;
 	icon_state = "borderfall";
 	pixel_y = 8
@@ -35377,10 +35396,6 @@
 	icon_state = "borderfall";
 	pixel_x = -8
 	},
-/obj/item/perfume/random,
-/obj/item/clothing/suit/roguetown/shirt/dress/royal/prince,
-/obj/item/clothing/cloak/half,
-/obj/item/clothing/shoes/roguetown/shortboots,
 /turf/open/floor/rogue/carpet/lord/left{
 	dir = 1
 	},
@@ -40812,7 +40827,9 @@
 	icon_state = "borderfall";
 	pixel_y = 8
 	},
-/obj/structure/closet/crate/roguecloset/inn,
+/obj/structure/closet/crate/roguecloset/inn{
+	pixel_x = 8
+	},
 /obj/item/storage/belt/rogue/pouch,
 /obj/item/rope/chain,
 /obj/item/paper/scroll,
@@ -51100,6 +51117,15 @@
 /obj/structure/fluff/wallclock,
 /turf/open/floor/rogue/tile/harem,
 /area/rogue/indoors/town)
+"kqR" = (
+/obj/effect/decal/cobbleedge{
+	dir = 1;
+	icon_state = "borderfall";
+	pixel_y = 8
+	},
+/obj/machinery/light/rogue/candle,
+/turf/open/floor/rogue/tile,
+/area/rogue/indoors/town/manor/rockhill)
 "kqT" = (
 /obj/structure/table/wood/crafted,
 /obj/item/reagent_containers/glass/cup/golden/small{
@@ -53105,6 +53131,7 @@
 /obj/item/clothing/shoes/roguetown/boots/armor/iron,
 /obj/item/clothing/shoes/roguetown/boots/armor/iron,
 /obj/item/clothing/head/roguetown/helmet/heavy/knight,
+/obj/item/clothing/head/roguetown/helmet/heavy/knight,
 /turf/open/floor/rogue/concrete,
 /area/rogue/under/town/basement)
 "kLY" = (
@@ -53348,6 +53375,11 @@
 /obj/item/clothing/wrists/roguetown/royalsleeves,
 /obj/item/clothing/cloak/half,
 /obj/item/clothing/shoes/roguetown/shortboots,
+/obj/item/clothing/suit/roguetown/shirt/tunic,
+/obj/item/clothing/suit/roguetown/shirt/tunic/noblecoat,
+/obj/item/clothing/suit/roguetown/armor/silkcoat,
+/obj/item/clothing/suit/roguetown/shirt/dress/silkdress/princess,
+/obj/item/clothing/suit/roguetown/shirt/undershirt/puritan,
 /turf/open/floor/rogue/carpet/lord/right{
 	dir = 1
 	},
@@ -57350,6 +57382,11 @@
 /obj/machinery/light/rogue/candle/l,
 /obj/item/flashlight/flare/torch/lantern,
 /obj/item/flashlight/flare/torch/lantern,
+/obj/effect/decal/cobbleedge{
+	dir = 8;
+	icon_state = "borderfall";
+	pixel_x = -8
+	},
 /turf/open/floor/rogue/wood,
 /area/rogue/indoors/town/manor/rockhill)
 "lIV" = (
@@ -61623,6 +61660,7 @@
 	pixel_y = -32
 	},
 /obj/structure/mannequin/male,
+/obj/item/clothing/suit/roguetown/armor/gambeson/heavy,
 /turf/open/floor/rogue/wood/herringbone,
 /area/rogue/indoors/town/manor/rockhill)
 "mCa" = (
@@ -64614,7 +64652,8 @@
 "njW" = (
 /obj/structure/chair/wood/rogue{
 	dir = 8;
-	pixel_y = 4
+	pixel_y = 4;
+	pixel_x = -4
 	},
 /obj/machinery/light/rogue/candle,
 /obj/effect/decal/cobbleedge{
@@ -74505,6 +74544,9 @@
 	icon_state = "borderfall";
 	pixel_x = 8
 	},
+/obj/item/clothing/head/roguetown/chaperon/noble,
+/obj/item/clothing/shoes/roguetown/boots/nobleboot,
+/obj/machinery/light/rogue/candle/r,
 /turf/open/floor/carpet/royalblack,
 /area/rogue/indoors/town/manor/rockhill)
 "pkN" = (
@@ -82040,7 +82082,8 @@
 /area/rogue/under/town/sewer)
 "qLo" = (
 /obj/structure/roguemachine/bathvend{
-	pixel_x = -32
+	pixel_x = -32;
+	density = 0
 	},
 /turf/open/floor/rogue/carpet,
 /area/rogue/indoors/town/bath)
@@ -84077,6 +84120,7 @@
 	pixel_y = 32
 	},
 /obj/structure/mannequin/male,
+/obj/item/clothing/suit/roguetown/armor/gambeson/heavy,
 /turf/open/floor/rogue/wood/herringbone,
 /area/rogue/indoors/town/manor/rockhill)
 "rmv" = (
@@ -95278,6 +95322,8 @@
 	layer = 2
 	},
 /obj/structure/rack/rogue/shelf/biggest,
+/obj/item/rogueweapon/sword/decorated,
+/obj/item/rogueweapon/scabbard,
 /turf/open/floor/rogue/wood/herringbone,
 /area/rogue/indoors/town/manor/rockhill)
 "tFo" = (
@@ -107481,6 +107527,7 @@
 	pixel_y = -8
 	},
 /obj/item/flashlight/flare/torch/lantern,
+/obj/item/clothing/head/roguetown/chaperon/noble,
 /turf/open/floor/rogue/wood/herringbone,
 /area/rogue/indoors/town/manor/rockhill)
 "wgx" = (
@@ -110204,6 +110251,11 @@
 	icon_state = "borderfall";
 	pixel_y = 8
 	},
+/obj/effect/decal/cobbleedge{
+	dir = 8;
+	icon_state = "borderfall";
+	pixel_x = -8
+	},
 /turf/open/floor/rogue/wood,
 /area/rogue/indoors/town/manor/rockhill)
 "wKp" = (
@@ -110563,10 +110615,6 @@
 	},
 /obj/item/cooking/platter,
 /obj/item/cooking/platter,
-/obj/structure/closet/crate/roguecloset{
-	pixel_x = 5;
-	pixel_y = 4
-	},
 /obj/item/kitchen/fork,
 /obj/structure/fluff/railing/border{
 	dir = 10
@@ -401194,7 +401242,7 @@ qVH
 nDI
 dYF
 mwE
-mwE
+pAT
 qrn
 wbg
 wbg
@@ -522122,11 +522170,11 @@ euP
 eBg
 iiP
 oif
-wkw
+amn
 uOL
 qCp
 uOL
-eJr
+kqR
 beQ
 wrt
 eBg
@@ -632745,7 +632793,7 @@ oRO
 uwJ
 hwF
 oif
-amn
+wkw
 vRm
 jqs
 fZJ
