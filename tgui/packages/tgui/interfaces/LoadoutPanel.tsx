@@ -75,30 +75,168 @@ export const LoadoutPanel = () => {
     !!data.isDonator && data.triumphDiscount > 0;
 
   return (
-    <Window title="Лодаут" width={1000} height={700}>
+    <Window
+      title="Лодаут"
+      buttons={
+        <Button
+          tooltip={`Выберите предметы для вашего персонажа.
+Вы их сможете забрать, когда нажмете правой кнопкой мыши по статуе или дереву.
+Рескины на оружие (Donator kit) являются просто рескинами, чтобы его получить используйте зелье на соответствующем предмете.`}
+          tooltipPosition="bottom"
+          style={{
+            position: 'fixed',
+            top: '9px',
+            left: '92px',
+            zIndex: 103,
+            minWidth: '0',
+            width: '16px',
+            height: '16px',
+            padding: '0',
+            border: 'none',
+            boxShadow: 'none',
+            background: 'none',
+            textAlign: 'center',
+            lineHeight: '16px',
+            fontSize: '13px',
+            fontWeight: 'bold',
+            color: '#d7b6b6',
+            textShadow: '0 0 4px rgba(255,255,255,0.35)',
+            cursor: 'help',
+          }}
+        >
+          ?
+        </Button>
+      }
+      width={1200}
+      height={700}
+    >
       <Window.Content>
         <Stack fill>
           <Stack.Item width="300px">
             <Stack vertical textAlign="justify">
-              <Stack.Item>
-                <h2>Выберите предметы для вашего персонажа.</h2>
-              </Stack.Item>
-              <Stack.Item>
-                <h2>
-                  Вы их сможете забрать, когда нажмете правой кнопкой мыши по статуе
-                  или дереву.
-                </h2>
-              </Stack.Item>
-              <Stack.Item>
-                <h4>
-                  Рескины на оружие (Donator kit) являются просто рескинами, чтобы
-                  его получить используйте зелье на соответствующем предмете.
-                </h4>
-              </Stack.Item>
-              <Stack.Item>
+              <Stack.Item style={{ textAlign: 'center' }}>
                 <Button onClick={() => act('boosty')}>
                   <h3>Поддержать сервер</h3>
                 </Button>
+              </Stack.Item>
+              <Stack.Item>
+                <Box
+                  mt={1}
+                  style={{
+                    fontSize: '13px',
+                    lineHeight: 1.35,
+                    textAlign: 'center',
+                    color: '#d7b6b6',
+                  }}
+                >
+                  Для меценатов в зависимости от уровня подписки(
+                  <Button
+                    tooltip="Т1 - дает 7 слотов вещей, 3 скидочных триумфа, 40 слотов персонажей и вещи своего тира."
+                    tooltipPosition="bottom"
+                    style={{
+                      minWidth: '0',
+                      width: 'auto',
+                      height: 'auto',
+                      padding: '0',
+                      border: 'none',
+                      boxShadow: 'none',
+                      background: 'none',
+                      lineHeight: 'inherit',
+                      verticalAlign: 'baseline',
+                      color: '#facc15',
+                      fontWeight: 'bold',
+                      cursor: 'help',
+                    }}
+                  >
+                    1
+                  </Button>
+                  ,{' '}
+                  <Button
+                    tooltip="Т2 - дает 11 слотов вещей, 5 скидочных триумфа, 60 слотов персонажей, возможность поменять цвет в дискорде, кастомную боевую музыку и вещи своего тира."
+                    tooltipPosition="bottom"
+                    style={{
+                      minWidth: '0',
+                      width: 'auto',
+                      height: 'auto',
+                      padding: '0',
+                      border: 'none',
+                      boxShadow: 'none',
+                      background: 'none',
+                      lineHeight: 'inherit',
+                      verticalAlign: 'baseline',
+                      color: '#facc15',
+                      fontWeight: 'bold',
+                      cursor: 'help',
+                    }}
+                  >
+                    2
+                  </Button>
+                  ,{' '}
+                  <Button
+                    tooltip="Т3 - дает 17 слотов вещей, 7 скидочных триумфа, 80 слотов персонажей, возможность поменять цвет в дискорде, кастомную боевую музыку и вещи своего тира. Также дается возможность раз в 2 раунда с повышенным приоритетом зайти за роль, имеющую более 2 слотов."
+                    tooltipPosition="bottom"
+                    style={{
+                      minWidth: '0',
+                      width: 'auto',
+                      height: 'auto',
+                      padding: '0',
+                      border: 'none',
+                      boxShadow: 'none',
+                      background: 'none',
+                      lineHeight: 'inherit',
+                      verticalAlign: 'baseline',
+                      color: '#facc15',
+                      fontWeight: 'bold',
+                      cursor: 'help',
+                    }}
+                  >
+                    3
+                  </Button>
+                  ,{' '}
+                  <Button
+                    tooltip="Т4 - дает 21 слотов вещей, 10 скидочных триумфа, 100 слотов персонажей, возможность поменять цвет в дискорде, кастомную боевую музыку и вещи своего тира. Также дается возможность с повышенным приоритетом зайти за роль, имеющую более 2 слотов, в отличии от Т3 без КД в 2 раунда."
+                    tooltipPosition="bottom"
+                    style={{
+                      minWidth: '0',
+                      width: 'auto',
+                      height: 'auto',
+                      padding: '0',
+                      border: 'none',
+                      boxShadow: 'none',
+                      background: 'none',
+                      lineHeight: 'inherit',
+                      verticalAlign: 'baseline',
+                      color: '#facc15',
+                      fontWeight: 'bold',
+                      cursor: 'help',
+                    }}
+                  >
+                    4
+                  </Button>
+                  ,{' '}
+                  <Button
+                    tooltip="Т5 - дает 27 слотов вещей, 15 скидочных триумфа, 120 слотов персонажей, возможность поменять цвет в дискорде, кастомную боевую музыку и вещи своего тира. Также дается возможность зайти за любую роль с повышенным приоритетом, в отличии от Т3 и Т4 каких-либо ограничений нет."
+                    tooltipPosition="bottom"
+                    style={{
+                      minWidth: '0',
+                      width: 'auto',
+                      height: 'auto',
+                      padding: '0',
+                      border: 'none',
+                      boxShadow: 'none',
+                      background: 'none',
+                      lineHeight: 'inherit',
+                      verticalAlign: 'baseline',
+                      color: '#facc15',
+                      fontWeight: 'bold',
+                      cursor: 'help',
+                    }}
+                  >
+                    5
+                  </Button>
+                  ) открываются различные бонусы в лодауте и не только. Лишь за
+                  счет поддержки сервер существует.
+                </Box>
               </Stack.Item>
               <br />
               <Stack.Item>
@@ -139,8 +277,8 @@ export const LoadoutPanel = () => {
                 <Box
                   mt={2}
                   style={{
-                    minHeight: '180px',
-                    maxHeight: '200px',
+                    minHeight: '200px',
+                    maxHeight: '260px',
                     overflowY: 'auto',
                     overflowX: 'hidden',
                     padding: '8px',
