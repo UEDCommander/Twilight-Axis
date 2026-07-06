@@ -135,6 +135,69 @@ export const LoadoutPanel = () => {
                   </Box>
                 </Stack.Item>
               ) : null}
+              <Stack.Item>
+                <Box
+                  mt={2}
+                  style={{
+                    minHeight: '180px',
+                    maxHeight: '200px',
+                    overflowY: 'auto',
+                    overflowX: 'hidden',
+                    padding: '8px',
+                    border: '1px solid rgba(120, 150, 190, 0.65)',
+                    borderRadius: '6px',
+                    backgroundColor: 'rgba(0, 0, 0, 0.14)',
+                  }}
+                >
+                  <Box
+                    mb={1}
+                    textAlign="center"
+                    style={{
+                      fontSize: '16px',
+                      fontWeight: 'bold',
+                      textShadow: '1px 1px 3px rgba(0,0,0,0.8)',
+                    }}
+                  >
+                    Выбранные предметы:
+                  </Box>
+
+                  {(data.selectedLoadoutItems ?? []).length ? (
+                    (data.selectedLoadoutItems ?? []).map((item) => (
+                      <Box
+                        key={item}
+                        mb={1}
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          gap: '6px',
+                        }}
+                      >
+                        <Box
+                          style={{
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                          }}
+                          tooltip={item}
+                        >
+                          {item}
+                        </Box>
+                        <Button
+                          color="danger"
+                          onClick={() => act('remove', { item })}
+                        >
+                          Удалить
+                        </Button>
+                      </Box>
+                    ))
+                  ) : (
+                    <Box color="label" textAlign="center">
+                      Пока ничего не выбрано.
+                    </Box>
+                  )}
+                </Box>
+              </Stack.Item>
             </Stack>
           </Stack.Item>
 
@@ -195,56 +258,56 @@ export const LoadoutPanel = () => {
                     gap: '8px',
                   }}
                 >
-                {filteredItems.map((item, index) => (
-                  <div
-                    key={item?.name || item?.path || index}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      minHeight: '64px',
-                      borderRadius: '4px',
-                    }}
-                  >
-                    <Box
+                  {filteredItems.map((item, index) => (
+                    <div
+                      key={item?.name || item?.path || index}
                       style={{
                         display: 'flex',
-                        flexDirection: 'column',
                         alignItems: 'center',
-                        justifyContent: 'center',
-                        minWidth: '96px',
-                        flexShrink: 0,
+                        minHeight: '64px',
+                        borderRadius: '4px',
                       }}
                     >
-                      <Button
+                      <Box
                         style={{
-                          backgroundColor: '#141414',
-                          padding: '16px',
-                          width: '96px',
-                          height: '96px',
-                          border: '2x solid red',
-                          borderColor: `${item?.unavailable ? '#a77a18' : (selectedSet.has(item?.name)? '#a71818' : '#24a718')}`,
-                          borderRadius: '8px',
-                        }}
-                        tooltip={
-                          `${item?.unavailable 
-                              ? item?.unavailableReason || (item?.requiredTier ? "Недоступно. Требуется уровень:"+item.requiredTier : 'Недоступно.') 
-                              : item?.name || 'Без названия'}`}
-                        onClick={() => {
-                          if (selectedSet.has(item?.name)) {
-                            act('remove', { item: item?.name || item?.path });
-                          } else {
-                            act('add', { item: item?.name || item?.path });
-                          }
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          minWidth: '96px',
+                          flexShrink: 0,
                         }}
                       >
-                        <Box
-                          inline
-                          verticalAlign="middle"
-                          className={item.icon_class_name}
+                        <Button
                           style={{
-                            transform: 'scale(0.67) translate(-51px, -50px)',
+                            backgroundColor: '#141414',
+                            padding: '16px',
+                            width: '96px',
+                            height: '96px',
+                            border: '2x solid red',
+                            borderColor: `${item?.unavailable ? '#a77a18' : (selectedSet.has(item?.name)? '#a71818' : '#24a718')}`,
+                            borderRadius: '8px',
+                          }}
+                          tooltip={
+                            `${item?.unavailable
+                              ? item?.unavailableReason || (item?.requiredTier ? "Недоступно. Требуется уровень:"+item.requiredTier : 'Недоступно.')
+                              : item?.name || 'Без названия'}`}
+                          onClick={() => {
+                            if (selectedSet.has(item?.name)) {
+                              act('remove', { item: item?.name || item?.path });
+                            } else {
+                              act('add', { item: item?.name || item?.path });
+                            }
                           }}
                         >
+                          <Box
+                            inline
+                            verticalAlign="middle"
+                            className={item.icon_class_name}
+                            style={{
+                              transform: 'scale(0.67) translate(-51px, -50px)',
+                            }}
+                          >
                             {item?.triumphCost ? (
                               <Box
                                 style={{
@@ -280,11 +343,11 @@ export const LoadoutPanel = () => {
                                 Донат тир {item.requiredTier && item.requiredTier > 0 ? item.requiredTier : 1}
                               </Box>
                             ) : null}
-                        </Box>
-                      </Button>
-                    </Box>
-                  </div>
-                ))}
+                          </Box>
+                        </Button>
+                      </Box>
+                    </div>
+                  ))}
                 </div>
               </Stack.Item>
             </Stack>
