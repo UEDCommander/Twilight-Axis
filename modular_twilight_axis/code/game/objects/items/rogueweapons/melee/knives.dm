@@ -207,6 +207,7 @@
 	description = "A strong neurotoxin that puts the subject into a death-like state."
 	color = "#2E2E61" // rgb: 46, 46, 97
 	metabolization_rate = 0.05
+	harmful = TRUE
 
 /datum/reagent/neurotoxin/on_mob_life(mob/living/carbon/M)
 	var/amt = volume 
