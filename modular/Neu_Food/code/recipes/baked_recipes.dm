@@ -288,6 +288,7 @@
 	)
 	result_type = /obj/item/reagent_containers/food/snacks/rogue/eggdoughsheetnoodles_white
 	time_per_step = 3 SECONDS
+	inline_ancestry = TRUE
 
 // Sheet noodles + tomato sauce -> red lasagna (raw, baked separately)
 /datum/food_recipe/baked/lasagna_red
@@ -298,6 +299,7 @@
 	)
 	result_type = /obj/item/reagent_containers/food/snacks/rogue/eggdoughsheetnoodles_red
 	time_per_step = 3 SECONDS
+	inline_ancestry = TRUE
 
 // Sheet noodles + pesto -> pesto lasagna (raw, baked separately)
 /datum/food_recipe/baked/lasagna_pesto
@@ -308,6 +310,7 @@
 	)
 	result_type = /obj/item/reagent_containers/food/snacks/rogue/eggdoughsheetnoodles_pesto
 	time_per_step = 3 SECONDS
+	inline_ancestry = TRUE
 
 // Red lasagna + cheese -> cheesy lasagna (raw, baked separately)
 /datum/food_recipe/baked/lasagna_redwhite_from_red
@@ -318,6 +321,7 @@
 	)
 	result_type = /obj/item/reagent_containers/food/snacks/rogue/eggdoughsheetnoodles_redwhite
 	time_per_step = 3 SECONDS
+	inline_ancestry = TRUE
 
 // White lasagna + tomato sauce -> cheesy lasagna (raw, baked separately)
 /datum/food_recipe/baked/lasagna_redwhite_from_white
@@ -328,6 +332,7 @@
 	)
 	result_type = /obj/item/reagent_containers/food/snacks/rogue/eggdoughsheetnoodles_redwhite
 	time_per_step = 3 SECONDS
+	inline_ancestry = TRUE
 
 /*	.................   Griddle fruit cakes (fruit folded in, then fried)   ................... */
 // Griddle dough + lemon -> Lemongriddles
@@ -340,6 +345,7 @@
 	step_visuals = list(list('modular/Neu_Food/icons/raw/raw_dough.dmi', "griddlelemon_uncooked"))
 	cook_method = COOK_FRY
 	result_type = /obj/item/reagent_containers/food/snacks/rogue/griddle/fruit/lemon
+	inline_ancestry = TRUE
 
 // Griddle dough + berry (blackberry/raspberry/jacksberry) -> Berrygriddles
 /datum/food_recipe/baked/griddle_berry
@@ -355,6 +361,7 @@
 	step_visuals = list(list('modular/Neu_Food/icons/raw/raw_dough.dmi', "griddleberry_uncooked"))
 	cook_method = COOK_FRY
 	result_type = /obj/item/reagent_containers/food/snacks/rogue/griddle/fruit/berry
+	inline_ancestry = TRUE
 
 // Griddle dough + poison jacksberry -> poison Berrygriddles
 /datum/food_recipe/baked/griddle_poisonberry
@@ -366,6 +373,7 @@
 	step_visuals = list(list('modular/Neu_Food/icons/raw/raw_dough.dmi', "griddleberry_uncooked"))
 	cook_method = COOK_FRY
 	result_type = /obj/item/reagent_containers/food/snacks/rogue/griddle/fruit/poisonberry
+	inline_ancestry = TRUE
 	hidden = TRUE
 
 // Griddle dough + apple slices -> Applegriddles
@@ -378,3 +386,4 @@
 	step_visuals = list(list('modular/Neu_Food/icons/raw/raw_dough.dmi', "griddleapple_uncooked"))
 	cook_method = COOK_FRY
 	result_type = /obj/item/reagent_containers/food/snacks/rogue/griddle/fruit/apple
+	inline_ancestry = TRUE

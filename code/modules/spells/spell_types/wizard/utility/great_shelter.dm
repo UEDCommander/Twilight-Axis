@@ -30,7 +30,7 @@
 
 	charge_required = TRUE
 	charge_time = 5 SECONDS
-	charge_drain = 2
+	hold_drain = 2
 	charge_slowdown = CHARGING_SLOWDOWN_HEAVY
 	charge_sound = 'sound/magic/charging.ogg'
 	cooldown_time = 5 MINUTES
@@ -85,10 +85,11 @@
 			if("wall")
 				new /obj/structure/forcefield_weak/shelter_wall(T, H)
 			if("bed")
-				new /obj/structure/bed/rogue/inn/wool/conjured(T)
+				new /obj/structure/bed/rogue/conjured(T)
 			if("hearth")
 				new /obj/machinery/light/rogue/hearth/conjured(T)
 				new /obj/machinery/light/rogue/oven/conjured(T)
+
 		if(tile_type == "bed" || tile_type == "hearth" || (tile_type == "empty" && offset[2] >= 0))
 			new /obj/effect/shelter_roof(T)
 
@@ -122,6 +123,11 @@
 	. = ..()
 	QDEL_IN(src, SHELTER_DURATION)
 
+/obj/structure/forcefield_weak/shelter_wall/CanPass(atom/movable/mover, turf/target)
+	if(mover == caster)
+		return TRUE
+	return ..()
+
 /obj/effect/shelter_roof
 	name = "arcyne roof"
 	anchored = TRUE
@@ -145,12 +151,12 @@
 	covered_turf = null
 	return ..()
 
-/obj/structure/bed/rogue/inn/wool/conjured
+/obj/structure/bed/rogue/conjured
 	name = "arcyne bed"
 	desc = "A bed conjured from arcyne force. It looks uncomfortable, but functional."
 	color = "#6495ED"
 
-/obj/structure/bed/rogue/inn/wool/conjured/Initialize(mapload)
+/obj/structure/bed/rogue/conjured/Initialize(mapload)
 	. = ..()
 	QDEL_IN(src, SHELTER_DURATION)
 

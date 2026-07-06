@@ -42,6 +42,8 @@
 	var/sheathe_sound = 'sound/foley/equip/scabbard_holster.ogg'
 	/// If true, this weapon's examine highlights (see `get_examine_highlight_status()`) will not reveal the weapon stored in it.
 	var/hides_weapon = TRUE
+	// Prevent special scabbards from being stripped
+	var/cant_strip = FALSE
 
 /obj/item/rogueweapon/scabbard/get_mechanics_examine(mob/user)
 	. = ..()
@@ -440,6 +442,8 @@
 	max_integrity = 750
 
 /obj/item/rogueweapon/scabbard/sword/MiddleClick(mob/user)
+	if(cant_strip)
+		return FALSE
 	if(hol_comp.sheathed)
 		to_chat(user, span_notice("There's something inside!"))
 		return
@@ -549,6 +553,7 @@
 	wdefense = 4
 	max_integrity = 75
 	resistance_flags = null
+	cant_strip = TRUE
 
 /obj/item/rogueweapon/scabbard/sword/royal
 	name = "gold-decorated scabbard"
@@ -561,6 +566,7 @@
 	wdefense = 6
 	max_integrity = 150
 	resistance_flags = null
+	cant_strip = TRUE
 
 //
 
@@ -579,6 +585,7 @@
 	anvilrepair = /datum/skill/craft/carpentry
 	wdefense = 8
 	special = /datum/special_intent/limbguard
+	cant_strip = TRUE
 
 	max_integrity = 0
 
@@ -652,6 +659,7 @@
 	item_state = "doccanesheath"
 	valid_blade = /obj/item/rogueweapon/sword/rapier/courtphysician
 	sellprice = 45
+	cant_strip = TRUE
 
 /obj/item/rogueweapon/scabbard/sheath/courtphysician/getonmobprop(tag)
 	. = ..()

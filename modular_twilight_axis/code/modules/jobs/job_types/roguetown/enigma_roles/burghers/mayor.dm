@@ -128,6 +128,10 @@
 
 /obj/effect/proc_holder/spell/self/writeresidentscroll/cast(list/targets, mob/living/user = usr)
 	. = ..()
+	if(!resident_manuscripts_enabled())
+		to_chat(user, span_warning("Грамоты жительства на этой карте временно недоступны."))
+		revert_cast()
+		return
 	var/mob/living/carbon/human/H = user
 	var/obj/item/writefeather
 	for(var/obj/item/I in user.held_items)
