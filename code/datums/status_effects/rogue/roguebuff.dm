@@ -1171,7 +1171,7 @@
 /datum/status_effect/buff/reversion
 	id = "stasis"
 	alert_type = /atom/movable/screen/alert/status_effect/buff/stasis
-	duration = 15 SECONDS // TA EDIT
+	duration = 25 SECONDS
 
 #define CRANKBOX_FILTER "crankboxbuff_glow"
 /atom/movable/screen/alert/status_effect/buff/churnerprotection
@@ -2303,10 +2303,13 @@
 		mob.remove_status_effect(/datum/status_effect/debuff/joybringer_druqks)
 
 /datum/status_effect/joybringer/proc/clear_affected_mobs()
+	if(!affected_mobs)
+		return
+
 	for(var/mob/living/mob in affected_mobs)
 		clear_joybringer_debuff(mob)
 
-	affected_mobs?.Cut()
+	affected_mobs.Cut()
 
 /datum/status_effect/joybringer/proc/on_life()
 	SIGNAL_HANDLER
@@ -2324,9 +2327,10 @@
 		current_mobs += mob
 		mob.apply_status_effect(/datum/status_effect/debuff/joybringer_druqks)
 
-	for(var/mob/living/old_mob in affected_mobs)
-		if(!(old_mob in current_mobs))
-			clear_joybringer_debuff(old_mob)
+	if(affected_mobs)
+		for(var/mob/living/old_mob in affected_mobs)
+			if(!(old_mob in current_mobs))
+				clear_joybringer_debuff(old_mob)
 
 	affected_mobs = current_mobs // TA EDIT END
 
