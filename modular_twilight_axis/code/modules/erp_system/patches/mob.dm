@@ -83,6 +83,45 @@
 
 	return FALSE
 
+/mob/living/proc/erp_can_do_sex(silent = FALSE, force = FALSE)
+	if(force)
+		return TRUE
+
+	if(!client)
+		return FALSE
+
+	if(stat != CONSCIOUS)
+		if(!silent)
+			to_chat(src, span_warning("I can't do this."))
+		return FALSE
+
+	if(!ishuman(src))
+		if(!silent)
+			to_chat(src, span_warning("I can't do this."))
+		return FALSE
+
+	var/mob/living/carbon/human/human_actor = src
+
+	if(human_actor.mind?.has_antag_datum(/datum/antagonist/zombie))
+		if(!silent)
+			to_chat(src, span_warning("I can't do this."))
+		return FALSE
+
+	if(human_actor.mind?.has_antag_datum(/datum/antagonist/skeleton) || istype(human_actor, /mob/living/carbon/human/species/skeleton))
+		if(!silent)
+			to_chat(src, span_warning("I can't do this."))
+		return FALSE
+
+	if(human_actor.is_erp_blocked_as_target())
+		return FALSE
+
+	if(human_actor.client?.prefs && !human_actor.client.prefs.sexable)
+		if(!silent)
+			to_chat(src, span_warning("You don't want to do this. (ERP preference)"))
+		return FALSE
+
+	return TRUE
+
 /mob/living/carbon/human/proc/is_erp_defiant_in_combat()
 	return defiant && cmode
 
@@ -324,24 +363,7 @@
 	if(!actor || !istype(actor))
 		return FALSE
 
-	if(force)
-		return TRUE
-
-	var/mob/living/carbon/human/human_actor = actor
-	if(!human_actor.can_do_sex)
-		if(!silent)
-			to_chat(actor, span_warning("I can't do this."))
-		return FALSE
-
-	if(human_actor.is_erp_blocked_as_target())
-		return FALSE
-
-	if(actor.client && actor.client.prefs && !actor.client.prefs.sexable)
-		if(!silent)
-			to_chat(actor, span_warning("You don't want to do this. (ERP preference)"))
-		return FALSE
-
-	return TRUE
+	return actor.erp_can_do_sex(silent, force)
 
 
 /proc/erp_can_target_atom_for_menu(mob/living/actor, atom/target_atom, silent = FALSE, force = FALSE)
