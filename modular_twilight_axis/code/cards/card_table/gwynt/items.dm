@@ -283,7 +283,7 @@
 		if("toggle_soundtrack")
 			if(user?.client?.prefs)
 				user.client.prefs.ccg_soundtrack_enabled = !user.client.prefs.ccg_soundtrack_enabled
-				user.client.prefs.ccg_save()
+				user.client.prefs.ccg_save_settings_sql()
 				active_match.sync_soundtrack_for(user)
 				active_match.update_deck_uis()
 				return TRUE
