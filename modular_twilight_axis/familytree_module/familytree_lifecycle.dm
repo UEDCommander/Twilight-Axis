@@ -230,8 +230,10 @@
 		deltimer(timerid)
 	if(person_a && !QDELETED(person_a))
 		person_a.familytree_confirmation_pending = FALSE
+		person_a.familytree_clear_confirm_button()
 	if(person_b && !QDELETED(person_b))
 		person_b.familytree_confirmation_pending = FALSE
+		person_b.familytree_clear_confirm_button()
 	person_a = null
 	person_b = null
 	on_both_accept = null
@@ -299,9 +301,12 @@
 		return
 	SSfamilytree.ftlog("MUTUAL CONFIRM: [person.real_name] cancelled (other side refused) type=[confirm_type]")
 	to_chat(person, span_warning("Другая сторона отказалась от вступления в семью. Ваш запрос отменён. Система попробует найти вам новую пару."))
+	if(person.familytree_confirmation_pending || person.familytree_assignment_scheduled)
+		return
 	if(!person.familytree_opted_out && !person.family_datum && !person.spouse_mob && familytree_pref_enabled(person.familytree_pref))
+		person.familytree_consecutive_match_failures++
 		person.familytree_assignment_scheduled = TRUE
-		addtimer(CALLBACK(SSfamilytree, TYPE_PROC_REF(/datum/controller/subsystem/familytree, run_local_assignment), person, person.familytree_pref), 10 SECONDS)
+		addtimer(CALLBACK(SSfamilytree, TYPE_PROC_REF(/datum/controller/subsystem/familytree, run_local_assignment), person, person.familytree_pref), SSfamilytree.familytree_match_retry_delay(person))
 
 /datum/controller/subsystem/familytree/proc/request_family_confirmation(mob/living/carbon/human/H, datum/callback/on_accept, confirm_type = "family", relation_text = null, busy_attempt = 0, busy_deferred = FALSE)
 	if(!H || QDELETED(H))
@@ -380,6 +385,27 @@
 	if(familytree_confirmation_should_chat(confirm_type))
 		to_chat(H, span_love(found_text))
 
+	if(!H.familytree_show_confirm_button(found_text, CALLBACK(src, PROC_REF(do_solo_confirmation_prompt), H, on_accept, confirm_type, context_person, relation_text)))
+		do_solo_confirmation_prompt(H, on_accept, confirm_type, context_person, relation_text)
+		return
+	if(H.familytree_confirm_timerid)
+		deltimer(H.familytree_confirm_timerid)
+	H.familytree_confirm_timerid = addtimer(CALLBACK(src, PROC_REF(familytree_solo_confirm_expire), H), 60 SECONDS, TIMER_STOPPABLE)
+
+/datum/controller/subsystem/familytree/proc/do_solo_confirmation_prompt(mob/living/carbon/human/H, datum/callback/on_accept, confirm_type, mob/living/carbon/human/context_person = null, relation_text = null)
+	if(!H || QDELETED(H))
+		return
+	if(!H.familytree_confirmation_pending)
+		return
+	if(H.familytree_confirm_timerid)
+		deltimer(H.familytree_confirm_timerid)
+		H.familytree_confirm_timerid = null
+	if(!H.client)
+		H.familytree_confirmation_pending = FALSE
+		on_accept.Invoke()
+		return
+
+	var/found_text = familytree_confirmation_found_text(confirm_type, H, context_person, FALSE, relation_text)
 	var/result = tgui_alert(H, familytree_confirmation_prompt_body(found_text, H, context_person), "Семейная система", list("Да", "Нет"), 60 SECONDS)
 
 	if(!H || QDELETED(H))
@@ -399,6 +425,18 @@
 			to_chat(H, span_warning("Вы отказались от участия в семейной системе на этот раунд."))
 			H.familytree_opted_out = TRUE
 			unsubscribe_familytree_human(H, "player declined [confirm_type]")
+
+/datum/controller/subsystem/familytree/proc/familytree_solo_confirm_expire(mob/living/carbon/human/H)
+	if(!H || QDELETED(H))
+		return
+	H.familytree_confirm_timerid = null
+	if(!H.familytree_confirmation_pending)
+		return
+	H.familytree_clear_confirm_button()
+	H.familytree_confirmation_pending = FALSE
+	ftlog("CONFIRM EXPIRE: [H.real_name] button not clicked in time")
+	if(!H.familytree_opted_out && !H.family_datum && !H.spouse_mob && familytree_pref_enabled(H.familytree_pref))
+		try_queue_assignment(H)
 
 /datum/controller/subsystem/familytree/proc/request_mutual_confirmation(mob/living/carbon/human/person_a, mob/living/carbon/human/person_b, datum/callback/on_both_accept, confirm_type = "family", relation_text_a = null, relation_text_b = null, busy_attempt = 0, busy_deferred = FALSE)
 	if(!person_a || QDELETED(person_a) || !person_b || QDELETED(person_b))
@@ -492,12 +530,29 @@
 	if(familytree_confirmation_should_chat(session.confirm_type))
 		to_chat(person, span_love(found_text))
 
-	var/result = tgui_alert(person, familytree_confirmation_prompt_body(found_text, person, partner), "Семейная система", list("Да", "Нет"), 60 SECONDS)
+	var/body = familytree_confirmation_prompt_body(found_text, person, partner)
+	if(!person.familytree_show_confirm_button(found_text, CALLBACK(src, PROC_REF(do_mutual_prompt), session, person, is_person_a, body)))
+		do_mutual_prompt(session, person, is_person_a, body)
+
+/datum/controller/subsystem/familytree/proc/do_mutual_prompt(datum/family_confirm_session/session, mob/living/carbon/human/person, is_person_a, body)
+	if(!person || QDELETED(person))
+		return
+	if(QDELETED(session))
+		person.familytree_confirmation_pending = FALSE
+		return
+	if(!person.client)
+		return
+
+	var/result = tgui_alert(person, body, "Семейная система", list("Да", "Нет"), 60 SECONDS)
 
 	if(!person || QDELETED(person))
 		return
+	if(QDELETED(session))
+		person.familytree_confirmation_pending = FALSE
+		return
 
 	var/accepted = (result == "Да")
+	var/mob/living/carbon/human/partner = is_person_a ? session.person_b : session.person_a
 
 	if(session.resolved)
 		if(is_person_a)

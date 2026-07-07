@@ -128,6 +128,7 @@
 #define FTREJ_F_OPTOUT       (1<<10)
 
 #include "familytree_prefs_ui.dm"
+#include "familytree_confirm_alert.dm"
 #include "familytree_mob_procs.dm"
 #include "familytree_heritage_core.dm"
 #include "familytree_member.dm"

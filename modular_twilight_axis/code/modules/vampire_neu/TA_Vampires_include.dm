@@ -29,6 +29,7 @@
 #include "./ascended_covens.dm"
 #include "./coven_level_purchases.dm"
 #include "./crimson_crucible_ru_i18n.dm"
+#include "./overrides/crucible_summons.dm"
 #include "./rockhill_masquerade.dm"
 #include "./overrides/pallid_addiction.dm"
 #include "./overrides/death_gifts.dm"

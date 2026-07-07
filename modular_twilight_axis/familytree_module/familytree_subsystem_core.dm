@@ -274,6 +274,8 @@ SUBSYSTEM_DEF(familytree)
 		return
 	H.familytree_assignment_scheduled = FALSE
 	H.familytree_confirmation_pending = FALSE
+	H.familytree_consecutive_match_failures = 0
+	H.familytree_clear_confirm_button()
 	viable_spouses -= H
 	if(!H.familytree_module_signal_bound)
 		ftlog("stop_tracking SKIP: [H.real_name] not bound")
@@ -409,6 +411,12 @@ SUBSYSTEM_DEF(familytree)
 	if(H.client && (H.mind?.assigned_role || H.job))
 		ftlog("try_queue STOP: [H.real_name] familytree disabled (pref=FAMILY_NONE)")
 		stop_tracking_human(H, "familytree disabled for this character")
+
+/datum/controller/subsystem/familytree/proc/familytree_match_retry_delay(mob/living/carbon/human/H)
+	var/failures = 0
+	if(H)
+		failures = clamp(H.familytree_consecutive_match_failures, 0, 6)
+	return (10 + failures * 10) SECONDS
 
 /datum/controller/subsystem/familytree/proc/run_local_assignment(mob/living/carbon/human/H, status, busy_attempt = 0)
 	ftlog("run_local_assignment: [H?.real_name] ([H?.ckey]) status=[status] busy_attempt=[busy_attempt]")

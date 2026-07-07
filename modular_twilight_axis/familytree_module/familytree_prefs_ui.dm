@@ -38,6 +38,8 @@
 	var/tmp/familytree_opted_out = FALSE
 	var/tmp/familytree_setspouse_timeout_offered = FALSE
 	var/tmp/familytree_setspouse_retries = 0
+	var/tmp/familytree_consecutive_match_failures = 0
+	var/tmp/familytree_confirm_timerid
 	var/allow_relatives_in_family = TRUE
 	var/know_your_fate = FALSE
 	var/familytree_father_name = ""

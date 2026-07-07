@@ -1,13 +1,17 @@
 /*
  * Blood starvation rebalance adapted from Scarlet-Reach/Scarlet-Reach#1840.
  *
- * Uses TA-specific thresholds and statuses so vampire vitae hunger does not
- * collide with the generic hydration debuffs.
+ * Thresholds scale off maxbloodpool (percentage) with an absolute floor and
+ * cap, so low-cap vampires (vagabond/converted, 1000 max) are not permanently
+ * starved, while high-cap vampires (lords) keep the original 1000/750/300 tiers.
  */
 
-#define TA_VITAE_LEVEL_STARVING 300
-#define TA_VITAE_LEVEL_HUNGRY 750
-#define TA_VITAE_LEVEL_FED 1000
+#define TA_VITAE_FED_PERCENT 0.30
+#define TA_VITAE_FED_MIN 250
+#define TA_VITAE_FED_CAP 1000
+#define TA_VITAE_HUNGRY_RATIO 0.75
+#define TA_VITAE_STARVING_RATIO 0.30
+#define TA_VITAE_FRENZY_FLOOR 100
 
 /datum/status_effect/debuff/ta_bloodstarved
 	id = "ta_bloodstarved"
@@ -48,30 +52,37 @@
 	remove_status_effect(/datum/status_effect/debuff/thirstyt2)
 	remove_status_effect(/datum/status_effect/debuff/thirstyt3)
 
-	switch(bloodpool)
-		if(TA_VITAE_LEVEL_FED to INFINITY)
-			remove_status_effect(/datum/status_effect/debuff/ta_bloodstarved)
-			remove_status_effect(/datum/status_effect/debuff/ta_bloodstarved/worse)
-			remove_status_effect(/datum/status_effect/debuff/ta_bloodstarved/worst)
-		if(TA_VITAE_LEVEL_HUNGRY to TA_VITAE_LEVEL_FED)
-			apply_status_effect(/datum/status_effect/debuff/ta_bloodstarved)
-			remove_status_effect(/datum/status_effect/debuff/ta_bloodstarved/worse)
-			remove_status_effect(/datum/status_effect/debuff/ta_bloodstarved/worst)
-		if(TA_VITAE_LEVEL_STARVING to TA_VITAE_LEVEL_HUNGRY)
-			apply_status_effect(/datum/status_effect/debuff/ta_bloodstarved/worse)
-			remove_status_effect(/datum/status_effect/debuff/ta_bloodstarved)
-			remove_status_effect(/datum/status_effect/debuff/ta_bloodstarved/worst)
-		if(-INFINITY to TA_VITAE_LEVEL_STARVING)
-			apply_status_effect(/datum/status_effect/debuff/ta_bloodstarved/worst)
-			remove_status_effect(/datum/status_effect/debuff/ta_bloodstarved)
-			remove_status_effect(/datum/status_effect/debuff/ta_bloodstarved/worse)
-			if(prob(3))
-				playsound(get_turf(src), pick('sound/vo/hungry1.ogg', 'sound/vo/hungry2.ogg', 'sound/vo/hungry3.ogg'), 100, TRUE, -1)
+	var/max_vitae = max(maxbloodpool, 1)
+	var/fed_level = clamp(round(max_vitae * TA_VITAE_FED_PERCENT), TA_VITAE_FED_MIN, TA_VITAE_FED_CAP)
+	var/hungry_level = round(fed_level * TA_VITAE_HUNGRY_RATIO)
+	var/starving_level = round(fed_level * TA_VITAE_STARVING_RATIO)
 
-	if(bloodpool < 100 && prob(9))
+	if(bloodpool >= fed_level)
+		remove_status_effect(/datum/status_effect/debuff/ta_bloodstarved)
+		remove_status_effect(/datum/status_effect/debuff/ta_bloodstarved/worse)
+		remove_status_effect(/datum/status_effect/debuff/ta_bloodstarved/worst)
+	else if(bloodpool >= hungry_level)
+		apply_status_effect(/datum/status_effect/debuff/ta_bloodstarved)
+		remove_status_effect(/datum/status_effect/debuff/ta_bloodstarved/worse)
+		remove_status_effect(/datum/status_effect/debuff/ta_bloodstarved/worst)
+	else if(bloodpool >= starving_level)
+		apply_status_effect(/datum/status_effect/debuff/ta_bloodstarved/worse)
+		remove_status_effect(/datum/status_effect/debuff/ta_bloodstarved)
+		remove_status_effect(/datum/status_effect/debuff/ta_bloodstarved/worst)
+	else
+		apply_status_effect(/datum/status_effect/debuff/ta_bloodstarved/worst)
+		remove_status_effect(/datum/status_effect/debuff/ta_bloodstarved)
+		remove_status_effect(/datum/status_effect/debuff/ta_bloodstarved/worse)
+		if(prob(3))
+			playsound(get_turf(src), pick('sound/vo/hungry1.ogg', 'sound/vo/hungry2.ogg', 'sound/vo/hungry3.ogg'), 100, TRUE, -1)
+
+	if(bloodpool < TA_VITAE_FRENZY_FLOOR && prob(9))
 		if(last_frenzy_check + 5 MINUTES < world.time)
 			rollfrenzy()
 
-#undef TA_VITAE_LEVEL_STARVING
-#undef TA_VITAE_LEVEL_HUNGRY
-#undef TA_VITAE_LEVEL_FED
+#undef TA_VITAE_FED_PERCENT
+#undef TA_VITAE_FED_MIN
+#undef TA_VITAE_FED_CAP
+#undef TA_VITAE_HUNGRY_RATIO
+#undef TA_VITAE_STARVING_RATIO
+#undef TA_VITAE_FRENZY_FLOOR
