@@ -106,7 +106,7 @@
 				if("Cloak")
 					cloak = /obj/item/clothing/cloak/undivided
 				if("Tabard")
-					cloak = /obj/item/clothing/cloak/templar/undivided_alt
+					cloak = /obj/item/clothing/cloak/templar/undivided
 				if("Clerical Cloak")
 					cloak = /obj/item/clothing/cloak/undividedcleric
 				if("Clerical Tabard")
