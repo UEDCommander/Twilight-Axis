@@ -547,13 +547,15 @@
 		return FALSE
 	if(target == owner || target.stat == DEAD)
 		return FALSE
+	if(!target.client)
+		return FALSE
 	return get_dist(owner, target) <= 7
 
 /datum/component/ta_death_gift_berserk/proc/find_berserk_target(mob/living/carbon/human/owner, mob/living/excluded_target = null)
 	var/mob/living/best_target = null
 	var/best_dist = INFINITY
 	for(var/mob/living/possible_target in oviewers(7, owner))
-		if(possible_target == owner || possible_target == excluded_target || possible_target.stat == DEAD)
+		if(possible_target == excluded_target || !is_valid_berserk_target(owner, possible_target))
 			continue
 		var/current_dist = get_dist(owner, possible_target)
 		if(current_dist < best_dist)
@@ -561,7 +563,7 @@
 			best_dist = current_dist
 	if(best_target)
 		return best_target
-	if(excluded_target && !QDELETED(excluded_target) && excluded_target.stat != DEAD)
+	if(is_valid_berserk_target(owner, excluded_target))
 		return excluded_target
 	return null
 
@@ -647,7 +649,7 @@
 /datum/component/ta_death_gift_berserk/proc/on_unarmed_attack(mob/living/carbon/human/source, mob/living/carbon/human/attacker, mob/living/target, datum/martial_art/attacker_style)
 	SIGNAL_HANDLER
 	var/mob/living/carbon/human/owner = parent
-	if(!active || ending || source != owner || attacker != owner || !isliving(target) || target == owner || target.stat == DEAD)
+	if(!active || ending || source != owner || attacker != owner || !is_valid_berserk_target(owner, target))
 		return
 
 	INVOKE_ASYNC(src, PROC_REF(try_berserk_attack), owner, target)
@@ -676,7 +678,7 @@
 		handle_berserk_unarmed_attack(owner, target, selected_zone)
 
 /datum/component/ta_death_gift_berserk/proc/handle_berserk_unarmed_attack(mob/living/carbon/human/owner, mob/living/target, selected_zone)
-	if(!active || ending || !istype(owner) || QDELETED(owner) || !isliving(target) || QDELETED(target) || target == owner || target.stat == DEAD)
+	if(!active || ending || !istype(owner) || QDELETED(owner) || !is_valid_berserk_target(owner, target))
 		return
 
 	var/zone = check_zone(selected_zone)
@@ -699,7 +701,7 @@
 	owner.clear_frenzy_cache()
 
 /datum/component/ta_death_gift_berserk/proc/handle_berserk_bite(mob/living/carbon/human/owner, mob/living/target, selected_zone)
-	if(!active || ending || !istype(owner) || QDELETED(owner) || !isliving(target) || QDELETED(target) || target == owner || target.stat == DEAD)
+	if(!active || ending || !istype(owner) || QDELETED(owner) || !is_valid_berserk_target(owner, target))
 		return
 
 	var/zone = check_zone(selected_zone)
