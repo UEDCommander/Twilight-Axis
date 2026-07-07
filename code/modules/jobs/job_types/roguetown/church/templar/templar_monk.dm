@@ -37,9 +37,6 @@
 	id = /obj/item/clothing/ring/silver
 	gloves = /obj/item/clothing/gloves/roguetown/bandages/weighted
 	backl = /obj/item/storage/backpack/rogue/satchel
-	head = /obj/item/clothing/head/roguetown/roguehood/undivided
-	cloak = /obj/item/clothing/cloak/undivided
-	armor = /obj/item/clothing/suit/roguetown/shirt/robe/undivided
 	backpack_contents = list(
 		/obj/item/ritechalk = 1,
 		)
