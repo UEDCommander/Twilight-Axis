@@ -6,7 +6,6 @@
  */
 
 #define TA_POTENCE_TRAIT_SOURCE "ta_potence"
-#define TA_CELERITY_TRAIT_SOURCE "ta_celerity"
 
 /atom/movable/screen/alert/status_effect/buff/celerity
 	name = "Celerity"
@@ -129,32 +128,12 @@
 	. = ..()
 	ta_restore_upstream_punch_damage_bonus()
 
+// Celerity is otherwise left to upstream; only stop its after-image "speed
+// aura" from being applied below tier 4. Upstream's deactivate clears the
+// component when it exists, so no deactivate override is needed.
 /datum/coven_power/celerity/activate(atom/target)
 	. = ..()
-	owner.add_movespeed_modifier(MOVESPEED_ID_CELERITY, multiplicative_slowdown = multiplicative_slowdown)
-	owner.apply_status_effect(/datum/status_effect/buff/celerity, level)
-
-	if(level >= 4)
-		owner.AddComponent(/datum/component/after_image)
-		playsound(owner, 'sound/magic/timeforward.ogg', 40, TRUE)
-		owner.visible_message(span_warning("[owner] движется с нечеловеческой скоростью, и каждое движение сливается в размытый след!"))
-	if(level >= 4)
-		ADD_TRAIT(owner, TRAIT_LEAPER, TA_CELERITY_TRAIT_SOURCE)
-	if(level >= 5)
-		ADD_TRAIT(owner, TRAIT_DODGEEXPERT, TA_CELERITY_TRAIT_SOURCE)
-
-/datum/coven_power/celerity/deactivate(atom/target, direct)
-	. = ..()
-	owner.remove_status_effect(/datum/status_effect/buff/celerity)
-	owner.remove_movespeed_modifier(MOVESPEED_ID_CELERITY)
-
-	if(level >= 4)
+	if(. && (level < 4))
 		qdel(owner.GetComponent(/datum/component/after_image))
-		playsound(owner, 'sound/magic/timestop.ogg', 40, TRUE)
-	if(level >= 4)
-		REMOVE_TRAIT(owner, TRAIT_LEAPER, TA_CELERITY_TRAIT_SOURCE)
-	if(level >= 5)
-		REMOVE_TRAIT(owner, TRAIT_DODGEEXPERT, TA_CELERITY_TRAIT_SOURCE)
 
 #undef TA_POTENCE_TRAIT_SOURCE
-#undef TA_CELERITY_TRAIT_SOURCE
