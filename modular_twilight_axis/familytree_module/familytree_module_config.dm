@@ -23,7 +23,7 @@
 //
 // TGUI: tgui/packages/tgui/interfaces/FamilySettingsPanel.tsx
 //       tgui/packages/tgui/interfaces/FamilyDisplayPanel.tsx
-//       tgui/packages/tgui/interfaces/FamilyDisplayPanel/*.tsx (FamilyTree, FamilyTreeBranch, FamilyTreeCard, FamilyListSections, types)
+//       tgui/packages/tgui/interfaces/FamilyDisplayPanel/*.tsx (FamilyTree, FamilyTreeCard, FamilyListSections, types)
 // Assets: relations.dmi
 //
 // Notes:
