@@ -34,28 +34,21 @@
 
 /datum/coven_power/potence
 	var/ta_punch_damage_bonus = 0
-	var/ta_upstream_punch_damage_bonus = 0
-	var/ta_cancelled_upstream_punch_damage_bonus = FALSE
 
 /datum/coven_power/potence/one
 	ta_punch_damage_bonus = 2
-	ta_upstream_punch_damage_bonus = 8
 
 /datum/coven_power/potence/two
 	ta_punch_damage_bonus = 4
-	ta_upstream_punch_damage_bonus = 16
 
 /datum/coven_power/potence/three
 	ta_punch_damage_bonus = 8
-	ta_upstream_punch_damage_bonus = 24
 
 /datum/coven_power/potence/four
 	ta_punch_damage_bonus = 10
-	ta_upstream_punch_damage_bonus = 32
 
 /datum/coven_power/potence/five
 	ta_punch_damage_bonus = 15
-	ta_upstream_punch_damage_bonus = 40
 
 /datum/coven_power/potence/activate(atom/target)
 	. = ..()
@@ -88,18 +81,12 @@
 	do_deactivation_notification()
 
 /datum/coven_power/potence/proc/ta_cancel_upstream_punch_damage_bonus()
-	if(!ta_upstream_punch_damage_bonus || ta_cancelled_upstream_punch_damage_bonus)
-		return
-	owner.dna.species.punch_damage -= ta_upstream_punch_damage_bonus
+	owner.dna.species.punch_damage -= level * 8
 	owner.potence_weapon_buff = 0
-	ta_cancelled_upstream_punch_damage_bonus = TRUE
 
 /datum/coven_power/potence/proc/ta_restore_upstream_punch_damage_bonus()
-	if(!ta_upstream_punch_damage_bonus || !ta_cancelled_upstream_punch_damage_bonus)
-		return
-	owner.dna.species.punch_damage += ta_upstream_punch_damage_bonus
+	owner.dna.species.punch_damage += level * 8
 	owner.potence_weapon_buff = 0
-	ta_cancelled_upstream_punch_damage_bonus = FALSE
 
 // Replace the upstream level-specific punch and virtual-STR adjustments.
 /datum/coven_power/potence/one/activate()
