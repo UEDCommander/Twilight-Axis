@@ -35,19 +35,19 @@
 	var/ta_punch_damage_bonus = 0
 
 /datum/coven_power/potence/one
-	ta_punch_damage_bonus = 2
-
-/datum/coven_power/potence/two
 	ta_punch_damage_bonus = 4
 
-/datum/coven_power/potence/three
+/datum/coven_power/potence/two
 	ta_punch_damage_bonus = 8
 
+/datum/coven_power/potence/three
+	ta_punch_damage_bonus = 12
+
 /datum/coven_power/potence/four
-	ta_punch_damage_bonus = 10
+	ta_punch_damage_bonus = 16
 
 /datum/coven_power/potence/five
-	ta_punch_damage_bonus = 15
+	ta_punch_damage_bonus = 22
 
 /datum/coven_power/potence/activate(atom/target)
 	. = ..()
