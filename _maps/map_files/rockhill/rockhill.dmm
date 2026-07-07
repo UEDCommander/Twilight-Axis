@@ -21093,10 +21093,6 @@
 /turf/open/floor/rogue/naturalstone,
 /area/rogue/under/cave/fishmandungeon)
 "eid" = (
-/obj/structure/fluff/railing/border{
-	dir = 6;
-	pixel_x = 4
-	},
 /obj/machinery/light/rogue/candle,
 /turf/open/floor/rogue/ruinedwood{
 	dir = 1;
@@ -28244,6 +28240,17 @@
 /obj/structure/flora/roguetree/pine,
 /turf/open/floor/rogue/grasscold,
 /area/rogue/outdoors/woodsrat/above)
+"fHs" = (
+/obj/structure/mineral_door/wood{
+	locked = 1;
+	lockid = "fancyiii";
+	name = "Luxury Room III"
+	},
+/turf/open/floor/rogue/ruinedwood{
+	dir = 1;
+	icon_state = "vertw"
+	},
+/area/rogue/indoors/town/tavern)
 "fHy" = (
 /turf/open/floor/rogue/rooftop/green/corner1{
 	dir = 1
@@ -32447,7 +32454,10 @@
 	lockid = "fancyii";
 	name = "Luxury Room II"
 	},
-/turf/open/floor/rogue/carpet,
+/turf/open/floor/rogue/ruinedwood{
+	dir = 1;
+	icon_state = "vertw"
+	},
 /area/rogue/indoors/town/tavern)
 "gzg" = (
 /obj/effect/wisp/prestidigitation{
@@ -54754,12 +54764,8 @@
 /turf/open/floor/rogue/dirt/road,
 /area/rogue/outdoors/bograt/south)
 "let" = (
-/obj/structure/bed/rogue/inn/double{
-	can_buckle = 0
-	},
-/obj/item/bedsheet/rogue/double_pelt{
-	dir = 4
-	},
+/obj/structure/bed/rogue/inn,
+/obj/item/bedsheet/rogue/pelt,
 /turf/open/floor/rogue/hexstone,
 /area/rogue/indoors/town/magician/tower)
 "lez" = (
@@ -66957,10 +66963,6 @@
 /turf/open/floor/rogue/blocks,
 /area/rogue/indoors/town/garrison)
 "nKf" = (
-/obj/structure/bed/rogue/inn/double{
-	can_buckle = 0
-	},
-/obj/item/bedsheet/rogue/fabric_double,
 /obj/structure/rack/rogue/shelf,
 /obj/item/candle/yellow{
 	pixel_x = -9;
@@ -66974,6 +66976,8 @@
 	pixel_y = 0;
 	pixel_x = 32
 	},
+/obj/structure/bed/rogue/inn,
+/obj/item/bedsheet/rogue/pelt,
 /turf/open/floor/rogue/hexstone,
 /area/rogue/indoors/town/magician/tower)
 "nKj" = (
@@ -78475,7 +78479,7 @@
 	lockid = "roomhunt";
 	name = "HUNT Room"
 	},
-/turf/open/floor/rogue/church,
+/turf/open/floor/rogue/ruinedwood,
 /area/rogue/indoors/town/tavern)
 "pYZ" = (
 /obj/machinery/light/rogue/candle/blue,
@@ -87260,10 +87264,10 @@
 /turf/open/floor/rogue/tile/brownbrick,
 /area/rogue/indoors/town/bath)
 "rUh" = (
-/obj/structure/bed/rogue/inn/double{
-	dir = 8
+/obj/structure/bed/rogue/inn{
+	dir = 1
 	},
-/obj/item/bedsheet/rogue/fabric_double{
+/obj/item/bedsheet/rogue/pelt{
 	dir = 1
 	},
 /turf/open/floor/rogue/hexstone,
@@ -93464,7 +93468,6 @@
 /turf/closed/wall/mineral/rogue/stonebrick,
 /area/rogue/indoors/shelter/bog)
 "tkW" = (
-/obj/item/bodypart/l_arm/devil,
 /obj/item/bodypart/r_arm/goblin,
 /obj/item/bodypart/r_arm,
 /obj/item/reagent_containers/food/snacks/zizo_bane,
@@ -95843,8 +95846,8 @@
 /turf/open/floor/rogue/ruinedwood,
 /area/rogue/outdoors/mountains/decap/somewhere)
 "tLv" = (
-/obj/structure/table/finer,
 /obj/effect/spawner/lootdrop/general_loot_mid,
+/obj/structure/table/wood/poor,
 /turf/open/floor/rogue/cobble,
 /area/rogue/under/cavewet/wizarddungeon)
 "tLz" = (
@@ -101996,9 +101999,6 @@
 "vaQ" = (
 /obj/structure/stairs/stone{
 	dir = 8
-	},
-/obj/structure/fluff/railing/border{
-	dir = 10
 	},
 /turf/open/floor/rogue/ruinedwood{
 	dir = 1;
@@ -111459,7 +111459,7 @@
 /obj/machinery/light/rogue/hearth,
 /obj/item/cooking/pan,
 /obj/machinery/light/rogue/oven/north,
-/turf/open/floor/rogue/churchrough,
+/turf/open/floor/rogue/concrete,
 /area/rogue/indoors/town/tavern)
 "wXY" = (
 /obj/structure/closet/crate/chest/crate,
@@ -111979,8 +111979,6 @@
 /area/rogue/under/underdark/south)
 "xdi" = (
 /obj/structure/closet/crate/chest,
-/obj/item/reagent_containers/food/snacks/rogue/meat/steak/wolf,
-/obj/item/reagent_containers/food/snacks/rogue/meat/steak/wolf,
 /obj/effect/spawner/lootdrop/roguetown/dungeon/food,
 /obj/effect/spawner/lootdrop/roguetown/dungeon/food,
 /obj/effect/spawner/lootdrop/roguetown/dungeon/food,
@@ -115306,8 +115304,8 @@
 /area/rogue/outdoors/town/rockhill)
 "xMP" = (
 /obj/effect/wisp/prestidigitation,
-/obj/structure/table/finer,
 /obj/effect/spawner/lootdrop/general_loot_mid,
+/obj/structure/table/wood/poor,
 /turf/open/floor/rogue/cobble/mossy,
 /area/rogue/under/cavewet/wizarddungeon)
 "xMT" = (
@@ -410709,9 +410707,9 @@ euP
 euP
 euP
 euP
-iur
-iur
-iur
+euP
+euP
+euP
 ekG
 ekG
 jAW
@@ -411141,7 +411139,7 @@ euP
 euP
 euP
 euP
-iur
+euP
 pfp
 pfp
 jxy
@@ -411573,7 +411571,7 @@ euP
 euP
 euP
 euP
-iur
+euP
 pfp
 mJM
 bRo
@@ -415893,7 +415891,7 @@ euP
 euP
 euP
 euP
-iur
+euP
 pfp
 dYQ
 xfk
@@ -416325,7 +416323,7 @@ euP
 euP
 euP
 euP
-iur
+euP
 pfp
 pfp
 jxy
@@ -416757,9 +416755,9 @@ euP
 euP
 euP
 euP
-iur
-iur
-iur
+euP
+euP
+euP
 euP
 euP
 euP
@@ -619435,7 +619433,7 @@ iJC
 iJC
 fHB
 wNn
-vAR
+fHs
 fHB
 wNn
 fHB
