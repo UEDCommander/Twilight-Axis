@@ -535,7 +535,7 @@
   - balance: "\u041D\u0430\u0441\u0438\u043B\u044C\u0441\u0442\u0432\u0435\u043D\u043D\
       \u043E\u0435 \u043E\u0431\u0440\u0430\u0449\u0435\u043D\u0438\u0435 \u0442\u0435\
       \u043F\u0435\u0440\u044C \u0434\u043E\u0441\u0442\u0443\u043F\u043D\u043E \u0442\
-      \u043E\u043B\u044C\u043A\u043E \u0432\u0430\u043C\u043F\u0438\u0440-\u043B\u043E\
+      \uu043E\u043B\u044C\u043A\u043E \u0432\u0430\u043C\u043F\u0438\u0440-\u043B\u043E\
       \u0440\u0434\u0443."
   - balance: "\u0414\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u044B Pallid-\u0438\
       \u0441\u0441\u0443\u0448\u0435\u043D\u0438\u0435, \u0414\u0430\u0440\u044B \u0441\
@@ -596,6 +596,8 @@
   WeNeedMorePhoron:
   - rscadd: Encyclopedia's existence is now aggressively pushed to you whenever you
       join.
+  - rscadd: NPC with steel gears no longer magically transmute it into iron (because
+      they wear iron)
   - rscadd: Raises the amount of time a NPC will focus a zone by 3x. It now ranges
       from 9 to 18 attacks.
   - balance: Augmentation buffs last a minute, as nintended.

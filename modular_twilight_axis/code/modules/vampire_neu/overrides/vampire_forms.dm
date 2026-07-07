@@ -11,4 +11,3 @@
 	AIStatus = AI_OFF
 	can_have_ai = FALSE
 	wander = FALSE
-	sight = SEE_TURFS | SEE_MOBS | SEE_OBJS | SEE_SELF
