@@ -82,12 +82,12 @@
 	icon_state = "naledistaffalt"
 
 /obj/item/clothing/under/roguetown/trou/leather/pontifex/warscholar
-	name = "warscholar's chaqchur"
+	name = "war scholar's chaqchur"
 	desc = "A sturdy pair of baggy, thin leather pants. The perfect garb for protecting one from the hot sun and the harsh sands of Naledi."
 	naledicolor = FALSE
 
 /obj/item/clothing/suit/roguetown/shirt/robe/hierophant/warscholar
-	name = "warscholar's kandys"
+	name = "war scholar's kandys"
 	desc = "A thin piece of fabric worn under a robe to stop chafing and keep one's dignity if a harsh blow of wind comes through. Despite the light fabric, it offers decent protection."
 	icon = 'modular_twilight_axis/icons/roguetown/clothing/armor.dmi'
 	mob_overlay_icon = 'modular_twilight_axis/icons/roguetown/clothing/onmob/armor.dmi'
@@ -96,13 +96,13 @@
 	naledicolor = FALSE
 
 /obj/item/clothing/suit/roguetown/armor/gambeson/heavy/hierophant/warscholar
-	name = "warscholar's shawl"
+	name = "war scholar's shawl"
 	desc = "Thick and protective while remaining light and breezy; the perfect garb for protecting one from the hot sun and the harsh sands of Naledi."
 	color = "#48443b"
 	naledicolor = FALSE
 
 /obj/item/clothing/head/roguetown/roguehood/psydon/warscholar
-	name = "warscholar's pashmina"
+	name = "war scholar's pashmina"
 	desc = "A protective hood, favored by the Golden Order. It offers reliable defense while allowing the wearer to remain focused amidst the chaos of battle."
 	icon = 'modular_twilight_axis/icons/roguetown/clothing/head.dmi'
 	mob_overlay_icon = 'modular_twilight_axis/icons/roguetown/clothing/onmob/head.dmi'
