@@ -3285,7 +3285,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/clothing/shoes/courtphysician/female
 	donatitem = TRUE
 	donat_tier = 2
-	donat_ignore = list("namenlos66")
 
 /datum/loadout_item/sanguine_vest
 	name = "Sanguine Vest"
@@ -3293,7 +3292,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/clothing/suit/roguetown/shirt/courtphysician
 	donatitem = TRUE
 	donat_tier = 2
-	donat_ignore = list("namenlos66")
 
 /datum/loadout_item/sanguine_blouse
 	name = "Sanguine Blouse"
@@ -3301,7 +3299,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/clothing/suit/roguetown/shirt/courtphysician/female
 	donatitem = TRUE
 	donat_tier = 2
-	donat_ignore = list("namenlos66")
 
 /datum/loadout_item/sanguine_hat
 	name = "Sanguine Hat"
@@ -3309,7 +3306,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/clothing/head/roguetown/courtphysician
 	donatitem = TRUE
 	donat_tier = 2
-	donat_ignore = list("namenlos66")
 
 /datum/loadout_item/sanguine_cap
 	name = "Sanguine Cap"
@@ -3317,7 +3313,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/clothing/head/roguetown/courtphysician/female
 	donatitem = TRUE
 	donat_tier = 2
-	donat_ignore = list("namenlos66")
 
 /datum/loadout_item/sanguine_gloves
 	name = "Sanguine Gloves"
@@ -3325,7 +3320,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/clothing/gloves/roguetown/courtphysician
 	donatitem = TRUE
 	donat_tier = 2
-	donat_ignore = list("namenlos66")
 
 /datum/loadout_item/sanguine_sleeves
 	name = "Sanguine Sleeves"
@@ -3333,7 +3327,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/clothing/gloves/roguetown/courtphysician/female
 	donatitem = TRUE
 	donat_tier = 2
-	donat_ignore = list("namenlos66")
 
 /datum/loadout_item/sanguine_trousers
 	name = "Sanguine Trousers"
@@ -3341,7 +3334,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/clothing/under/roguetown/trou/leather/courtphysician
 	donatitem = TRUE
 	donat_tier = 2
-	donat_ignore = list("namenlos66")
 
 /datum/loadout_item/sanguine_skirt
 	name = "Sanguine Skirt"
@@ -3349,7 +3341,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/clothing/under/roguetown/skirt/courtphysician
 	donatitem = TRUE
 	donat_tier = 2
-	donat_ignore = list("namenlos66")
 
 /datum/loadout_item/sanguine_shoes
 	name = "Sanguine Shoes"
@@ -3357,7 +3348,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/clothing/shoes/courtphysician
 	donatitem = TRUE
 	donat_tier = 2
-	donat_ignore = list("namenlos66")
 
 // Sanguine Kits
 
@@ -3367,7 +3357,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/enchantingkit/sanguine_vest
 	donatitem = TRUE
 	donat_tier = 2
-	donat_ignore = list("namenlos66")
 
 /datum/loadout_item/donator_sanguine_heels
 	name = "Donator Kit - Sanguine Heels - Required: Heavy Leather Boots"
@@ -3375,7 +3364,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/enchantingkit/sanguine_heels
 	donatitem = TRUE
 	donat_tier = 2
-	donat_ignore = list("namenlos66")
 
 /datum/loadout_item/donator_sanguine_trousers
 	name = "Donator Kit - Sanguine Trousers - Required: Hardened Leather Trousers or Fencing Breeches"
@@ -3383,7 +3371,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/enchantingkit/sanguine_trousers
 	donatitem = TRUE
 	donat_tier = 2
-	donat_ignore = list("namenlos66")
 
 /datum/loadout_item/donator_sanguine_jacket
 	name = "Donator Kit - Sanguine Jacket - Required: Hardened Leather Jacket or Fencing Jacket"
@@ -3391,7 +3378,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/enchantingkit/sanguine_jacket
 	donatitem = TRUE
 	donat_tier = 2
-	donat_ignore = list("namenlos66")
 
 /datum/loadout_item/donator_sanguine_coat
 	name = "Donator Kit - Sanguine Coat - Required: Hardened Leather Coat"
@@ -3399,7 +3385,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/enchantingkit/sanguine_coat
 	donatitem = TRUE
 	donat_tier = 2
-	donat_ignore = list("namenlos66")
 
 // Sanguine Kits End
 
