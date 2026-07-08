@@ -5,6 +5,10 @@
 	desc = "Система нашла для вас семейную связь. Нажмите, чтобы открыть меню принятия или отказа."
 	icon_state = "buff"
 	alert_group = ALERT_BUFF
+	// Render above the rest of the HUD and get a fixed prominent spot (see the
+	// reorganize_alerts override below) so it isn't buried among other alerts.
+	plane = ABOVE_HUD_PLANE
+	layer = ABOVE_HUD_LAYER
 	var/datum/callback/on_open
 
 /atom/movable/screen/alert/familytree_confirm/Destroy()
@@ -41,5 +45,14 @@
 /mob/living/carbon/human/proc/familytree_clear_confirm_button()
 	if(alerts && alerts[FAMILYTREE_CONFIRM_ALERT_CATEGORY])
 		clear_alert(FAMILYTREE_CONFIRM_ALERT_CATEGORY)
+
+// The base reorganize_alerts() slots every alert into the buff/status/debuff
+// stacks by group, which buries the family-confirm button among other icons.
+// After the normal pass, pin it to a fixed top-center spot so it stands out.
+/datum/hud/reorganize_alerts()
+	. = ..()
+	var/atom/movable/screen/alert/familytree_confirm/confirm = mymob?.alerts?[FAMILYTREE_CONFIRM_ALERT_CATEGORY]
+	if(confirm)
+		confirm.screen_loc = "CENTER,NORTH-1"
 
 #undef FAMILYTREE_CONFIRM_ALERT_CATEGORY
