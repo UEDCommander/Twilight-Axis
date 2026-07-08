@@ -199,7 +199,7 @@
 		H.familytree_assignment_scheduled = TRUE
 		addtimer(CALLBACK(src, PROC_REF(run_local_assignment), H, status), 60 SECONDS)
 
-#define MUTUAL_CONFIRM_TIMEOUT 60 SECONDS
+#define MUTUAL_CONFIRM_TIMEOUT 2 MINUTES
 #define CONFIRM_PENDING 0
 #define CONFIRM_ACCEPTED 1
 #define CONFIRM_REJECTED 2
@@ -390,7 +390,7 @@
 		return
 	if(H.familytree_confirm_timerid)
 		deltimer(H.familytree_confirm_timerid)
-	H.familytree_confirm_timerid = addtimer(CALLBACK(src, PROC_REF(familytree_solo_confirm_expire), H), 60 SECONDS, TIMER_STOPPABLE)
+	H.familytree_confirm_timerid = addtimer(CALLBACK(src, PROC_REF(familytree_solo_confirm_expire), H), 2 MINUTES, TIMER_STOPPABLE)
 
 /datum/controller/subsystem/familytree/proc/do_solo_confirmation_prompt(mob/living/carbon/human/H, datum/callback/on_accept, confirm_type, mob/living/carbon/human/context_person = null, relation_text = null)
 	if(!H || QDELETED(H))

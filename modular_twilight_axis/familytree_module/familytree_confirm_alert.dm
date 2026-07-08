@@ -3,7 +3,8 @@
 /atom/movable/screen/alert/familytree_confirm
 	name = "Семейная связь"
 	desc = "Система нашла для вас семейную связь. Нажмите, чтобы открыть меню принятия или отказа."
-	icon_state = "template"
+	icon_state = "buff"
+	alert_group = ALERT_BUFF
 	var/datum/callback/on_open
 
 /atom/movable/screen/alert/familytree_confirm/Destroy()
@@ -33,8 +34,8 @@
 	if(button_desc)
 		alert.desc = "[button_desc]\n\nНажмите, чтобы открыть меню принятия или отказа."
 	alert.add_filter("familytree_glow", 2, list("type" = "outline", "size" = 1, "color" = "#e8b923"))
-	animate(alert, alpha = 150, time = 8, loop = -1, flags = ANIMATION_PARALLEL, easing = SINE_EASING)
-	animate(alpha = 255, time = 8, easing = SINE_EASING)
+	animate(alert, alpha = 150, time = 8 SECONDS, loop = -1, flags = ANIMATION_PARALLEL, easing = SINE_EASING)
+	animate(alpha = 255, time = 8 SECONDS, easing = SINE_EASING)
 	return TRUE
 
 /mob/living/carbon/human/proc/familytree_clear_confirm_button()
