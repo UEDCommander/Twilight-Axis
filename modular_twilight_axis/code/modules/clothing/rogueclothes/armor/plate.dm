@@ -190,7 +190,7 @@
 	desc = "Is it not obvious what Ravox would've chosen? Yet upon the dae of His choice, She refused to gift any chance to Her sister.."
 	icon_state = "baothaplate"
 	item_state = "baothaplate"
-	max_integrity = ARMOR_INT_CHEST_PLATE_ANTAG - 350 //Halved durability, compared to traditional Ascendant-tier armor.
+	max_integrity = ARMOR_INT_CHEST_PLATE_ANTAG - 250 //TA EDIT
 	armor_class = ARMOR_CLASS_LIGHT //The big, big thing.
 	color = null
 	chunkcolor = "#dd2166"
@@ -216,12 +216,12 @@
 	desc = "A gemmed chalice, Eora's own, swilled with Psydonia's most noxious venoms - and but a simple sip was enough to bring Her to death's door.."
 	icon_state = "baothagamb"
 	armor_class = ARMOR_CLASS_LIGHT
-	armor = ARMOR_PADDED
+	armor = ARMOR_BRIGANDINE
 	color = null
 	max_integrity = ARMOR_INT_CHEST_LIGHT_MASTER + 150
 	armor_class = ARMOR_CLASS_LIGHT
 	resistance_flags = FIRE_PROOF
-	body_parts_covered = CHEST | GROIN | ARMS
+	body_parts_covered = COVERAGE_ALL_BUT_HANDFEET
 	icon = 'icons/roguetown/clothing/shirts.dmi'
 	mob_overlay_icon = 'icons/roguetown/clothing/onmob/shirts.dmi'
 	sleeved = 'icons/roguetown/clothing/onmob/helpers/sleeves_shirts.dmi'
@@ -246,7 +246,7 @@
 	desc = "A betrayal without compare, and a sin without redemption; or so, She believed.."
 	icon_state = "baothabracers"
 	chunkcolor = "#6d1c87"
-	armor = ARMOR_PADDED
+	armor = ARMOR_BAOTHA_LIGHT
 	resistance_flags = FIRE_PROOF
 	max_integrity = ARMOR_INT_CHEST_LIGHT_MASTER + 150
 	smeltresult = /obj/item/ingot/component/baotha
@@ -268,7 +268,7 @@
 /obj/item/clothing/under/roguetown/skirt/baotha_ta
 	name = "saccharine fauldcoat"
 	desc = "Only did Belladona's haze clear, once She heard Eora's gasps and Ravox's fright; what else could She've done besides fleeing the heavens?"
-	armor = ARMOR_PADDED
+	armor = ARMOR_BAOTHA_LIGHT
 	icon_state = "baothaskirt"
 	chunkcolor = "#6d1c87"
 	resistance_flags = FIRE_PROOF
@@ -321,7 +321,7 @@
 	icon_state = "baothaboots"
 	item_state = "baothaboots"
 	chunkcolor = "#6d1c87"
-	max_integrity = ARMOR_INT_SIDE_ANTAG - 250
+	max_integrity = ARMOR_INT_SIDE_ANTAG - 200
 	armor_class = ARMOR_CLASS_LIGHT
 	smeltresult = /obj/item/ingot/component/baotha
 
