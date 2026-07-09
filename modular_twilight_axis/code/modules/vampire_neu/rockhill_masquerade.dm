@@ -1,6 +1,7 @@
-#define ROCKHILL_MASQUERADE_CLAN_GOAL_MIN_POP 50
 #define ROCKHILL_MASQUERADE_MAX_ANTAGS 3
-#define ROCKHILL_MASQUERADE_CLAN_SIZE 5
+#define ROCKHILL_MASQUERADE_CLAN_SIZE_LOW 1
+#define ROCKHILL_MASQUERADE_CLAN_SIZE_MEDIUM 3
+#define ROCKHILL_MASQUERADE_CLAN_SIZE_HIGH 5
 
 #define ROCKHILL_MASQUERADE_MEDIUM_POP 30
 #define ROCKHILL_MASQUERADE_HIGH_POP 60
@@ -8,9 +9,6 @@
 #define ROCKHILL_MASQUERADE_MEDIUM_CHANCE 25
 #define ROCKHILL_MASQUERADE_HIGH_CHANCE 60
 
-// A masquerader who stalls on picking a clan holds up their whole slot; give
-// them 4 minutes (checked once a minute, so the on-screen bar can count down)
-// before the role is pulled and handed to someone else instead.
 #define ROCKHILL_MASQUERADE_CLAN_CHOICE_TICKS 4
 #define ROCKHILL_MASQUERADE_CLAN_CHOICE_TICK_TIME 1 MINUTES
 
@@ -72,6 +70,13 @@ SUBSYSTEM_DEF(ta_rockhill_masquerade)
 		return ROCKHILL_MASQUERADE_MEDIUM_CHANCE
 	return ROCKHILL_MASQUERADE_LOW_CHANCE
 
+/proc/ta_get_rockhill_masquerade_clan_size(active_population)
+	if(active_population >= ROCKHILL_MASQUERADE_HIGH_POP)
+		return ROCKHILL_MASQUERADE_CLAN_SIZE_HIGH
+	if(active_population >= ROCKHILL_MASQUERADE_MEDIUM_POP)
+		return ROCKHILL_MASQUERADE_CLAN_SIZE_MEDIUM
+	return ROCKHILL_MASQUERADE_CLAN_SIZE_LOW
+
 
 /datum/round_event_control/antagonist/solo/masquerade/rockhill
 	name = "Rockhill Masquerade"
@@ -95,29 +100,40 @@ SUBSYSTEM_DEF(ta_rockhill_masquerade)
 	name = "Участник Маскарада"
 	show_in_roundend = TRUE
 	show_in_antagpanel = FALSE
+	antag_flags = FLAG_ANTAG_CAP_IGNORE
 	var/list/datum/objective/synced_ambitions = list()
 	var/ambition_rewards_granted = FALSE
 	var/clan_choice_timer
 	var/clan_choice_ticks_left = 0
+	var/clan_choice_paused = FALSE
 
 /datum/antagonist/vampire/rockhill_masquerader/New(incoming_clan = /datum/clan/crimson_fang, forced_clan = FALSE, generation = GENERATION_ANCILLAE)
 	. = ..(incoming_clan, forced_clan, generation)
 
 /datum/antagonist/vampire/rockhill_masquerader/show_clan_selection(mob/living/carbon/human/vampdude)
 	. = ..()
-	start_clan_choice_timeout()
+	if(clan_choice_ticks_left <= 0 && !clan_selected)
+		clan_choice_ticks_left = ROCKHILL_MASQUERADE_CLAN_CHOICE_TICKS
+	update_clan_choice_bar()
+	pause_clan_choice_timeout()
 
-/datum/antagonist/vampire/rockhill_masquerader/proc/start_clan_choice_timeout()
+/datum/antagonist/vampire/rockhill_masquerader/pause_clan_choice_timeout()
 	if(clan_choice_timer)
 		deltimer(clan_choice_timer)
-	clan_choice_ticks_left = ROCKHILL_MASQUERADE_CLAN_CHOICE_TICKS
-	update_clan_choice_bar()
+		clan_choice_timer = null
+	clan_choice_paused = TRUE
+
+/datum/antagonist/vampire/rockhill_masquerader/resume_clan_choice_timeout()
+	clan_choice_paused = FALSE
+	if(clan_selected || clan_choice_ticks_left <= 0 || clan_choice_timer)
+		return
 	clan_choice_timer = addtimer(CALLBACK(src, PROC_REF(tick_clan_choice_timeout)), ROCKHILL_MASQUERADE_CLAN_CHOICE_TICK_TIME, TIMER_STOPPABLE)
 
 /datum/antagonist/vampire/rockhill_masquerader/proc/stop_clan_choice_timeout()
 	if(clan_choice_timer)
 		deltimer(clan_choice_timer)
 		clan_choice_timer = null
+	clan_choice_paused = FALSE
 
 /datum/antagonist/vampire/rockhill_masquerader/proc/tick_clan_choice_timeout()
 	clan_choice_timer = null
@@ -249,8 +265,7 @@ SUBSYSTEM_DEF(ta_rockhill_masquerade)
 			available_goal_ids += "inquisition"
 		if(length(royal_targets))
 			available_goal_ids += "royal_conversion"
-		if(active_population >= ROCKHILL_MASQUERADE_CLAN_GOAL_MIN_POP)
-			available_goal_ids += "clan_growth"
+		available_goal_ids += "clan_growth"
 
 		var/list/unused_goal_ids = available_goal_ids - used_goal_ids
 		var/goal_id = pick(length(unused_goal_ids) ? unused_goal_ids : available_goal_ids)
@@ -273,7 +288,10 @@ SUBSYSTEM_DEF(ta_rockhill_masquerade)
 				royal_objective.update_explanation_text()
 				objective = royal_objective
 			if("clan_growth")
-				objective = new /datum/objective/rockhill_masquerade/clan_growth(owner = masquerader_mind)
+				var/datum/objective/rockhill_masquerade/clan_growth/clan_growth_objective = new(owner = masquerader_mind)
+				clan_growth_objective.target_clan_size = ta_get_rockhill_masquerade_clan_size(active_population)
+				clan_growth_objective.update_explanation_text()
+				objective = clan_growth_objective
 
 		ta_add_rockhill_masquerade_objective(masquerader_mind, objective)
 
@@ -485,7 +503,10 @@ SUBSYSTEM_DEF(ta_rockhill_masquerade)
 
 /datum/objective/rockhill_masquerade/clan_growth
 	name = "расширить клан"
-	explanation_text = "Расширить свой клан как минимум до 5 живых вампиров."
+	var/target_clan_size = ROCKHILL_MASQUERADE_CLAN_SIZE_HIGH
+
+/datum/objective/rockhill_masquerade/clan_growth/update_explanation_text()
+	explanation_text = "Расширить свой клан как минимум до [target_clan_size] живых вампиров."
 
 /datum/objective/rockhill_masquerade/clan_growth/check_completion()
 	var/mob/living/carbon/human/owner_body = owner?.current
@@ -495,7 +516,7 @@ SUBSYSTEM_DEF(ta_rockhill_masquerade)
 	for(var/mob/living/carbon/human/member as anything in owner_body.clan.clan_members)
 		if(considered_alive(member.mind) && member.mind?.has_antag_datum(/datum/antagonist/vampire))
 			living_vampires++
-	return living_vampires >= ROCKHILL_MASQUERADE_CLAN_SIZE
+	return living_vampires >= target_clan_size
 
 
 /datum/objective/rockhill_masquerade/methuselah
@@ -519,9 +540,10 @@ SUBSYSTEM_DEF(ta_rockhill_masquerade)
 	return target && considered_alive(target)
 
 
-#undef ROCKHILL_MASQUERADE_CLAN_GOAL_MIN_POP
 #undef ROCKHILL_MASQUERADE_MAX_ANTAGS
-#undef ROCKHILL_MASQUERADE_CLAN_SIZE
+#undef ROCKHILL_MASQUERADE_CLAN_SIZE_LOW
+#undef ROCKHILL_MASQUERADE_CLAN_SIZE_MEDIUM
+#undef ROCKHILL_MASQUERADE_CLAN_SIZE_HIGH
 #undef ROCKHILL_MASQUERADE_MEDIUM_POP
 #undef ROCKHILL_MASQUERADE_HIGH_POP
 #undef ROCKHILL_MASQUERADE_LOW_CHANCE

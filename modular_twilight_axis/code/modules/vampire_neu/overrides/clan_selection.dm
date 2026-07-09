@@ -1,12 +1,3 @@
-/*
- * Masquerade vampires should never be forced to reveal themselves just to pick
- * a clan. Closing the clan menu without choosing no longer force-assigns a
- * default clan; a big glowing bat-icon button (granted the moment the menu is
- * first shown, removed once a clan is actually picked) lets them retreat
- * somewhere private and reopen it whenever they're ready. Once a clan IS
- * chosen, the vampire's default appearance is disguised (mortal) rather than
- * revealed.
- */
 #define VAMPIRE_CHOOSE_CLAN_ALERT_CATEGORY "vampire_choose_clan"
 
 /atom/movable/screen/alert/vampire_choose_clan
@@ -63,11 +54,19 @@
 	if(istype(alert))
 		alert.update_timeout_bar(ticks_left, ticks_total)
 
+/datum/antagonist/vampire/proc/pause_clan_choice_timeout()
+	return
+
+/datum/antagonist/vampire/proc/resume_clan_choice_timeout()
+	return
+
 /datum/vampire_clan_selection_menu/ui_close(mob/user)
+	antag?.resume_clan_choice_timeout()
 	qdel(src)
 
 /datum/vampire_clan_selection_menu/ui_act(action, list/params)
 	if(action == "close")
+		antag?.resume_clan_choice_timeout()
 		SStgui.close_uis(src)
 		qdel(src)
 		return TRUE
