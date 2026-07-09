@@ -753,6 +753,9 @@
 	return FALSE
 
 /datum/preferences/proc/ccg_give_deck_item(mob/user)
+	if(user?.stat == DEAD)
+		to_chat(user, span_warning("The dead cannot take a card battle deck."))
+		return FALSE
 	if(!ccg_require_sql(user))
 		return FALSE
 	ccg_clean_cards()
@@ -1119,6 +1122,9 @@
 	set name = "CCG Deck"
 	set category = "IC"
 	if(!client)
+		return
+	if(stat == DEAD)
+		to_chat(src, span_warning("The dead cannot take a card battle deck."))
 		return
 	client.prefs?.ccg_give_deck_item(src)
 
