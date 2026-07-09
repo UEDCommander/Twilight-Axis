@@ -46,13 +46,4 @@
 	if(alerts && alerts[FAMILYTREE_CONFIRM_ALERT_CATEGORY])
 		clear_alert(FAMILYTREE_CONFIRM_ALERT_CATEGORY)
 
-// The base reorganize_alerts() slots every alert into the buff/status/debuff
-// stacks by group, which buries the family-confirm button among other icons.
-// After the normal pass, pin it to a fixed top-center spot so it stands out.
-/datum/hud/reorganize_alerts()
-	. = ..()
-	var/atom/movable/screen/alert/familytree_confirm/confirm = mymob?.alerts?[FAMILYTREE_CONFIRM_ALERT_CATEGORY]
-	if(confirm)
-		confirm.screen_loc = "CENTER,NORTH-1"
-
 #undef FAMILYTREE_CONFIRM_ALERT_CATEGORY

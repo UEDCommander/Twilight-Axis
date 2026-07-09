@@ -384,6 +384,7 @@
 	var/found_text = familytree_confirmation_found_text(confirm_type, H, context_person, FALSE, relation_text)
 	if(familytree_confirmation_should_chat(confirm_type))
 		to_chat(H, span_love(found_text))
+		H.playsound_local(get_turf(H), 'sound/misc/bell_small.ogg', 50, FALSE, pressure_affected = FALSE)
 
 	if(!H.familytree_show_confirm_button(found_text, CALLBACK(src, PROC_REF(do_solo_confirmation_prompt), H, on_accept, confirm_type, context_person, relation_text)))
 		do_solo_confirmation_prompt(H, on_accept, confirm_type, context_person, relation_text)
@@ -529,6 +530,7 @@
 	var/found_text = familytree_confirmation_found_text(session.confirm_type, person, partner, TRUE, relation_text_for_self)
 	if(familytree_confirmation_should_chat(session.confirm_type))
 		to_chat(person, span_love(found_text))
+		person.playsound_local(get_turf(person), 'sound/misc/bell_small.ogg', 50, FALSE, pressure_affected = FALSE)
 
 	var/body = familytree_confirmation_prompt_body(found_text, person, partner)
 	if(!person.familytree_show_confirm_button(found_text, CALLBACK(src, PROC_REF(do_mutual_prompt), session, person, is_person_a, body)))

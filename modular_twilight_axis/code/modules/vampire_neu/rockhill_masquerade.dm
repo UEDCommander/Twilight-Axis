@@ -1,14 +1,13 @@
-#define ROCKHILL_MASQUERADE_MIN_POP 60
 #define ROCKHILL_MASQUERADE_CLAN_GOAL_MIN_POP 50
 #define ROCKHILL_MASQUERADE_MAX_ANTAGS 3
 #define ROCKHILL_MASQUERADE_CLAN_SIZE 5
 
-/*
- * Rockhill receives a second, map-specific Masquerade attempt after the normal
- * storyteller roundstart roll. The controller still uses the standard solo
- * antagonist candidate pipeline: vampire preferences, antagonist bans,
- * existing-antag exclusion, and DEFAULT_ANTAG_BLACKLISTED_ROLES.
- */
+#define ROCKHILL_MASQUERADE_MEDIUM_POP 30
+#define ROCKHILL_MASQUERADE_HIGH_POP 60
+#define ROCKHILL_MASQUERADE_LOW_CHANCE 8
+#define ROCKHILL_MASQUERADE_MEDIUM_CHANCE 25
+#define ROCKHILL_MASQUERADE_HIGH_CHANCE 60
+
 SUBSYSTEM_DEF(ta_rockhill_masquerade)
 	name = "TA Rockhill Masquerade"
 	flags = SS_NO_FIRE
@@ -40,7 +39,9 @@ SUBSYSTEM_DEF(ta_rockhill_masquerade)
 		return
 
 	var/active_population = get_active_player_count(alive_check = TRUE, afk_check = TRUE, human_check = TRUE)
-	if(active_population < ROCKHILL_MASQUERADE_MIN_POP)
+	var/spawn_chance = get_masquerade_chance(active_population)
+	if(!prob(spawn_chance))
+		log_storyteller("Rockhill Masquerade fallback skipped: failed the [spawn_chance]% roll at active pop [active_population].")
 		return
 
 	if(istype(SSgamemode.current_roundstart_event, /datum/round_event_control/antagonist/solo/masquerade))
@@ -53,10 +54,17 @@ SUBSYSTEM_DEF(ta_rockhill_masquerade)
 		qdel(fallback)
 		return
 
-	message_admins("STORYTELLER: Rockhill Masquerade fallback is adding up to [fallback.get_antag_amount()] Masqueraders at active pop [active_population].")
-	log_storyteller("Rockhill Masquerade fallback triggered at active pop [active_population].")
+	message_admins("STORYTELLER: Rockhill Masquerade fallback is adding up to [fallback.get_antag_amount()] Masqueraders at active pop [active_population] (passed [spawn_chance]% roll).")
+	log_storyteller("Rockhill Masquerade fallback triggered at active pop [active_population] (passed [spawn_chance]% roll).")
 	SSgamemode.triggered_round_events |= fallback.name
 	fallback.runEvent(random = FALSE, admin_forced = FALSE)
+
+/datum/controller/subsystem/ta_rockhill_masquerade/proc/get_masquerade_chance(active_population)
+	if(active_population >= ROCKHILL_MASQUERADE_HIGH_POP)
+		return ROCKHILL_MASQUERADE_HIGH_CHANCE
+	if(active_population >= ROCKHILL_MASQUERADE_MEDIUM_POP)
+		return ROCKHILL_MASQUERADE_MEDIUM_CHANCE
+	return ROCKHILL_MASQUERADE_LOW_CHANCE
 
 
 /datum/round_event_control/antagonist/solo/masquerade/rockhill
@@ -434,7 +442,11 @@ SUBSYSTEM_DEF(ta_rockhill_masquerade)
 	return target && considered_alive(target)
 
 
-#undef ROCKHILL_MASQUERADE_MIN_POP
 #undef ROCKHILL_MASQUERADE_CLAN_GOAL_MIN_POP
 #undef ROCKHILL_MASQUERADE_MAX_ANTAGS
 #undef ROCKHILL_MASQUERADE_CLAN_SIZE
+#undef ROCKHILL_MASQUERADE_MEDIUM_POP
+#undef ROCKHILL_MASQUERADE_HIGH_POP
+#undef ROCKHILL_MASQUERADE_LOW_CHANCE
+#undef ROCKHILL_MASQUERADE_MEDIUM_CHANCE
+#undef ROCKHILL_MASQUERADE_HIGH_CHANCE
