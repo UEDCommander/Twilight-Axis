@@ -42,6 +42,27 @@
 	if(alerts && alerts[VAMPIRE_CHOOSE_CLAN_ALERT_CATEGORY])
 		clear_alert(VAMPIRE_CHOOSE_CLAN_ALERT_CATEGORY)
 
+/atom/movable/screen/alert/vampire_choose_clan/proc/update_timeout_bar(ticks_left, ticks_total)
+	if(ticks_left <= 0)
+		if(istype(maptext_holder))
+			maptext_holder.maptext = null
+		return
+	if(!istype(maptext_holder))
+		maptext_holder = new(src)
+		maptext_holder.x = -6
+		maptext_holder.y = -10
+		maptext_holder.color = "#e0a0b0"
+		vis_contents.Add(maptext_holder)
+	var/bar = ""
+	for(var/i in 1 to ticks_total)
+		bar += (i <= ticks_left) ? "▰" : "▱"
+	maptext_holder.maptext = MAPTEXT(bar)
+
+/mob/living/carbon/human/proc/vampire_update_choose_clan_timeout_bar(ticks_left, ticks_total)
+	var/atom/movable/screen/alert/vampire_choose_clan/alert = alerts?[VAMPIRE_CHOOSE_CLAN_ALERT_CATEGORY]
+	if(istype(alert))
+		alert.update_timeout_bar(ticks_left, ticks_total)
+
 /datum/vampire_clan_selection_menu/ui_close(mob/user)
 	qdel(src)
 

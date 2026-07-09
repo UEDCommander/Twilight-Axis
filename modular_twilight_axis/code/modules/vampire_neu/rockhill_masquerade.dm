@@ -8,6 +8,12 @@
 #define ROCKHILL_MASQUERADE_MEDIUM_CHANCE 25
 #define ROCKHILL_MASQUERADE_HIGH_CHANCE 60
 
+// A masquerader who stalls on picking a clan holds up their whole slot; give
+// them 4 minutes (checked once a minute, so the on-screen bar can count down)
+// before the role is pulled and handed to someone else instead.
+#define ROCKHILL_MASQUERADE_CLAN_CHOICE_TICKS 4
+#define ROCKHILL_MASQUERADE_CLAN_CHOICE_TICK_TIME 1 MINUTES
+
 SUBSYSTEM_DEF(ta_rockhill_masquerade)
 	name = "TA Rockhill Masquerade"
 	flags = SS_NO_FIRE
@@ -91,12 +97,61 @@ SUBSYSTEM_DEF(ta_rockhill_masquerade)
 	show_in_antagpanel = FALSE
 	var/list/datum/objective/synced_ambitions = list()
 	var/ambition_rewards_granted = FALSE
+	var/clan_choice_timer
+	var/clan_choice_ticks_left = 0
 
 /datum/antagonist/vampire/rockhill_masquerader/New(incoming_clan = /datum/clan/crimson_fang, forced_clan = FALSE, generation = GENERATION_ANCILLAE)
 	. = ..(incoming_clan, forced_clan, generation)
 
+/datum/antagonist/vampire/rockhill_masquerader/show_clan_selection(mob/living/carbon/human/vampdude)
+	. = ..()
+	start_clan_choice_timeout()
+
+/datum/antagonist/vampire/rockhill_masquerader/proc/start_clan_choice_timeout()
+	if(clan_choice_timer)
+		deltimer(clan_choice_timer)
+	clan_choice_ticks_left = ROCKHILL_MASQUERADE_CLAN_CHOICE_TICKS
+	update_clan_choice_bar()
+	clan_choice_timer = addtimer(CALLBACK(src, PROC_REF(tick_clan_choice_timeout)), ROCKHILL_MASQUERADE_CLAN_CHOICE_TICK_TIME, TIMER_STOPPABLE)
+
+/datum/antagonist/vampire/rockhill_masquerader/proc/stop_clan_choice_timeout()
+	if(clan_choice_timer)
+		deltimer(clan_choice_timer)
+		clan_choice_timer = null
+
+/datum/antagonist/vampire/rockhill_masquerader/proc/tick_clan_choice_timeout()
+	clan_choice_timer = null
+	if(clan_selected)
+		return
+	var/mob/living/carbon/human/vampdude = owner?.current
+	if(!istype(vampdude) || QDELETED(vampdude))
+		return
+	clan_choice_ticks_left--
+	update_clan_choice_bar()
+	if(clan_choice_ticks_left <= 0)
+		expire_clan_choice(vampdude)
+		return
+	clan_choice_timer = addtimer(CALLBACK(src, PROC_REF(tick_clan_choice_timeout)), ROCKHILL_MASQUERADE_CLAN_CHOICE_TICK_TIME, TIMER_STOPPABLE)
+
+/datum/antagonist/vampire/rockhill_masquerader/proc/update_clan_choice_bar()
+	var/mob/living/carbon/human/vampdude = owner?.current
+	if(istype(vampdude))
+		vampdude.vampire_update_choose_clan_timeout_bar(clan_choice_ticks_left, ROCKHILL_MASQUERADE_CLAN_CHOICE_TICKS)
+
+/datum/antagonist/vampire/rockhill_masquerader/proc/expire_clan_choice(mob/living/carbon/human/vampdude)
+	if(clan_selected)
+		return
+	to_chat(vampdude, span_userdanger("Я не смог(-ла) решиться вовремя. Маскарад отворачивается от меня, и проклятие покидает мою кровь..."))
+	silent = TRUE
+	remove_verb(vampdude, /mob/living/carbon/human/proc/vampire_choose_clan_verb)
+	vampdude.vampire_clear_choose_clan_button()
+	var/datum/mind/expired_mind = owner
+	expired_mind?.remove_antag_datum(/datum/antagonist/vampire/rockhill_masquerader)
+	ta_reassign_rockhill_masquerader(expired_mind)
+
 /datum/antagonist/vampire/rockhill_masquerader/after_gain()
 	. = ..()
+	stop_clan_choice_timeout()
 	sync_ambitions_to_clan_leader_memory()
 
 /datum/antagonist/vampire/rockhill_masquerader/proc/sync_ambitions_to_clan_leader_memory()
@@ -128,6 +183,28 @@ SUBSYSTEM_DEF(ta_rockhill_masquerade)
 		owner?.adjust_triumphs(triumphs_earned)
 		to_chat(owner, span_greentext("Выполненная амбиция принесла мне [triumphs_earned] триумф."))
 
+
+/proc/ta_reassign_rockhill_masquerader(datum/mind/excluded_mind)
+	var/datum/round_event_control/antagonist/solo/masquerade/rockhill/reassign_control = new
+	var/list/candidates = reassign_control.get_candidates()
+	qdel(reassign_control)
+
+	if(excluded_mind?.current)
+		candidates -= excluded_mind.current
+	if(!length(candidates))
+		message_admins("STORYTELLER: Rockhill Masquerade reassignment failed - no valid replacement candidates after a timeout.")
+		log_storyteller("Rockhill Masquerade reassignment failed: no valid replacement candidates after a timeout.")
+		return
+
+	var/mob/new_candidate = pick(candidates)
+	if(!new_candidate.mind)
+		new_candidate.mind = new /datum/mind(new_candidate.key)
+	var/datum/mind/new_mind = new_candidate.mind
+	new_mind.add_antag_datum(/datum/antagonist/vampire/rockhill_masquerader)
+	ta_assign_rockhill_masquerade_objectives(list(new_mind))
+
+	message_admins("STORYTELLER: Rockhill Masquerade reassigned a timed-out slot to [key_name(new_candidate)].")
+	log_storyteller("Rockhill Masquerade reassigned a timed-out slot to [key_name(new_candidate)].")
 
 /proc/ta_assign_rockhill_masquerade_objectives(list/datum/mind/masquerader_minds, methuselah_retries = 0)
 	if(!length(masquerader_minds))
@@ -450,3 +527,5 @@ SUBSYSTEM_DEF(ta_rockhill_masquerade)
 #undef ROCKHILL_MASQUERADE_LOW_CHANCE
 #undef ROCKHILL_MASQUERADE_MEDIUM_CHANCE
 #undef ROCKHILL_MASQUERADE_HIGH_CHANCE
+#undef ROCKHILL_MASQUERADE_CLAN_CHOICE_TICKS
+#undef ROCKHILL_MASQUERADE_CLAN_CHOICE_TICK_TIME
