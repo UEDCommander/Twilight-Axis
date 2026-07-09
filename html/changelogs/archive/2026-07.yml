@@ -662,3 +662,19 @@
   radarseas:
   - rscdel: T5 Presence ability 'Majesty' is gone, I physically can't save this one.
       Sorry chief.
+2026-07-09:
+  Ollanius:
+  - rscadd: Adds missing recipe for blacksteel fishing rods.
+  - balance: Silver and Psydonic Knuckledusters no longer spawn with blessings.
+  - balance: Fluted armor properly requires +1 Steel Ingot, now, instead of +1 Iron
+      Ingot.
+  SomeDeviant:
+  - rscdel: Removed error-causing trait string from drown check
+  - bugfix: Drowning runtime
+  SpartanBobby, litepurple, Castortroy:
+  - rscadd: Plate Arm Harness universal donor item for the steel bracers
+  THE GRAND DUKE OF AZURE PEAK:
+  - bugfix: heater shield silverface item will no longer dispense wooden one
+  - bugfix: griddlewiener should show up now. or is it griddleweiner. griddlewieiner.
+  radarseas:
+  - rscdel: DEBUG - Zombification (whatever goes here) tochat
