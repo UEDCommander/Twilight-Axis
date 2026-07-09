@@ -6,6 +6,11 @@
 	var/busted = FALSE
 	var/ready = FALSE
 	var/draws_used = 0
+	var/poker_folded = FALSE
+	var/poker_all_in = FALSE
+	var/poker_bet = 0
+	var/poker_total_bet = 0
+	var/poker_combo = null
 	var/result = null
 	var/left = FALSE
 	var/is_spirit = FALSE
@@ -26,6 +31,11 @@
 		"busted" = busted,
 		"ready" = ready,
 		"draws_used" = draws_used,
+		"poker_folded" = poker_folded,
+		"poker_all_in" = poker_all_in,
+		"poker_bet" = poker_bet,
+		"poker_total_bet" = poker_total_bet,
+		"poker_combo" = poker_combo,
 		"result" = result,
 		"left" = left,
 		"is_spirit" = is_spirit,
@@ -56,6 +66,11 @@
 		"busted" = player.busted,
 		"ready" = player.ready,
 		"draws_used" = player.draws_used,
+		"poker_folded" = player.poker_folded,
+		"poker_all_in" = player.poker_all_in,
+		"poker_bet" = player.poker_bet,
+		"poker_total_bet" = player.poker_total_bet,
+		"poker_combo" = player.poker_combo,
 		"result" = player.result,
 		"left" = player.left,
 		"is_spirit" = player.is_spirit,

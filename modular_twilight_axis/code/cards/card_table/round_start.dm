@@ -7,10 +7,11 @@
 	if(players.len < min_players())
 		to_chat(user, span_warning("Недостаточно игроков."))
 		return FALSE
-	if(game_type == CARD_TABLE_GAME_FOOL)
-		fool_ensure_spirit_opponent()
+	ensure_spirit_opponent()
 	if((game_type == CARD_TABLE_GAME_BLACKJACK || game_type == CARD_TABLE_GAME_POKER) && players.len)
-		if(!dealer_rotates)
+		if(has_spirit_opponent())
+			dealer_index = players.len
+		else if(!dealer_rotates)
 			dealer_index = 1
 		else if(!dealer_index)
 			dealer_index = 1
@@ -21,6 +22,7 @@
 	discard = list()
 	dealer_hand = list()
 	community_cards = list()
+	poker_community_stock = list()
 	solitaire_tableau = list()
 	solitaire_stock = list()
 	solitaire_foundations = list()
@@ -33,6 +35,11 @@
 		player.busted = FALSE
 		player.ready = FALSE
 		player.draws_used = 0
+		player.poker_folded = FALSE
+		player.poker_all_in = FALSE
+		player.poker_bet = 0
+		player.poker_total_bet = 0
+		player.poker_combo = null
 		player.result = null
 		player.left = FALSE
 	stage = CARD_TABLE_STAGE_PLAYING
@@ -45,6 +52,7 @@
 			for(var/datum/card_table_player/bj_reveal_player in players)
 				xylix_try_reveal_for_turn_holder(bj_reveal_player)
 			message = "Блекджек начался. Вариант: [blackjack_variant_label()]. [dealer_rotation_label()]."
+			blackjack_process_spirit_turn(FALSE)
 		if(CARD_TABLE_GAME_POKER)
 			for(var/datum/card_table_player/poker_player in players)
 				switch(poker_variant)
@@ -54,12 +62,21 @@
 						deal_to(poker_player, 4)
 					else
 						deal_to(poker_player, 5)
+			poker_turn_index = 0
+			poker_current_bet = 0
+			poker_pot = 0
+			poker_round = 0
+			poker_draw_phase = FALSE
 			if(poker_variant == CARD_TABLE_POKER_TEXAS || poker_variant == CARD_TABLE_POKER_OMAHA)
 				for(var/i = 1, i <= 5, i++)
-					community_cards += list(draw_one())
+					poker_community_stock += list(draw_one())
 			for(var/datum/card_table_player/poker_reveal_player in players)
 				xylix_try_reveal_for_turn_holder(poker_reveal_player)
 			message = "Покер начался. Вариант: [poker_variant_label()]. [dealer_rotation_label()]."
+			if(poker_variant == CARD_TABLE_POKER_DRAW)
+				poker_start_draw_phase()
+			else
+				poker_start_betting_round()
 		if(CARD_TABLE_GAME_SOLITAIRE)
 			if(solitaire_variant == CARD_TABLE_SOLITAIRE_SPIDER)
 				deck += card_table_make_deck()
@@ -101,6 +118,11 @@
 			table_attack = null
 			table_defense = null
 			table_pairs = list()
+			fool_passed_players = list()
+			fool_action_seq = 0
+			fool_action_kind = null
+			fool_action_player_index = 0
+			fool_action_target_index = 0
 			var/datum/card_table_player/starting_defender = fool_current_defender()
 			fool_defender_start_hand = starting_defender ? starting_defender.hand.len : 0
 			fool_first_bout = TRUE
