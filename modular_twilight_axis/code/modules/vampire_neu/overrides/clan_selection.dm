@@ -74,7 +74,7 @@
 
 /datum/antagonist/vampire/show_clan_selection(mob/living/carbon/human/vampdude)
 	. = ..()
-	if(!vampdude)
+	if(!vampdude || clan_selected)
 		return
 	add_verb(vampdude, /mob/living/carbon/human/proc/vampire_choose_clan_verb)
 	vampdude.vampire_show_choose_clan_button()
