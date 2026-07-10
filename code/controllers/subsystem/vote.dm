@@ -517,7 +517,7 @@ SUBSYSTEM_DEF(vote)
 		return FALSE
 	if(istype(C.mob, /mob/dead/new_player))
 		var/mob/dead/new_player/NP = C.mob
-		if(NP.ready != PLAYER_READY_TO_PLAY)
+		if(mode != "map" && NP.ready != PLAYER_READY_TO_PLAY)
 			return FALSE
 	return TRUE
 
