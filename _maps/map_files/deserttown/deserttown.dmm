@@ -21346,11 +21346,6 @@
 /turf/closed/mineral/random/rogue,
 /area/rogue/outdoors/mountains/decap/gunduzirak)
 "fyF" = (
-/obj/structure/broadcast_horn/paid{
-	broadcaster_tag = "Inn";
-	dir = 4;
-	pixel_y = 4
-	},
 /obj/structure/table/wood{
 	icon_state = "tablewood1"
 	},
@@ -41304,11 +41299,6 @@
 	dir = 1;
 	layer = 2
 	},
-/obj/structure/broadcast_horn/paid{
-	broadcaster_tag = "Merchant's Shop";
-	pixel_y = 10;
-	layer = 5
-	},
 /obj/structure/table/wood,
 /turf/open/floor/rogue/wood,
 /area/rogue/indoors/town/shop/desert)
@@ -45785,11 +45775,6 @@
 "lOy" = (
 /obj/structure/table/wood{
 	icon_state = "tablewood1"
-	},
-/obj/structure/broadcast_horn/paid{
-	broadcaster_tag = "Garrison Barracks";
-	dir = 4;
-	pixel_y = 8
 	},
 /turf/open/floor/rogue/deserttile{
 	icon_state = "tiledrab2"
@@ -65698,11 +65683,6 @@
 /area/rogue/under/town/basement/desert/keep)
 "qMl" = (
 /obj/structure/table/wood/long_table,
-/obj/structure/broadcast_horn/paid{
-	broadcaster_tag = "Smith's Guild";
-	pixel_y = 15;
-	pixel_x = -5
-	},
 /turf/open/floor/carpet/royalblack,
 /area/rogue/indoors/town/dwarfin/desert)
 "qMo" = (
@@ -74496,12 +74476,6 @@
 "sWE" = (
 /obj/structure/fluff/walldeco/customflag/deserttown{
 	pixel_y = 32
-	},
-/obj/structure/broadcast_horn/paid{
-	broadcaster_tag = "Palace";
-	dir = 4;
-	pixel_y = 11;
-	pixel_x = -9
 	},
 /obj/structure/table/wood/fancy/purple{
 	color = "gray"
