@@ -439,6 +439,12 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	category = "Головные уборы"
 	path = /obj/item/clothing/head/roguetown/briarthorns
 
+/datum/loadout_item/loudmouth_headgear
+	name = "Loudmouth's Headcover"
+	category = "Головные уборы"
+	path = /obj/item/clothing/head/roguetown/veiled/loudmouth
+	donat_tier = 2
+
 //CLOAKS
 /datum/loadout_item/tabard
 	name = "Tabard"
@@ -1803,6 +1809,13 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	name = "Donator Kit - Azurosa-Wrapped Sword - Required: Simple Sword, Sabre, Short Sword or Messer "
 	category = list("Оружие", "Донат")
 	path = /obj/item/enchantingkit/weapon/ollanius
+	donatitem = TRUE
+	donat_tier = 2
+
+/datum/loadout_item/donator/spaz_helm
+	name = "Donator Kit - Hound-Nosed Bascinet - Required: Armet, Hounskull Or Barbute"
+	category = list("Броня", "Донат")
+	path = /obj/item/enchantingkit/spaz_helm
 	donatitem = TRUE
 	donat_tier = 2
 

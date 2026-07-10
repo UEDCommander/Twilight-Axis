@@ -176,7 +176,7 @@
 
 /obj/effect/proc_holder/spell/self/mayor_announcement
 	name = "The Mayor's Speech"
-	desc = "Let your word be heard by everyone on this city and near of it. You need streetpipe to speak."
+	desc = "Let your word be heard by everyone on this city and near of it. You need an SCOM to speak."
 	overlay_state = "paper"
 	action_icon = 'modular_twilight_axis/icons/mob/actions/roguespells.dmi'
 	releasedrain = 40
@@ -188,8 +188,8 @@
 
 /obj/effect/proc_holder/spell/self/mayor_announcement/cast(list/targets, mob/living/user = usr)
 	var/turf/T = get_step(user, user.dir)
-	if(!(locate(/obj/structure/broadcast_horn/paid) in T))
-		to_chat(user, span_warning("I need streetpipe to speak.")) 
+	if(!(locate(/obj/structure/roguemachine/scomm) in T))
+		to_chat(user, span_warning("I need an SCOM to speak.")) 
 		revert_cast()
 		return
 	if(!SScommunications.can_announce(user, FALSE))
