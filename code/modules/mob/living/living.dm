@@ -197,6 +197,9 @@
 			var/self_points = FLOOR((STACON + STASTR)/2, 1)
 			var/target_points = FLOOR((L.STACON + L.STASTR)/2, 1)
 
+			src.log_message("charged into [key_name(M)]", LOG_ATTACK, color="red")  // TA edit
+			M.log_message("has been charged by [key_name(src)]", LOG_ATTACK, color="red") // TA edit
+
 			switch(sprint_distance)
 				// Point blank
 				if(0 to 1)
@@ -719,10 +722,6 @@
 		updatehealth()
 //		if(!whispered)
 //			to_chat(src, span_userdanger("I have given up life and succumbed to death."))
-
-		var/word_input = stripped_input(src, "Your parting words? Leave empty if you will.", "Last Words")
-		if(word_input)
-			say(word_input)
 		death()
 
 /mob/living/incapacitated(ignore_restraints = FALSE, ignore_grab = TRUE, check_immobilized = FALSE, ignore_stasis = FALSE)
@@ -1063,7 +1062,15 @@
 	if(pulling)
 		update_pull_movespeed()
 
+	var/atom/movable/water_dragged_atom // TA EDIT START
+	if(!moving_from_pull && pulling && pulling != src)
+		water_dragged_atom = pulling
+		water_dragged_atom.water_dragged = TRUE
+
 	. = ..()
+
+	if(water_dragged_atom && !QDELETED(water_dragged_atom))
+		water_dragged_atom.water_dragged = FALSE // TA EDIT END
 
 	update_sneak_invis()
 
@@ -1184,6 +1191,15 @@
 	else if(isobj(loc))
 		var/obj/C = loc
 		C.container_resist(src)
+
+	else if(mobility_flags & MOBILITY_MOVE)
+		if(on_fire)
+			resist_fire() //stop, drop, and roll
+		else if(has_status_effect(/datum/status_effect/leash_pet))
+			if(istype(src, /mob/living/carbon))
+				src:resist_leash()
+		else if(last_special <= world.time)
+			resist_restraints() //trying to remove cuffs.
 
 	else if(mobility_flags & MOBILITY_MOVE)
 		if(on_fire)
@@ -1317,8 +1333,9 @@
 		if(!HAS_TRAIT(src, TRAIT_GARROTED))
 			combat_modifier -= 0.3
 		else
+			combat_modifier -= 0.15 // garrote is always harder to escape than a regular grab
 			if(!src.mind)
-				combat_modifier -= 0.3
+				combat_modifier -= 0.3 // mindless victims are even less capable of escaping
 			if(HAS_TRAIT(L, TRAIT_BLACKBAGGER))
 				combat_modifier -= 0.3
 				if(HAS_TRAIT(src, TRAIT_BAGGED))
@@ -1410,7 +1427,6 @@
 	if(anchored || (buckled && buckled.anchored))
 		on = FALSE
 	..()
-
 
 // The src mob is trying to strip an item from someone
 // Override if a certain type of mob should be behave differently when stripping items (can't, for example)
@@ -2647,3 +2663,6 @@
 	if(QDELETED(src) || stat != DEAD) // skip if it was somehow revived in the meantime
 		return
 	dust()
+
+/mob/living/proc/resist_leash()
+	return
