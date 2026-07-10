@@ -94,8 +94,7 @@
 					rules += "Азурийский: туз за 11, но два туза дают 21; валет, дама и король за 10."
 		if(CARD_TABLE_GAME_POKER)
 			rules += "Цель: собрать лучшую комбинацию."
-			rules += "Комбинации: старшая карта, пара, две пары, сет, стрит, флеш, фулл-хаус, каре, стрит-флеш, роял-флеш."
-			rules += "Ход ставок идет по очереди: Поддержать делает чек при нуле или уравнивает текущую ставку, Повысить добавляет деньги в банк, Ва-банк ставит все, Пасс сбрасывает руку."
+			rules += "Ставки: введите сумму. Если сумма не выше текущей ставки, кнопка Ставка делает чек или поддержку; если выше - поднимает ставку. Ва-банк ставит все, Отказаться сбрасывает руку."
 			switch(poker_variant)
 				if(CARD_TABLE_POKER_TEXAS)
 					rules += "Ранешенский: у игрока 2 карты, на столе 5 общих карт."
@@ -104,7 +103,7 @@
 				if(CARD_TABLE_POKER_STUD)
 					rules += "Гиза: игрок получает 5 личных карт без обмена."
 				else
-					rules += "Азурийский: игрок получает 5 личных карт, общих карт на столе нет; перед ставками можно один раз заменить одну карту."
+					rules += "Азурийский: игрок получает 5 карт и может один раз заменить одну карту."
 			rules += "Дилер всегда один из игроков. [dealer_rotation_label()]."
 		if(CARD_TABLE_GAME_SOLITAIRE)
 			rules += "Цель: разложить карты по стопкам пасьянса."
@@ -123,7 +122,6 @@
 		var/show_hand = (stage == CARD_TABLE_STAGE_FINISHED || player == me)
 		player_row["hand_value"] = (show_hand && game_type == CARD_TABLE_GAME_BLACKJACK) ? hand_value(player.hand) : null
 		player_row["is_dealer"] = (player == dealer_player())
-		player_row["fool_passed"] = (game_type == CARD_TABLE_GAME_FOOL) ? fool_player_passed(player) : FALSE
 		player_rows += list(player_row)
 	var/list/observer_rows = list()
 	for(var/ckey in observers)
@@ -176,8 +174,6 @@
 		"poker_turn" = (game_type == CARD_TABLE_GAME_POKER && stage == CARD_TABLE_STAGE_PLAYING && poker_current_player()) ? poker_current_player().name : null,
 		"poker_current_bet" = (game_type == CARD_TABLE_GAME_POKER) ? poker_current_bet : 0,
 		"poker_pot" = (game_type == CARD_TABLE_GAME_POKER) ? poker_pot : 0,
-		"poker_round" = (game_type == CARD_TABLE_GAME_POKER) ? poker_round : 0,
-		"poker_draw_phase" = (game_type == CARD_TABLE_GAME_POKER) ? poker_draw_phase : FALSE,
 		"my_value" = me ? hand_value(me.hand) : null,
 		"solitaire_tableau" = build_solitaire_tableau(),
 		"solitaire_stock_count" = solitaire_stock.len,
@@ -190,14 +186,6 @@
 		"table_defense" = (fool_is_playing && table_defense) ? card_table_card_label(table_defense) : null,
 		"table_pairs" = fool_is_playing ? build_fool_table_pairs() : list(),
 		"trump" = fool_is_playing ? trump_suit : null,
-		"fool_all_defended" = fool_is_playing ? fool_all_pairs_defended() : FALSE,
-		"fool_action_seq" = fool_is_playing ? fool_action_seq : 0,
-		"fool_action_kind" = fool_is_playing ? fool_action_kind : null,
-		"fool_action_player_index" = fool_is_playing ? fool_action_player_index : 0,
-		"fool_action_target_index" = fool_is_playing ? fool_action_target_index : 0,
-		"blackjack_action_seq" = (game_type == CARD_TABLE_GAME_BLACKJACK) ? blackjack_action_seq : 0,
-		"blackjack_action_player_index" = (game_type == CARD_TABLE_GAME_BLACKJACK) ? blackjack_action_player_index : 0,
-		"blackjack_action_bust" = (game_type == CARD_TABLE_GAME_BLACKJACK) ? blackjack_action_bust : FALSE,
 		"xylix" = list(
 			"enabled" = (stage == CARD_TABLE_STAGE_PLAYING && xylix_level >= CLERIC_T0 && game_type != CARD_TABLE_GAME_SOLITAIRE),
 			"tier" = xylix_level,

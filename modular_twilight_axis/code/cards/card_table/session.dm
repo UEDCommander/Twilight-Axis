@@ -8,7 +8,6 @@
 	var/list/discard = list()
 	var/list/dealer_hand = list()
 	var/list/community_cards = list()
-	var/list/poker_community_stock = list()
 	var/list/solitaire_tableau = list()
 	var/list/solitaire_stock = list()
 	var/list/solitaire_foundations = list()
@@ -24,10 +23,8 @@
 	var/dealer_index = 0
 	var/dealer_rounds = 0
 	var/poker_turn_index = 0
-	var/poker_current_bet = 0
+	var/poker_current_bet = 10
 	var/poker_pot = 0
-	var/poker_round = 0
-	var/poker_draw_phase = FALSE
 
 	var/current_index = 1
 	var/defender_index = 2
@@ -36,14 +33,6 @@
 	var/list/table_pairs = list()
 	var/list/table_attack = null
 	var/list/table_defense = null
-	var/list/fool_passed_players = list()
-	var/fool_action_seq = 0
-	var/fool_action_kind = null
-	var/fool_action_player_index = 0
-	var/fool_action_target_index = 0
-	var/blackjack_action_seq = 0
-	var/blackjack_action_player_index = 0
-	var/blackjack_action_bust = FALSE
 	var/list/trump_card = null
 	var/trump_suit = null
 
@@ -61,7 +50,6 @@
 	discard = null
 	dealer_hand = null
 	community_cards = null
-	poker_community_stock = null
 	solitaire_tableau = null
 	solitaire_stock = null
 	solitaire_foundations = null
@@ -70,7 +58,6 @@
 	table_pairs = null
 	table_attack = null
 	table_defense = null
-	fool_passed_players = null
 	trump_card = null
 	return ..()
 
@@ -85,7 +72,6 @@
 	discard = list()
 	dealer_hand = list()
 	community_cards = list()
-	poker_community_stock = list()
 	solitaire_tableau = list()
 	solitaire_stock = list()
 	solitaire_foundations = list()
@@ -93,21 +79,11 @@
 	xylix_seen_cards = list()
 	xylix_cheat_used = list()
 	poker_turn_index = 0
-	poker_current_bet = 0
+	poker_current_bet = 10
 	poker_pot = 0
-	poker_round = 0
-	poker_draw_phase = FALSE
 	table_pairs = list()
 	table_attack = null
 	table_defense = null
-	fool_passed_players = list()
-	fool_action_seq = 0
-	fool_action_kind = null
-	fool_action_player_index = 0
-	fool_action_target_index = 0
-	blackjack_action_seq = 0
-	blackjack_action_player_index = 0
-	blackjack_action_bust = FALSE
 	trump_card = null
 	trump_suit = null
 	current_index = 1
@@ -124,7 +100,6 @@
 		player.poker_all_in = FALSE
 		player.poker_bet = 0
 		player.poker_total_bet = 0
-		player.poker_combo = null
 		player.result = null
 		player.left = FALSE
 	if(dealer_index > players.len)
@@ -226,10 +201,8 @@
 /datum/card_table_session/proc/player_is_active(datum/card_table_player/player)
 	return player && !player.left && player.result != "Out" && player.result != "Fool"
 
-/datum/card_table_session/proc/ensure_spirit_opponent()
-	if(players.len != 1)
-		return
-	if(game_type != CARD_TABLE_GAME_FOOL && game_type != CARD_TABLE_GAME_BLACKJACK && game_type != CARD_TABLE_GAME_POKER)
+/datum/card_table_session/proc/fool_ensure_spirit_opponent()
+	if(game_type != CARD_TABLE_GAME_FOOL || players.len != 1)
 		return
 	var/datum/card_table_player/spirit = new()
 	spirit.ckey = "card_table_spirit"
@@ -237,23 +210,10 @@
 	spirit.is_spirit = TRUE
 	players += spirit
 
-/datum/card_table_session/proc/has_spirit_opponent()
-	for(var/datum/card_table_player/player in players)
-		if(player.is_spirit && !player.left)
-			return TRUE
-	return FALSE
-
 /datum/card_table_session/proc/active_players_count()
 	var/count = 0
 	for(var/datum/card_table_player/player in players)
 		if(player_is_active(player))
-			count++
-	return count
-
-/datum/card_table_session/proc/active_real_players_count()
-	var/count = 0
-	for(var/datum/card_table_player/player in players)
-		if(player_is_active(player) && !player.is_spirit)
 			count++
 	return count
 

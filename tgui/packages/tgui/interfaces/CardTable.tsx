@@ -1,4 +1,4 @@
-import { type CSSProperties, useState } from 'react';
+import { type CSSProperties, useEffect, useState } from 'react';
 import { Button, Section, Stack } from 'tgui-core/components';
 
 import { useBackend } from '../backend';
@@ -27,11 +27,9 @@ type Player = {
   poker_all_in?: boolean;
   poker_bet?: number;
   poker_total_bet?: number;
-  poker_combo?: string | null;
   result?: string | null;
   left?: boolean;
   is_spirit?: boolean;
-  fool_passed?: boolean;
 };
 
 type FoolPair = {
@@ -96,8 +94,6 @@ type Data = {
   poker_turn?: string | null;
   poker_current_bet?: number;
   poker_pot?: number;
-  poker_round?: number;
-  poker_draw_phase?: boolean;
   my_value?: number | null;
   solitaire_tableau?: { index: number; cards: Card[] }[];
   solitaire_stock_count?: number;
@@ -110,14 +106,6 @@ type Data = {
   table_defense?: string | null;
   table_pairs?: FoolPair[];
   trump?: string | null;
-  fool_all_defended?: boolean;
-  fool_action_seq?: number;
-  fool_action_kind?: string | null;
-  fool_action_player_index?: number;
-  fool_action_target_index?: number;
-  blackjack_action_seq?: number;
-  blackjack_action_player_index?: number;
-  blackjack_action_bust?: boolean;
   xylix?: XylixCheat;
 };
 
@@ -134,7 +122,6 @@ const resultText: Record<string, string> = {
   Push: 'ничья',
   Winner: 'выиграл',
   Lost: 'проиграл',
-  Fold: 'пас',
   Out: 'выиграл',
   Fool: 'дурак',
   Left: 'покинул стол',
@@ -253,15 +240,6 @@ const seatPositions: CSSProperties[] = [
   { right: '18px', top: '28px', width: '112px' },
 ];
 
-const seatFlightAnchors = [
-  { left: '50%', top: '78%', dx: '0px', dy: '-230px' },
-  { left: '11%', top: '18%', dx: '320px', dy: '210px' },
-  { left: '25%', top: '18%', dx: '210px', dy: '210px' },
-  { left: '39%', top: '18%', dx: '95px', dy: '210px' },
-  { left: '66%', top: '18%', dx: '-125px', dy: '210px' },
-  { left: '83%', top: '18%', dx: '-260px', dy: '210px' },
-];
-
 const solitaireBoardStyle: CSSProperties = {
   position: 'absolute',
   inset: '18px',
@@ -330,23 +308,6 @@ const rankValue = (rank: string) => {
   return Number(rank) || 0;
 };
 
-const suitSortValue = (suit: string) => {
-  return ['S', 'H', 'D', 'C'].indexOf(suit);
-};
-
-const sortFoolHand = (cards: Card[]) => {
-  return [...cards].sort((left, right) => {
-    const leftParts = getRankSuit(left.label, left);
-    const rightParts = getRankSuit(right.label, right);
-    const suitDelta =
-      suitSortValue(leftParts.suit) - suitSortValue(rightParts.suit);
-    if (suitDelta) {
-      return suitDelta;
-    }
-    return rankValue(leftParts.rank) - rankValue(rightParts.rank);
-  });
-};
-
 const suitColor = (suit: string) => {
   return suit === 'H' || suit === 'D' ? '#a31926' : '#101820';
 };
@@ -396,28 +357,29 @@ const statusText = (player?: Player) => {
     return '';
   }
 
-  if (player.left) {
-    return 'покинул';
-  }
-  if (player.result) {
-    return resultText[player.result] || player.result;
-  }
-  if (player.poker_folded) {
-    return 'пас';
-  }
-  if (player.poker_all_in) {
-    return 'ва-банк';
+  const parts: string[] = [];
+  if (player.standing) {
+    parts.push('стоит');
   }
   if (player.busted) {
-    return 'перебор';
+    parts.push('перебор');
   }
-  if (player.standing) {
-    return 'стоит';
+  if (player.poker_folded) {
+    parts.push('пас');
+  }
+  if (player.poker_all_in) {
+    parts.push('ва-банк');
   }
   if (player.ready) {
-    return 'готов';
+    parts.push('готов');
   }
-  return '';
+  if (player.left) {
+    parts.push('покинул');
+  }
+  if (player.result) {
+    parts.push(resultText[player.result] || player.result);
+  }
+  return parts.join(' / ');
 };
 
 const CardFace = (props: {
@@ -429,7 +391,6 @@ const CardFace = (props: {
   caption?: string | number | null;
   onClick?: () => void;
 }) => {
-  const [hovered, setHovered] = useState(false);
   const card = props.card;
   const label = props.label || card?.label || '';
   const hidden = card?.hidden || label === '??' || !label;
@@ -440,8 +401,6 @@ const CardFace = (props: {
 
   return (
     <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
       onClick={(event) => {
         if (!props.onClick) {
           return;
@@ -465,16 +424,8 @@ const CardFace = (props: {
         cursor: props.onClick ? 'pointer' : 'default',
         outline: props.selected ? '2px solid #f4cf5c' : 'none',
         outlineOffset: '2px',
-        transform: hovered && props.onClick ? 'scale(1.08)' : undefined,
-        transition:
-          'transform 90ms ease-out, box-shadow 90ms ease-out, border-color 90ms ease-out',
-        zIndex: hovered ? 20 : undefined,
         boxShadow: highlightColor
-          ? `0 0 0 2px ${highlightColor}, ${
-              hovered && props.onClick ? `0 0 14px ${highlightColor}, ` : ''
-            }0 2px 4px rgba(0, 0, 0, 0.35)`
-          : hovered && props.onClick
-            ? '0 0 14px rgba(244, 207, 92, 0.72), 0 4px 8px rgba(0, 0, 0, 0.42)'
+          ? `0 0 0 2px ${highlightColor}, 0 2px 4px rgba(0, 0, 0, 0.35)`
           : cardShellStyle.boxShadow,
       }}
     >
@@ -615,8 +566,6 @@ const Seat = (props: {
   attacker?: string | null;
   defender?: string | null;
   dealer?: string | null;
-  foolActionKind?: string | null;
-  foolActionPlayerIndex?: number;
   selectedCardIndex?: number | null;
   getCardHighlight?: (card: Card) => string | undefined;
   onCardClick?: (card: Card) => void;
@@ -631,8 +580,6 @@ const Seat = (props: {
     attacker,
     defender,
     dealer,
-    foolActionKind,
-    foolActionPlayerIndex,
     selectedCardIndex,
     getCardHighlight,
     onCardClick,
@@ -649,14 +596,6 @@ const Seat = (props: {
   const hasVisibleHand = !!player?.hand?.some((card) => !card.hidden);
   const showCards = !!player?.hand?.length && (isMe || hasVisibleHand);
   const showBlackjackValues = gameType === 'blackjack' && showCards;
-  const displayHand =
-    gameType === 'fool' && player?.hand
-      ? sortFoolHand(player.hand)
-      : player?.hand || [];
-  const isDefendImpact =
-    gameType === 'fool' &&
-    foolActionKind === 'defend' &&
-    foolActionPlayerIndex === seatNumber;
 
   return (
     <div
@@ -665,9 +604,6 @@ const Seat = (props: {
         ...seatPositions[positionIndex],
         outline: isMe ? '2px solid rgba(244, 207, 92, 0.9)' : 'none',
         opacity: player?.left ? 0.72 : 1,
-        animation: isDefendImpact
-          ? 'cardtable-defender-impact 220ms ease-out'
-          : undefined,
       }}
     >
       <div style={{ fontWeight: 700, marginBottom: '4px' }}>
@@ -676,13 +612,10 @@ const Seat = (props: {
       </div>
       <div style={{ minHeight: '16px', color: '#f4cf5c', fontSize: '12px' }}>
         {activeRole || statusText(player)}
-        {gameType === 'fool' && player?.fool_passed ? ' / Бито' : ''}
       </div>
       {gameType === 'poker' && player && (
         <div style={{ minHeight: '16px', opacity: 0.82, fontSize: '12px' }}>
-          Ставка: {player.poker_bet || 0} / всего:{' '}
-          {player.poker_total_bet || 0}
-          {!!player.poker_combo && ` / ${player.poker_combo}`}
+          Ставка: {player.poker_bet || 0} / всего: {player.poker_total_bet || 0}
         </div>
       )}
       {player ? (
@@ -691,43 +624,30 @@ const Seat = (props: {
             ...rowStyle,
             marginTop: '6px',
             justifyContent: isMe ? 'center' : 'flex-start',
-            flexWrap: isMe ? 'nowrap' : rowStyle.flexWrap,
-            height: isMe ? '86px' : undefined,
-            overflowX: isMe ? 'auto' : undefined,
-            overflowY: isMe ? 'hidden' : undefined,
-            alignContent: isMe ? 'center' : 'flex-start',
-            padding: isMe ? '8px 10px 10px' : undefined,
+            maxHeight: isMe ? '112px' : undefined,
+            overflowY: isMe ? 'auto' : undefined,
+            alignContent: 'flex-start',
+            paddingRight: isMe ? '4px' : undefined,
           }}
         >
-          {displayHand.length && isMe && onCardClick ? (
-            displayHand.map((card, cardIndex) => (
-              <div
-                key={`${card.label}-${card.index || cardIndex}`}
-                style={{
-                  flex: '0 0 58px',
-                  width: '58px',
-                  height: '74px',
-                  display: 'grid',
-                  placeItems: 'center',
-                  overflow: 'visible',
-                }}
-              >
-                <CardFace
-                  card={card}
-                  small
-                  selected={selectedCardIndex === card.index}
-                  highlightColor={getCardHighlight?.(card)}
-                  caption={
-                    showBlackjackValues
-                      ? blackjackCardValue(card, blackjackVariant)
-                      : null
-                  }
-                  onClick={() => onCardClick(card)}
-                />
-              </div>
+          {player.hand.length && isMe && onCardClick ? (
+            player.hand.map((card, cardIndex) => (
+              <CardFace
+                key={`${card.label}-${cardIndex}`}
+                card={card}
+                small
+                selected={selectedCardIndex === card.index}
+                highlightColor={getCardHighlight?.(card)}
+                caption={
+                  showBlackjackValues
+                    ? blackjackCardValue(card, blackjackVariant)
+                    : null
+                }
+                onClick={() => onCardClick(card)}
+              />
             ))
           ) : showCards ? (
-            displayHand.map((card, cardIndex) => (
+            player.hand.map((card, cardIndex) => (
               <TinyCardFace
                 key={`${card.label}-${cardIndex}`}
                 card={card}
@@ -889,7 +809,7 @@ const SolitaireBoard = (props: {
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: '20px', fontWeight: 800 }}>{gameLabel}</div>
           <div style={{ opacity: 0.75 }}>
-            {variantLabel} | {stageText[stage]}
+            {variantLabel} · {stageText[stage]}
           </div>
         </div>
 
@@ -1004,7 +924,7 @@ export const CardTable = () => {
   const [selectedPokerCard, setSelectedPokerCard] = useState<number | null>(
     null,
   );
-  const [pokerRaiseAmount, setPokerRaiseAmount] = useState(5);
+  const [pokerBetAmount, setPokerBetAmount] = useState(10);
   const [selectedSolitaireCard, setSelectedSolitaireCard] =
     useState<SolitaireSelection | null>(null);
   const {
@@ -1039,10 +959,8 @@ export const CardTable = () => {
     dealer_value,
     community_cards = [],
     poker_turn,
-    poker_current_bet = 0,
+    poker_current_bet = 10,
     poker_pot = 0,
-    poker_round = 0,
-    poker_draw_phase = false,
     my_value,
     solitaire_tableau = [],
     solitaire_stock_count = 0,
@@ -1055,13 +973,6 @@ export const CardTable = () => {
     table_defense,
     table_pairs = [],
     trump,
-    fool_all_defended,
-    fool_action_seq = 0,
-    fool_action_kind,
-    fool_action_player_index = 0,
-    blackjack_action_seq = 0,
-    blackjack_action_player_index = 0,
-    blackjack_action_bust,
     xylix,
   } = data;
 
@@ -1070,6 +981,9 @@ export const CardTable = () => {
   const isLobby = stage === 'lobby';
   const isPlaying = stage === 'playing';
   const isFinished = stage === 'finished';
+  useEffect(() => {
+    setPokerBetAmount(poker_current_bet);
+  }, [poker_current_bet]);
   const seatCount = Math.max(max_players || 6, 6);
   const visibleSeatCount = Math.min(seatCount, 6);
   const occupiedSeatEntries = players.map((player, index) => ({
@@ -1108,131 +1022,24 @@ export const CardTable = () => {
   const canTransfer =
     game_type === 'fool' &&
     (fool_variant === 'transfer' || fool_variant === 'throw_transfer');
-  const blackjackDealer = players.find((player) => player.name === dealer_name);
-  const blackjackRoundPlayers = players.filter(
-    (player) => game_type === 'blackjack' && !player.left && !!player.result,
-  );
-  const blackjackPlayerWinners = blackjackRoundPlayers.filter(
-    (player) => player.name !== dealer_name && player.result === 'Win',
-  );
-  const blackjackDealerStatus =
-    blackjackDealer?.result === 'Bust'
-      ? 'перебор'
-      : blackjackPlayerWinners.length
-        ? 'проиграл'
-        : blackjackRoundPlayers.some(
-              (player) => player.name !== dealer_name && player.result === 'Push',
-            )
-          ? 'ничья'
-          : 'выиграл';
-  const blackjackResultStatus = (player: Player) => {
-    if (player.name === dealer_name) {
-      return blackjackDealerStatus;
-    }
-    return resultText[player.result || ''] || player.result || '';
-  };
-  const blackjackResultRank = (player: Player) => {
-    const status = blackjackResultStatus(player);
-    if (status === 'выиграл') {
-      return 0;
-    }
-    if (status === 'ничья') {
-      return 1;
-    }
-    if (status === 'проиграл') {
-      return 2;
-    }
-    if (status === 'перебор') {
-      return 3;
-    }
-    return 4;
-  };
-  const blackjackResultDetails =
-    isFinished && game_type === 'blackjack'
-      ? [...blackjackRoundPlayers]
-          .sort((left, right) => {
-            const rankDelta =
-              blackjackResultRank(left) - blackjackResultRank(right);
-            if (rankDelta) {
-              return rankDelta;
-            }
-            if (left.name === dealer_name) {
-              return -1;
-            }
-            if (right.name === dealer_name) {
-              return 1;
-            }
-            return 0;
-          })
-          .map((player) => {
-            const value =
-              player.hand_value !== null && player.hand_value !== undefined
-                ? ` (${player.hand_value})`
-                : '';
-            return `${player.name}${value} - ${blackjackResultStatus(player)}`;
-          })
-          .filter(Boolean)
-      : [];
-  const blackjackDealerDetail =
-    isFinished && game_type === 'blackjack' && blackjackDealer
-      ? `Дилер: ${blackjackDealer.name}${
-          blackjackDealer.hand_value !== null &&
-          blackjackDealer.hand_value !== undefined
-            ? ` (${blackjackDealer.hand_value})`
-            : ''
-        } - ${blackjackDealerStatus}`
-      : '';
-  const activeBlackjackPlayers = players.filter(
-    (player) => game_type === 'blackjack' && !player.left,
-  );
-  const currentDealerIndex = activeBlackjackPlayers.findIndex(
-    (player) => player.name === dealer_name,
-  );
-  const nextBlackjackDealer =
-    currentDealerIndex >= 0 && activeBlackjackPlayers.length > 1
-      ? activeBlackjackPlayers[
-          (currentDealerIndex + 1) % activeBlackjackPlayers.length
-        ]
-      : null;
-  const blackjackDealerRotationText =
-    isFinished &&
-    game_type === 'blackjack' &&
-    dealer_rotates &&
-    !players.some((player) => player.is_spirit) &&
-    nextBlackjackDealer &&
-    nextBlackjackDealer.name !== dealer_name
-      ? `Новый дилер: ${nextBlackjackDealer.name}`
-      : '';
-  const pokerResultDetails =
-    isFinished && game_type === 'poker'
-      ? players
-          .filter((player) => !!player.result)
-          .sort((left, right) => {
-            if (left.result === 'Winner' && right.result !== 'Winner') {
-              return -1;
-            }
-            if (right.result === 'Winner' && left.result !== 'Winner') {
-              return 1;
-            }
-            return 0;
-          })
-          .map((player) => {
-            const result = resultText[player.result || ''] || player.result;
-            const combo = player.poker_combo ? `, ${player.poker_combo}` : '';
-            return `${player.name} - ${result}${combo}`;
-          })
-      : [];
+  const canActInPoker =
+    game_type === 'poker' &&
+    isPlaying &&
+    !!myPlayer &&
+    myPlayer.name === poker_turn;
   const playerResultText = players
-    .filter(
-      (player) =>
-        !!player.result && game_type !== 'blackjack' && game_type !== 'poker',
-    )
+    .filter((player) => !!player.result)
     .map(
       (player) =>
         `${player.name} - ${resultText[player.result || ''] || player.result}`,
     )
     .join(', ');
-  const finalText = isFinished && playerResultText ? playerResultText : '';
+  const finalText =
+    isFinished && playerResultText
+      ? playerResultText
+      : isFinished && game_type === 'blackjack'
+        ? `${dealer_name || 'Дилер'} - дилер`
+        : '';
   const attackRank = getRankSuit(table_attack || '').rank;
   const attackSuit = getRankSuit(table_attack || '').suit;
   const tableRanks = new Set<string>();
@@ -1244,34 +1051,6 @@ export const CardTable = () => {
       tableRanks.add(getRankSuit(pair.defense.label, pair.defense).rank);
     }
   });
-  const myFoolPassed = !!myPlayer?.fool_passed;
-  const canSayBito =
-    game_type === 'fool' &&
-    isPlaying &&
-    !!myPlayer &&
-    myPlayer.name !== defender &&
-    !!fool_all_defended &&
-    !myFoolPassed;
-  const actionFlightAnchor =
-    seatFlightAnchors[Math.max(0, fool_action_player_index - 1)] ||
-    seatFlightAnchors[0];
-  const blackjackFlightAnchor =
-    seatFlightAnchors[Math.max(0, blackjack_action_player_index - 1)] ||
-    seatFlightAnchors[0];
-  const canActInPoker =
-    game_type === 'poker' &&
-    isPlaying &&
-    !!myPlayer &&
-    !poker_draw_phase &&
-    myPlayer.name === poker_turn;
-  const canDrawInPoker =
-    game_type === 'poker' &&
-    isPlaying &&
-    !!myPlayer &&
-    poker_draw_phase &&
-    poker_variant === 'draw' &&
-    !myPlayer.ready &&
-    myPlayer.draws_used < 1;
   const cardBeatsAttack = (card: Card) => {
     if (!table_attack) {
       return false;
@@ -1388,8 +1167,8 @@ export const CardTable = () => {
     if (!isPlaying || !myPlayer || !card.index) {
       return;
     }
-    if (game_type === 'poker' && poker_draw_phase && poker_variant === 'draw') {
-      if (canDrawInPoker) {
+    if (game_type === 'poker' && poker_variant === 'draw') {
+      if (!myPlayer.ready && myPlayer.draws_used < 1) {
         setSelectedPokerCard(
           selectedPokerCard === card.index ? null : card.index,
         );
@@ -1472,56 +1251,8 @@ export const CardTable = () => {
   return (
     <Window width={1020} height={840} title="Карточный стол">
       <Window.Content scrollable>
-        <style>
-          {`
-            @keyframes cardtable-fly-in {
-              0% { opacity: 0; transform: translate(0, 0) rotate(-10deg) scale(0.72); }
-              18% { opacity: 1; }
-              92% { opacity: 1; }
-              100% { opacity: 0; visibility: hidden; transform: translate(var(--cardtable-dx), var(--cardtable-dy)) rotate(8deg) scale(1); }
-            }
-            @keyframes cardtable-table-hit {
-              0% { transform: translate(-50%, -50%) rotate(0deg); }
-              25% { transform: translate(calc(-50% - 2px), calc(-50% + 1px)) rotate(-0.25deg); }
-              55% { transform: translate(calc(-50% + 2px), calc(-50% - 1px)) rotate(0.2deg); }
-              100% { transform: translate(-50%, -50%) rotate(0deg); }
-            }
-            @keyframes cardtable-blackjack-draw {
-              0% { opacity: 0; transform: translate(-50%, -50%) rotate(5deg) scale(0.8); }
-              15% { opacity: 1; }
-              92% { opacity: 1; }
-              100% { opacity: 0; visibility: hidden; transform: translate(var(--cardtable-dx), var(--cardtable-dy)) rotate(-8deg) scale(1); }
-            }
-            @keyframes cardtable-bust-shake {
-              0% { transform: translate(0, 0); }
-              18% { transform: translate(-3px, 1px); }
-              36% { transform: translate(3px, -1px); }
-              54% { transform: translate(-2px, -1px); }
-              72% { transform: translate(2px, 1px); }
-              100% { transform: translate(0, 0); }
-            }
-            @keyframes cardtable-defender-impact {
-              0% { transform: rotate(0deg); }
-              35% { transform: rotate(-0.8deg) translateY(1px); }
-              70% { transform: rotate(0.6deg) translateY(-1px); }
-              100% { transform: rotate(0deg); }
-            }
-          `}
-        </style>
         <div style={tableLayoutStyle}>
-          <div
-            key={
-              blackjack_action_bust
-                ? `blackjack-bust-${blackjack_action_seq}`
-                : 'table'
-            }
-            style={{
-              ...tableStyle,
-              animation: blackjack_action_bust
-                ? 'cardtable-bust-shake 260ms ease-out'
-                : undefined,
-            }}
-          >
+          <div style={tableStyle}>
             {game_type === 'solitaire' ? (
               <SolitaireBoard
                 gameLabel={game_label}
@@ -1567,13 +1298,7 @@ export const CardTable = () => {
                         attacker={attacker}
                         defender={defender}
                         dealer={dealer_name}
-                        foolActionKind={fool_action_kind}
-                        foolActionPlayerIndex={fool_action_player_index}
-                        selectedCardIndex={
-                          game_type === 'poker'
-                            ? selectedPokerCard
-                            : undefined
-                        }
+                        selectedCardIndex={selectedPokerCard}
                         getCardHighlight={getOwnCardHighlight}
                         onCardClick={clickOwnCard}
                       />
@@ -1581,88 +1306,14 @@ export const CardTable = () => {
                   },
                 )}
 
-                {game_type === 'fool' &&
-                  isPlaying &&
-                  !!fool_action_seq &&
-                  (fool_action_kind === 'attack' ||
-                    fool_action_kind === 'defend' ||
-                    fool_action_kind === 'take') && (
-                    <div
-                      key={`fool-action-${fool_action_seq}`}
-                      style={
-                        {
-                          position: 'absolute',
-                          left: actionFlightAnchor.left,
-                          top: actionFlightAnchor.top,
-                          zIndex: 8,
-                          pointerEvents: 'none',
-                          '--cardtable-dx': actionFlightAnchor.dx,
-                          '--cardtable-dy': actionFlightAnchor.dy,
-                          animation:
-                            'cardtable-fly-in 360ms cubic-bezier(0.2, 0.8, 0.2, 1)',
-                          animationFillMode: 'forwards',
-                        } as CSSProperties
-                      }
-                    >
-                      <div
-                        style={{
-                          ...cardBackShellStyle,
-                          width: '48px',
-                          height: '62px',
-                        }}
-                      />
-                    </div>
-                  )}
-
-                {game_type === 'blackjack' && !!blackjack_action_seq && (
-                  <div
-                    key={`blackjack-action-${blackjack_action_seq}`}
-                    style={
-                      {
-                        position: 'absolute',
-                        left: '67%',
-                        top: '31%',
-                        zIndex: 8,
-                        pointerEvents: 'none',
-                        '--cardtable-dx': `calc(${blackjackFlightAnchor.dx} * -1)`,
-                        '--cardtable-dy': `calc(${blackjackFlightAnchor.dy} * -1)`,
-                        animation:
-                          'cardtable-blackjack-draw 420ms cubic-bezier(0.2, 0.75, 0.2, 1)',
-                        animationFillMode: 'forwards',
-                      } as CSSProperties
-                    }
-                  >
-                    <div
-                      style={{
-                        ...cardBackShellStyle,
-                        width: '48px',
-                        height: '62px',
-                      }}
-                    />
-                  </div>
-                )}
-
-                <div
-                  key={
-                    fool_action_kind === 'defend'
-                      ? `center-hit-${fool_action_seq}`
-                      : 'center'
-                  }
-                  style={{
-                    ...centerStyle,
-                    animation:
-                      fool_action_kind === 'defend'
-                        ? 'cardtable-table-hit 180ms ease-out'
-                        : undefined,
-                  }}
-                >
+                <div style={centerStyle}>
                   <div style={{ ...rowStyle, justifyContent: 'space-between' }}>
                     <div>
                       <div style={{ fontSize: '18px', fontWeight: 800 }}>
                         {game_label}
                       </div>
                       <div style={{ opacity: 0.75 }}>
-                        {stageText[stage]} |{' '}
+                        {stageText[stage]} ·{' '}
                         {game_type === 'fool'
                           ? fool_variant_label
                           : game_type === 'poker'
@@ -1684,14 +1335,15 @@ export const CardTable = () => {
                     </div>
                   </div>
 
-                  {game_type === 'blackjack' && !isFinished && (
+                  {game_type === 'blackjack' && (
                     <div>
                       <div style={{ marginBottom: '6px', fontWeight: 700 }}>
                         Дилер: {dealer_name || '-'}{' '}
                         {isFinished && dealer_value ? `(${dealer_value})` : ''}
                       </div>
                       <div style={{ opacity: 0.76 }}>
-                        Рука дилера показана на его месте. {dealer_rotation_label}.
+                        Рука дилера показана на его месте.{' '}
+                        {dealer_rotation_label}.
                       </div>
                     </div>
                   )}
@@ -1749,25 +1401,22 @@ export const CardTable = () => {
                   {game_type === 'poker' && (
                     <div>
                       <div style={{ marginBottom: '8px', fontWeight: 700 }}>
-                        {poker_variant === 'draw' || poker_variant === 'stud'
-                          ? 'Личные карты'
-                          : 'Общие карты'}
+                        Общие карты
                       </div>
                       <div style={{ marginBottom: '6px', opacity: 0.82 }}>
-                        {poker_draw_phase
-                          ? 'Замена карт'
-                          : `Круг: ${poker_round} | Ход: ${
-                              poker_turn || '-'
-                            }`}{' '}
-                        | Банк: {poker_pot} | Текущая ставка:{' '}
-                        {poker_current_bet}
+                        Ход: {poker_turn || '-'} | Банк: {poker_pot} |
+                        Текущая ставка: {poker_current_bet}
                       </div>
                       {community_cards.length ? (
                         <CardRow cards={community_cards} />
-                      ) : poker_variant === 'draw' || poker_variant === 'stud' ? (
-                        <div style={{ opacity: 0.72 }}>Общих карт нет</div>
                       ) : (
-                        <div style={{ opacity: 0.72 }}>Пока закрыто</div>
+                        <div style={rowStyle}>
+                          <CardFace />
+                          <CardFace />
+                          <CardFace />
+                          <CardFace />
+                          <CardFace />
+                        </div>
                       )}
                     </div>
                   )}
@@ -1786,32 +1435,6 @@ export const CardTable = () => {
                   {!!finalText && (
                     <div style={{ color: '#f4cf5c', fontWeight: 700 }}>
                       Итог: {finalText}
-                    </div>
-                  )}
-                  {!!pokerResultDetails.length && (
-                    <div style={{ color: '#f4cf5c', opacity: 0.92 }}>
-                      <div>Итог:</div>
-                      {pokerResultDetails.map((resultLine) => (
-                        <div key={resultLine}>{resultLine}</div>
-                      ))}
-                    </div>
-                  )}
-                  {!!blackjackDealerDetail && (
-                    <div style={{ color: '#d5efb3', fontWeight: 700 }}>
-                      {blackjackDealerDetail}
-                    </div>
-                  )}
-                  {!!blackjackResultDetails.length && (
-                    <div style={{ color: '#f4cf5c', opacity: 0.92 }}>
-                      <div>Результаты:</div>
-                      {blackjackResultDetails.map((resultLine) => (
-                        <div key={resultLine}>{resultLine}</div>
-                      ))}
-                    </div>
-                  )}
-                  {!!blackjackDealerRotationText && (
-                    <div style={{ color: '#d5efb3', opacity: 0.76 }}>
-                      {blackjackDealerRotationText}
                     </div>
                   )}
 
@@ -1834,67 +1457,21 @@ export const CardTable = () => {
 
                   {isPlaying && is_player && game_type === 'poker' && (
                     <div style={rowStyle}>
-                      {poker_draw_phase ? (
-                        <>
-                          <span style={{ opacity: 0.82 }}>
-                            Замена:{' '}
-                            {selectedPokerCard ? 'карта выбрана' : 'выберите карту'}
-                          </span>
-                          <Button
-                            disabled={!canDrawInPoker || !selectedPokerCard}
-                            onClick={() => {
-                              act('poker_discard', {
-                                card_index: selectedPokerCard || 0,
-                              });
-                              setSelectedPokerCard(null);
-                            }}
-                          >
-                            Заменить
-                          </Button>
-                          <Button
-                            disabled={!canDrawInPoker}
-                            onClick={() => {
-                              act('poker_ready');
-                              setSelectedPokerCard(null);
-                            }}
-                          >
-                            Оставить
-                          </Button>
-                        </>
-                      ) : (
-                        <>
-                      <Button
-                        disabled={!canActInPoker}
-                        onClick={() => act('poker_check')}
-                      >
-                        Поддержать
-                      </Button>
-                      <Button
-                        disabled={!canActInPoker}
-                        onClick={() =>
-                          act('poker_raise', {
-                            amount: pokerRaiseAmount,
-                            all_in: 0,
-                          })
-                        }
-                      >
-                        Повысить
-                      </Button>
                       <input
                         type="number"
-                        min={1}
-                        value={pokerRaiseAmount}
+                        min={10}
+                        value={pokerBetAmount}
                         disabled={!canActInPoker}
                         onChange={(event) =>
-                          setPokerRaiseAmount(
+                          setPokerBetAmount(
                             Math.max(
-                              1,
-                              Number(event.currentTarget.value) || 1,
+                              10,
+                              Number(event.currentTarget.value) || 10,
                             ),
                           )
                         }
                         style={{
-                          width: '58px',
+                          width: '54px',
                           height: '22px',
                           boxSizing: 'border-box',
                           background: 'rgba(255,255,255,0.08)',
@@ -1905,11 +1482,16 @@ export const CardTable = () => {
                       <Button
                         disabled={!canActInPoker}
                         onClick={() =>
-                          act('poker_raise', {
-                            amount: pokerRaiseAmount,
-                            all_in: 1,
-                          })
+                          pokerBetAmount > poker_current_bet
+                            ? act('poker_bet', { amount: pokerBetAmount })
+                            : act('poker_check')
                         }
+                      >
+                        Ставка
+                      </Button>
+                      <Button
+                        disabled={!canActInPoker}
+                        onClick={() => act('poker_all_in')}
                       >
                         Ва-банк
                       </Button>
@@ -1917,10 +1499,8 @@ export const CardTable = () => {
                         disabled={!canActInPoker}
                         onClick={() => act('poker_fold')}
                       >
-                        Пасс
+                        Отказаться
                       </Button>
-                        </>
-                      )}
                     </div>
                   )}
 
@@ -1933,10 +1513,10 @@ export const CardTable = () => {
                         Взять
                       </Button>
                       <Button
-                        disabled={!canSayBito}
+                        disabled={!table_attack || !table_defense}
                         onClick={() => act('fool_end_attack')}
                       >
-                        {myFoolPassed ? 'Бито сказано' : 'Бито'}
+                        Бито
                       </Button>
                     </div>
                   )}
