@@ -180,9 +180,10 @@
 /datum/ccg_card/base_militia
 	id = "base_militia"
 	name = "Militia"
-	desc = "Cheap infantry."
+	desc = "Morale boost for infantry."
 	row = CCG_ROW_INFANTRY
 	power = 2
+	effect = CCG_EFFECT_MORALE
 	art = "ccg_cards/militia.png"
 
 /datum/ccg_card/base_mangonel

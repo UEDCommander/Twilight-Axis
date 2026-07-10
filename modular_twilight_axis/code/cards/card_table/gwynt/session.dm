@@ -62,6 +62,7 @@
 	var/round_number = 1
 	var/in_mulligan = TRUE
 	var/next_play_id = 1
+	var/turns_played = 0
 	var/result_text
 	var/last_message
 
@@ -490,6 +491,7 @@
 	recalculate_board()
 	if(is_weather_card(card))
 		last_message = "[player_names[side]] plays [card.name]."
+	turns_played++
 	advance_turn()
 	return TRUE
 
@@ -499,6 +501,7 @@
 		return FALSE
 	passed[side] = TRUE
 	last_message = "[player_names[side]] passes."
+	turns_played++
 	advance_turn()
 	return TRUE
 
@@ -529,6 +532,7 @@
 		play_cue(CCG_SOUND_SPECIAL)
 	last_message = "[player_names[side]] uses leader: [leader.name]."
 	recalculate_board()
+	turns_played++
 	advance_turn()
 	return TRUE
 
@@ -864,6 +868,8 @@
 	if(round_wins[CCG_SIDE_ONE] >= 2 || round_wins[CCG_SIDE_TWO] >= 2)
 		var/winner = round_wins[CCG_SIDE_ONE] >= 2 ? CCG_SIDE_ONE : CCG_SIDE_TWO
 		result_text = "[player_names[winner]] wins the match."
+		if(turns_played >= 5)
+			ccg_award_match_progress(player_ckeys[winner], player_ckeys[opposite(winner)])
 		play_cue(CCG_SOUND_GAME_END)
 		stop_soundtracks()
 		return

@@ -9,8 +9,16 @@
 #define CCG_SQL_LOAD_FAILED 0
 #define CCG_SQL_LOAD_EMPTY 1
 #define CCG_SQL_LOAD_LOADED 2
-#define CCG_STARTER_ARCHER_CARD "base_crossbow"
-#define CCG_STARTER_SIEGE_CARD "base_blacksmith"
+#define CCG_STARTER_INFANTRY_CARD "rare_azuria_squire"
+#define CCG_STARTER_ARCHER_CARD "base_scout"
+#define CCG_STARTER_SIEGE_CARD "base_mangonel"
+#define CCG_STARTER_BLACKSMITH_CARD "base_blacksmith"
+#define CCG_STARTER_SCORCH_CARD "base_scorch"
+#define CCG_BOOSTER_PROGRESS_REQUIRED 5
+
+GLOBAL_LIST_EMPTY(ccg_round_win_progress_awarded)
+GLOBAL_LIST_EMPTY(ccg_round_match_loss_progress_awarded)
+GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 
 /datum/mind
 	var/ccg_deck_requested = FALSE
@@ -26,6 +34,8 @@
 	var/ccg_deckbuilder_view_mode = CCG_VIEW_SETUP
 	var/ccg_soundtrack_enabled = FALSE
 	var/ccg_presets_are_virtual = FALSE
+	var/ccg_win_progress = 0
+	var/ccg_loss_progress = 0
 
 /datum/preferences/proc/ccg_known_cards()
 	var/list/cards = list()
@@ -87,6 +97,18 @@
 		return 0
 	var/deck_limit = ccg_card_deck_limit(card)
 	return min(deck_limit, ccg_card_pool_count(card_id))
+
+/datum/preferences/proc/ccg_owned_deck_cards(list/card_ids)
+	var/list/owned_cards = list()
+	var/list/card_counts = list()
+	if(!islist(card_ids))
+		return owned_cards
+	for(var/card_id in card_ids)
+		if(card_counts[card_id] >= ccg_card_pool_count(card_id))
+			continue
+		card_counts[card_id] = (card_counts[card_id] || 0) + 1
+		owned_cards += card_id
+	return owned_cards
 
 /datum/preferences/proc/ccg_default_deck_spec(index = 1)
 	var/datum/ccg_faction/faction = ccg_faction(CCG_FACTION_AZURIA)
@@ -313,7 +335,7 @@
 
 	var/list/settings = null
 	var/datum/DBQuery/settings_query = SSdbcore.NewQuery({"
-		SELECT active_deck_index, deckbuilder_view_mode, soundtrack_enabled, presets_are_virtual
+		SELECT active_deck_index, deckbuilder_view_mode, soundtrack_enabled, presets_are_virtual, win_progress, loss_progress
 		FROM [format_table_name("ccg_settings")]
 		WHERE ckey = :ckey
 	"}, list("ckey" = account_ckey))
@@ -401,6 +423,8 @@
 		ccg_deckbuilder_view_mode = settings[2]
 		ccg_soundtrack_enabled = text2num("[settings[3]]") ? TRUE : FALSE
 		ccg_presets_are_virtual = text2num("[settings[4]]") ? TRUE : FALSE
+		ccg_win_progress = max(0, round(text2num("[settings[5]]") || 0))
+		ccg_loss_progress = max(0, round(text2num("[settings[6]]") || 0))
 	return CCG_SQL_LOAD_LOADED
 
 /datum/preferences/proc/ccg_save_sql(save_collection = TRUE, save_decks = TRUE, save_settings = TRUE)
@@ -423,19 +447,23 @@
 		success = success && ccg_execute_sql("DELETE FROM [format_table_name("ccg_collection")] WHERE ckey = :ckey", list("ckey" = account_ckey))
 	if(save_settings)
 		success = success && ccg_execute_sql({"
-			INSERT INTO [format_table_name("ccg_settings")] (ckey, active_deck_index, deckbuilder_view_mode, soundtrack_enabled, presets_are_virtual)
-			VALUES (:ckey, :active_deck_index, :deckbuilder_view_mode, :soundtrack_enabled, :presets_are_virtual)
+			INSERT INTO [format_table_name("ccg_settings")] (ckey, active_deck_index, deckbuilder_view_mode, soundtrack_enabled, presets_are_virtual, win_progress, loss_progress)
+			VALUES (:ckey, :active_deck_index, :deckbuilder_view_mode, :soundtrack_enabled, :presets_are_virtual, :win_progress, :loss_progress)
 			ON DUPLICATE KEY UPDATE
 				active_deck_index = :active_deck_index,
 				deckbuilder_view_mode = :deckbuilder_view_mode,
 				soundtrack_enabled = :soundtrack_enabled,
-				presets_are_virtual = :presets_are_virtual
+				presets_are_virtual = :presets_are_virtual,
+				win_progress = :win_progress,
+				loss_progress = :loss_progress
 		"}, list(
 			"ckey" = account_ckey,
 			"active_deck_index" = ccg_active_deck_index,
 			"deckbuilder_view_mode" = ccg_deckbuilder_view_mode,
 			"soundtrack_enabled" = ccg_soundtrack_enabled ? 1 : 0,
 			"presets_are_virtual" = ccg_presets_are_virtual ? 1 : 0,
+			"win_progress" = ccg_win_progress,
+			"loss_progress" = ccg_loss_progress,
 		))
 
 	var/list/collection_rows = list()
@@ -505,14 +533,93 @@
 	ccg_clean_cards()
 	return ccg_save_sql(TRUE, FALSE, FALSE)
 
+/datum/preferences/proc/ccg_grant_booster(mob/living/user, premium = FALSE)
+	if(!user)
+		return FALSE
+	var/obj/item/ccg_card_booster/booster
+	if(premium)
+		booster = new /obj/item/ccg_card_booster/premium(get_turf(user))
+	else
+		booster = new /obj/item/ccg_card_booster(get_turf(user))
+	if(!booster)
+		return FALSE
+	user.put_in_hands(booster)
+	if(premium)
+		to_chat(user, span_notice("Ксалликс рад вашим удачам и даровал вам чудо: набор карт для новых вершин."))
+	else
+		to_chat(user, span_notice("Ксалликс рад вашим неудачам и даровал вам чудо: набор карт для новых насмешек."))
+	return TRUE
+
+/datum/preferences/proc/ccg_award_progress(mob/living/user, progress_type)
+	if(!user || !ccg_account_ckey())
+		return FALSE
+	var/list/round_awards
+	var/premium = FALSE
+	switch(progress_type)
+		if("win")
+			round_awards = GLOB.ccg_round_win_progress_awarded
+			premium = TRUE
+		if("match_loss")
+			round_awards = GLOB.ccg_round_match_loss_progress_awarded
+		if("trade_loss")
+			round_awards = GLOB.ccg_round_trade_loss_progress_awarded
+		else
+			return FALSE
+	var/account_ckey = ccg_account_ckey()
+	if(round_awards[account_ckey])
+		return FALSE
+	var/old_progress = premium ? ccg_win_progress : ccg_loss_progress
+	var/new_progress = old_progress + 1
+	var/grant_booster = new_progress >= CCG_BOOSTER_PROGRESS_REQUIRED
+	if(grant_booster)
+		new_progress = 0
+	if(premium)
+		ccg_win_progress = new_progress
+	else
+		ccg_loss_progress = new_progress
+	if(!ccg_save_settings_sql())
+		if(premium)
+			ccg_win_progress = old_progress
+		else
+			ccg_loss_progress = old_progress
+		return FALSE
+	round_awards[account_ckey] = TRUE
+	if(grant_booster)
+		ccg_grant_booster(user, premium)
+	return TRUE
+
+/proc/ccg_award_match_progress(winner_ckey, loser_ckey)
+	if(!winner_ckey || winner_ckey == loser_ckey)
+		return FALSE
+	var/mob/living/winner = ccg_find_mob_by_ckey(winner_ckey)
+	var/mob/living/loser = ccg_find_mob_by_ckey(loser_ckey)
+	if(winner?.client?.prefs)
+		winner.client.prefs.ccg_award_progress(winner, "win")
+	if(loser?.client?.prefs)
+		loser.client.prefs.ccg_award_progress(loser, "match_loss")
+	return TRUE
+
+/proc/ccg_award_trade_progress(source_ckey, mob/living/recipient)
+	if(!source_ckey || !recipient?.ckey || source_ckey == recipient.ckey)
+		return FALSE
+	var/mob/living/source = ccg_find_mob_by_ckey(source_ckey)
+	if(!source)
+		return FALSE
+	var/source_awarded = source.client?.prefs?.ccg_award_progress(source, "trade_loss")
+	var/recipient_awarded = recipient.client?.prefs?.ccg_award_progress(recipient, "trade_loss")
+	return source_awarded || recipient_awarded
+
 /datum/preferences/proc/ccg_seed_base_pool()
 	if(!length(GLOB.ccg_base_card_ids))
 		ccg_build_card_registry()
 	. = FALSE
-	. = ccg_add_seed_card(ccg_starter_infantry_card_id(), 2) || .
-	. = ccg_add_seed_card(CCG_STARTER_ARCHER_CARD, 2) || .
-	. = ccg_add_seed_card(CCG_STARTER_SIEGE_CARD, 1) || .
-	for(var/card_id in list("base_frost", "base_fog", "base_rain", "base_clear"))
+	. = ccg_add_seed_card(ccg_starter_infantry_card_id(), 4) || .
+	. = ccg_add_seed_card(CCG_STARTER_ARCHER_CARD, 3) || .
+	. = ccg_add_seed_card(CCG_STARTER_SIEGE_CARD, 2) || .
+	. = ccg_add_seed_card(CCG_STARTER_BLACKSMITH_CARD, 1) || .
+	. = ccg_add_seed_card("base_clear", 2) || .
+	. = ccg_add_seed_card(CCG_STARTER_SCORCH_CARD, 1) || .
+	for(var/card_id in list("base_frost", "base_fog", "base_rain"))
 		. = ccg_add_seed_card(card_id, 1) || .
 
 /datum/preferences/proc/ccg_ensure_base_pool()
@@ -522,7 +629,7 @@
 	var/datum/ccg_card/card = ccg_card(card_id)
 	if(!card)
 		return FALSE
-	amount = clamp(round(amount || 0), 0, ccg_card_deck_limit(card))
+	amount = max(0, round(amount || 0))
 	if(amount <= 0)
 		return FALSE
 	if((ccg_known_rare_cards[card_id] || 0) >= amount)
@@ -531,12 +638,7 @@
 	return TRUE
 
 /datum/preferences/proc/ccg_starter_infantry_card_id()
-	var/faction_id = ccg_saved_deck_faction || CCG_FACTION_AZURIA
-	for(var/card_id in GLOB.ccg_base_card_ids)
-		var/datum/ccg_card/card = ccg_card(card_id)
-		if(card && card.faction == faction_id && card.row == CCG_ROW_INFANTRY)
-			return card_id
-	return "base_militia"
+	return CCG_STARTER_INFANTRY_CARD
 
 /datum/preferences/proc/ccg_reset_collection(seed_base_pool = TRUE)
 	ccg_known_rare_cards = list()
@@ -568,6 +670,27 @@
 			ccg_known_rare_cards -= card_id
 		return FALSE
 	return TRUE
+
+/datum/preferences/proc/ccg_base_pool_required_count(card_id)
+	if(card_id == ccg_starter_infantry_card_id())
+		return 4
+	if(card_id == CCG_STARTER_ARCHER_CARD)
+		return 3
+	if(card_id == CCG_STARTER_SIEGE_CARD || card_id == "base_clear")
+		return 2
+	if(card_id == CCG_STARTER_BLACKSMITH_CARD || card_id == CCG_STARTER_SCORCH_CARD || (card_id in list("base_frost", "base_fog", "base_rain")))
+		return 1
+	return 0
+
+/datum/preferences/proc/ccg_export_known_card(card_id)
+	var/current_count = ccg_card_pool_count(card_id)
+	if(current_count <= ccg_base_pool_required_count(card_id))
+		return FALSE
+	ccg_known_rare_cards[card_id] = current_count - 1
+	if(ccg_save_collection_sql())
+		return TRUE
+	ccg_known_rare_cards[card_id] = current_count
+	return FALSE
 
 /datum/preferences/proc/ccg_remove_known_cards_from_deck(list/card_ids)
 	return TRUE
@@ -1106,17 +1229,383 @@
 			var/card_index = deck.card_ids.Find(card_id)
 			if(!card_index)
 				return TRUE
+			if(!P.ccg_export_known_card(card_id))
+				to_chat(user, span_warning("This card cannot be taken from your collection."))
+				return TRUE
 			deck.card_ids.Cut(card_index, card_index + 1)
 			if(!P.ccg_save_deck_snapshot(deck.card_ids, deck.faction_id, deck.leader_id))
 				deck.card_ids.Insert(card_index, card_id)
+				P.ccg_add_known_card(card_id)
 				to_chat(user, span_warning("The card deck failed to save. The card was not removed."))
 				return TRUE
 			var/obj/item/ccg_card_single/single = new(get_turf(user))
 			single.set_card(card_id)
-			single.pooled = TRUE
+			single.source_ckey = user.ckey
 			user.put_in_hands(single)
 			return TRUE
 	return FALSE
+
+/proc/ccg_admin_execute_sql(sql, list/arguments = null)
+	if(!SSdbcore.Connect())
+		return FALSE
+	var/datum/DBQuery/query = SSdbcore.NewQuery(sql, arguments)
+	if(!query)
+		return FALSE
+	var/success = query.Execute(async = FALSE)
+	qdel(query)
+	return success
+
+/proc/ccg_admin_online_preferences(target_ckey)
+	var/mob/target = ccg_find_mob_by_ckey(target_ckey)
+	var/datum/preferences/P = target?.client?.prefs
+	if(P && !P.ccg_load_or_migrate_sql())
+		return null
+	return P
+
+/proc/ccg_admin_change_card_amount(target_ckey, card_id, change)
+	if(!target_ckey || !ccg_card(card_id) || !change || !SSdbcore.Connect())
+		return null
+	var/datum/preferences/P = ccg_admin_online_preferences(target_ckey)
+	if(GLOB.directory[target_ckey] && !P)
+		return null
+	if(change > 0)
+		if(!ccg_admin_execute_sql({"
+			INSERT INTO [format_table_name("ccg_collection")] (ckey, card_id, amount)
+			VALUES (:ckey, :card_id, :amount)
+			ON DUPLICATE KEY UPDATE amount = amount + :amount
+		"}, list("ckey" = target_ckey, "card_id" = card_id, "amount" = change)))
+			return null
+		if(P)
+			P.ccg_known_rare_cards[card_id] = (P.ccg_known_rare_cards[card_id] || 0) + change
+		return change
+	var/datum/DBQuery/query = SSdbcore.NewQuery("SELECT amount FROM [format_table_name("ccg_collection")] WHERE ckey = :ckey AND card_id = :card_id", list("ckey" = target_ckey, "card_id" = card_id))
+	if(!query || !query.Execute(async = FALSE) || !query.NextRow())
+		qdel(query)
+		return 0
+	var/current_amount = round(text2num("[query.item[1]]") || 0)
+	qdel(query)
+	var/removed = min(abs(change), current_amount)
+	if(!removed)
+		return 0
+	var/remaining_amount = current_amount - removed
+	var/success
+	if(remaining_amount)
+		success = ccg_admin_execute_sql("UPDATE [format_table_name("ccg_collection")] SET amount = :amount WHERE ckey = :ckey AND card_id = :card_id", list("ckey" = target_ckey, "card_id" = card_id, "amount" = remaining_amount))
+	else
+		success = ccg_admin_execute_sql("DELETE FROM [format_table_name("ccg_collection")] WHERE ckey = :ckey AND card_id = :card_id", list("ckey" = target_ckey, "card_id" = card_id))
+	if(!success)
+		return null
+	if(P)
+		if(remaining_amount)
+			P.ccg_known_rare_cards[card_id] = remaining_amount
+		else
+			P.ccg_known_rare_cards -= card_id
+	return -removed
+
+/client/proc/ccg_admin_management()
+	set name = "Gwynt Management"
+	set category = "Admin.Admin"
+	set desc = "Manage Gwynt collections and saved decks."
+	if(!check_rights(R_ADMIN))
+		return
+	holder?.ccg_management_panel()
+
+/datum/admins/proc/ccg_management_panel(target_ckey = null)
+	if(!check_rights(R_ADMIN))
+		return
+	if(!SSdbcore.Connect())
+		to_chat(usr, span_warning("The card collection database is unavailable."))
+		return
+	var/list/html = list("<!DOCTYPE html><html><body><style>body{margin:14px;background:#15171d;color:#d9dce5;font-family:Verdana,sans-serif;font-size:12px}h2,h3{margin:0}header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding:10px 12px;background:#232834;border-left:4px solid #c39b55}table{border-collapse:collapse;width:100%;background:#1d212b}th{position:sticky;top:0;background:#303747;color:#fff;text-align:left}th,td{border:1px solid #3e4658;padding:7px}tr:nth-child(even){background:#202631}.count{font-weight:bold;text-align:center;width:64px}.actions{white-space:nowrap;width:135px}a{color:#e0b96c;text-decoration:none;margin-right:7px}.control{display:inline-block;min-width:20px;text-align:center;padding:2px 5px;border:1px solid #69758b;background:#2b3240}.danger{color:#ff9c9c}.muted{color:#a6adbc}.toolbar{margin:12px 0}</style>")
+	if(target_ckey)
+		html += "<header><div><h2>Gwynt Management</h2><span class='muted'>Player collection</span></div><a href='?src=[REF(src)];[HrefToken()];ccg_manage=index'>Players</a></header>"
+		html += "<h3>[html_encode(target_ckey)]</h3>"
+		html += "<p class='toolbar'><a href='?src=[REF(src)];[HrefToken()];ccg_manage=clear_collection;ckey=[url_encode(target_ckey)]' class='danger'>Clear collection</a>"
+		html += "<a href='?src=[REF(src)];[HrefToken()];ccg_manage=clear_decks;ckey=[url_encode(target_ckey)]' class='danger'>Clear saved decks</a></p>"
+		var/datum/DBQuery/cards_query = SSdbcore.NewQuery("SELECT card_id, amount FROM [format_table_name("ccg_collection")] WHERE ckey = :ckey ORDER BY card_id ASC", list("ckey" = target_ckey))
+		if(!cards_query || !cards_query.Execute(async = FALSE))
+			qdel(cards_query)
+			to_chat(usr, span_warning("The card collection query failed. Check the SQL log."))
+			return
+		var/list/card_amounts = list()
+		while(cards_query.NextRow())
+			card_amounts[cards_query.item[1]] = round(text2num("[cards_query.item[2]]") || 0)
+		qdel(cards_query)
+		if(!length(GLOB.ccg_cards_by_id))
+			ccg_build_card_registry()
+		var/list/card_ids = list()
+		for(var/registered_card_id in GLOB.ccg_cards_by_id)
+			card_ids += registered_card_id
+		card_ids = sortList(card_ids)
+		html += "<table><tr><th>Card</th><th class='count'>Amount</th><th class='actions'>Actions</th></tr>"
+		for(var/card_id in card_ids)
+			var/datum/ccg_card/card = ccg_card(card_id)
+			if(!card)
+				continue
+			var/card_name = html_encode(card.name)
+			var/amount = card_amounts[card_id] || 0
+			html += "<tr><td>[card_name] <span class='muted'>([html_encode(card_id)])</span></td><td class='count'>[amount]</td>"
+			html += "<td class='actions'><a class='control' href='?src=[REF(src)];[HrefToken()];ccg_manage=change;ckey=[url_encode(target_ckey)];card_id=[url_encode(card_id)];amount=-1'>-</a>"
+			html += "<a class='control' href='?src=[REF(src)];[HrefToken()];ccg_manage=change;ckey=[url_encode(target_ckey)];card_id=[url_encode(card_id)];amount=1'>+</a></td></tr>"
+		html += "</table>"
+	else
+		var/datum/DBQuery/players_query = SSdbcore.NewQuery({"
+			SELECT ckey FROM [format_table_name("ccg_settings")]
+			UNION SELECT ckey FROM [format_table_name("ccg_collection")]
+			UNION SELECT ckey FROM [format_table_name("ccg_decks")]
+			ORDER BY ckey ASC
+		"})
+		if(!players_query || !players_query.Execute(async = FALSE))
+			qdel(players_query)
+			to_chat(usr, span_warning("The card collection database is unavailable."))
+			return
+		html += "<header><div><h2>Gwynt Management</h2><span class='muted'>Stored player collections</span></div></header><table><tr><th>Ckey</th><th class='actions'>Actions</th></tr>"
+		while(players_query.NextRow())
+			var/player_ckey = players_query.item[1]
+			html += "<tr><td><a href='?src=[REF(src)];[HrefToken()];ccg_manage=view;ckey=[url_encode(player_ckey)]'>[html_encode(player_ckey)]</a></td>"
+			html += "<td class='actions'><a class='danger' href='?src=[REF(src)];[HrefToken()];ccg_manage=clear_collection;ckey=[url_encode(player_ckey)]'>Clear collection</a></td></tr>"
+		qdel(players_query)
+		html += "</table>"
+	html += "</body></html>"
+	usr << browse(jointext(html, ""), "window=ccg_admin_management;size=800x650")
+
+/datum/admins/proc/ccg_management_topic(list/href_list)
+	if(!check_rights(R_ADMIN))
+		return
+	var/action = href_list["ccg_manage"]
+	var/target_ckey = ckey(href_list["ckey"])
+	if(action == "index")
+		ccg_management_panel()
+		return
+	if(!target_ckey)
+		return
+	if(action == "view")
+		ccg_management_panel(target_ckey)
+		return
+	if(action == "add")
+		var/added_card_id = owner.ccg_admin_choose_card("Add Gwynt Card")
+		if(added_card_id && !isnull(ccg_admin_change_card_amount(target_ckey, added_card_id, 1)))
+			log_admin("[key_name(usr)] added 1 x [added_card_id] to Gwynt collection of [target_ckey].")
+			message_admins("[key_name_admin(usr)] added 1 x [added_card_id] to Gwynt collection of [target_ckey].")
+		ccg_management_panel(target_ckey)
+		return
+	if(action == "change")
+		var/changed_card_id = href_list["card_id"]
+		var/change_amount = clamp(text2num(href_list["amount"]), -1, 1)
+		var/changed = ccg_admin_change_card_amount(target_ckey, changed_card_id, change_amount)
+		if(changed)
+			log_admin("[key_name(usr)] changed Gwynt card [changed_card_id] by [changed] for [target_ckey].")
+			message_admins("[key_name_admin(usr)] changed Gwynt card [changed_card_id] by [changed] for [target_ckey].")
+		ccg_management_panel(target_ckey)
+		return
+	if(action == "clear_collection")
+		if(alert(usr, "Delete every Gwynt card for [target_ckey]? Starter cards will be restored on their next Gwynt load.", "Clear Gwynt Collection", "Delete", "Cancel") == "Delete")
+			var/datum/preferences/collection_prefs = ccg_admin_online_preferences(target_ckey)
+			if((!GLOB.directory[target_ckey] || collection_prefs) && ccg_admin_execute_sql("DELETE FROM [format_table_name("ccg_collection")] WHERE ckey = :ckey", list("ckey" = target_ckey)))
+				if(collection_prefs)
+					collection_prefs.ccg_known_rare_cards = list()
+				log_admin("[key_name(usr)] cleared Gwynt collection for [target_ckey].")
+				message_admins("[key_name_admin(usr)] cleared Gwynt collection for [target_ckey].")
+		ccg_management_panel(target_ckey)
+		return
+	if(action == "clear_decks")
+		if(alert(usr, "Delete all saved Gwynt deck presets for [target_ckey]?", "Clear Gwynt Decks", "Delete", "Cancel") == "Delete")
+			var/datum/preferences/deck_prefs = ccg_admin_online_preferences(target_ckey)
+			var/success = (!GLOB.directory[target_ckey] || deck_prefs) && ccg_admin_execute_sql("START TRANSACTION")
+			success = success && ccg_admin_execute_sql("DELETE FROM [format_table_name("ccg_deck_cards")] WHERE ckey = :ckey", list("ckey" = target_ckey))
+			success = success && ccg_admin_execute_sql("DELETE FROM [format_table_name("ccg_decks")] WHERE ckey = :ckey", list("ckey" = target_ckey))
+			if(success)
+				ccg_admin_execute_sql("COMMIT")
+				if(deck_prefs)
+					deck_prefs.ccg_saved_decks = list()
+					deck_prefs.ccg_saved_deck_cards = list()
+				log_admin("[key_name(usr)] cleared saved Gwynt decks for [target_ckey].")
+				message_admins("[key_name_admin(usr)] cleared saved Gwynt decks for [target_ckey].")
+			else
+				ccg_admin_execute_sql("ROLLBACK")
+		ccg_management_panel(target_ckey)
+
+/client/proc/ccg_admin_target_ckey(prompt)
+	var/target_ckey = ckey(input(src, "Enter the player's ckey.", prompt) as null|text)
+	return target_ckey
+
+/client/proc/ccg_admin_choose_card(prompt)
+	if(!length(GLOB.ccg_cards_by_id))
+		ccg_build_card_registry()
+	var/list/card_choices = list()
+	for(var/card_id in GLOB.ccg_cards_by_id)
+		var/datum/ccg_card/card = ccg_card(card_id)
+		if(card)
+			card_choices["[card.name] ([card_id])"] = card_id
+	var/choice = input(src, "Choose a card.", prompt) as null|anything in sortList(card_choices)
+	return choice ? card_choices[choice] : null
+
+/client/proc/ccg_admin_show_collection()
+	set name = "Inspect Gwynt Cards"
+	set category = "Admin.Admin"
+	set desc = "Show a player's Gwynt card collection from SQL."
+	if(!check_rights(R_ADMIN))
+		return
+	var/target_ckey = ccg_admin_target_ckey("Inspect Gwynt Cards")
+	if(!target_ckey || !SSdbcore.Connect())
+		return
+	var/datum/DBQuery/query = SSdbcore.NewQuery({"
+		SELECT card_id, amount
+		FROM [format_table_name("ccg_collection")]
+		WHERE ckey = :ckey
+		ORDER BY card_id ASC
+	"}, list("ckey" = target_ckey))
+	if(!query || !query.Execute(async = FALSE))
+		qdel(query)
+		to_chat(src, span_warning("The card collection database is unavailable."))
+		return
+	var/list/lines = list("Gwynt collection for [target_ckey]:")
+	while(query.NextRow())
+		var/card_id = query.item[1]
+		var/datum/ccg_card/card = ccg_card(card_id)
+		lines += "[card ? card.name : card_id] ([card_id]): [query.item[2]]"
+	qdel(query)
+	if(lines.len == 1)
+		lines += "No cards stored."
+	src << browse("<pre>[jointext(lines, "\n")]</pre>", "window=ccg_admin_collection;size=500x600")
+	log_admin("[key_name(usr)] inspected Gwynt collection for [target_ckey].")
+
+/client/proc/ccg_admin_give_card()
+	set name = "Give Gwynt Card"
+	set category = "Admin.Admin"
+	set desc = "Add a card to a player's Gwynt collection in SQL."
+	if(!check_rights(R_ADMIN))
+		return
+	var/target_ckey = ccg_admin_target_ckey("Give Gwynt Card")
+	if(!target_ckey)
+		return
+	var/card_id = ccg_admin_choose_card("Give Gwynt Card")
+	if(!card_id)
+		return
+	var/input_amount = input(src, "How many copies?", "Give Gwynt Card", 1) as null|num
+	if(isnull(input_amount))
+		return
+	var/amount = clamp(round(input_amount), 1, 100)
+	var/datum/preferences/P = ccg_admin_online_preferences(target_ckey)
+	if(GLOB.directory[target_ckey] && !P)
+		to_chat(src, span_warning("The target's card state could not be loaded."))
+		return
+	if(!ccg_admin_execute_sql({"
+		INSERT INTO [format_table_name("ccg_collection")] (ckey, card_id, amount)
+		VALUES (:ckey, :card_id, :amount)
+		ON DUPLICATE KEY UPDATE amount = amount + :amount
+	"}, list("ckey" = target_ckey, "card_id" = card_id, "amount" = amount)))
+		to_chat(src, span_warning("The card could not be written to SQL."))
+		return
+	if(P)
+		P.ccg_known_rare_cards[card_id] = (P.ccg_known_rare_cards[card_id] || 0) + amount
+	var/datum/ccg_card/card = ccg_card(card_id)
+	to_chat(src, span_notice("Added [amount] x [card ? card.name : card_id] to [target_ckey]."))
+	log_admin("[key_name(usr)] gave [amount] x [card_id] to Gwynt collection of [target_ckey].")
+	message_admins("[key_name_admin(usr)] gave [amount] x [card_id] to Gwynt collection of [target_ckey].")
+
+/client/proc/ccg_admin_take_card()
+	set name = "Take Gwynt Card"
+	set category = "Admin.Admin"
+	set desc = "Remove copies of a card from a player's Gwynt collection in SQL."
+	if(!check_rights(R_ADMIN))
+		return
+	var/target_ckey = ccg_admin_target_ckey("Take Gwynt Card")
+	if(!target_ckey)
+		return
+	var/card_id = ccg_admin_choose_card("Take Gwynt Card")
+	if(!card_id)
+		return
+	var/input_amount = input(src, "How many copies?", "Take Gwynt Card", 1) as null|num
+	if(isnull(input_amount) || !SSdbcore.Connect())
+		return
+	var/amount = clamp(round(input_amount), 1, 100)
+	var/datum/preferences/P = ccg_admin_online_preferences(target_ckey)
+	if(GLOB.directory[target_ckey] && !P)
+		to_chat(src, span_warning("The target's card state could not be loaded."))
+		return
+	var/datum/DBQuery/load_query = SSdbcore.NewQuery("SELECT amount FROM [format_table_name("ccg_collection")] WHERE ckey = :ckey AND card_id = :card_id", list("ckey" = target_ckey, "card_id" = card_id))
+	if(!load_query || !load_query.Execute(async = FALSE) || !load_query.NextRow())
+		qdel(load_query)
+		to_chat(src, span_warning("[target_ckey] does not have that card."))
+		return
+	var/current_amount = round(text2num("[load_query.item[1]]") || 0)
+	qdel(load_query)
+	var/taken_amount = min(amount, current_amount)
+	var/remaining_amount = current_amount - taken_amount
+	var/success
+	if(remaining_amount)
+		success = ccg_admin_execute_sql("UPDATE [format_table_name("ccg_collection")] SET amount = :amount WHERE ckey = :ckey AND card_id = :card_id", list("ckey" = target_ckey, "card_id" = card_id, "amount" = remaining_amount))
+	else
+		success = ccg_admin_execute_sql("DELETE FROM [format_table_name("ccg_collection")] WHERE ckey = :ckey AND card_id = :card_id", list("ckey" = target_ckey, "card_id" = card_id))
+	if(!success)
+		to_chat(src, span_warning("The card could not be removed from SQL."))
+		return
+	if(P)
+		if(remaining_amount)
+			P.ccg_known_rare_cards[card_id] = remaining_amount
+		else
+			P.ccg_known_rare_cards -= card_id
+	var/datum/ccg_card/card = ccg_card(card_id)
+	to_chat(src, span_notice("Removed [taken_amount] x [card ? card.name : card_id] from [target_ckey]."))
+	log_admin("[key_name(usr)] took [taken_amount] x [card_id] from Gwynt collection of [target_ckey].")
+	message_admins("[key_name_admin(usr)] took [taken_amount] x [card_id] from Gwynt collection of [target_ckey].")
+
+/client/proc/ccg_admin_clear_collection()
+	set name = "Clear Gwynt Collection"
+	set category = "Admin.Admin"
+	set desc = "Delete every stored Gwynt card for a player."
+	if(!check_rights(R_ADMIN))
+		return
+	var/target_ckey = ccg_admin_target_ckey("Clear Gwynt Collection")
+	if(!target_ckey)
+		return
+	if(alert(src, "Delete every Gwynt card for [target_ckey]? Starter cards will be restored on their next Gwynt load.", "Clear Gwynt Collection", "Delete", "Cancel") != "Delete")
+		return
+	var/datum/preferences/P = ccg_admin_online_preferences(target_ckey)
+	if(GLOB.directory[target_ckey] && !P)
+		to_chat(src, span_warning("The target's card state could not be loaded."))
+		return
+	if(!ccg_admin_execute_sql("DELETE FROM [format_table_name("ccg_collection")] WHERE ckey = :ckey", list("ckey" = target_ckey)))
+		to_chat(src, span_warning("The collection could not be cleared in SQL."))
+		return
+	if(P)
+		P.ccg_known_rare_cards = list()
+	to_chat(src, span_notice("Cleared Gwynt collection for [target_ckey]."))
+	log_admin("[key_name(usr)] cleared Gwynt collection for [target_ckey].")
+	message_admins("[key_name_admin(usr)] cleared Gwynt collection for [target_ckey].")
+
+/client/proc/ccg_admin_clear_decks()
+	set name = "Clear Gwynt Decks"
+	set category = "Admin.Admin"
+	set desc = "Delete every saved Gwynt deck preset for a player."
+	if(!check_rights(R_ADMIN))
+		return
+	var/target_ckey = ccg_admin_target_ckey("Clear Gwynt Decks")
+	if(!target_ckey)
+		return
+	if(alert(src, "Delete all saved Gwynt deck presets for [target_ckey]?", "Clear Gwynt Decks", "Delete", "Cancel") != "Delete")
+		return
+	var/datum/preferences/P = ccg_admin_online_preferences(target_ckey)
+	if(GLOB.directory[target_ckey] && !P)
+		to_chat(src, span_warning("The target's card state could not be loaded."))
+		return
+	var/success = ccg_admin_execute_sql("START TRANSACTION")
+	success = success && ccg_admin_execute_sql("DELETE FROM [format_table_name("ccg_deck_cards")] WHERE ckey = :ckey", list("ckey" = target_ckey))
+	success = success && ccg_admin_execute_sql("DELETE FROM [format_table_name("ccg_decks")] WHERE ckey = :ckey", list("ckey" = target_ckey))
+	if(success)
+		success = ccg_admin_execute_sql("COMMIT")
+	else
+		ccg_admin_execute_sql("ROLLBACK")
+	if(!success)
+		to_chat(src, span_warning("The saved decks could not be cleared in SQL."))
+		return
+	if(P)
+		P.ccg_saved_decks = list()
+		P.ccg_saved_deck_cards = list()
+	to_chat(src, span_notice("Cleared saved Gwynt decks for [target_ckey]."))
+	log_admin("[key_name(usr)] cleared saved Gwynt decks for [target_ckey].")
+	message_admins("[key_name_admin(usr)] cleared saved Gwynt decks for [target_ckey].")
 
 /mob/living/verb/open_ccg_deck()
 	set name = "CCG Deck"
@@ -1141,5 +1630,8 @@
 #undef CCG_STASH_DECK_KEY
 #undef CCG_STASH_FACTION_KEY
 #undef CCG_STASH_LEADER_KEY
+#undef CCG_STARTER_INFANTRY_CARD
 #undef CCG_STARTER_ARCHER_CARD
 #undef CCG_STARTER_SIEGE_CARD
+#undef CCG_STARTER_BLACKSMITH_CARD
+#undef CCG_STARTER_SCORCH_CARD

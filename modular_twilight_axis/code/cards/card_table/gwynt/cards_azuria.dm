@@ -41,7 +41,6 @@
 	power = 4
 	rarity = CCG_RARITY_BASE
 	faction = CCG_FACTION_AZURIA
-	effect = CCG_EFFECT_MORALE
 	limited = TRUE
 	art = "ccg_cards/azuria_squire.png"
 

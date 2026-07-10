@@ -66,7 +66,8 @@
 	if(!faction)
 		faction = ccg_faction(CCG_FACTION_AZURIA)
 	set_faction(faction.id, P.ccg_saved_deck_leader)
-	set_cards(length(P.ccg_saved_deck_cards) ? P.ccg_saved_deck_cards : P.ccg_first_deck_cards(faction.id))
+	var/list/saved_cards = length(P.ccg_saved_deck_cards) ? P.ccg_saved_deck_cards : P.ccg_first_deck_cards(faction.id)
+	set_cards(P.ccg_owned_deck_cards(saved_cards))
 	owner_ckey = user.ckey
 	var/owner_name = user.real_name || user.name
 	if(owner_name)
@@ -337,6 +338,7 @@
 	w_class = WEIGHT_CLASS_TINY
 	var/card_id
 	var/pooled = FALSE
+	var/source_ckey
 
 /obj/item/ccg_card_single/proc/set_card(new_card_id)
 	card_id = new_card_id
@@ -358,6 +360,8 @@
 	var/datum/preferences/P = user?.client?.prefs
 	if(P && P.ccg_add_known_card(card_id))
 		to_chat(user, span_notice("The card is added to your known collection."))
+		if(source_ckey && source_ckey != user.ckey)
+			ccg_award_trade_progress(source_ckey, user)
 		SStgui.update_user_uis(user)
 		qdel(src)
 	else

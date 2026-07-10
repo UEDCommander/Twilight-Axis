@@ -381,6 +381,8 @@ CREATE TABLE `ccg_settings` (
   `deckbuilder_view_mode` varchar(16) NOT NULL DEFAULT 'setup',
   `soundtrack_enabled` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `presets_are_virtual` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `win_progress` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `loss_progress` tinyint(3) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`ckey`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
