@@ -1,6 +1,6 @@
 /datum/wound
 	/// Werewolf infection probability for bites on this wound
-	var/werewolf_infection_probability = 5
+	var/werewolf_infection_probability = 4
 	/// Time taken until werewolf infection comes in
 	var/werewolf_infection_time = 2 MINUTES
 	/// Actual infection timer
