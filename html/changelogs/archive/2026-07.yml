@@ -535,7 +535,7 @@
   - balance: "\u041D\u0430\u0441\u0438\u043B\u044C\u0441\u0442\u0432\u0435\u043D\u043D\
       \u043E\u0435 \u043E\u0431\u0440\u0430\u0449\u0435\u043D\u0438\u0435 \u0442\u0435\
       \u043F\u0435\u0440\u044C \u0434\u043E\u0441\u0442\u0443\u043F\u043D\u043E \u0442\
-      \uu043E\u043B\u044C\u043A\u043E \u0432\u0430\u043C\u043F\u0438\u0440-\u043B\u043E\
+      \u043E\u043B\u044C\u043A\u043E \u0432\u0430\u043C\u043F\u0438\u0440-\u043B\u043E\
       \u0440\u0434\u0443."
   - balance: "\u0414\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u044B Pallid-\u0438\
       \u0441\u0441\u0443\u0448\u0435\u043D\u0438\u0435, \u0414\u0430\u0440\u044B \u0441\
@@ -662,3 +662,40 @@
   radarseas:
   - rscdel: T5 Presence ability 'Majesty' is gone, I physically can't save this one.
       Sorry chief.
+2026-07-09:
+  7erracotta:
+  - rscadd: added new sprites for the loincloth, also added the belt shawl
+  - rscadd: added new sprites
+  - bugfix: fixed the handles of the macauhuitls
+  Ollanius:
+  - rscadd: Adds missing recipe for blacksteel fishing rods.
+  - balance: Silver and Psydonic Knuckledusters no longer spawn with blessings.
+  - balance: Fluted armor properly requires +1 Steel Ingot, now, instead of +1 Iron
+      Ingot.
+  Ryan180602:
+  - rscadd: volfhelm bascinet to paladin, ke, knightly journey knight, knight
+  SomeDeviant:
+  - rscdel: Removed error-causing trait string from drown check
+  - bugfix: Drowning runtime
+  SpartanBobby, litepurple, Castortroy:
+  - rscadd: Plate Arm Harness universal donor item for the steel bracers
+  THE GRAND DUKE OF AZURE PEAK:
+  - bugfix: heater shield silverface item will no longer dispense wooden one
+  - bugfix: griddlewiener should show up now. or is it griddleweiner. griddlewieiner.
+  WeNeedMorePhoron:
+  - rscdel: Town Crier role has undergone euthanasia after a long and agonizing 9
+      months death.
+  - rscdel: Town crier related mechanics like loudmouth channel and streetpipes has
+      been removed
+  - rscdel: Town Crier house repurposed temporarily into a generic towner house for
+      future mapping purpose
+  - rscdel: Zizo's bane sleep gas only activate if you step on it with low for / attack
+      it
+  - rscadd: Mimic no longer immune to fire damage
+  - rscdel: Remove lance special
+  borneblood:
+  - balance: Removes the mutual Immobilize from Bite.
+  mumblemancer:
+  - bugfix: you can no longer hide under bedrolls or eoran flowerbeds
+  radarseas:
+  - rscdel: DEBUG - Zombification (whatever goes here) tochat
