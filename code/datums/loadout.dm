@@ -105,6 +105,16 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	category = "Разное"
 	path = /obj/item/toy/cards/deck/tarot
 
+/datum/loadout_item/bibble
+	name = "The Verses and Acts of the Ten"
+	category = "Разное"
+	path = /obj/item/book/rogue/bibble
+
+/datum/loadout_item/bibble_psy
+	name = "Psy Bible"
+	category = "Разное"
+	path = /obj/item/book/rogue/bibble/psy
+
 /datum/loadout_item/custom_book
 	name = "Custom Book"
 	category = "Разное"
