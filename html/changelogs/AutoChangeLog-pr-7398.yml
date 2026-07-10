@@ -1,4 +1,4 @@
 author: "borneblood"
 delete-after: True
 changes:
-  - rscadd: "Mimics jumpscare you now."
+  - refactor: "Reworked Dual Wielder virtue."

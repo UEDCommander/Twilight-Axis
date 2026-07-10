@@ -699,3 +699,41 @@
   - bugfix: you can no longer hide under bedrolls or eoran flowerbeds
   radarseas:
   - rscdel: DEBUG - Zombification (whatever goes here) tochat
+2026-07-10:
+  Dorodomki:
+  - rscadd: Added new fur boots to loadout
+  - bugfix: 'fixed a typo on the flower crown for loadout
+
+      :cl:'
+  Kell-E:
+  - balance: Siegebows are now louder and deal significant damage to any terrain they
+      collide with.
+  - bugfix: Siegebows no longer delete (any) turf on contact.
+  Lamasmaster:
+  - balance: Noc Miracles Overhaul
+  OrbisAnima:
+  - bugfix: Fixes Briar curse to deal true brute damate to the user instead of the
+      target, on top of adding 10 extra force to regular and wielded. Reduced the
+      true damage dealt to 5 from 10.
+  Ryan180602:
+  - rscadd: let people vote only when readied up
+  - balance: rebalanced gamemodes.
+  TankTheBirb:
+  - bugfix: Forlorn Hope goedendag loadout now boosts correct polearm skill instead
+      of staves
+  WeNeedMorePhoron:
+  - rscadd: Fixed various exploits and such that leads to overly easy crafting money
+      making
+  bearrrrrrrr:
+  - rscadd: vheslyn ultrasun event
+  borneblood:
+  - rscadd: Mimics jumpscare you now.
+  - rscadd: Underdweller Origin can choose Sunlight Sensitivity, similar to Naledi
+      Complex.
+  mumblemancer:
+  - rscadd: loudmouth gear now available thru various means
+  string-thing:
+  - rscadd: added CON buff of 1 to fortifying vapors
+  yyzsong:
+  - spellcheck: Removes extraneous right square bracket in Martyr weapon touch interactions
+  - code_imp: Corrects bed proc typepath typo

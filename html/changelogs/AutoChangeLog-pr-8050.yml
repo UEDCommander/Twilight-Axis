@@ -1,0 +1,4 @@
+author: "borneblood"
+delete-after: True
+changes:
+  - bugfix: "fixed prosthetics having the wrong speed malus value, and weirdness with Bronze Limbs virtue"

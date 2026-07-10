@@ -315,3 +315,8 @@
 	name = "Helmet, Froggemund"
 	cost = 140
 	contains = list(/obj/item/clothing/head/roguetown/helmet/heavy/frogmouth)
+
+/datum/supply_pack/rogue/armor_steel/refitkit_slimarmor_steel
+	name = "Refitter's Kit, Slim Plated Armor"
+	cost = 50 // 1 Ingots
+	contains = list(/datum/anvil_recipe/armor/steel/refitkit_slimmedsteel)
