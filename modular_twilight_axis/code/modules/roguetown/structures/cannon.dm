@@ -1,3 +1,5 @@
+#define CANNON_POWDER_COST 10
+
 /datum/anvil_recipe/weapons/steel/cannon
 	name = "Cannon"
 	additional_items = list(/obj/item/ingot/steel, /obj/item/ingot/steel, /obj/item/ingot/steel, /obj/item/ingot/steel, /obj/item/grown/log/tree/small, /obj/item/grown/log/tree/small,)
@@ -85,8 +87,8 @@
 /obj/projectile/bullet/cannonball_straight
 	name = "cannonball"
 	desc = "Свинцовое ядро"
-	icon = 'modular_twilight_axis/icons/obj/structures/siege/cannon/cannon.dmi'
-	icon_state = "cannonball"
+	icon = 'modular_twilight_axis/icons/obj/structures/siege/cannon/cannonball.dmi'
+	icon_state = "ball"
 	damage = 110
 	damage_type = BRUTE
 	flag = "bullet"
@@ -95,22 +97,16 @@
 /obj/projectile/bullet/cannonball_straight/on_hit(atom/target, blocked = 0)
 	. = ..()
 	var/turf/T = get_turf(target)
+	if(!T)
+		qdel(src)
+		return
+
 	if(isliving(target))
 		var/mob/living/L = target
 		L.visible_message(span_danger("Прямое попадание пушечного ядра разрывает [L] на куски!"))
 		L.gib()
-		explosion(T, devastation_range = 2, heavy_impact_range = 3, light_impact_range = 8, flame_range = 0, smoke = TRUE, soundin = pick('sound/misc/explode/bottlebomb (1).ogg','sound/misc/explode/bottlebomb (2).ogg'))
-		
-	if(T)
-		for(var/mob/living/M in range(3, T))
-			if(!M.mind || istype(M, /mob/living/simple_animal))
-				M.adjustBruteLoss(300)
-		for(var/mob/living/M in range(8, T))
-			if(!M.mind || istype(M, /mob/living/simple_animal))
-				M.adjustBruteLoss(200)
 
-		explosion(T, devastation_range = 2, heavy_impact_range = 3, light_impact_range = 8, flame_range = 0, smoke = TRUE, soundin = pick('sound/misc/explode/bottlebomb (1).ogg','sound/misc/explode/bottlebomb (2).ogg'))
-	
+	explosion(T, devastation_range = 2, heavy_impact_range = 3, light_impact_range = 8, flame_range = 0, smoke = TRUE, soundin = pick('sound/misc/explode/bottlebomb (1).ogg','sound/misc/explode/bottlebomb (2).ogg'))
 	qdel(src)
 
 /obj/projectile/bullet/grapeshot_pellet
@@ -159,28 +155,25 @@
 	dir = NORTH
 	update_icon()
 
+/obj/structure/cannon/Destroy()
+	if(bullet_loaded)
+		qdel(bullet_loaded)
+		bullet_loaded = null
+	if(inserted_fuse)
+		qdel(inserted_fuse)
+		inserted_fuse = null
+	return ..()
+
 /obj/structure/cannon/update_icon()
 	. = ..()
 	cut_overlays()
 
-	if(inserted_fuse)
-		var/mutable_appearance/fuse_overlay = mutable_appearance(inserted_fuse.icon, inserted_fuse.icon_state)
-		
-		switch(dir)
-			if(NORTH)
-				fuse_overlay.pixel_x = 14
-				fuse_overlay.pixel_y = 20
-			if(SOUTH)
-				fuse_overlay.pixel_x = -14
-				fuse_overlay.pixel_y = -10
-			if(EAST)
-				fuse_overlay.pixel_x = -10
-				fuse_overlay.pixel_y = 14
-			if(WEST)
-				fuse_overlay.pixel_x = 10
-				fuse_overlay.pixel_y = 14
-				
-		add_overlay(fuse_overlay)
+	if(!inserted_fuse)
+		icon_state = "cannon"
+	else if(fuse_burning)
+		icon_state = "cannon_lit"
+	else
+		icon_state = "cannon_fib"
 
 /obj/structure/cannon/examine(mob/user)
 	. = ..()
@@ -230,13 +223,18 @@
 		if(powder_loaded)
 			to_chat(user, span_warning("В пушку уже засыпан порох!"))
 			return
-		if(P.charges < 10)
+		if(P.charges < CANNON_POWDER_COST)
 			to_chat(user, span_warning("В пороховнице слишком мало пороха для такой пушки! Нужно хотя бы 10 зарядов."))
 			return
 		user.visible_message(span_notice("[user] начинает засыпать порох в дуло [src.name]..."))
 		playsound(src, 'modular_twilight_axis/awful_artillery/sound/powder.ogg', 100, TRUE)
 		if(do_after(user, 3 SECONDS, src))
-			P.charges -= 10
+			if(QDELETED(P) || QDELETED(src))
+				return
+			if(P.charges < CANNON_POWDER_COST)
+				to_chat(user, span_warning("В пороховнице уже недостаточно пороха!"))
+				return
+			P.charges -= CANNON_POWDER_COST
 			powder_loaded = TRUE
 			to_chat(user, span_notice("Вы засыпали порох в ствол."))
 			if(P.charges <= 0)
@@ -376,7 +374,8 @@
 			S.def_zone = pick(BODY_ZONE_HEAD, BODY_ZONE_CHEST, BODY_ZONE_R_ARM, BODY_ZONE_L_ARM, BODY_ZONE_R_LEG, BODY_ZONE_L_LEG)
 			var/shoot_dir = pick(dirs_to_fire)
 			var/turf/pellet_target = get_ranged_target_turf(start_turf, shoot_dir, 8)
-			pellet_target = locate(pellet_target.x + rand(-1, 1), pellet_target.y + rand(-1, 1), pellet_target.z)
+			if(pellet_target)
+				pellet_target = locate(pellet_target.x + rand(-1, 1), pellet_target.y + rand(-1, 1), pellet_target.z)
 			S.preparePixelProjectile(pellet_target, src, null, rand(-35, 35))
 			S.fire()
 	else
@@ -400,5 +399,6 @@
 
 	if(barrel_integrity <= 0)
 		src.visible_message(span_danger("[src] разрывается на части из-за критического износа ствола!"))
-		explosion(src, 1, 2, 4, 0, TRUE, FALSE, 2)
+		explosion(get_turf(src), 1, 2, 4, 0, TRUE, FALSE, 2)
 		qdel(src)
+#undef CANNON_POWDER_COST
