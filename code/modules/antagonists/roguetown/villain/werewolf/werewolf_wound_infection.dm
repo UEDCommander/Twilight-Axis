@@ -10,12 +10,12 @@
 	if(QDELETED(src) || QDELETED(owner) || QDELETED(bodypart_owner))
 		return FALSE
 	if(werewolf_infection_timer || !ishuman(owner) || !prob(werewolf_infection_probability))
-		return
+		return FALSE
 	var/mob/living/carbon/human/human_owner = owner
 	if(!human_owner.can_werewolf())
-		return
+		return FALSE
 	if(human_owner.stat >= DEAD) //forget it
-		return
+		return FALSE
 	to_chat(human_owner, span_danger("I feel horrible... REALLY horrible..."))
 	human_owner.mob_timers["puke"] = world.time
 	human_owner.vomit(1, blood = TRUE, stun = FALSE)
