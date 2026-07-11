@@ -1,9 +1,0 @@
-author: "Ollanius"
-delete-after: True
-changes:
-  - bugfix: "Orles can now be properly dyed in two altering variants."
-  - rscadd: "Reshades the dyeable orle to match the greyscaled tabard."
-  - rscadd: "Headbands and undervestments can now be adjusted via RMB."
-  - rscadd: "Slimmed-down versions of steel plate armor, available via Triumph elixirs or a craftable tool."
-  - bugfix: "Fixes a potential exploit that could allow Enchanting Kit-forked tools to upgrade lesser forms of armor."
-  - rscadd: "Gilded versions of steel plat earmor, available via the 'Decorated' smithing tier. Entirely cosmetic."
