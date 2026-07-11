@@ -1,6 +1,6 @@
 /datum/action/cooldown/spell/selfbuff
 	name = "Divine Arcanum"
-	desc = "Improves the reflexes and wrap yourself and up to 5 nearby humens with soothing arcyne light"
+	desc = "Improves the reflexes and wrap yourself and up to 3 nearby fellowship party members with soothing arcyne light(you need to be part of a fellowship to receive the effect of this spell, even alone)"
 	button_icon = 'icons/mob/actions/mage_augmentation.dmi'
 	button_icon_state = "guidance"
 	sound = 'sound/magic/undivided_perserverance.ogg'
@@ -32,33 +32,32 @@
 		return
 	
 	for(var/mob/living/carbon/target in view(cast_range, get_turf(owner)))
-		if(buff >= 6) // self and 5 other persons, 6 total affected target(or a full fellowship)
-			buff = 0 // after reaching the expected limit re-define the value to origine value
-			break // a return true or false doesn't call out of the spell incantation, animation and sound
-		if(H.mind) // will target any entities with a player mind(H.mind) attached to them with the effects specified written under
-			H.apply_status_effect(/datum/status_effect/buff/lesser_guidance)
-			H.apply_status_effect(/datum/status_effect/buff/healingaura)
+		if(buff >= 4)
+			buff = 0
+			break
+		if(shares_fellowship(H,target)) //shares the same fellowship, also target self
+			target.apply_status_effect(/datum/status_effect/buff/lesser_guidance)
+			target.apply_status_effect(/datum/status_effect/buff/healingaura)
 			buff++
 	return TRUE
 
 /atom/movable/screen/alert/status_effect/buff/lesser_guidance
 	name = "Awakening"
-	desc = "Arcyne energy quickens the Mynd. (+12% chance to bypass parry / dodge, +12% chance to parry / dodge)"
+	desc = "Arcyne energy quickens the Mynd. (+2 Perception)"
 	icon_state = "buff"
 
 /datum/status_effect/buff/lesser_guidance
 	id = "lesser_guidance"
 	alert_type = /atom/movable/screen/alert/status_effect/buff/lesser_guidance
+	effectedstats = list(STATKEY_PER = 2)
 	duration = 60 SECONDS
 
 /datum/status_effect/buff/lesser_guidance/on_apply()
 	. = ..()
-	ADD_TRAIT(owner, TRAIT_LESSER_GUIDANCE, MAGIC_TRAIT)
 	to_chat(owner, span_warning("Blessed Arcynes guides me true!"))
 
 /datum/status_effect/buff/lesser_guidance/on_remove()
 	. = ..()
-	REMOVE_TRAIT(owner, TRAIT_LESSER_GUIDANCE, MAGIC_TRAIT)
 	to_chat(owner, span_warning("Blessed Arcynes seeps out of my control!"))
 
 /atom/movable/screen/alert/status_effect/buff/healingaura

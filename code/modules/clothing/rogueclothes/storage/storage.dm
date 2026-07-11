@@ -59,6 +59,13 @@
 	icon_state = "belt_double"
 	item_state = "belt_double"
 
+
+/obj/item/storage/belt/rogue/leather/beltshawl
+	name = "belt shawl"
+	desc = "A fancy shawl worn around the waist."
+	icon_state = "beltshawl"
+	item_state = "beltshawl"
+
 /obj/item/storage/belt/rogue/leather/plaquesilver
 	name = "plaque belt"
 	desc = "An exquisite belt, decorated with studdings of silver."
@@ -258,6 +265,11 @@
 	icon_state = "satchelshort"
 	item_state = "satchelshort"
 	slot_flags = ITEM_SLOT_BACK|ITEM_SLOT_HIP //Implement a check in the future that prevents more than one being worn at once.
+
+/obj/item/storage/backpack/rogue/satchel/short/black
+	name = "black short satchel"
+	icon_state = "bsatchelshort"
+	item_state = "bsatchelshort"
 
 /obj/item/storage/backpack/rogue/satchel/beltpack
 	name = "beltpack" //Satchel that fits on the cloak or belt slot. Should be exceptionally rare for on-spawn loadouts, unless a flag's added to make it incompatable with regular satchels.
