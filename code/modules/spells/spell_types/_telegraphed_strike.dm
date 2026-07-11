@@ -23,11 +23,13 @@
 	var/structure_damage = 0
 	var/swipe_state = null
 	var/vuln_on_hit = 0
+	var/immobilize_on_hit = 0
 	var/telegraph_type = /obj/effect/temp_visual/trap
 	var/requires_weapon = FALSE
 	var/weapon_missing_message = "I need a weapon to strike with!"
 	var/sweep_hit_count = 0
 	var/list/struck_obstacles
+	var/list/struck_mobs
 
 /datum/action/cooldown/spell/telegraphed_strike/cast(atom/cast_on)
 	. = ..()
@@ -125,6 +127,7 @@
 	var/deflected = FALSE
 	sweep_hit_count = 0
 	struck_obstacles = list()
+	struck_mobs = list()
 	for(var/b in 1 to length(bands))
 		if(QDELETED(H) || H.stat != CONSCIOUS)
 			break
@@ -167,6 +170,9 @@
 	for(var/mob/living/L in T.contents)
 		if(L == H)
 			continue
+		if(L in struck_mobs)
+			continue
+		struck_mobs += L
 		if(L.anti_magic_check())
 			on_antimagic_block(L)
 			continue
@@ -185,6 +191,8 @@
 			L.adjustBruteLoss(actual_damage)
 		if(vuln_on_hit)
 			L.apply_status_effect(/datum/status_effect/debuff/vulnerable, vuln_on_hit)
+		if(immobilize_on_hit)
+			L.apply_status_effect(STATUS_EFFECT_IMMOBILIZED, immobilize_on_hit)
 		new /obj/effect/temp_visual/spell_impact(get_turf(L), spell_color, spell_impact_intensity)
 		on_hit_target(H, L, facing)
 	if(hit_any && detonate_sound)

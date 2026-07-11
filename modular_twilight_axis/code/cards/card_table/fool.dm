@@ -85,12 +85,12 @@
 	fool_action_target_index = target ? player_index(target) : 0
 
 /datum/card_table_session/proc/fool_player_passed(datum/card_table_player/player)
-	if(!player?.ckey || !fool_passed_players)
+	if(!player || !player.ckey || !fool_passed_players)
 		return FALSE
 	return !!fool_passed_players[player.ckey]
 
 /datum/card_table_session/proc/fool_set_player_passed(datum/card_table_player/player)
-	if(!player?.ckey)
+	if(!player || !player.ckey)
 		return
 	if(!fool_passed_players)
 		fool_passed_players = list()
@@ -216,7 +216,7 @@
 	for(var/guard = 1, guard <= 20, guard++)
 		var/datum/card_table_player/attacker = fool_current_attacker()
 		var/datum/card_table_player/defender = fool_current_defender()
-		if(attacker?.is_spirit)
+		if(attacker && attacker.is_spirit)
 			if(table_attack && !table_defense)
 				return
 			if(table_attack && table_defense)
@@ -243,7 +243,7 @@
 			message = "[attacker.name] ходит [card_table_card_label(attack_card)]."
 			fool_mark_action("attack", attacker, defender)
 			return
-		if(defender?.is_spirit && table_attack && !table_defense)
+		if(defender && defender.is_spirit && table_attack && !table_defense)
 			var/defense_index = fool_find_defense_card_index(defender)
 			if(defense_index)
 				var/list/defense_card = remove_hand_card(defender, defense_index)

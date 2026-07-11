@@ -140,15 +140,15 @@
 	var/list/ranks = list()
 	for(var/list/card in hand)
 		var/rank = "[card["rank_value"]]"
-		counts[rank] = text2num("[counts[rank]]") + 1
+		counts[rank]++
 		ranks += card_table_card_rank_value(card)
 	var/list/groups = list()
 	for(var/rank_key in counts)
-		groups += text2num("[counts[rank_key]]")
+		groups += counts[rank_key]
 	groups = sortList(groups)
 	var/high = 0
 	for(var/value in ranks)
-		high = max(high, text2num("[value]"))
+		high = max(high, value)
 	var/category = 1
 	if(4 in groups)
 		category = 7
@@ -159,7 +159,7 @@
 	else
 		var/pairs = 0
 		for(var/group_count in groups)
-			if(text2num("[group_count]") == 2)
+			if(group_count == 2)
 				pairs++
 		if(pairs >= 2)
 			category = 3
