@@ -25,13 +25,64 @@
 			continue
 		if(!P.ready)
 			return TRUE
-	poker_finish()
+	poker_after_betting_round()
 	return TRUE
 
 /datum/card_table_session/proc/poker_player_in_hand(datum/card_table_player/player)
 	return player_is_active(player) && !player.poker_folded
 
-/datum/card_table_session/proc/poker_current_player()
+/datum/card_table_session/proc/poker_uses_community_cards()
+	return poker_variant == CARD_TABLE_POKER_TEXAS || poker_variant == CARD_TABLE_POKER_OMAHA || poker_variant == CARD_TABLE_POKER_STUD
+
+/datum/card_table_session/proc/poker_active_hands_count()
+	var/count = 0
+	for(var/datum/card_table_player/player in players)
+		if(poker_player_in_hand(player))
+			count++
+	return count
+
+/datum/card_table_session/proc/poker_next_betting_index(start_index)
+	if(!players.len)
+		return 0
+	for(var/offset = 0, offset < players.len, offset++)
+		var/check_index = start_index + offset
+		while(check_index > players.len)
+			check_index -= players.len
+		var/datum/card_table_player/player = players[check_index]
+		if(poker_player_in_hand(player) && !player.ready && !player.poker_all_in)
+			return check_index
+	return 0
+
+/datum/card_table_session/proc/poker_reset_betting_round()
+	poker_current_bet = 10
+	for(var/datum/card_table_player/player in players)
+		if(poker_player_in_hand(player) && !player.poker_all_in)
+			player.ready = FALSE
+			player.poker_bet = 0
+		else if(poker_player_in_hand(player))
+			player.ready = TRUE
+	poker_turn_index = poker_next_betting_index(dealer_index + 1)
+	poker_betting_round = community_cards.len
+	return poker_turn_index
+
+/datum/card_table_session/proc/poker_after_betting_round()
+	if(poker_active_hands_count() <= 1)
+		poker_finish()
+		return
+	if(!poker_uses_community_cards())
+		poker_finish()
+		return
+	while(community_cards.len < 5)
+		var/list/new_card = draw_one()
+		if(!new_card)
+			break
+		community_cards += list(new_card)
+		if(poker_reset_betting_round())
+			message = "Открыта общая карта [community_cards.len]/5. Новый круг ставок."
+			return
+	poker_finish()
+
+/datum/card_table_session/proc/poker_current_player() as /datum/card_table_player
 	if(poker_turn_index < 1 || poker_turn_index > players.len)
 		return null
 	var/datum/card_table_player/player = players[poker_turn_index]
@@ -40,11 +91,7 @@
 	return player
 
 /datum/card_table_session/proc/poker_next_turn()
-	var/active_count = 0
-	for(var/datum/card_table_player/player in players)
-		if(poker_player_in_hand(player))
-			active_count++
-	if(active_count <= 1)
+	if(poker_active_hands_count() <= 1)
 		poker_finish()
 		return
 	for(var/offset = 1, offset <= players.len, offset++)
@@ -55,7 +102,7 @@
 		if(poker_player_in_hand(next_player) && !next_player.ready && !next_player.poker_all_in)
 			poker_turn_index = check_index
 			return
-	poker_finish()
+	poker_after_betting_round()
 
 /datum/card_table_session/proc/poker_check(mob/user)
 	var/datum/card_table_player/player = player_for_user(user)
@@ -130,7 +177,7 @@
 			continue
 		if(!P.ready)
 			return TRUE
-	poker_finish()
+	poker_after_betting_round()
 	return TRUE
 
 /datum/card_table_session/proc/poker_score(list/hand)
@@ -173,7 +220,7 @@
 	var/list/scored_hand = list()
 	for(var/list/card in player.hand)
 		scored_hand += list(card)
-	if(poker_variant == CARD_TABLE_POKER_TEXAS || poker_variant == CARD_TABLE_POKER_OMAHA)
+	if(poker_uses_community_cards())
 		for(var/list/table_card in community_cards)
 			scored_hand += list(table_card)
 	return poker_score(scored_hand)

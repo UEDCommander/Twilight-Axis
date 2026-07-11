@@ -42,6 +42,14 @@
 	stage = CARD_TABLE_STAGE_PLAYING
 	current_index = 1
 	defender_index = min(2, players.len)
+	blackjack_action_seq = 0
+	blackjack_action_player_index = 0
+	blackjack_action_bust = FALSE
+	fool_passed_players = list()
+	fool_action_seq = 0
+	fool_action_kind = null
+	fool_action_player_index = 0
+	fool_action_target_index = 0
 	switch(game_type)
 		if(CARD_TABLE_GAME_BLACKJACK)
 			for(var/datum/card_table_player/bj_player in players)
@@ -58,14 +66,10 @@
 						deal_to(poker_player, 4)
 					else
 						deal_to(poker_player, 5)
-			if(poker_variant == CARD_TABLE_POKER_TEXAS || poker_variant == CARD_TABLE_POKER_OMAHA)
-				for(var/i = 1, i <= 5, i++)
-					community_cards += list(draw_one())
-			poker_turn_index = dealer_index + 1
-			if(poker_turn_index > players.len)
-				poker_turn_index = 1
-			poker_current_bet = 10
+			if(poker_uses_community_cards())
+				community_cards += list(draw_one())
 			poker_pot = 0
+			poker_reset_betting_round()
 			for(var/datum/card_table_player/poker_reveal_player in players)
 				xylix_try_reveal_for_turn_holder(poker_reveal_player)
 			message = "Покер начался. Вариант: [poker_variant_label()]. [dealer_rotation_label()]."

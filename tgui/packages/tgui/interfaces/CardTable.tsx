@@ -1,4 +1,4 @@
-import { type CSSProperties, useEffect, useState } from 'react';
+import { type CSSProperties, useEffect, useRef, useState } from 'react';
 import { Button, Section, Stack } from 'tgui-core/components';
 
 import { useBackend } from '../backend';
@@ -94,6 +94,14 @@ type Data = {
   poker_turn?: string | null;
   poker_current_bet?: number;
   poker_pot?: number;
+  poker_betting_round?: number;
+  blackjack_action_seq?: number;
+  blackjack_action_player_index?: number;
+  blackjack_action_bust?: boolean;
+  fool_action_seq?: number;
+  fool_action_kind?: string | null;
+  fool_action_player_index?: number;
+  fool_action_target_index?: number;
   my_value?: number | null;
   solitaire_tableau?: { index: number; cards: Card[] }[];
   solitaire_stock_count?: number;
@@ -240,6 +248,24 @@ const seatPositions: CSSProperties[] = [
   { right: '18px', top: '28px', width: '112px' },
 ];
 
+const seatFlightPoints = [
+  { x: 50, y: 86 },
+  { x: 11, y: 18 },
+  { x: 25, y: 18 },
+  { x: 39, y: 18 },
+  { x: 68, y: 18 },
+  { x: 86, y: 18 },
+];
+
+type CardFlight = {
+  id: number;
+  fromX: number;
+  fromY: number;
+  toX: number;
+  toY: number;
+  label: string;
+};
+
 const solitaireBoardStyle: CSSProperties = {
   position: 'absolute',
   inset: '18px',
@@ -306,6 +332,23 @@ const rankValue = (rank: string) => {
     return 11;
   }
   return Number(rank) || 0;
+};
+
+const suitValue = (suit: string) => {
+  return ['S', 'H', 'D', 'C'].indexOf(suit);
+};
+
+const sortCardsForHand = (cards: Card[]) => {
+  return [...cards].sort((left, right) => {
+    const leftRankSuit = getRankSuit(left.label, left);
+    const rightRankSuit = getRankSuit(right.label, right);
+    const suitDelta =
+      suitValue(leftRankSuit.suit) - suitValue(rightRankSuit.suit);
+    if (suitDelta) {
+      return suitDelta;
+    }
+    return rankValue(leftRankSuit.rank) - rankValue(rightRankSuit.rank);
+  });
 };
 
 const suitColor = (suit: string) => {
@@ -389,8 +432,10 @@ const CardFace = (props: {
   selected?: boolean;
   highlightColor?: string;
   caption?: string | number | null;
+  hoverLift?: boolean;
   onClick?: () => void;
 }) => {
+  const [hovered, setHovered] = useState(false);
   const card = props.card;
   const label = props.label || card?.label || '';
   const hidden = card?.hidden || label === '??' || !label;
@@ -401,6 +446,8 @@ const CardFace = (props: {
 
   return (
     <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       onClick={(event) => {
         if (!props.onClick) {
           return;
@@ -424,8 +471,16 @@ const CardFace = (props: {
         cursor: props.onClick ? 'pointer' : 'default',
         outline: props.selected ? '2px solid #f4cf5c' : 'none',
         outlineOffset: '2px',
+        transform:
+          props.hoverLift && hovered
+            ? 'scale(1.12) translateY(-6px)'
+            : 'scale(1)',
+        transformOrigin: 'center center',
+        transition:
+          'transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease',
+        zIndex: props.hoverLift && hovered ? 20 : undefined,
         boxShadow: highlightColor
-          ? `0 0 0 2px ${highlightColor}, 0 2px 4px rgba(0, 0, 0, 0.35)`
+          ? `0 0 0 2px ${highlightColor}, 0 0 12px ${highlightColor}, 0 2px 4px rgba(0, 0, 0, 0.35)`
           : cardShellStyle.boxShadow,
       }}
     >
@@ -596,6 +651,7 @@ const Seat = (props: {
   const hasVisibleHand = !!player?.hand?.some((card) => !card.hidden);
   const showCards = !!player?.hand?.length && (isMe || hasVisibleHand);
   const showBlackjackValues = gameType === 'blackjack' && showCards;
+  const displayedHand = player?.hand ? sortCardsForHand(player.hand) : [];
 
   return (
     <div
@@ -624,20 +680,24 @@ const Seat = (props: {
             ...rowStyle,
             marginTop: '6px',
             justifyContent: isMe ? 'center' : 'flex-start',
-            maxHeight: isMe ? '112px' : undefined,
-            overflowY: isMe ? 'auto' : undefined,
+            flexWrap: isMe ? 'nowrap' : 'wrap',
+            minHeight: isMe ? '92px' : undefined,
+            maxWidth: isMe ? '100%' : undefined,
+            overflowX: isMe ? 'auto' : undefined,
+            overflowY: isMe ? 'visible' : undefined,
             alignContent: 'flex-start',
-            paddingRight: isMe ? '4px' : undefined,
+            padding: isMe ? '8px 4px 12px' : undefined,
           }}
         >
           {player.hand.length && isMe && onCardClick ? (
-            player.hand.map((card, cardIndex) => (
+            displayedHand.map((card, cardIndex) => (
               <CardFace
                 key={`${card.label}-${cardIndex}`}
                 card={card}
                 small
                 selected={selectedCardIndex === card.index}
                 highlightColor={getCardHighlight?.(card)}
+                hoverLift
                 caption={
                   showBlackjackValues
                     ? blackjackCardValue(card, blackjackVariant)
@@ -647,7 +707,7 @@ const Seat = (props: {
               />
             ))
           ) : showCards ? (
-            player.hand.map((card, cardIndex) => (
+            displayedHand.map((card, cardIndex) => (
               <TinyCardFace
                 key={`${card.label}-${cardIndex}`}
                 card={card}
@@ -925,6 +985,10 @@ export const CardTable = () => {
     null,
   );
   const [pokerBetAmount, setPokerBetAmount] = useState(10);
+  const lastBlackjackActionSeq = useRef(0);
+  const lastFoolActionSeq = useRef(0);
+  const [cardFlight, setCardFlight] = useState<CardFlight | null>(null);
+  const [tableShaking, setTableShaking] = useState(false);
   const [selectedSolitaireCard, setSelectedSolitaireCard] =
     useState<SolitaireSelection | null>(null);
   const {
@@ -961,6 +1025,14 @@ export const CardTable = () => {
     poker_turn,
     poker_current_bet = 10,
     poker_pot = 0,
+    poker_betting_round = 0,
+    blackjack_action_seq = 0,
+    blackjack_action_player_index = 0,
+    blackjack_action_bust = false,
+    fool_action_seq = 0,
+    fool_action_kind,
+    fool_action_player_index = 0,
+    fool_action_target_index = 0,
     my_value,
     solitaire_tableau = [],
     solitaire_stock_count = 0,
@@ -1017,6 +1089,88 @@ export const CardTable = () => {
       };
     },
   );
+  const pointForPlayerIndex = (playerIndex: number) => {
+    const player = players[playerIndex - 1];
+    const screenEntry = screenSeatEntries.find(
+      (entry) => entry.player?.ckey === player?.ckey,
+    );
+    return (
+      seatFlightPoints[screenEntry?.positionIndex || 0] || seatFlightPoints[0]
+    );
+  };
+  const startCardFlight = (
+    from: { x: number; y: number },
+    to: { x: number; y: number },
+    label: string,
+  ) => {
+    const id = Date.now();
+    setCardFlight({
+      id,
+      fromX: from.x,
+      fromY: from.y,
+      toX: to.x,
+      toY: to.y,
+      label,
+    });
+    window.setTimeout(() => {
+      setCardFlight((current) => (current?.id === id ? null : current));
+    }, 520);
+  };
+  const shakeTable = () => {
+    setTableShaking(true);
+    window.setTimeout(() => setTableShaking(false), 380);
+  };
+  useEffect(() => {
+    if (
+      blackjack_action_seq <= lastBlackjackActionSeq.current ||
+      !blackjack_action_player_index
+    ) {
+      return;
+    }
+    lastBlackjackActionSeq.current = blackjack_action_seq;
+    startCardFlight(
+      { x: 70, y: 28 },
+      pointForPlayerIndex(blackjack_action_player_index),
+      '??',
+    );
+    if (blackjack_action_bust) {
+      shakeTable();
+    }
+  }, [
+    blackjack_action_seq,
+    blackjack_action_player_index,
+    blackjack_action_bust,
+  ]);
+  useEffect(() => {
+    if (
+      fool_action_seq <= lastFoolActionSeq.current ||
+      !fool_action_player_index
+    ) {
+      return;
+    }
+    lastFoolActionSeq.current = fool_action_seq;
+    const from = pointForPlayerIndex(fool_action_player_index);
+    const to = fool_action_target_index
+      ? pointForPlayerIndex(fool_action_target_index)
+      : { x: 50, y: 45 };
+    startCardFlight(
+      from,
+      to,
+      fool_action_kind === 'defend'
+        ? table_defense || '??'
+        : table_attack || '??',
+    );
+    if (fool_action_kind === 'defend') {
+      shakeTable();
+    }
+  }, [
+    fool_action_seq,
+    fool_action_kind,
+    fool_action_player_index,
+    fool_action_target_index,
+    table_attack,
+    table_defense,
+  ]);
   const canUseDealerRotation =
     game_type === 'blackjack' || game_type === 'poker';
   const canTransfer =
@@ -1251,8 +1405,62 @@ export const CardTable = () => {
   return (
     <Window width={1020} height={840} title="Карточный стол">
       <Window.Content scrollable>
+        <style>
+          {`
+            @keyframes card-table-flight {
+              0% {
+                left: calc(var(--from-x) * 1%);
+                top: calc(var(--from-y) * 1%);
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.78) rotate(-7deg);
+              }
+              12% {
+                opacity: 1;
+              }
+              100% {
+                left: calc(var(--to-x) * 1%);
+                top: calc(var(--to-y) * 1%);
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(1.03) rotate(7deg);
+              }
+            }
+            @keyframes card-table-shake {
+              0%, 100% { transform: translate(0, 0); }
+              20% { transform: translate(-2px, 1px); }
+              40% { transform: translate(2px, -1px); }
+              60% { transform: translate(-1px, -1px); }
+              80% { transform: translate(1px, 1px); }
+            }
+          `}
+        </style>
         <div style={tableLayoutStyle}>
-          <div style={tableStyle}>
+          <div
+            style={{
+              ...tableStyle,
+              animation: tableShaking
+                ? 'card-table-shake 360ms ease-in-out'
+                : undefined,
+            }}
+          >
+            {cardFlight && (
+              <div
+                key={cardFlight.id}
+                style={
+                  {
+                    position: 'absolute',
+                    '--from-x': cardFlight.fromX,
+                    '--from-y': cardFlight.fromY,
+                    '--to-x': cardFlight.toX,
+                    '--to-y': cardFlight.toY,
+                    zIndex: 50,
+                    pointerEvents: 'none',
+                    animation: 'card-table-flight 520ms ease-out forwards',
+                  } as CSSProperties
+                }
+              >
+                <CardFace label={cardFlight.label} small />
+              </div>
+            )}
             {game_type === 'solitaire' ? (
               <SolitaireBoard
                 gameLabel={game_label}
@@ -1400,24 +1608,27 @@ export const CardTable = () => {
 
                   {game_type === 'poker' && (
                     <div>
-                      <div style={{ marginBottom: '8px', fontWeight: 700 }}>
+                      <div
+                        style={{
+                          marginBottom: '8px',
+                          fontWeight: 700,
+                          display:
+                            poker_variant === 'draw' ? 'none' : undefined,
+                        }}
+                      >
                         Общие карты
                       </div>
-                      <div style={{ marginBottom: '6px', opacity: 0.82 }}>
-                        Ход: {poker_turn || '-'} | Банк: {poker_pot} |
-                        Текущая ставка: {poker_current_bet}
+                      <div style={{ marginBottom: '4px', opacity: 0.82 }}>
+                        Круг: {poker_betting_round || 1}
                       </div>
-                      {community_cards.length ? (
-                        <CardRow cards={community_cards} />
-                      ) : (
-                        <div style={rowStyle}>
-                          <CardFace />
-                          <CardFace />
-                          <CardFace />
-                          <CardFace />
-                          <CardFace />
-                        </div>
-                      )}
+                      <div style={{ marginBottom: '6px', opacity: 0.82 }}>
+                        Ход: {poker_turn || '-'} | Банк: {poker_pot} | Текущая
+                        ставка: {poker_current_bet}
+                      </div>
+                      {poker_variant !== 'draw' &&
+                        (community_cards.length ? (
+                          <CardRow cards={community_cards} />
+                        ) : null)}
                     </div>
                   )}
 

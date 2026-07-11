@@ -43,7 +43,7 @@
 	if(!player)
 		return list()
 	var/show_hand = (stage == CARD_TABLE_STAGE_FINISHED || player == viewer)
-	var/list/seen = (!show_hand && user?.ckey && player?.ckey) ? xylix_seen_for(user.ckey, player.ckey) : list()
+	var/list/seen = (!show_hand && user && user.ckey && player.ckey) ? xylix_seen_for(user.ckey, player.ckey) : list()
 	var/list/hand_data = list()
 	for(var/i = 1, i <= player.hand.len, i++)
 		var/list/card = player.hand[i]
