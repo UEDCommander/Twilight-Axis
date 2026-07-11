@@ -784,6 +784,8 @@
       \u0433\u0438 \u043F\u0440\u0438 \u043E\u0442\u043A\u0440\u044B\u0442\u0438\u0438\
       \ \u043B\u043E\u0434\u0430\u0443\u0442\u0430"
   WeNeedMorePhoron:
+  - rscadd: Raised the per client topic limit to 200 and no longer count the statpanel
+      to hopefully alleviates issues
   - rscadd: 'Shuffle some south terrorbog quest spots around/:cl:
 
       <!-- Both :cl:''s are required for the changelog to work! You can put your name
@@ -795,9 +797,12 @@
       generally represent how a player might be affected by the changes rather than
       a summary of the PR''s contents. -->'
   borneblood:
+  - bugfix: Apothecary gets staves instead of polearms
+  - bugfix: Fixed a racial boon choice not working.
   - bugfix: fixed mannequins not having pants slot
   - bugfix: fixed being able to punch your own gear
   - refactor: Reworked Dual Wielder virtue.
+  - bugfix: fixed light sunderbolts
   - bugfix: fixed prosthetics having the wrong speed malus value, and weirdness with
       Bronze Limbs virtue
   plsleavemealon:

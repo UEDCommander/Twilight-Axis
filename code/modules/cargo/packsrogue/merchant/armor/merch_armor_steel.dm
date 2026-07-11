@@ -274,7 +274,7 @@
 /datum/supply_pack/rogue/armor_steel/aventail_steel
 	name = "Aventail"
 	cost = 90 // 2 Steel
-	contains = list(/obj/item/clothing/neck/roguetown/chaincoif/aventail)
+	contains = list(/obj/item/clothing/neck/roguetown/gorget/aventail)
 
 /datum/supply_pack/rogue/armor_steel/plateboots_steel
 	name = "Plated Boots"
