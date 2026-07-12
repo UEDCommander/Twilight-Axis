@@ -815,3 +815,14 @@
   - balance: Wretches can buy more supplies from camp + Get Bronze/weaponry, for gimmiciness
   string-thing:
   - bugfix: fixed con buff on fort. vapours
+2026-07-12:
+  Kell-E:
+  - bugfix: Fixes siege bow zombie walls
+  Ryan180602:
+  - qol: Admins don't need to ready up to vote.
+  - qol: End round votes can be done from lobby now again
+  ShiroseSchnee:
+  - rscadd: Adds new donator item for ShiroseSchnee
+  borneblood:
+  - bugfix: fixed tomato on a fundamental level
+  - bugfix: fixed Avantail and Chainmantle
