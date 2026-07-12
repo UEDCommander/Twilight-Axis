@@ -1035,6 +1035,9 @@
 
 /// End the charging cycle
 /datum/action/cooldown/spell/proc/end_charging()
+	if(!currently_charging)
+		return
+
 	currently_charging = FALSE
 	fully_charged = FALSE
 	charge_started_at = null
