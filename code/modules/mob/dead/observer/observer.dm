@@ -344,8 +344,6 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 	return TRUE
 
 /mob/dead/observer/rogue/can_move_near_body(turf/target_turf)
-	if(istype(src, /mob/dead/observer/rogue/arcaneeye))
-		return TRUE
 	var/turf/body_turf = get_ghost_body_turf()
 	if(!body_turf || !target_turf)
 		return TRUE
