@@ -64401,10 +64401,6 @@
 /obj/item/grown/log/tree/small,
 /turf/open/floor/rogue/naturalstone,
 /area/rogue/under/cave)
-"nhC" = (
-/obj/structure/chair/bench/church/r,
-/turf/open/floor/rogue/grass,
-/area/rogue/outdoors/town/rockhill)
 "nhD" = (
 /obj/structure/chair/wood/rogue{
 	dir = 8
@@ -74875,7 +74871,9 @@
 /turf/open/floor/rogue/twig,
 /area/rogue/indoors/shelter/bog)
 "pnK" = (
-/obj/structure/chair/bench/church/mid,
+/obj/structure/chair/bench/church/mid{
+	dir = 1
+	},
 /turf/open/floor/rogue/grass,
 /area/rogue/outdoors/town/rockhill)
 "pnP" = (
@@ -86692,6 +86690,7 @@
 /obj/item/rogueweapon/shield/tower/metal,
 /obj/item/rogueweapon/shield/tower/metal,
 /obj/item/rogueweapon/shield/buckler,
+/obj/item/rogueweapon/shield/buckler,
 /turf/open/floor/rogue/concrete,
 /area/rogue/under/town/basement)
 "rNP" = (
@@ -94205,6 +94204,7 @@
 /obj/structure/closet/dirthole/closed/loot{
 	dir = 1
 	},
+/obj/item/enchantmentscroll/basic/xylix,
 /turf/open/floor/rogue/dirt,
 /area/rogue/under/cave/inhumen)
 "ttI" = (
@@ -104657,8 +104657,9 @@
 /turf/open/floor/rogue/wood,
 /area/rogue/indoors/town/manor/rockhill)
 "vCV" = (
-/obj/structure/chair/bench/church/r,
-/obj/effect/wisp/prestidigitation,
+/obj/structure/chair/bench/church/r{
+	dir = 1
+	},
 /turf/open/floor/rogue/grass,
 /area/rogue/outdoors/town/rockhill)
 "vCY" = (
@@ -393861,7 +393862,7 @@ eeH
 fkC
 mwE
 fnA
-nhC
+vCV
 rfx
 rfx
 rfx
