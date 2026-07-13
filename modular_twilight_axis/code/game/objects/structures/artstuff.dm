@@ -134,7 +134,6 @@
 	name = "random painting spawner"
 	icon = 'icons/obj/library.dmi'
 	icon_state = "book4"
-	
 	var/persistence_path = "data/paintings/"
 
 /obj/effect/spawner/roguetown/random_painting/Initialize(mapload)
@@ -220,18 +219,13 @@ var/global/datum/art_gallery/glob_gallery
 	
 	var/list/paintings = list()
 	var/list/files = flist(persistence_path)
-	
+
 	for(var/f in files)
 		if(findtext(f, ".json"))
 			var/id = replacetext(f, ".json", "")
 			var/json_path = "[persistence_path][id].json"
 			if(fexists(json_path))
 				var/list/meta = json_decode(file2text(json_path))
-				paintings += list(list(
-					"id" = id,
-					"title" = meta["title"],
-					"author" = meta["author"]
-				))
 				if(islist(meta))
 					paintings += list(list(
 						"id" = id,
