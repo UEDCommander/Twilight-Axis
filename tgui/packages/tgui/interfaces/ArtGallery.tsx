@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button, Section, Stack, NoticeBox, Box } from 'tgui-core/components';
 import { useBackend } from '../backend';
 import { Window } from '../layouts';
+import { useEffect } from 'react';
 
 type PaintingMeta = {
   id: string;
@@ -30,9 +31,11 @@ export const ArtGallery = (props) => {
   };
 
   const customMessage = useBackend<any>().data?.image_data;
-  if (customMessage && customMessage.id && customMessage.base64 && !loadedImages[customMessage.id]) {
-    setLoadedImages(prev => ({ ...prev, [customMessage.id]: customMessage.base64 }));
-  }
+  useEffect(() => {
+    if (customMessage && customMessage.id && customMessage.base64 && !loadedImages[customMessage.id]) {
+      setLoadedImages(prev => ({ ...prev, [customMessage.id]: customMessage.base64 }));
+    }
+  }, [customMessage, loadedImages]);
 
   return (
     <Window width={600} height={500} title="Server Art Gallery">

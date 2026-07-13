@@ -122,6 +122,7 @@
 	src.icon = icon(img_path)
 	src.painting_id = id
 	var/list/data = json_decode(file2text(json_path))
+	if(!islist(data)) return FALSE
 	src.author = data["author"]
 	src.author_ckey = data["author_ckey"]
 	src.title = data["title"]
@@ -231,6 +232,12 @@ var/global/datum/art_gallery/glob_gallery
 					"title" = meta["title"],
 					"author" = meta["author"]
 				))
+				if(islist(meta))
+					paintings += list(list(
+						"id" = id,
+						"title" = meta["title"],
+						"author" = meta["author"]
+					))
 			
 	data["paintings"] = paintings
 	return data
@@ -253,6 +260,8 @@ var/global/datum/art_gallery/glob_gallery
 		if("delete_painting")
 			if(!user.client.holder) return
 			var/id = params["id"]
+			if(!id || findtext(id, "/") || findtext(id, "\\") || findtext(id, ".."))
+				return TRUE
 			if(fexists("[persistence_path][id].png")) fdel("[persistence_path][id].png")
 			if(fexists("[persistence_path][id].json")) fdel("[persistence_path][id].json")
 			

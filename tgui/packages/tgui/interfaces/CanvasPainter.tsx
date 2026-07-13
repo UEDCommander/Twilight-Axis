@@ -189,8 +189,12 @@ export const CanvasPainter = (props) => {
 
         let colorIdx = palette.indexOf(colorHex);
         if (colorIdx === -1) {
-          palette.push(colorHex);
-          colorIdx = palette.length - 1;
+          if (palette.length < 256) {
+            palette.push(colorHex);
+            colorIdx = palette.length - 1;
+          } else {
+            colorIdx = 0;
+          }
         }
 
         pixelString += colorIdx.toString(16).padStart(2, '0');
