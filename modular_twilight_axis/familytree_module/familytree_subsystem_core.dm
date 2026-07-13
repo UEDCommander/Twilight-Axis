@@ -342,6 +342,7 @@ SUBSYSTEM_DEF(familytree)
 		ftlog("try_queue UNSUB: [H.real_name] reason=[unsubscribe_reason]", FTLOG_WARN)
 		unsubscribe_familytree_human(H, unsubscribe_reason)
 		return
+	familytree_hydrate_round_state(H)
 	if(H.stat == DEAD)
 		ftlog("try_queue SKIP: [H.real_name] dead")
 		return
@@ -400,6 +401,11 @@ SUBSYSTEM_DEF(familytree)
 		addtimer(CALLBACK(src, PROC_REF(run_royal_assignment), H, royal_status), get_royal_delay(H) SECONDS)
 		return
 
+	if(H.familytree_opted_out)
+		ftlog("try_queue STOP: [H.real_name] opted out this round")
+		stop_tracking_human(H, "opted out this round")
+		return
+
 	if(familytree_pref_enabled(H.familytree_pref))
 		var/target_name = familytree_get_target_name(H)
 		var/timer = (target_name && length(target_name)) ? 3 : (rand(1, 30) + 10)
@@ -453,6 +459,11 @@ SUBSYSTEM_DEF(familytree)
 	if(H.familytree_confirmation_pending)
 		ftlog("run_local SKIP: [H.real_name] confirmation already pending")
 		H.familytree_assignment_scheduled = FALSE
+		return
+	if(!familytree_join_create_phase_open())
+		ftlog("run_local WAIT: [H.real_name] matching locked until join/create phase")
+		H.familytree_assignment_scheduled = FALSE
+		wait_for_join_create_phase(H, "matching locked until join/create phase")
 		return
 	H.familytree_assignment_scheduled = FALSE
 	if(try_force_mutual_targeted_match(H))

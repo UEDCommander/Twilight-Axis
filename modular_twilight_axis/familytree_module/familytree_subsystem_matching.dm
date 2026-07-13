@@ -1,6 +1,6 @@
 /datum/controller/subsystem/familytree/proc/familytree_join_create_phase_open()
 	if(!SSticker?.round_start_time)
-		return TRUE
+		return FALSE
 	return (world.time - SSticker.round_start_time) >= FAMILYTREE_JOIN_CREATE_DELAY
 
 /datum/controller/subsystem/familytree/proc/familytree_join_create_delay_remaining()
@@ -12,7 +12,7 @@
 
 /datum/controller/subsystem/familytree/proc/familytree_relative_join_phase_open()
 	if(!SSticker?.round_start_time)
-		return TRUE
+		return FALSE
 	return (world.time - SSticker.round_start_time) >= FAMILYTREE_RELATIVE_JOIN_DELAY
 
 /datum/controller/subsystem/familytree/proc/familytree_join_create_fallback_open()
@@ -138,7 +138,6 @@
 		ftlog("AddLocal: [H.real_name] has favorite=[target_name], trying favorite assign (retry #[H.familytree_setspouse_retries])")
 		var/favorite_result = TryAssignToFavorite(H, status)
 		if(favorite_result == "assigned")
-			stop_tracking_human(H, "assigned via favorite")
 			return
 		if(favorite_result == "phase_locked")
 			wait_for_relative_join_phase(H, "favorite house join is phase locked")
@@ -176,6 +175,9 @@
 			return
 		if(H.desired_relative_role != RELATIVE_ANY)
 			wait_for_new_family_match(H, "target house count not met for selected relative role")
+			return
+		if(!relative_join_phase_open)
+			wait_for_new_family_match(H, "holding solo house seed until relative join phase")
 			return
 		familytree_found_new_house(H, "created new house; target house count not met")
 		return
