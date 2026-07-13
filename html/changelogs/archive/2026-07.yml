@@ -826,3 +826,34 @@
   borneblood:
   - bugfix: fixed tomato on a fundamental level
   - bugfix: fixed Avantail and Chainmantle
+2026-07-13:
+  7erracotta:
+  - rscadd: Added Saree's and Dhoti's
+  Ketrai:
+  - rscadd: Abyssor's power shifts, tidal spires now produce darkwater.
+  - bugfix: zizo's pet cemetery event being unable to run
+  Ollanius:
+  - bugfix: Haubyrines no longer inherit unintended coverage of the groin.
+  - balance: Haubyrines cannot be worn by those with TRAIT_ARCYNE or TRAIT_CIVILIZEDBARBARIAN;
+      magicka casters and dedicated pugilists, more plainly.
+  - code_imp: Added new tags in armour_filtering.dm that allows for tagged items to
+      be unwearable by those with TRAIT_ARCYNE, TRAIT_CIVILIZEDBARBARIAN, or TRAIT_DODGEEXPERT--
+      independently or all together. Check out chainmail.dm for an example of how
+      to add multiple tags to the same armor-filtering component.
+  Ryan180602:
+  - bugfix: painting crashes + other bugs
+  - bugfix: errant hair editor bugs
+  - refactor: cleans up ghost mob code.
+  - bugfix: fixed bugs with the profane dagger that did not actually put the player
+      client in the dagger.
+  - bugfix: fixed ghost polling for scried clients.
+  - bugfix: prevents scried clients from jumping around with double click to move
+      turf.
+  WeNeedMorePhoron:
+  - bugfix: Potentially fixes spells and attacks fizzling when you move your mouse
+      after charging
+  borneblood:
+  - rscadd: added a way to access either of the Bishop's holy staves
+  - bugfix: fixed the staff of the shepherd's missing interactions
+  - rscadd: Added 'Pouched Suspenders' as a cosmetic for the loadout.
+  - bugfix: frei swords can now block projectiles on halfsword intent's block
