@@ -1,31 +1,8 @@
-// Base song debuff/buff status effect types - shared by all songs
-#define SONG_DEBUFF_FILTER "song_debuff_glow"
-
-/datum/status_effect/debuff/song
-	var/outline_colour = "#CC3333" // Red outline for all song debuffs
-
-/datum/status_effect/debuff/song/on_apply()
-	. = ..()
-	var/filter = owner.get_filter(SONG_DEBUFF_FILTER)
-	if(!filter)
-		owner.add_filter(SONG_DEBUFF_FILTER, 2, list("type" = "outline", "color" = outline_colour, "alpha" = 40, "size" = 1))
-
-/datum/status_effect/debuff/song/on_remove()
-	. = ..()
-	// Only remove filter if no other song debuffs remain
-	var/has_other_song_debuff = FALSE
-	for(var/datum/status_effect/debuff/song/S in owner.status_effects)
-		if(S != src)
-			has_other_song_debuff = TRUE
-			break
-	if(!has_other_song_debuff)
-		owner.remove_filter(SONG_DEBUFF_FILTER)
-
 // ---- Base Song Spell (new action cooldown system) ----
 
 /datum/action/cooldown/spell/song
 	button_icon = 'icons/mob/actions/bardsongs.dmi'
-	button_icon_state = "dirge_t1_base"
+	button_icon_state = "melody_t1_base"
 	sound = 'sound/magic/buffrollaccent.ogg'
 	spell_color = GLOW_COLOR_BARDIC
 	glow_intensity = GLOW_INTENSITY_LOW
@@ -81,16 +58,11 @@
 	// Clear any existing song and its applied effects before starting a new one
 	for(var/datum/status_effect/buff/playing_melody/melodies in H.status_effects)
 		H.remove_status_effect(melodies)
-	for(var/datum/status_effect/buff/playing_dirge/dirges in H.status_effects)
-		H.remove_status_effect(dirges)
-	// Explicitly clean up lingering song buffs/debuffs from the old song
+	// Explicitly clean up lingering song buffs from the old song
 	if(H.inspiration)
 		for(var/mob/living/carbon/human/guy in H.inspiration.audience)
 			for(var/datum/status_effect/buff/song/old_buff in guy.status_effects)
 				guy.remove_status_effect(old_buff)
-		for(var/mob/living/carbon/human/enemy in hearers(10, H))
-			for(var/datum/status_effect/debuff/song/old_debuff in enemy.status_effects)
-				enemy.remove_status_effect(old_debuff)
 	// Apply new song - on_apply will immediately grant effects
 	H.apply_status_effect(song_effect)
 	return TRUE
@@ -107,81 +79,11 @@
 	// No instrument - cancel song and clean up audience buffs
 	for(var/datum/status_effect/buff/playing_melody/melodies in owner.status_effects)
 		owner.remove_status_effect(melodies)
-	for(var/datum/status_effect/buff/playing_dirge/dirges in owner.status_effects)
-		owner.remove_status_effect(dirges)
 	for(var/mob/living/carbon/human/guy in owner.inspiration.audience)
 		for(var/datum/status_effect/buff/song/song2remove in guy.status_effects)
 			guy.remove_status_effect(song2remove)
 	to_chat(owner, span_warning("I lost my instrument - my song fades."))
 	return FALSE
-
-/datum/status_effect/buff/playing_dirge
-	id = "play_dirge"
-	alert_type = /atom/movable/screen/alert/status_effect/buff/playing_dirge
-	var/effect_color
-	var/datum/status_effect/debuff/debuff_to_apply // Applied by T1 (lesser) bards, or as default if no full variant
-	var/datum/status_effect/debuff/debuff_to_apply_full // Applied by T2 (full) bards. If null, uses debuff_to_apply for all tiers
-	var/pulse = 0
-	var/ticks_to_apply = SONG_SUSTAIN_TICKS
-	duration = -1
-	var/obj/effect/temp_visual/songs/effect = /obj/effect/temp_visual/songs/inspiration_dirget1
-	var/energytodrain = SONG_SUSTAIN_COST
-
-
-/atom/movable/screen/alert/status_effect/buff/playing_dirge
-	name = "Playing Dirge"
-	desc = "Terrorizing the world with my craft."
-	icon_state = "buff"
-
-
-/datum/status_effect/buff/playing_dirge/tick()
-	var/mob/living/carbon/human/O = owner
-	if(!song_check_instrument(O))
-		return
-	pulse += 1
-	new effect(get_turf(owner))
-	// Spawn telltale notes on debuffed enemies every tick (2s) for visibility
-	for(var/mob/living/carbon/human/H in hearers(10, O))
-		if (H.stat == DEAD)
-			continue
-		if(!O.in_audience(H))
-			for(var/datum/status_effect/debuff/song/S in H.status_effects)
-				new /obj/effect/temp_visual/song_telltale/debuff(get_turf(H))
-				break // One note per target per tick
-	if (pulse >= ticks_to_apply)
-		pulse = 0
-		O.energy_add(energytodrain)
-		apply_song_effects(O)
-
-/// Apply debuff to all non-audience in range. Separated so on_apply can call it too.
-/datum/status_effect/buff/playing_dirge/proc/apply_song_effects(mob/living/carbon/human/O)
-	var/debuff = debuff_to_apply
-	if(debuff_to_apply_full && O.inspiration.level >= BARD_T2)
-		debuff = debuff_to_apply_full
-	for (var/mob/living/carbon/human/H in hearers(10, O))
-		if (H.stat == DEAD)
-			continue
-		if(!O.in_audience(H))
-			H.apply_status_effect(debuff)
-
-/datum/status_effect/buff/playing_dirge/on_apply()
-	. = ..()
-	// Apply effects immediately on song start, don't wait for first full pulse cycle
-	var/mob/living/carbon/human/O = owner
-	if(O?.inspiration)
-		apply_song_effects(O)
-
-/datum/status_effect/buff/playing_dirge/on_remove()
-	. = ..()
-	// Clean up debuffs on enemies when song stops
-	if(!ishuman(owner))
-		return
-	var/mob/living/carbon/human/O = owner
-	if(!O.inspiration)
-		return
-	for(var/mob/living/carbon/human/H in hearers(10, O))
-		for(var/datum/status_effect/debuff/song/song2remove in H.status_effects)
-			H.remove_status_effect(song2remove)
 
 
 /datum/status_effect/buff/playing_melody
@@ -247,5 +149,3 @@
 	for(var/mob/living/carbon/human/guy in O.inspiration.audience)
 		for(var/datum/status_effect/buff/song/song2remove in guy.status_effects)
 			guy.remove_status_effect(song2remove)
-
-#undef SONG_DEBUFF_FILTER
