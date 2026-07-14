@@ -643,7 +643,7 @@
 	name = "Aventail, Iron (+1 Iron)"
 	req_bar = /obj/item/ingot/iron
 	additional_items = list(/obj/item/ingot/iron)
-	created_item = /obj/item/clothing/neck/roguetown/chaincoif/iron/aventail
+	created_item = /obj/item/clothing/neck/roguetown/gorget/aventail/iron
 	display_category = ITEM_CAT_ARMOR_NECK
 	createditem_num = 1
 
@@ -1348,7 +1348,7 @@
 	name = "Aventail, Steel (+1 Steel)"
 	req_bar = /obj/item/ingot/steel
 	additional_items = list(/obj/item/ingot/steel)
-	created_item = /obj/item/clothing/neck/roguetown/chaincoif/aventail
+	created_item = /obj/item/clothing/neck/roguetown/gorget/aventail
 	display_category = ITEM_CAT_ARMOR_NECK
 
 /datum/anvil_recipe/armor/iron/cursed_collar
