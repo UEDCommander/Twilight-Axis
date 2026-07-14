@@ -112,6 +112,25 @@
 		active = FALSE
 		playsound(loc, 'sound/items/garroteshut.ogg', 65, TRUE)
 
+/obj/item/inqarticles/garrote/proc/has_oxy_protection(obj/item/I)
+	if(!I || I.obj_broken)
+		return FALSE
+	return istype(I, /obj/item/clothing/neck/roguetown/gorget) || istype(I, /obj/item/clothing/neck/roguetown/leather) || istype(I, /obj/item/clothing/neck/roguetown/bevor) || istype(I, /obj/item/clothing/neck/roguetown/coif) || istype(I, /obj/item/clothing/neck/roguetown/chaincoif)
+
+/obj/item/inqarticles/garrote/proc/log_garrote_grab(mob/living/user, mob/living/target)
+	if(!user || !target)
+		return
+	log_attack("[key_name(user)] wrapped [src] around [key_name(target)]'s throat at [AREACOORD(user)].")
+	user.log_message("wrapped [src] around [key_name(target)]'s throat.", LOG_ATTACK, color = "red")
+	target.log_message("had [src] wrapped around their throat by [key_name(user)].", LOG_ATTACK, color = "orange")
+
+/obj/item/inqarticles/garrote/proc/log_garrote_choke(mob/living/user, mob/living/target, oxy_damage)
+	if(!user || !target)
+		return
+	log_attack("[key_name(user)] choked [key_name(target)] with [src] for [oxy_damage] oxygen damage at [AREACOORD(user)].")
+	user.log_message("choked [key_name(target)] with [src] for [oxy_damage] oxygen damage.", LOG_ATTACK, color = "red")
+	target.log_message("was choked by [key_name(user)] with [src] for [oxy_damage] oxygen damage.", LOG_ATTACK, color = "orange")
+
 /obj/item/inqarticles/garrote/attack_self(mob/user)
 	if(obj_broken)
 		to_chat(user, span_warning("It's useless now, although.."))
@@ -207,6 +226,7 @@
 		if(target != user)
 			user.start_pulling(target, state = 1, supress_message = TRUE, item_override = src)
 		user.visible_message(span_danger("[user] wraps the [src] around [target]'s throat!"))
+		log_garrote_grab(user, target)
 		user.stamina_add(25)
 		user.changeNext_move(CLICK_CD_RAPID)
 		REMOVE_TRAIT(user, TRAIT_NOSTRUGGLE, TRAIT_GENERIC)	
@@ -231,9 +251,19 @@
 		playsound(loc, pick('sound/items/garrotechoke1.ogg', 'sound/items/garrotechoke2.ogg', 'sound/items/garrotechoke3.ogg', 'sound/items/garrotechoke4.ogg', 'sound/items/garrotechoke5.ogg'), 100, TRUE)
 		if(prob(40))
 			C.emote("choke")
-		C.adjustOxyLoss(30)
+		var/oxy_damage = 30
+		if(C.InCritical())
+			oxy_damage = choke_damage
+		else if(ishuman(C))
+			var/mob/living/carbon/human/H = C
+			if(has_oxy_protection(H.wear_neck) || has_oxy_protection(H.head))
+				oxy_damage = choke_damage
+		var/total_oxy_damage = oxy_damage
+		C.adjustOxyLoss(oxy_damage)
 		if(!C.mind) // NPCs can be choked out twice as fast
-			C.adjustOxyLoss(30)
+			C.adjustOxyLoss(oxy_damage)
+			total_oxy_damage += oxy_damage
+		log_garrote_choke(user, C, total_oxy_damage)
 		C.visible_message(span_danger("[user] [pick("garrotes", "asphyxiates")] [C]!"), \
 		span_userdanger("[user] [pick("garrotes", "asphyxiates")] me!"), span_hear("I hear the sickening sound of cordage!"), COMBAT_MESSAGE_RANGE, user)
 		to_chat(user, span_danger("I [pick("garrote", "asphyxiate")] [C]!"))	
@@ -378,4 +408,3 @@
 						H.mind?.AddSpell(new /datum/action/cooldown/spell/repulse)
 					if("Leap")
 						H.mind?.AddSpell(new /datum/action/cooldown/spell/leap)
-

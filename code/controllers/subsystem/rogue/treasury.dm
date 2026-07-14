@@ -28,10 +28,9 @@ SUBSYSTEM_DEF(treasury)
 		TAX_CATEGORY_IMPORT_TARIFF = 0.15,
 		TAX_CATEGORY_EXPORT_DUTY = 0.15,
 		TAX_CATEGORY_FINE = 1.0,
+		TAX_CATEGORY_ESTATE_LEVY = 0.15, //TA EDIT
 	)
 	var/trade_spread = 0.10
-	var/mint_multiplier = 0.8
-	var/minted = 0
 	var/autoexport_percentage = 0.6
 	var/list/bank_accounts = list()
 	var/datum/fund/discretionary_fund
@@ -147,9 +146,6 @@ SUBSYSTEM_DEF(treasury)
 		stockpile_datums += D
 		if(D.trade_good_id)
 			stockpile_by_trade_good[D.trade_good_id] = D
-	for(var/path in subtypesof(/datum/roguestock/bounty))
-		var/datum/D = new path
-		stockpile_datums += D
 	autoset_stockpile_limits()
 	return ..()
 
@@ -412,13 +408,19 @@ SUBSYSTEM_DEF(treasury)
 		return FALSE
 	if(HAS_TRAIT(recipient, TRAIT_OUTLAW))
 		return FALSE
+	var/datum/job/J = SSjob.GetJob(recipient.job) //TA EDIT START
+	if(HAS_TRAIT(recipient, TRAIT_NOBLE))
+		if(!J)
+			return FALSE
+		else if(!(J.department_flag & NOBLEMEN))
+			return FALSE //TA EDIT END
 	var/datum/fund/account = get_account(recipient)
 	if(!account)
 		create_bank_account(recipient)
 		account = get_account(recipient)
 	if(!account)
 		return FALSE
-	var/source = recipient.job == "Merchant" ? "Azurian Trading Company" : "Noble Estate"
+	var/source = recipient.job == "Merchant" ? "Azurian Trading Company" : "Treasury Sponsorship" //TA EDIT
 	var/payout = is_starter ? amount + ESTATE_STARTER_BONUS : amount
 	if(!mint(account, payout, source))
 		return FALSE
@@ -712,6 +714,8 @@ SUBSYSTEM_DEF(treasury)
 			return "Import Tariff"
 		if(TAX_CATEGORY_EXPORT_DUTY)
 			return "Export Duty"
+		if(TAX_CATEGORY_ESTATE_LEVY) //TA EDIT
+			return "Estate Peasants Levy" //TA EDIT
 		if(TAX_CATEGORY_FINE)
 			return "Fine"
 	return capitalize(category)
@@ -752,7 +756,7 @@ SUBSYSTEM_DEF(treasury)
 		return POLL_TAX_CAT_GUILDS
 	if(H.job == "Merchant")
 		return POLL_TAX_CAT_MERCHANT
-	if((H.job in list("Innkeeper", "Head Physician", "Apothecary", "Bathmaster", "Town Crier", "Magicians Associate")) || HAS_TRAIT(H, TRAIT_RESIDENT))
+	if((H.job in list("Innkeeper", "Head Physician", "Apothecary", "Bathmaster", "Magicians Associate")) || HAS_TRAIT(H, TRAIT_RESIDENT))
 		return POLL_TAX_CAT_BURGHER
 	if(H.job in GLOB.wanderer_positions)
 		return POLL_TAX_CAT_ADVENTURER

@@ -24,6 +24,8 @@
 #define ROLE_UNBOUND_DEATHKNIGHT "Unbound Death Knight"
 #define ROLE_DARK_ITINERANT "Dark Itinerant"
 #define ROLE_CULT			"Cult of Ascension"
+#define ROLE_FREEMAN		"Freeman" // TA EDIT
+#define ROLE_LOSTGRENZEL	"Lost Grenzel" // TA EDIT
 
 #define ROLE_SYNDICATE			"Syndicate"
 #define ROLE_TRAITOR			"Traitor"
@@ -37,7 +39,6 @@
 #define ROLE_CULTIST			"Cultist"
 #define ROLE_BLOB				"Blob"
 #define ROLE_NINJA				"Space Ninja"
-#define ROLE_MONKEY				"Monkey"
 #define ROLE_ABDUCTOR			"Abductor"
 #define ROLE_REVENANT			"Revenant"
 #define ROLE_DEVIL				"Devil"

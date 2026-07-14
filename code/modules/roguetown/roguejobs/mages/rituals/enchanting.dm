@@ -8,8 +8,6 @@
  *   T3: 1x T3 realm mat + cinnabar + scroll + leyline shard
  *   T4: 1x T4 realm mat + cinnabar + scroll + leyline shard
  *
- * Void-themed enchantments (Voidtouched, Chaos Storm) use voidstone
- * instead of a realm mat.
  *
  * Rune requirements:
  *   Imbuement Array — T1 through T3 enchantments.
@@ -51,6 +49,14 @@
 	tier = 1
 	required_atoms = list(/obj/item/rogueore/cinnabar = 1, /obj/item/paper/scroll = 1, /obj/item/magic/fae/fairydust = 4)
 	result_atoms = list(/obj/item/enchantmentscroll/basic/xylix)
+
+/datum/runeritual/enchanting/fairseeming
+	name = "Fair Seeming"
+	desc = "Become Spotless!"
+	blacklisted = FALSE
+	tier = 1
+	required_atoms = list(/obj/item/rogueore/cinnabar = 1, /obj/item/paper/scroll = 1, /obj/item/magic/fae/fairydust = 4)
+	result_atoms = list(/obj/item/enchantmentscroll/basic/fairseeming)
 
 /datum/runeritual/enchanting/revealinglight
 	name = "Revealing Light"
@@ -137,13 +143,6 @@
 	required_atoms = list(/obj/item/rogueore/cinnabar = 1, /obj/item/paper/scroll = 1, /obj/item/magic/leyline = 1, /obj/item/magic/elemental/fragment = 1)
 	result_atoms = list(/obj/item/enchantmentscroll/greater/lightning)
 
-/datum/runeritual/enchanting/voidtouched
-	name = "voidtouched"
-	desc = "Teleports the target nearby."
-	blacklisted = FALSE
-	tier = 3
-	required_atoms = list(/obj/item/rogueore/cinnabar = 1, /obj/item/paper/scroll = 1, /obj/item/magic/leyline = 1, /obj/item/magic/voidstone = 1)
-	result_atoms = list(/obj/item/enchantmentscroll/greater/voidtouched)
 
 /datum/runeritual/enchanting/frostveil
 	name = "Lesser Freezing"
@@ -202,11 +201,3 @@
 	tier = 4
 	required_atoms = list(/obj/item/rogueore/cinnabar = 1, /obj/item/paper/scroll = 1, /obj/item/magic/leyline = 1, /obj/item/magic/fae/sylvanessence = 1)
 	result_atoms = list(/obj/item/enchantmentscroll/mythic/rewind)
-
-/datum/runeritual/enchanting/chaosstorm
-	name = "Chaos Storm"
-	desc = "Causes random powerful effects."
-	blacklisted = FALSE
-	tier = 4
-	required_atoms = list(/obj/item/rogueore/cinnabar = 1, /obj/item/paper/scroll = 1, /obj/item/magic/leyline = 1, /obj/item/magic/voidstone = 1)
-	result_atoms = list(/obj/item/enchantmentscroll/mythic/chaos_storm)

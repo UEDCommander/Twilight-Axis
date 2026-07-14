@@ -121,6 +121,12 @@
 	if(mob.force_moving)
 		return FALSE
 
+	var/mob/living/sliding_mob = mob
+	var/datum/status_effect/ice_slide/ice_sliding = sliding_mob.has_status_effect(/datum/status_effect/ice_slide)
+	if(ice_sliding)
+		ice_sliding.steer(direct)
+		return FALSE
+
 	if(mob.shifting)
 		mob.pixel_shift(direct)
 		return FALSE
@@ -467,8 +473,8 @@
 	switch(mob.zone_selected)
 		if(BODY_ZONE_R_ARM)
 			next_in_line = BODY_ZONE_PRECISE_R_HAND
-		if(BODY_ZONE_PRECISE_R_HAND) // ta edit
-			next_in_line = BODY_ZONE_PRECISE_R_INHAND // ta edit
+//.		if(BODY_ZONE_PRECISE_R_HAND) // ta edit
+//			next_in_line = BODY_ZONE_PRECISE_R_INHAND // ta edit
 		else
 			next_in_line = BODY_ZONE_R_ARM
 
@@ -505,8 +511,8 @@
 	switch(mob.zone_selected)
 		if(BODY_ZONE_L_ARM)
 			next_in_line = BODY_ZONE_PRECISE_L_HAND
-		if(BODY_ZONE_PRECISE_L_HAND) // ta edit
-			next_in_line = BODY_ZONE_PRECISE_L_INHAND // ta edit
+//		if(BODY_ZONE_PRECISE_L_HAND) // ta edit
+//			next_in_line = BODY_ZONE_PRECISE_L_INHAND // ta edit
 		else
 			next_in_line = BODY_ZONE_L_ARM
 
@@ -592,7 +598,7 @@
 
 //* Updates a mob's sneaking status, rendering them invisible or visible in accordance to their status. TODO:Fix people bypassing the sneak fade by turning, and add a proc var to have a timer after resetting visibility.
 /mob/living/update_sneak_invis(reset = FALSE) //Why isn't this in mob/living/living_movements.dm? Why, I'm glad you asked!
-	if(has_status_effect(/datum/status_effect/stealth_revealed) && !reset)
+	if(in_combat_until > world.time && !reset)
 		return
 	if(!reset && world.time < mob_timers[MT_INVISIBILITY]) // Check if the mob is affected by the invisibility spell
 		rogue_sneaking = TRUE
@@ -712,9 +718,12 @@
 		switch(intent)
 			if(MOVE_INTENT_SNEAK)
 				var/mob/living/L = src
-				if(!L.has_status_effect(/datum/status_effect/stealth_revealed))
+				if(L.has_status_effect(/datum/status_effect/buff/fly))
+					to_chat(src, span_warning("I can't sneak while flying!"))
+				else
 					m_intent = MOVE_INTENT_SNEAK
-					update_sneak_invis()
+					if(L.in_combat_until < world.time)
+						update_sneak_invis()
 
 			if(MOVE_INTENT_WALK)
 				m_intent = MOVE_INTENT_WALK

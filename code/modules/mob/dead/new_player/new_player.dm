@@ -116,6 +116,9 @@ GLOBAL_LIST_INIT(roleplay_readme, world.file2list("strings/rt/rp_prompt.txt"))
 
 			if(ready != tready)
 				ready = tready
+				if(tready != PLAYER_READY_TO_PLAY && SSvote.mode)
+					SSvote.remove_vote_for_ckey(ckey)
+					SSvote.show_vote(client)
 		//if it's post initialisation and they're trying to observe we do the needful
 		if(!SSticker.current_state < GAME_STATE_PREGAME && tready == PLAYER_READY_TO_OBSERVE)
 			ready = tready
@@ -558,7 +561,7 @@ GLOBAL_LIST_INIT(roleplay_readme, world.file2list("strings/rt/rp_prompt.txt"))
 				if (BURGHERS)
 					cat_name = "Burghers"
 				if (ATC)
-					cat_name = "Azurian Trading Company"
+					cat_name = ta_economy_trade_company()
 				if (PEASANTS)
 					cat_name = "Peasants"
 				if (SIDEFOLK)

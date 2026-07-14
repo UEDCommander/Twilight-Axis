@@ -79,7 +79,7 @@ GLOBAL_LIST_EMPTY(respawncounts)
 			return
 
 	var/stl = CONFIG_GET(number/second_topic_limit)
-	if (!holder && stl)
+	if (!holder && stl && href_list["window_id"] != "statbrowser")
 		var/second = round(world.time, 10)
 		if (!topiclimiter)
 			topiclimiter = new(LIMITER_SIZE)
@@ -237,6 +237,11 @@ GLOBAL_LIST_EMPTY(respawncounts)
 	if(href_list["vieweconomics"])
 		var/datum/economic_chronicle/chronicle = get_economic_chronicle()
 		chronicle.ui_interact(mob)
+		return
+
+	if(href_list["open_encyclopedia"])
+		var/datum/recipe_wiki/wiki = get_recipe_wiki()
+		wiki.show_library(mob)
 		return
 
 	if(href_list["commandbar_typing"])
@@ -496,11 +501,19 @@ GLOBAL_LIST_EMPTY(respawncounts)
 			alert(mob, "You have logged in already with another key this round, please log out of this one NOW or risk being banned!")
 
 	tgui_panel.initialize()
+	/* //TA EDIT BEGIN
 	stat_panel.initialize(
 		inline_html = file("html/statbrowser.html"),
 		inline_js = file("html/statbrowser.js"),
 		inline_css = file("html/statbrowser.css"),
 	)
+	*/
+
+	stat_panel.initialize(
+		inline_html = file("ta_statpanel/dist/ta-statbrowser-bundle.html"),
+	)
+
+	//TA EDIT END
 	apply_statbrowser_theme()
 	addtimer(CALLBACK(src, PROC_REF(check_panel_loaded)), 30 SECONDS)
 

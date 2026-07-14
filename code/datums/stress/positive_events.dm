@@ -41,7 +41,7 @@
 /datum/stressevent/pweed
 	timer = 1 MINUTES
 	stressadd = -2
-	desc = span_green("I've enjoyed a relaxing smoke.")
+	desc = span_green("A pleasant, stimulating buzz settles over me.")
 
 /datum/stressevent/weed
 	timer = 5 MINUTES
@@ -334,7 +334,7 @@
 
 /datum/stressevent/graggar_culling_finished
 	stressadd = -1
-	desc = span_green("I have prevailed over my rival! Graggar favours me now!")
+	desc = span_green("My rival lies dead. Visions of their former lyfe flash before me as their former strength suffuses with mine.")
 	timer = INFINITY
 
 /datum/stressevent/eoran_blessing
