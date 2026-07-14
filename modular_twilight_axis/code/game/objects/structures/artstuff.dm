@@ -205,7 +205,7 @@ var/global/datum/art_gallery/glob_gallery
 	var/persistence_path = "data/paintings/"
 
 /datum/art_gallery/ui_status(mob/user)
-	return UI_INTERACTIVE 
+	return UI_INTERACTIVE
 
 /datum/art_gallery/ui_interact(mob/user, datum/tgui/ui)
 	ui = SStgui.try_update_ui(user, src, ui)
@@ -213,13 +213,11 @@ var/global/datum/art_gallery/glob_gallery
 		ui = new(user, src, "ArtGallery", "Server Art Gallery")
 		ui.open()
 
-/datum/art_gallery/ui_data(mob/user)
+/datum/art_gallery/ui_static_data(mob/user)
 	var/list/data = list()
-	data["is_admin"] = user.client.holder ? TRUE : FALSE
-	
 	var/list/paintings = list()
 	var/list/files = flist(persistence_path)
-
+	
 	for(var/f in files)
 		if(findtext(f, ".json"))
 			var/id = replacetext(f, ".json", "")
@@ -236,6 +234,11 @@ var/global/datum/art_gallery/glob_gallery
 	data["paintings"] = paintings
 	return data
 
+/datum/art_gallery/ui_data(mob/user)
+	var/list/data = list()
+	data["is_admin"] = user.client.holder ? TRUE : FALSE
+	return data
+
 /datum/art_gallery/ui_act(action, list/params, datum/tgui/ui)
 	. = ..()
 	if(.) return
@@ -244,6 +247,9 @@ var/global/datum/art_gallery/glob_gallery
 	switch(action)
 		if("get_image")
 			var/id = params["id"]
+			if(!id || findtext(id, "/") || findtext(id, "\\") || findtext(id, ".."))
+				return TRUE
+				
 			var/img_path = "[persistence_path][id].png"
 			if(fexists(img_path))
 				var/icon/I = icon(img_path)
@@ -259,5 +265,5 @@ var/global/datum/art_gallery/glob_gallery
 			if(fexists("[persistence_path][id].png")) fdel("[persistence_path][id].png")
 			if(fexists("[persistence_path][id].json")) fdel("[persistence_path][id].json")
 			
-			SStgui.update_uis(src)
+			SStgui.close_uis(src)
 			return TRUE
