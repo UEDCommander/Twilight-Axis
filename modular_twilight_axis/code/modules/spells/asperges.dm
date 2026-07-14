@@ -165,7 +165,7 @@
 		
 		if(do_after(user, cleanspeed, target = target))
 			var/turf/T = get_turf(target)
-			new /obj/effect/temp_visual/cleaning_pulse(T)
+			new /obj/effect/temp_visual/censer_dust(T)
 			
 			for(var/obj/effect/decal/cleanable/C in T)
 				if(!should_clean_rune(C))
@@ -186,7 +186,7 @@
 		
 		if(do_after(user, cleanspeed, target = target))
 			var/turf/T = get_turf(target)
-			new /obj/effect/temp_visual/cleaning_pulse(T)
+			new /obj/effect/temp_visual/censer_dust(T)
 			
 			for(var/obj/effect/decal/cleanable/C in T)
 				if(!should_clean_rune(C))
