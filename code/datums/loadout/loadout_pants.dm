@@ -14,6 +14,11 @@
 	path = /obj/item/clothing/under/roguetown/trou/leathertights
 	sort_category = "Pants"
 
+/datum/loadout_item/trousershorts
+	name = "Trouser Shorts"
+	path = /obj/item/clothing/under/roguetown/tights/shorts
+	sort_category = "Pants"
+
 /datum/loadout_item/trou
 	name = "Work Trousers"
 	path = /obj/item/clothing/under/roguetown/trou
@@ -53,4 +58,9 @@
 	name = "Formal Trousers"
 	path = /obj/item/clothing/under/roguetown/tights/formalfancy
 	sort_category = "Pants"	
+
+/datum/loadout_item/dhoti
+	name = "Dhoti"
+	path = /obj/item/clothing/under/roguetown/tights/dhoti
+	sort_category = "Pants"
 */

@@ -16,6 +16,8 @@ This allows the devs to draw whatever shape they want at the cost of it feeling 
 	var/mob/living/howner
 	var/atom/movable/iparent
 
+	var/special_armor_penetration = null // TA EDIT
+
 	/// The main place where we can draw out the pattern. Every tile entry is a list with two numbers.
 	/// The origin (0,0) is one step forward from the dir the owner is facing.
 	/// This is abstract, and can be modified, though it's best done before _assign_grid_indexes().
@@ -336,6 +338,12 @@ This allows the devs to draw whatever shape they want at the cost of it feeling 
 		return
 	howner.apply_status_effect(/datum/status_effect/debuff/specialcd, cd_to_apply)
 
+/datum/special_intent/proc/settle_visuals(pz = 0, matrix/tf)
+	if(QDELETED(howner))
+		return
+	howner.transform = tf
+	animate(howner, pixel_z = pz, time = 1)
+
 /// Resolves the attacker's aimed zone against a specific target using the shared accuracy formula.
 /// Uses weapon skill as the accuracy bonus. Specials can override this for custom behavior.
 /datum/special_intent/proc/get_aimed_zone(mob/living/target)
@@ -362,7 +370,10 @@ This allows the devs to draw whatever shape they want at the cost of it feeling 
 	if(ishuman(target))
 		var/mob/living/carbon/human/HT = target
 		var/obj/item/bodypart/affecting = HT.get_bodypart(zone)
-		var/armor_block = HT.run_armor_check(zone, d_type, 0, damage = dam, used_weapon = W, armor_penetration = (no_pen ? PEN_NONE : 0))
+		var/armor_penetration = no_pen ? PEN_NONE : 0 // TA EDIT START
+		if(!isnull(special_armor_penetration))
+			armor_penetration = special_armor_penetration
+		var/armor_block = HT.run_armor_check(zone, d_type, 0, damage = dam, used_weapon = W, armor_penetration = armor_penetration) // TA EDIT END
 		if(full_pen)
 			armor_block = 0		//You block NOTHING, sir!
 		if(HT.apply_damage(dam, W.damtype, affecting, armor_block))
@@ -677,9 +688,9 @@ SPECIALS START HERE
 		var/throwdir = get_dir(howner, L)
 		var/turf/throwtarget = get_ranged_target_turf(get_turf(L), throwdir, 1)
 		L.safe_throw_at(throwtarget, 1, 1, howner, force = MOVE_FORCE_EXTREMELY_STRONG)
-		L.apply_status_effect(/datum/status_effect/debuff/exposed, exposed_dur)
 		var/hit_zone = get_aimed_zone(L)
 		apply_generic_weapon_damage(L, dam, "blunt", hit_zone, bclass = BCLASS_BLUNT, no_pen = TRUE)
+		L.apply_status_effect(/datum/status_effect/debuff/exposed, exposed_dur)
 	..()
 
 #define AXE_SWING_GRID_DEFAULT 	list(list(-1,0), list(0,0, 0.2 SECONDS), list(1,0, 0.4 SECONDS))
@@ -734,6 +745,9 @@ SPECIALS START HERE
 
 /datum/special_intent/axe_swing/graggarite
 	requires_wielding = FALSE
+
+/datum/special_intent/axe_swing/graggarite/werewolf // TA EDIT
+	special_armor_penetration = PEN_MEDIUM // TA EDIT
 
 #undef AXE_SWING_GRID_DEFAULT
 #undef AXE_SWING_GRID_MIRROR
@@ -975,73 +989,6 @@ SPECIALS START HERE
 				apply_generic_weapon_damage(L, dam, "blunt", BODY_ZONE_CHEST, bclass = BCLASS_BLUNT, no_pen = TRUE)
 				L.apply_status_effect(/datum/status_effect/debuff/exposed, 3 SECONDS)
 				L.safe_throw_at(throwtarget, push_dist, 1, howner, force = MOVE_FORCE_EXTREMELY_STRONG)
-
-/datum/special_intent/charge
-	name = "Charge"
-	desc = "Lower your weapon and charge several tiles forward, punching straight through anyone in your path - driving them back and leaving them vulnerable. Aims for the targeted zone."
-	cooldown = 20 SECONDS
-	stamcost = 25
-	requires_wielding = TRUE
-	var/charge_dist = 4
-	var/dam = 40
-	var/step_delay = 1
-	var/telegraph_time = 0.25 SECONDS
-	var/vuln_dur = 3 SECONDS
-	var/knockback_dist = 1
-
-/datum/special_intent/charge/process_attack()
-	SHOULD_CALL_PARENT(FALSE)
-	var/mob/living/charger = howner
-	if(!charger)
-		return
-	var/obj/item/rogueweapon/W = iparent
-	var/facing = charger.dir
-	charger.emote("warcry", forced = TRUE)
-	charger.balloon_alert_to_viewers("Charging!")
-	playsound(charger, pick('sound/combat/wooshes/bladed/wooshlarge (1).ogg', 'sound/combat/wooshes/bladed/wooshlarge (2).ogg'), 80, TRUE)
-	sleep(telegraph_time)
-	var/old_pass = charger.pass_flags
-	var/old_throwing = charger.throwing
-	charger.pass_flags |= PASSMOB
-	charger.throwing = TRUE
-	var/list/gored = list()
-	for(var/i in 1 to charge_dist)
-		if(charger.stat != CONSCIOUS || charger.IsParalyzed() || charger.IsStun() || QDELETED(charger))
-			break
-		var/turf/next = get_step(get_turf(charger), facing)
-		if(!next || next.density)
-			break
-		var/blocked = FALSE
-		for(var/obj/structure/S in next.contents)
-			if(S.density && !S.climbable)
-				blocked = TRUE
-				break
-		if(blocked)
-			break
-		if(!step(charger, facing))
-			break
-		for(var/mob/living/L in get_turf(charger))
-			if(L == charger || (L in gored) || L.stat == DEAD)
-				continue
-			gored += L
-			if(istype(W))
-				apply_generic_weapon_damage(L, dam, "stab", get_aimed_zone(L), bclass = BCLASS_STAB)
-			L.apply_status_effect(/datum/status_effect/debuff/vulnerable, vuln_dur)
-			var/turf/throwtarget = get_edge_target_turf(L, facing)
-			L.safe_throw_at(throwtarget, knockback_dist, 1, charger, force = MOVE_FORCE_EXTREMELY_STRONG)
-		if(i < charge_dist)
-			sleep(step_delay)
-	charger.pass_flags = old_pass
-	charger.throwing = old_throwing
-	apply_cooldown(cooldown)
-
-
-
-
-
-
-
-
 
 
 /* 				EXAMPLES
@@ -1299,23 +1246,24 @@ tile_coordinates = list(list(1,1), list(-1,1), list(-1,-1), list(1,-1),list(0,0)
 	var/KD_dur = 1 SECONDS
 	var/self_immob_dur = 1.5 SECONDS
 	var/dam = 50
-	var/pixel_z
 	var/prev_pixel_z
 	var/prev_transform
-	var/transform
 
 
 /datum/special_intent/upper_cut/on_create()
 	. = ..()
-	
+
 	howner.OffBalance(self_immob_dur)
 	howner.Immobilize(self_immob_dur)
 	dam = initial(dam)
+	prev_pixel_z = howner.pixel_z
+	prev_transform = howner.transform
+	addtimer(CALLBACK(src, PROC_REF(settle_visuals), prev_pixel_z, prev_transform), delay + fade_delay)
 	playsound(howner, 'sound/combat/ground_smash_start.ogg', 100, TRUE)
 	if(HAS_TRAIT(howner, TRAIT_BIGGUY))
 		return // windup
 	else
-		animate(howner, pixel_z = pixel_z - 4, time = 3)
+		animate(howner, pixel_z = prev_pixel_z - 4, time = 3)
 	
 
 /datum/special_intent/upper_cut/apply_hit(turf/T)
@@ -1346,8 +1294,8 @@ tile_coordinates = list(list(1,1), list(-1,1), list(-1,-1), list(1,-1),list(0,0)
 	if(HAS_TRAIT(howner, TRAIT_BIGGUY))
 		return
 	else
-		animate(howner, pixel_z = pixel_z + 12, time = 2) //shoryuken
-		animate(pixel_z = prev_pixel_z, transform = turn(transform, pick(-12, 0, 12)), time=2)
+		animate(howner, pixel_z = prev_pixel_z + 12, time = 2) //shoryuken
+		animate(pixel_z = prev_pixel_z, transform = turn(prev_transform, pick(-12, 0, 12)), time=2)
 		animate(transform = prev_transform, time = 0)
 
 	..()
@@ -1376,6 +1324,7 @@ tile_coordinates = list(list(1,1), list(-1,1), list(-1,-1), list(1,-1),list(0,0)
 	dam = initial(dam)
 	prev_pixel_z = howner.pixel_z
 	prev_transform = howner.transform
+	addtimer(CALLBACK(src, PROC_REF(settle_visuals), prev_pixel_z, prev_transform), delay + fade_delay)
 	howner.visible_message(span_warning("[howner] rises on a surge of arcyne force!"), span_warning("I rise on a surge of arcyne force!"))
 	playsound(howner, 'sound/magic/charging.ogg', 100, TRUE)
 	if(!HAS_TRAIT(howner, TRAIT_BIGGUY))

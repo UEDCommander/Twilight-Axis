@@ -97,16 +97,16 @@
 	/// Cleave pattern for hitting secondary targets on normal attacks. Null = no cleave.
 	var/datum/cleave_pattern/cleave
 
-	var/list/static/bonk_animation_types = list(
+	var/static/list/bonk_animation_types = list(
 		BCLASS_BLUNT,
 		BCLASS_SMASH,
 		BCLASS_DRILL,
 	)
-	var/list/static/swipe_animation_types = list(
+	var/static/list/swipe_animation_types = list(
 		BCLASS_CUT,
 		BCLASS_CHOP,
 	)
-	var/list/static/thrust_animation_types = list(
+	var/static/list/thrust_animation_types = list(
 		BCLASS_STAB,
 		BCLASS_PICK,
 	)
@@ -648,8 +648,8 @@
 				custom_offset = 24
 
 			L.play_overhead_private_rclickemote(targetl, taunticon, custom_offset)
+			to_chat(M, span_taunt("[user] taunts [M]!"))
 			user.changeNext_move(CLICK_CD_FAST)	// Mostly to prevent spamming the animation too heavily.
-			to_chat(M, span_taunt("[user] taunts me!"))
 		else
 			M.taunted(user)
 	return
@@ -694,7 +694,7 @@
 			var/mob/living/L = user
 			L.play_overhead_private_rclickemote(targetl, "dismiss")
 			user.changeNext_move(CLICK_CD_FAST)	// Mostly to prevent spamming the animation too heavily.
-			to_chat(M, span_blue("[user] shoos me away."))
+			to_chat(M, span_blue("[user] shoos [M] away."))
 		else
 			M.shood(user)
 	return
@@ -723,7 +723,7 @@
 			var/mob/living/L = user
 			L.play_overhead_private_rclickemote(targetl, "beckon")
 			user.changeNext_move(CLICK_CD_FAST)	// Mostly to prevent spamming the animation too heavily.
-			to_chat(M, span_yellow("[user] beckons me to come closer."))
+			to_chat(M, span_yellow("[user] beckons [M] to come closer."))
 		else
 			M.beckoned(user)
 	return
@@ -749,7 +749,7 @@
 			var/mob/living/L = user
 			L.play_overhead_private_rclickemote(targetl, "wavefriendly")
 			user.changeNext_move(CLICK_CD_FAST)	// Mostly to prevent spamming the animation too heavily.
-			to_chat(M, span_green("[user] gives me a friendly wave."))
+			to_chat(M, span_green("[user] waves friendly at [M]."))
 	return
 
 /datum/intent/simple/headbutt

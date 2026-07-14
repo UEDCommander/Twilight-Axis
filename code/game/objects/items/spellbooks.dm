@@ -7,7 +7,7 @@ Intended to be a reward or a goal for pure mage, allowing them to rebind their a
 	var/open = FALSE
 	icon = 'icons/roguetown/items/books.dmi'
 	icon_state = "spellbookbrown_0"
-	slot_flags = ITEM_SLOT_HIP
+	slot_flags = ITEM_SLOT_HIP | ITEM_SLOT_BACK
 	grid_width = 32
 	grid_height = 32
 	base_icon_state = "spellbookbrown"
@@ -27,7 +27,7 @@ Intended to be a reward or a goal for pure mage, allowing them to rebind their a
 	sewrepair = TRUE
 	anvilrepair = null
 	associated_skill = /datum/skill/combat/arcyne
-	possible_item_intents = list(/datum/intent/mace/strike/wood, /datum/intent/tome/aegis)
+	possible_item_intents = list(/datum/intent/mace/strike/wood, /datum/intent/mace/smash/wood, /datum/intent/tome/aegis)
 	name = "\improper lesser tome of the arcyne"
 	desc = "A crackling, glowing book, filled with runes and symbols that hurt the mind to stare at. It can rebind aspect spells and project an arcyne aegis."
 	special = /datum/special_intent/arcyne_descent

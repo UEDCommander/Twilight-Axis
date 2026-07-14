@@ -14,6 +14,7 @@
 	)
 	fixed_spells = list(
 		/datum/action/cooldown/spell/arcyne_forge,
+		/datum/action/cooldown/spell/mending,
 	)
 
 /datum/magic_aspect/exowardry
@@ -76,7 +77,10 @@
 /datum/magic_aspect/lesser_augmentation
 	name = "Lesser Augmentation"
 	latin_name = "Minor Aspectus Augmenti"
-	desc = "TODO"
+	desc = "Scholars debate whether Augmentation is a first, second, or even third-order school. Its adherents consider themselves third-order - \
+	with the honor of imitating the divine by augmenting the boundless potential of the humen form. Its spells are focused on enhancing the body, \
+	never the mind directly - for the mind is the true province of the divine, and one cannot use magycks to enhance one's own ability to wield magycks so bluntly. \
+	Woe betides those who face a warrior sharpened by the arcyne."
 	aspect_type = ASPECT_MINOR
 	school_color = GLOW_COLOR_BUFF
 	binding_chants = list(
@@ -87,19 +91,18 @@
 		"I calm the potent within.",
 		"Augmentum, me relinquere!",
 	)
-	pointbuy_budget = 4
-	// Budget: 1x 3-cost or 2x 2-cost or 1x 2-cost + fillers
+	pointbuy_budget = 6
 	pointbuy_spells = list(
-		/datum/action/cooldown/spell/haste,
 		/datum/action/cooldown/spell/darkvision,
-		/datum/action/cooldown/spell/stoneskin,
-		/datum/action/cooldown/spell/hawks_eyes,
-		/datum/action/cooldown/spell/giants_strength,
-		/datum/action/cooldown/spell/guidance,
+		/datum/action/cooldown/spell/augment_buff/blood_rush,
+		/datum/action/cooldown/spell/augment_buff/guidance,
 		/datum/action/cooldown/spell/featherfall,
-		/datum/action/cooldown/spell/enlarge,
+		/datum/action/cooldown/spell/augment_buff/enlarge,
 		/datum/action/cooldown/spell/leap,
 		/datum/action/cooldown/spell/nondetection,
+		/datum/action/cooldown/spell/augment_buff/surge,
+		/datum/action/cooldown/spell/augment_buff/precognition,
+		/datum/action/cooldown/spell/augment_buff/grasp,
 		// 1-cost utility filler
 		/datum/action/cooldown/spell/light,
 		/datum/action/cooldown/spell/mending,

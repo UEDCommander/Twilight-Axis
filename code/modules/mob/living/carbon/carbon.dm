@@ -1,14 +1,16 @@
 /mob/living/carbon/Initialize()
 	..()
 
-	pain_threshold = STAWIL * 10
-
-	if(HAS_TRAIT(src, TRAIT_NOPAIN))
-		pain_threshold = 250
+	recalculate_pain_threshold()
 
 	create_reagents(1000)
 	update_body_parts() //to update the carbon's new bodyparts appearance
 	GLOB.carbon_list += src
+
+/mob/living/carbon/proc/recalculate_pain_threshold()
+	pain_threshold = STAWIL * 10
+	if(HAS_TRAIT(src, TRAIT_NOPAIN))
+		pain_threshold = 250
 
 /mob/living/carbon/Destroy()
 	//This must be done first, so the mob ghosts correctly before DNA etc is nulled
@@ -280,6 +282,8 @@
 		playsound(get_turf(src), used_sound, 60, FALSE)
 
 /mob/living/carbon/restrained(ignore_grab = TRUE)
+	if(..())
+		return TRUE
 //	. = (handcuffed || (!ignore_grab && pulledby && pulledby.grab_state >= GRAB_AGGRESSIVE))
 	if(handcuffed)
 		return TRUE
@@ -756,12 +760,14 @@
 /mob/living/carbon/updatehealth()
 	if(status_flags & GODMODE)
 		return
-//	var/total_brute	= 0
+
+
 	var/total_stamina = 0
 	var/total_burn_percent = 0
 	var/total_tox = getToxLoss()
 	var/total_oxy = getOxyLoss()
 	var/used_damage = 0
+
 
 	var/static/list/lethal_zones = list(
 		BODY_ZONE_HEAD,
@@ -1119,7 +1125,6 @@
 				var/bled_out = (blood_volume in -INFINITY to BLOOD_VOLUME_SURVIVE) && !HAS_TRAIT(src, TRAIT_BLOODLOSS_IMMUNE)
 				var/suffocating = getOxyLoss() > 75
 				var/poisoned = health <= HEALTH_THRESHOLD_FULLCRIT && getToxLoss() >= getFireLoss() && getToxLoss() >= getBruteLoss()
-				var/burned = health <= HEALTH_THRESHOLD_FULLCRIT && getFireLoss() >= getBruteLoss()
 				if(bled_out)
 					visible_message(span_danger("<b>[src] collapses, [src.p_their()] skin pale as parchment!</b>"), \
 						span_userdanger("My blood... there is nothing left. I cannot feel my limbs."))
@@ -1132,11 +1137,6 @@
 					visible_message(span_danger("<b>[src] collapses, [src.p_their()] body wracked with poison!</b>"), \
 						span_userdanger("The poison is too much... I cannot go on."))
 					balloon_alert_to_viewers("<font color='#2b8a3e'>poisoned!</font>")
-				else if(burned)
-					visible_message(span_danger("<b>[src] collapses, [src.p_their()] flesh charred and smoking!</b>"), \
-						span_userdanger("My body is too burnt to go on!"))
-					balloon_alert_to_viewers("<font color='#bb2b2b'>burnt down!</font>")
-					playsound(src, 'sound/health/burning.ogg', 60, TRUE)
 				else if(health <= HEALTH_THRESHOLD_FULLCRIT)
 					visible_message(span_danger("<b>[src] collapses, broken and bloodied!</b>"), \
 						span_userdanger("My bones are shattered... I cannot go on."))
