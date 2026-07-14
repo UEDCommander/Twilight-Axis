@@ -1328,7 +1328,10 @@ GLOBAL_VAR_INIT(mobids, 1)
 	SEND_SIGNAL(src, COMSIG_MOB_GET_STATUS_TAB_ITEMS, .)
 	if(client)
 		. += list(list("IC DATE: ", "[get_current_ic_date_as_string()] (CLICK FOR CALENDAR)", "src=[REF(client)];statbrowser_calendar=1"))
-		. += list(list("tod", GLOB.tod, "IC TIME: [get_current_ic_time_as_string()]"))
+		var/current_tod = GLOB.tod
+		if(!istext(current_tod) || !length(current_tod))
+			current_tod = "day"
+		. += list(list("tod", current_tod, "IC TIME: [get_current_ic_time_as_string()]"))
 	return .
 
 /mob/proc/get_stats_tab_items()
