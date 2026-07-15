@@ -19,6 +19,7 @@
 #include "./overrides/portal.dm"
 #include "./overrides/vampire_forms.dm"
 #include "./overrides/discipline_balance.dm"
+#include "./overrides/potence_costs.dm"
 #include "./overrides/celerity_costs.dm"
 #include "./overrides/quietus.dm"
 #include "./overrides/bloodacid_balance.dm"

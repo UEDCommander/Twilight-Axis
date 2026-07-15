@@ -59,10 +59,11 @@
 
 	if(level >= 3)
 		owner.visible_message(span_warning("[owner] tenses their muscles, looking exceptionally strong!"))
-	if(level >= 4)
 		ADD_TRAIT(owner, TRAIT_STRENGTH_UNCAPPED, TA_POTENCE_TRAIT_SOURCE)
+	if(level >= 4)
 		ADD_TRAIT(owner, TRAIT_ZJUMP, TA_POTENCE_TRAIT_SOURCE)
 		ADD_TRAIT(owner, TRAIT_NOFALLDAMAGE1, TA_POTENCE_TRAIT_SOURCE)
+		ADD_TRAIT(owner, TRAIT_ARMOR_NOSPDCAP, TA_POTENCE_TRAIT_SOURCE)
 
 /datum/coven_power/potence/deactivate(atom/target, direct)
 	. = ..()
@@ -72,10 +73,11 @@
 
 	if(level >= 3)
 		owner.visible_message(span_warning("[owner] relaxes their body."))
-	if(level >= 4)
 		REMOVE_TRAIT(owner, TRAIT_STRENGTH_UNCAPPED, TA_POTENCE_TRAIT_SOURCE)
+	if(level >= 4)
 		REMOVE_TRAIT(owner, TRAIT_ZJUMP, TA_POTENCE_TRAIT_SOURCE)
 		REMOVE_TRAIT(owner, TRAIT_NOFALLDAMAGE1, TA_POTENCE_TRAIT_SOURCE)
+		REMOVE_TRAIT(owner, TRAIT_ARMOR_NOSPDCAP, TA_POTENCE_TRAIT_SOURCE)
 
 	do_deactivation_notification()
 
