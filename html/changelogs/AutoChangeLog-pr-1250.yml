@@ -1,4 +1,0 @@
-author: "Vladmar11"
-delete-after: True
-changes:
-  - bugfix: "Исправлено появление второй статпанели при заходе в раунд с включенной вкладкой Round Info"
