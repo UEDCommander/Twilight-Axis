@@ -302,6 +302,33 @@
 	. = ..()
 	. += span_info("Left-clicking the appropriate item with this elixir will gift it a unique appearance.")
 
+/// NOT ACTUALLY AN ENCHANTING KIT
+/// Just wasn't sure where to put it, given its niche use.
+/obj/item/heelkit
+	name = "heel-morphing elixir"
+	desc = "A small container of special morphing dust, specially designed to add heels to any foot-garment lacking them. Arcyne innovations have now reached fashion, much to the dismay of Otavan heel-smiths."
+	icon = 'icons/obj/items/donor_objects.dmi'
+	icon_state = "enchanting_kit"
+	w_class = WEIGHT_CLASS_SMALL
+
+
+/obj/item/heelkit/pre_attack(obj/item/I, mob/user)
+	if(!user || !I)
+		return
+	if(!istype(I, /obj/item/clothing/shoes/roguetown))
+		to_chat(user, span_warning("These are not the appropriate type of item for this elixir."))
+		return
+	I.visible_message(span_notice("The dust sparkles over the item, the contours shifting as \the [I] grows a pair of heels..?"))
+	var/datum/component/SFX = I.GetComponent(/datum/component/item_equipped_movement_rustle)
+	if(SFX)
+		SFX.Destroy()
+	I.name += " (Heeled)"
+	I.AddComponent(/datum/component/item_equipped_movement_rustle, SFX_HEELS, 2)
+	var/obj/item/clothing/shoes/roguetown/SH = I
+	SH.stepnoise_flag = STEPNOISE_HEELS
+	do_sparks(2, TRUE, get_turf(SH))
+	qdel(src)
+
 /////////////////////////////
 // ! Unlocked Donor Kits ! //
 /////////////////////////////
@@ -330,13 +357,15 @@
 
 /obj/item/enchantingkit/gothicsteelarmor
 	name = "'Gothic Steel Armor' morphing elixir"
-	desc = "A small container of special morphing dust, perfect to make a specific item. It can be used to alter the appearance of a Steel Cuirass, Steel Halfplate, or a set of Steel Plate Armor."
+	desc = "A small container of special morphing dust, perfect to make a specific item. It can be used to alter the appearance of a Steel Cuirass, Steel Halfplate, a set of Steel Plate Armor, or a set of Fluted Plate Armor."
 	target_items = list(
-		/obj/item/clothing/suit/roguetown/armor/plate/cuirass			= /obj/item/clothing/suit/roguetown/armor/plate/cuirass/donator_gothic,
-		/obj/item/clothing/suit/roguetown/armor/plate/full				= /obj/item/clothing/suit/roguetown/armor/plate/full/donator_gothic,
-		/obj/item/clothing/suit/roguetown/armor/plate					= /obj/item/clothing/suit/roguetown/armor/plate/donator_gothic
+		/obj/item/clothing/suit/roguetown/armor/plate/full/fluted			= /obj/item/clothing/suit/roguetown/armor/plate/full/donator_gothic,
+		/obj/item/clothing/suit/roguetown/armor/plate/cuirass				= /obj/item/clothing/suit/roguetown/armor/plate/cuirass/donator_gothic,
+		/obj/item/clothing/suit/roguetown/armor/plate/full					= /obj/item/clothing/suit/roguetown/armor/plate/full/donator_gothic,
+		/obj/item/clothing/suit/roguetown/armor/plate						= /obj/item/clothing/suit/roguetown/armor/plate/donator_gothic
 	)
 	result_item = null
+	exact_type = TRUE
 	icon_loadout = /obj/item/clothing/suit/roguetown/armor/plate/full/donator_gothic
 
 /obj/item/enchantingkit/croppedhaubergeon
@@ -446,6 +475,7 @@
 		/obj/item/clothing/suit/roguetown/armor/plate/full								= /obj/item/clothing/suit/roguetown/armor/plate/full/donator_triheartfelt
 	)
 	result_item = null
+	exact_type = TRUE
 	icon_loadout = /obj/item/clothing/suit/roguetown/armor/plate/full/donator_triheartfelt
 
 /obj/item/enchantingkit/weapon/donator_longsword
