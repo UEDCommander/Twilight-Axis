@@ -343,6 +343,11 @@
 	if(force)
 		return TRUE
 
+	if(actor.is_blocked_by_auto_song())
+		if(!silent)
+			to_chat(actor, span_warning("I can't use the ERP panel while performing the song."))
+		return FALSE
+
 	var/mob/living/carbon/human/human_actor = actor
 	if(!istype(human_actor))
 		if(!silent)

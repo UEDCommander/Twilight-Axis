@@ -97,6 +97,9 @@ GLOBAL_LIST_INIT(department_radio_keys, list(
 		message = trim(copytext(sanitize(message), 1, MAX_MESSAGE_LEN))
 	if(!message || message == "")
 		return
+	if(!forced && is_blocked_by_auto_song())
+		to_chat(src, span_warning("I can't speak freely while performing the song."))
+		return
 
 	if(ic_blocked)
 		//The filter warning message shows the sanitized message though.

@@ -55,6 +55,10 @@
 	if(!iscarbon(eater))
 		return FALSE
 	var/mob/living/carbon/C = eater
+	if(C.is_blocked_by_music_consumption())
+		if(!silent)
+			to_chat(user || eater, span_warning("I can't eat or drink while performing music."))
+		return FALSE
 
 	var/obj/item/bodypart/head/dullahan/eaterrelay
 	if(ishuman(src))

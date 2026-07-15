@@ -306,6 +306,9 @@
 		var/mob/living/L = user
 		if(L.stat != CONSCIOUS)
 			return
+		if(L.is_blocked_by_music_consumption())
+			to_chat(user, span_warning("I can't drink while performing music."))
+			return
 		if(iscarbon(user))
 			var/mob/living/carbon/C = user
 			if(C.is_mouth_covered())
