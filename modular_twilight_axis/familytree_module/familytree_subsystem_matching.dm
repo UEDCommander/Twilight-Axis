@@ -150,10 +150,12 @@
 				find_and_confirm_newlywed(H)
 				wait_for_relative_join_phase(H, "favorite unavailable during join/create fallback phase")
 				return
+			if(!H.familytree_setspouse_wait_started)
+				H.familytree_setspouse_wait_started = world.time
 			H.familytree_setspouse_retries++
-			if(H.familytree_setspouse_retries >= 30 && !H.familytree_setspouse_timeout_offered)
+			if((world.time - H.familytree_setspouse_wait_started) >= FAMILYTREE_SETSPOUSE_TIMEOUT && !H.familytree_setspouse_timeout_offered)
 				H.familytree_setspouse_timeout_offered = TRUE
-				ftlog("AddLocal: [H.real_name] setspouse timeout reached (30 retries), offering reset")
+				ftlog("AddLocal: [H.real_name] setspouse timeout reached ([H.familytree_setspouse_retries] retries, [DisplayTimeText(world.time - H.familytree_setspouse_wait_started)] elapsed), offering reset")
 				INVOKE_ASYNC(src, PROC_REF(offer_setspouse_reset), H, status)
 				return
 			ftlog("AddLocal: [H.real_name] favorite not found, waiting 60s")

@@ -154,6 +154,7 @@ SUBSYSTEM_DEF(familytree)
 	if(old_setspouse != H.setspouse)
 		H.familytree_setspouse_retries = 0
 		H.familytree_setspouse_timeout_offered = FALSE
+		H.familytree_setspouse_wait_started = 0
 	H.species_preference_mode = P.species_preference_mode
 	H.preferred_species_types = islist(P.preferred_species_types) ? P.preferred_species_types.Copy() : list()
 	H.preferred_species_anatomy = P.preferred_species_anatomy
@@ -183,6 +184,7 @@ SUBSYSTEM_DEF(familytree)
 		return
 	H.familytree_setspouse_retries = 0
 	H.familytree_setspouse_timeout_offered = FALSE
+	H.familytree_setspouse_wait_started = 0
 	ftlog("target preference changed for [H.real_name]: '[old_target]' -> '[new_target]'")
 	if(H.family_datum || H.familytree_opted_out || H.familytree_confirmation_pending)
 		return

@@ -164,7 +164,7 @@
 	var/offered_target = familytree_get_target_name(H)
 	if(!offered_target || !length(offered_target))
 		return
-	var/result = tgui_alert(H, "Вы уже 30 минут ожидаете фаворита '[offered_target]', но он не найден.\n\nХотите сбросить предпочтение по нику и искать пару по текущим настройкам?", "Семейная система", list("Да, сбросить", "Нет, продолжить ждать"), 60 SECONDS)
+	var/result = tgui_alert(H, "Вы уже [DisplayTimeText(FAMILYTREE_SETSPOUSE_TIMEOUT)] ожидаете фаворита '[offered_target]', но он не найден.\n\nХотите сбросить предпочтение по нику и искать пару по текущим настройкам?", "Семейная система", list("Да, сбросить", "Нет, продолжить ждать"), 60 SECONDS)
 
 	if(!H || QDELETED(H))
 		return
@@ -174,6 +174,7 @@
 		ftlog("SETSPOUSE RESET STALE: [H.real_name] target changed from '[offered_target]' to '[current_target]'")
 		H.familytree_setspouse_retries = 0
 		H.familytree_setspouse_timeout_offered = FALSE
+		H.familytree_setspouse_wait_started = 0
 		if(!H.familytree_assignment_scheduled && !H.familytree_confirmation_pending && !H.family_datum && !H.familytree_opted_out && familytree_pref_enabled(H.familytree_pref))
 			H.familytree_assignment_scheduled = TRUE
 			addtimer(CALLBACK(src, PROC_REF(run_local_assignment), H, H.familytree_pref), 1 SECONDS)
@@ -191,6 +192,7 @@
 		else
 			H.familytree_setspouse_retries = 0
 			H.familytree_setspouse_timeout_offered = FALSE
+			H.familytree_setspouse_wait_started = 0
 		H.familytree_assignment_scheduled = FALSE
 		run_local_assignment(H, status)
 	else
