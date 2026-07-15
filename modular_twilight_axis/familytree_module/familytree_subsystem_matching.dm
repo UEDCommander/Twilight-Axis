@@ -487,6 +487,9 @@
 		return "waiting"
 	if(favorite.familytree_confirmation_pending)
 		return "waiting"
+	if(familytree_pair_blocked(H, favorite))
+		ftlog("TryFavorite: [H.real_name] <-> [favorite.real_name] pair is blocked (mutual refusal), skipping")
+		return "waiting"
 
 	var/mutual_sibling = (H.desired_relative_role == RELATIVE_SIBLING && favorite.desired_relative_role == RELATIVE_SIBLING)
 
@@ -943,6 +946,8 @@
 	if(!house || !person || !anchor?.person || anchor.person == person)
 		return possible_roles
 	if(anchor.cosmetic || anchor.phantom)
+		return possible_roles
+	if(familytree_pair_blocked(person, anchor.person))
 		return possible_roles
 	if(!familytree_relative_species_compatible(person, anchor.person))
 		return possible_roles
