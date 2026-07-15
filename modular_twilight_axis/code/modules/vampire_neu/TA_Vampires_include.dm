@@ -16,7 +16,6 @@
 #include "./overrides/vagabond_vampire.dm"
 #include "./overrides/clan_selection.dm"
 #include "./overrides/bloodsuck.dm"
-#include "./overrides/bloodstarvation.dm"
 #include "./overrides/portal.dm"
 #include "./overrides/vampire_forms.dm"
 #include "./overrides/discipline_balance.dm"
