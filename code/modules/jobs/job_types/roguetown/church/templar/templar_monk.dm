@@ -10,7 +10,7 @@
 		STATKEY_STR = 3, // TA EDIT
 		STATKEY_CON = 2,
 		STATKEY_WIL = 2,
-		STATKEY_SPD = 2
+		STATKEY_SPD = 1
 	)
 	subclass_skills = list(
 		/datum/skill/combat/unarmed = SKILL_LEVEL_EXPERT,
@@ -43,9 +43,16 @@
 	H.cmode_music = 'sound/music/cmode/church/combat_reckoning.ogg'
 	switch(H.patron?.type)
 		if(/datum/patron/divine/undivided)
-			mask = /obj/item/clothing/head/roguetown/roguehood/undivided
+			var/colors = list("Normal", "Clerical")
+			var/colorchoice = input(H,"Choose style", "TAKE UP FASHION") as anything in colors
+			switch(colorchoice)
+				if("Normal")
+					mask = /obj/item/clothing/head/roguetown/roguehood/undivided
+					cloak = /obj/item/clothing/suit/roguetown/shirt/robe/undivided
+				if("Clerical")
+					mask = /obj/item/clothing/head/roguetown/roguehood/undividedcleric
+					cloak = /obj/item/clothing/suit/roguetown/shirt/robe/undividedcleric
 			neck = /obj/item/clothing/neck/roguetown/psicross/undivided
-			cloak = /obj/item/clothing/suit/roguetown/shirt/robe/undivided
 		if(/datum/patron/divine/astrata)
 			mask = /obj/item/clothing/head/roguetown/roguehood/astrata
 			neck = /obj/item/clothing/neck/roguetown/psicross/astrata
@@ -99,7 +106,7 @@
 	shirt = /obj/item/clothing/suit/roguetown/shirt/tunic/black
 	armor = /obj/item/clothing/suit/roguetown/shirt/robe/monk/holy
 	pants = /obj/item/clothing/under/roguetown/tights/black
-	belt = /obj/item/storage/belt/rogue/leather/rope
+	belt = /obj/item/storage/belt/rogue/leather/rope/upgraded
 	beltl = /obj/item/storage/belt/rogue/pouch/coins/mid
 	beltr = /obj/item/storage/keyring/acolyte
 	shoes = /obj/item/clothing/shoes/roguetown/sandals
