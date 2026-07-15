@@ -46,6 +46,17 @@ type Data = {
   playing: boolean;
   repeat_enabled: boolean;
   auto_singing_title?: string | null;
+  band_invite_active: boolean;
+  band_invite_seconds_left: number;
+  band_members: BandMember[];
+  is_band_leader: boolean;
+};
+
+type BandMember = {
+  name: string;
+  instrument: string;
+  track: string;
+  mode: string;
 };
 
 export const BardMusicLibrary = () => {
@@ -57,6 +68,10 @@ export const BardMusicLibrary = () => {
     playing,
     repeat_enabled,
     auto_singing_title,
+    band_invite_active,
+    band_invite_seconds_left,
+    band_members = [],
+    is_band_leader,
   } = data;
   const [lyricsDraft, setLyricsDraft] = useState('');
   const [jsonDraft, setJsonDraft] = useState('');
@@ -109,6 +124,14 @@ export const BardMusicLibrary = () => {
                     onClick={() => act('toggle_repeat')}
                   >
                     Repeat
+                  </Button>
+                  <Button
+                    icon="users"
+                    selected={band_invite_active}
+                    disabled={band_invite_active && !is_band_leader}
+                    onClick={() => act('invite_band')}
+                  >
+                    Invite band
                   </Button>
                   <Button
                     icon={playing ? 'stop' : 'play'}
@@ -182,6 +205,40 @@ export const BardMusicLibrary = () => {
               )}
             </Section>
           </Stack.Item>
+
+          {band_invite_active && (
+            <Stack.Item>
+              <Section
+                title={`Band invite (${band_invite_seconds_left}s)`}
+                buttons={
+                  is_band_leader && (
+                    <>
+                      <Button icon="play" onClick={() => act('start_band')}>
+                        Start
+                      </Button>
+                      <Button icon="times" color="red" onClick={() => act('cancel_band')}>
+                        Cancel
+                      </Button>
+                    </>
+                  )
+                }
+              >
+                {band_members.length ? (
+                  <Stack wrap>
+                    {band_members.map((member, index) => (
+                      <Stack.Item key={`${member.name}-${index}`}>
+                        <Box>
+                          <b>{member.name}</b> - {member.instrument}: {member.track} ({member.mode})
+                        </Box>
+                      </Stack.Item>
+                    ))}
+                  </Stack>
+                ) : (
+                  <Box color="label">Waiting for performers.</Box>
+                )}
+              </Section>
+            </Stack.Item>
+          )}
 
           <Stack.Item grow basis={0}>
             <Stack fill>

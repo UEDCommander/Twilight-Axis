@@ -3684,6 +3684,7 @@
 #include "modular_twilight_axis\code\game\objects\items\rogueitems\horns.dm"
 #include "modular_twilight_axis\code\game\objects\items\rogueitems\inquisitionrelics.dm"
 #include "modular_twilight_axis\code\game\objects\items\rogueitems\instruments.dm"
+#include "modular_twilight_axis\code\modules\bard_music\bard_music.dm"
 #include "modular_twilight_axis\code\game\objects\items\rogueitems\keyrings.dm"
 #include "modular_twilight_axis\code\game\objects\items\rogueitems\keys.dm"
 #include "modular_twilight_axis\code\game\objects\items\rogueitems\leash.dm"
