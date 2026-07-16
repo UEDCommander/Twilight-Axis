@@ -85,8 +85,6 @@
 	icon_state = "instrike"
 	item_d_type = "blunt"
 	intent_intdamage_factor = BLUNT_DEFAULT_INT_DAMAGEFACTOR
-	effective_range = 1
-	effective_range_type = EFF_RANGE_ABOVE
 
 //Punish = Non-lethal sorta damage.
 /datum/intent/whip/punish
