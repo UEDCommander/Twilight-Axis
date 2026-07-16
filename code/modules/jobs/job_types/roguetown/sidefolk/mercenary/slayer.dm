@@ -13,7 +13,7 @@
 		STATKEY_STR = 2, 
 		STATKEY_CON = 5,
 		STATKEY_WIL = 2,
-		STATKEY_INT = -3,
+		STATKEY_INT = -3, // Brain dented in an accident involving 2 squirrels and a drunk zizite.
 		STATKEY_SPD = -1,
 		STATKEY_PER = -1
 	)
