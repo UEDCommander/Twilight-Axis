@@ -32,7 +32,7 @@
 	var/mob/dead/observer/G = usr
 	var/paramslist = params2list(params)
 	if(paramslist["right"]) // screen objects don't do the normal Click() stuff so we'll cheat
-		G.open_orbit_menu() // TA EDIT
+	//	G.open_orbit_menu() // TA EDIT
 	else
 		if(G.client)
 			if(isscryeye(G) || G.trapped)
