@@ -1,0 +1,4 @@
+author: "WeNeedMorePhoron"
+delete-after: True
+changes:
+  - admin: "Add the ability for admins / coders to download player saves."
