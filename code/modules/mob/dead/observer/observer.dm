@@ -258,6 +258,10 @@ Works together with spawning an observer, noted above.
 		SSdroning.kill_loop(client)
 		SSdroning.kill_droning(client)
 	var/mob/dead/observer/ghost = new ghostpath(src)
+	// TA EDIT START
+	ghost.ghost_body_anchor = src
+	ghost.ghost_body_anchor_turf = get_turf(src)
+	// TA EDIT END
 	ghost.ghostize_time = world.time
 	SStgui.on_transfer(src, ghost)
 	ghost.can_reenter_corpse = reenter
@@ -343,10 +347,10 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 		return body_turf
 	return ghost_body_anchor_turf
 
+// TA EDIT START
 /mob/dead/observer/proc/can_move_near_body(turf/target_turf)
-	return TRUE
-
-/mob/dead/observer/rogue/can_move_near_body(turf/target_turf)
+	if(istype(src, /mob/dead/observer/admin) || istype(src, /mob/dead/observer/eye))
+		return TRUE
 	var/turf/body_turf = get_ghost_body_turf()
 	if(!body_turf || !target_turf)
 		return TRUE
@@ -365,11 +369,12 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 		next_body_range_warning = world.time + 2 SECONDS
 	return FALSE
 
-/mob/dead/observer/rogue/forceMove(atom/destination)
+/mob/dead/observer/forceMove(atom/destination)
 	var/turf/target_turf = get_turf(destination)
 	if(!can_move_near_body(target_turf))
 		return FALSE
 	return ..()
+// TA EDIT END
 
 /mob/dead/observer/Move(NewLoc, direct)
 	if(updatedir)
