@@ -638,7 +638,7 @@ have ways of interacting with a specific atom and control it. They posses a blac
 		return FALSE
 
 	var/mob/living/living_target = target
-	if(QDELETED(living_target) || living_target.stat == DEAD)
+	if(QDELETED(living_target))
 		reset_melee_attack_progress()
 		return FALSE
 

@@ -453,7 +453,7 @@
 		return FALSE
 
 	var/mob/living/living_target = attacked_target
-	if(QDELETED(living_target) || living_target.stat == DEAD)
+	if(QDELETED(living_target))
 		reset_melee_attack_progress()
 		return FALSE
 
