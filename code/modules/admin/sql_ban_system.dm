@@ -1120,7 +1120,7 @@
 		to_chat(usr, span_danger("The selected bans are no longer active."))
 		return FALSE
 	var/target = ban_target_string(target_key, target_ip, target_cid)
-	var/server_unban = "Server" in roles
+	var/server_unban = ("Server" in roles)
 	var/list/non_server_roles = roles.Copy()
 	non_server_roles -= "Server"
 	var/grouped_roles = non_server_roles.Join(", ")
