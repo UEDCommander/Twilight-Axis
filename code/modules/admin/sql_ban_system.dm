@@ -1164,6 +1164,13 @@
 	var/role_text = roles.len == 1 ? roles[1] : "[roles.len] roles: [roles.Join(", ")]"
 	if(tgui_alert(usr, "Remove [target]'s ban from [role_text]?", "Unban confirmation", list("Cancel", "Unban")) != "Unban")
 		return FALSE
+	var/unban_reason = tgui_input_text(usr, "Enter the reason for this unban.", "Unban reason", null, 1024, TRUE)
+	if(isnull(unban_reason))
+		return FALSE
+	unban_reason = trim(unban_reason)
+	if(!length(unban_reason))
+		to_chat(usr, span_danger("An unban reason is required."))
+		return FALSE
 	id_list = active_ban_ids.Join(",")
 	var/datum/DBQuery/query_unban = SSdbcore.NewQuery({"
 		UPDATE [format_table_name("ban")] SET
@@ -1190,9 +1197,9 @@
 	var/kna = key_name_admin(usr)
 	var/grouped_roles = roles.Join(", ")
 	var/unban_subject = roles.len == 1 ? roles[1] : "[roles.len] roles: [grouped_roles]"
-	log_admin_private("[kn] has unbanned [target] from [unban_subject].")
-	message_admins("[kna] has unbanned [target] from [unban_subject].")
-	world.TgsAnnounceUnban(target, usr.ckey, roles)
+	log_admin_private("[kn] has unbanned [target] from [unban_subject]. Reason: [unban_reason]")
+	message_admins("[kna] has unbanned [target] from [unban_subject]. Reason: [unban_reason]")
+	world.TgsAnnounceUnban(target, usr.ckey, roles, unban_reason)
 	var/list/notified_clients = list()
 	var/client/key_client = target_ckey ? GLOB.directory[target_ckey] : null
 	var/notification_text = roles.len == 1 ? roles[1] : "roles: [grouped_roles]"

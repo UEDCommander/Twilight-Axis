@@ -35,13 +35,14 @@
 
 	var/is_role_ban = roles[1] != "Server"
 
-	var/title = is_role_ban ? "Бан ролей!" : "Бан!"
+	var/title = is_role_ban ? "Бан ролей" : "Бан"
 	var/description = "Игрок теряет возможность играть на сервере."
 
 	if(is_role_ban)
-		description = "Игрок теряет указанные роли:\n"
+		var/list/role_lines = list()
 		for(var/role_name in roles)
-			description += "- [role_name]\n"
+			role_lines += "• `[role_name]`"
+		description = "Игрок потерял доступ к указанным ролям:\n[role_lines.Join("\n")]"
 
 	description += "\n"
 
@@ -270,7 +271,7 @@
 		admin_notes_channel
 	)
 
-/world/proc/TgsAnnounceUnban(player_ckey, admin_ckey, roles)
+/world/proc/TgsAnnounceUnban(player_ckey, admin_ckey, roles, reason)
 	if(!TgsAvailable())
 		return
 
@@ -298,13 +299,13 @@
 		role_lines += "• `[role]`"
 	var/description
 	if(server_unban && !length(non_server_roles))
-		description = "Игрок может играть на сервере!"
+		description = "Игрок получил доступ к серверу!"
 	else if(server_unban)
-		description = "Игрок может играть на сервере и ему доступны роли:\n[role_lines.Join("\n")]"
+		description = "Игрок получил доступ к серверу и указанным ролям:\n[role_lines.Join("\n")]"
 	else if(length(non_server_roles) == 1)
-		description = "Игроку доступна роль `[non_server_roles[1]]`!"
+		description = "Игрок получил доступ к указанной роли `[non_server_roles[1]]`!"
 	else
-		description = "Игроку доступны роли:\n[role_lines.Join("\n")]"
+		description = "Игрок получил доступ к указанным ролям:\n[role_lines.Join("\n")]"
 
 	var/datum/tgs_chat_embed/structure/embed = new()
 	embed.title = "Разбан"
@@ -323,12 +324,18 @@
 		"Администратор", "`[admin_ckey]`"
 	)
 
+	var/datum/tgs_chat_embed/field/field_reason = new(
+		"Причина", "[copytext_char(reason, 1)]"
+	)
+
 	field_player_ckey.is_inline = TRUE
 	field_admin_ckey.is_inline = TRUE
+	field_reason.is_inline = FALSE
 
 	embed.fields = list(
 		field_player_ckey,
 		field_admin_ckey,
+		field_reason,
 	)
 
 	if(admin_bans_channel)
