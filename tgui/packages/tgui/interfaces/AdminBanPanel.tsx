@@ -46,7 +46,6 @@ type SearchForm = {
   admin_key?: string;
   player_ip?: string;
   player_cid?: string;
-  page: number;
   active_only: BooleanLike;
 };
 
@@ -82,7 +81,6 @@ type Data = {
   search: SearchForm;
   has_search: BooleanLike;
   total_bans: number;
-  page_count: number;
   results: BanResult[];
 };
 
@@ -191,7 +189,6 @@ export const AdminBanPanel = (props) => {
     search,
     has_search,
     total_bans,
-    page_count,
     results = [],
   } = data;
 
@@ -251,7 +248,7 @@ export const AdminBanPanel = (props) => {
 
   useEffect(() => {
     setSelectedBanIds([]);
-  }, [search?.page, results.map((result) => result.id).join(',')]);
+  }, [results.map((result) => result.id).join(',')]);
 
   const activeResultIds = useMemo(
     () => results.filter((result) => !!result.active).map((result) => result.id),
@@ -807,7 +804,7 @@ export const AdminBanPanel = (props) => {
                         disabled={!activeResultIds.length}
                         onClick={() => setSelectedBanIds(activeResultIds)}
                       >
-                        Select active on page
+                        Select all active
                       </Button>
                       <Button
                         disabled={!selectedBanIds.length}
@@ -834,7 +831,9 @@ export const AdminBanPanel = (props) => {
                     return (
                       <Section
                         key={result.id}
-                        title={`${result.target} — ${result.role}`}
+                        title={`${result.target} — ${
+                          result.role === 'Server' ? 'Server ban' : result.role
+                        }`}
                         buttons={
                           <>
                             {!!result.active && (
@@ -912,37 +911,6 @@ export const AdminBanPanel = (props) => {
               </Stack.Item>
             )}
 
-            {!!has_search && page_count > 1 && (
-              <Stack.Item>
-                <Stack justify="center" align="center">
-                  <Stack.Item>
-                    <Button
-                      icon="chevron-left"
-                      disabled={search.page <= 0}
-                      onClick={() =>
-                        act('set_page', { page: search.page - 1 })
-                      }
-                    >
-                      Previous
-                    </Button>
-                  </Stack.Item>
-                  <Stack.Item>
-                    Page {search.page + 1} of {page_count}
-                  </Stack.Item>
-                  <Stack.Item>
-                    <Button
-                      icon="chevron-right"
-                      disabled={search.page >= page_count - 1}
-                      onClick={() =>
-                        act('set_page', { page: search.page + 1 })
-                      }
-                    >
-                      Next
-                    </Button>
-                  </Stack.Item>
-                </Stack>
-              </Stack.Item>
-            )}
           </Stack>
         )}
       </Window.Content>

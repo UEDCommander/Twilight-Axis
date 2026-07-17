@@ -364,7 +364,6 @@
 	var/search_player_cid
 	var/search_page = 0
 	var/search_active_only = TRUE
-	var/bans_per_page = 25
 
 /datum/admin_ban_panel/New(datum/admins/new_admin_holder, panel_mode = "ban", player_key, player_ip, player_cid, role, duration = 1440, applies_to_admins, reason, new_edit_id, page, admin_key)
 	admin_holder = new_admin_holder
@@ -443,7 +442,6 @@
 		"admin_key" = search_admin_key,
 		"player_ip" = search_player_ip,
 		"player_cid" = search_player_cid,
-		"page" = search_page,
 		"active_only" = search_active_only,
 	)
 	if(mode == "unban")
@@ -451,7 +449,6 @@
 	else
 		data["has_search"] = FALSE
 		data["total_bans"] = 0
-		data["page_count"] = 1
 		data["results"] = list()
 	return data
 
@@ -475,9 +472,6 @@
 			search_active_only = !!params["active_only"]
 			search_page = 0
 			mode = "unban"
-			return TRUE
-		if("set_page")
-			search_page = max(0, text2num(params["page"]))
 			return TRUE
 		if("submit_ban")
 			return submit_ban(params)
@@ -529,7 +523,6 @@
 /datum/admin_ban_panel/proc/populate_unban_data(list/data)
 	data["has_search"] = FALSE
 	data["total_bans"] = 0
-	data["page_count"] = 1
 	data["results"] = list()
 	if(!search_player_key && !search_admin_key && !search_player_ip && !search_player_cid)
 		return
@@ -543,37 +536,6 @@
 		"player_ip" = search_player_ip || null,
 		"player_cid" = search_player_cid || null,
 	)
-	var/datum/DBQuery/query_unban_count_bans = SSdbcore.NewQuery({"
-		SELECT COUNT(id)
-		FROM [format_table_name("ban")]
-		WHERE
-			(:player_key IS NULL OR ckey = :player_key) AND
-			(:admin_key IS NULL OR a_ckey = :admin_key) AND
-			(:player_ip IS NULL OR ip = INET_ATON(:player_ip)) AND
-			(:player_cid IS NULL OR computerid = :player_cid)
-			[active_filter]
-	"}, query_parameters)
-	if(!query_unban_count_bans.warn_execute())
-		qdel(query_unban_count_bans)
-		return
-	var/ban_count = 0
-	if(query_unban_count_bans.NextRow())
-		ban_count = text2num(query_unban_count_bans.item[1])
-	qdel(query_unban_count_bans)
-	var/page_count = 1
-	var/remaining_bans = ban_count
-	while(remaining_bans > bans_per_page)
-		page_count++
-		remaining_bans -= bans_per_page
-	search_page = min(search_page, page_count - 1)
-	data["total_bans"] = ban_count
-	data["page_count"] = page_count
-	var/list/search_data = data["search"]
-	search_data["page"] = search_page
-	if(!ban_count)
-		return
-	query_parameters["skip"] = bans_per_page * search_page
-	query_parameters["take"] = bans_per_page
 	var/datum/DBQuery/query_unban_search_bans = SSdbcore.NewQuery({"
 		SELECT
 			id,
@@ -600,8 +562,7 @@
 			(:player_ip IS NULL OR ip = INET_ATON(:player_ip)) AND
 			(:player_cid IS NULL OR computerid = :player_cid)
 			[active_filter]
-		ORDER BY id DESC
-		LIMIT :skip, :take
+		ORDER BY CASE WHEN role = 'Server' THEN 0 ELSE 1 END, id DESC
 	"}, query_parameters)
 	if(!query_unban_search_bans.warn_execute())
 		qdel(query_unban_search_bans)
@@ -637,6 +598,7 @@
 			"active" = !expired && !unban_datetime,
 		))
 	qdel(query_unban_search_bans)
+	data["total_bans"] = length(results)
 	data["results"] = results
 
 
@@ -1101,9 +1063,6 @@
 	if(!length(ban_ids))
 		to_chat(usr, span_danger("No active bans were selected."))
 		return FALSE
-	if(length(ban_ids) > 100)
-		to_chat(usr, span_danger("No more than 100 bans can be removed at once."))
-		return FALSE
 	var/id_list = ban_ids.Join(",")
 	var/datum/DBQuery/query_get_bans = SSdbcore.NewQuery({"
 		SELECT
@@ -1161,7 +1120,19 @@
 		to_chat(usr, span_danger("The selected bans are no longer active."))
 		return FALSE
 	var/target = ban_target_string(target_key, target_ip, target_cid)
-	var/role_text = roles.len == 1 ? roles[1] : "[roles.len] roles: [roles.Join(", ")]"
+	var/server_unban = "Server" in roles
+	var/list/non_server_roles = roles.Copy()
+	non_server_roles -= "Server"
+	var/grouped_roles = non_server_roles.Join(", ")
+	var/role_text
+	if(server_unban && length(non_server_roles))
+		role_text = "the server and roles: [grouped_roles]"
+	else if(server_unban)
+		role_text = "the server"
+	else if(length(non_server_roles) == 1)
+		role_text = non_server_roles[1]
+	else
+		role_text = "roles: [grouped_roles]"
 	if(tgui_alert(usr, "Remove [target]'s ban from [role_text]?", "Unban confirmation", list("Cancel", "Unban")) != "Unban")
 		return FALSE
 	var/unban_reason = tgui_input_text(usr, "Enter the reason for this unban.", "Unban reason", null, 1024, TRUE)
@@ -1195,14 +1166,25 @@
 	qdel(query_unban)
 	var/kn = key_name(usr)
 	var/kna = key_name_admin(usr)
-	var/grouped_roles = roles.Join(", ")
-	var/unban_subject = roles.len == 1 ? roles[1] : "[roles.len] roles: [grouped_roles]"
+	var/unban_subject
+	var/notification_text
+	if(server_unban && length(non_server_roles))
+		unban_subject = "the server and roles: [grouped_roles]"
+		notification_text = "the server and roles: [grouped_roles]"
+	else if(server_unban)
+		unban_subject = "the server"
+		notification_text = "the server"
+	else if(length(non_server_roles) == 1)
+		unban_subject = non_server_roles[1]
+		notification_text = non_server_roles[1]
+	else
+		unban_subject = "roles: [grouped_roles]"
+		notification_text = "roles: [grouped_roles]"
 	log_admin_private("[kn] has unbanned [target] from [unban_subject]. Reason: [unban_reason]")
 	message_admins("[kna] has unbanned [target] from [unban_subject]. Reason: [unban_reason]")
 	world.TgsAnnounceUnban(target, usr.ckey, roles, unban_reason)
 	var/list/notified_clients = list()
 	var/client/key_client = target_ckey ? GLOB.directory[target_ckey] : null
-	var/notification_text = roles.len == 1 ? roles[1] : "roles: [grouped_roles]"
 	if(key_client)
 		build_ban_cache(key_client)
 		to_chat(key_client, span_boldannounce("[usr.client.key] has removed your ban from [notification_text]."))
