@@ -38,11 +38,11 @@
 // DR Absorb: damage reduced by tier, ALL damage goes to armor integrity (none to HP). Blunt, fire, acid.
 // DR Pierce: damage reduced by tier, reduced damage STILL hits HP. Armor also takes integrity damage. Bullets.
 // DBLOCK: tier pass/fail penetration system. Slash, stab, piercing.
-#define ARMOR_DR_ABSORB_TYPES list("blunt", "fire", "acid")
+#define ARMOR_DR_ABSORB_TYPES list("blunt", "fire", "acid") //TA EDIT
 #define ARMOR_DR_PIERCE_TYPES list("bullet") //TA EDIT
 #define ARMOR_DR_TYPES list("blunt", "fire", "acid", "bullet") //TA EDIT
 // Resist DR types: worn real armor absorbs these even at a 0 rating (metal shows no fire/acid pips but still)
-#define ARMOR_DR_RESIST_TYPES list("fire", "acid")
+#define ARMOR_DR_RESIST_TYPES list("fire", "acid") //TA EDIT
 #define ARMOR_DBLOCK_TYPES list("slash", "stab", "piercing")
 
 // Penetration passthrough fractions
