@@ -26,7 +26,7 @@
 		/obj/item/rogueore/iron = 2,
 		/obj/item/natural/bundle/fibers = 2,
 		/obj/item/reagent_containers/food/snacks/tallow = 1,
-		/obj/item/ccg_card_generator/common = 3,
+		/obj/item/ccg_card_generator/common = 5,
 		/obj/item/ccg_card_booster = 2,
 		/obj/item/ccg_card_booster/premium = 1,
 		//clothing
@@ -177,8 +177,8 @@
 		/obj/item/rogueore/silver = 1,
 		/obj/item/ingot/iron = 2,
 		/obj/item/reagent_containers/food/snacks/tallow = 1,
-		/obj/item/ccg_card_generator/common = 4,
-		/obj/item/ccg_card_generator/rare = 3,
+		/obj/item/ccg_card_generator/common = 5,
+		/obj/item/ccg_card_generator/rare = 4,
 		/obj/item/ccg_card_booster = 2,
 		/obj/item/ccg_card_booster/premium = 1,
 		//clothing
@@ -346,8 +346,8 @@
 		/obj/item/rogueore/silver = 1,
 		/obj/item/ingot/steel = 2,
 		/obj/item/ccg_card_generator/common = 1,
-		/obj/item/ccg_card_generator/rare = 3,
-		/obj/item/ccg_card_generator/unique = 2,
+		/obj/item/ccg_card_generator/rare = 4,
+		/obj/item/ccg_card_generator/unique = 3,
 		/obj/item/ccg_card_booster = 2,
 		/obj/item/ccg_card_booster/premium = 1,
 		//clothing

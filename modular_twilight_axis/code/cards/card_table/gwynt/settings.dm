@@ -906,6 +906,13 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 	to_chat(user, span_notice("You take a card battle deck."))
 	return TRUE
 
+/datum/preferences/proc/ccg_open_preferences_deckbuilder(mob/user)
+	if(!user?.client || !ccg_require_sql(user))
+		return FALSE
+	var/datum/ccg_deckbuilder_panel/panel = new()
+	panel.ui_interact(user)
+	return TRUE
+
 /datum/preferences/proc/ccg_export_active_deck(mob/user)
 	ccg_clean_cards()
 	var/list/spec = ccg_active_deck_spec()
