@@ -855,9 +855,6 @@ export const CardDeckBuilder = () => {
               <Button onClick={() => act('import_deck')}>
                 <Icon name="download" /> Import
               </Button>
-              <Button color="average" onClick={() => act('start_solo')}>
-                <Icon name="play" /> Start Solo
-              </Button>
             </div>
             <div style={{ display: 'flex', gap: '8px' }}>
               {(

@@ -938,36 +938,6 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 	to_chat(user, span_warning("Your pool is missing cards for this deck, or the imported deck failed to save."))
 	return FALSE
 
-/datum/preferences/proc/ccg_start_solo_match(mob/user)
-	ccg_clean_cards()
-	if(!user)
-		return FALSE
-	var/list/deck_cards = length(ccg_saved_deck_cards) ? ccg_saved_deck_cards.Copy() : ccg_first_deck_cards(ccg_saved_deck_faction)
-	if(deck_cards.len <= 1)
-		to_chat(user, span_warning("The active Gwynt deck needs more than one card before a solo match can start."))
-		return FALSE
-	var/turf/start_turf = get_turf(user)
-	var/obj/item/ccg_deck/player_deck = new(start_turf)
-	player_deck.name = "solo Gwynt deck"
-	player_deck.set_faction(ccg_saved_deck_faction, ccg_saved_deck_leader)
-	player_deck.set_cards(deck_cards)
-	player_deck.owner_ckey = user.ckey
-	player_deck.loaded_from_preferences = TRUE
-	var/obj/item/ccg_deck/opponent_deck = new(start_turf)
-	opponent_deck.name = "solo opponent Gwynt deck"
-	opponent_deck.set_faction(ccg_saved_deck_faction, ccg_saved_deck_leader)
-	opponent_deck.set_cards(deck_cards)
-	opponent_deck.owner_ckey = user.ckey
-	opponent_deck.loaded_from_preferences = TRUE
-	player_deck.match = new(player_deck, user, player_deck, user, opponent_deck)
-	opponent_deck.match_host = player_deck
-	opponent_deck.match = player_deck.match
-	user.put_in_hands(player_deck)
-	opponent_deck.ui_interact(user)
-	player_deck.ui_interact(user)
-	to_chat(user, span_notice("A solo Gwynt match starts. Use both opened deck windows to play both sides."))
-	return TRUE
-
 /datum/ccg_deckbuilder_panel
 	var/obj/item/ccg_deck/deck
 
@@ -1215,9 +1185,6 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 			if(deck)
 				deck.set_faction(P.ccg_saved_deck_faction, P.ccg_saved_deck_leader)
 				deck.set_cards(P.ccg_saved_deck_cards)
-			return TRUE
-		if("start_solo")
-			P.ccg_start_solo_match(user)
 			return TRUE
 		if("load_saved_deck")
 			if(deck)
