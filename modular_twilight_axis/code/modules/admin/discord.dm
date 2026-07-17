@@ -270,7 +270,7 @@
 		admin_notes_channel
 	)
 
-/world/proc/TgsAnnounceUnban(player_ckey, admin_ckey, role)
+/world/proc/TgsAnnounceUnban(player_ckey, admin_ckey, roles)
 	if(!TgsAvailable())
 		return
 
@@ -280,9 +280,31 @@
 	if(!admin_bans_channel && !admin_bans_channel2)
 		return
 
-	var/description = "Игроку доступна роль `[role]`!"
-	if(lowertext(role) == "server")
+	var/list/unbanned_roles
+	if(islist(roles))
+		var/list/role_list = roles
+		unbanned_roles = role_list.Copy()
+	else
+		unbanned_roles = list(roles)
+	var/list/non_server_roles = list()
+	var/server_unban = FALSE
+	for(var/role in unbanned_roles)
+		if(lowertext("[role]") == "server")
+			server_unban = TRUE
+		else
+			non_server_roles |= role
+	var/list/role_lines = list()
+	for(var/role in non_server_roles)
+		role_lines += "• `[role]`"
+	var/description
+	if(server_unban && !length(non_server_roles))
 		description = "Игрок может играть на сервере!"
+	else if(server_unban)
+		description = "Игрок может играть на сервере и ему доступны роли:\n[role_lines.Join("\n")]"
+	else if(length(non_server_roles) == 1)
+		description = "Игроку доступна роль `[non_server_roles[1]]`!"
+	else
+		description = "Игроку доступны роли:\n[role_lines.Join("\n")]"
 
 	var/datum/tgs_chat_embed/structure/embed = new()
 	embed.title = "Разбан"
@@ -314,7 +336,6 @@
 
 	if(admin_bans_channel2)
 		send2chat(message, admin_bans_channel2)
-
 
 /world/proc/TgsAnnounceAdminMessageDeletion(admin_ckey, target_key, type, text)
 	if(!TgsAvailable())
