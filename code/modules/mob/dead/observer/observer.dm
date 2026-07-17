@@ -1141,12 +1141,13 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 	if(!J)
 		J = SSjob.GetJob(assigned_role)
 	if(J)
-		var/department = SSjob.bitflag_to_department(J.department_flag, J.obsfuscated_job)
-		var/list/department_colors = JCOLOR_BY_DEPARTMENT
-		if(department_colors[department])
-			resolved_color = department_colors[department]
-		else if(J.selection_color)
+		if(J.selection_color)
 			resolved_color = J.selection_color
+		else
+			var/department = SSjob.bitflag_to_department(J.department_flag, J.obsfuscated_job)
+			var/list/department_colors = JCOLOR_BY_DEPARTMENT
+			if(department_colors[department])
+				resolved_color = department_colors[department]
 
 	if(role_color_cache)
 		role_color_cache[assigned_role] = resolved_color || ""

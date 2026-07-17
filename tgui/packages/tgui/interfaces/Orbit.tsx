@@ -352,7 +352,11 @@ function buildIndexedTarget(
     ? getTextColorForBackground(item.selection_color)
     : undefined;
 
-  const groupKey = item.department || roleLabel;
+  const groupKey =
+    sectionKey === 'alive' &&
+    (item.department === 'Vanguard' || item.department === 'Town Guard')
+      ? 'Garrison'
+      : item.department || roleLabel;
 
   return {
     ...item,
