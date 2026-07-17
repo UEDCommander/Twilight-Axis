@@ -359,6 +359,7 @@
 					to_chat(user, span_info("You begin loading [src]..."))
 					if(move_after(user, load_time_skill, target = user))
 						if (chambered && !chambered.BB)
+							to_chat(user, "<span class='warning'>You clear [src] and load it with a new [V.name].</span>")
 							chambered.forceMove(drop_location())
 							chambered = null
 						var/num_loaded = magazine.attackby(A, user, params, TRUE)
