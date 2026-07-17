@@ -1014,3 +1014,23 @@
   - bugfix: wildshaping will no longer remove your tired status
   probbrie:
   - rscadd: Added wide palmate antlers to character customisation.
+2026-07-17:
+  FreeStylaLT:
+  - sound: Saccharine Heels (Baothan Heretic boots) now make the appropriate heel
+      SFX.
+  Ollanius:
+  - bugfix: Purchasing a refitting kit now properly vends a refitting kit.
+  - balance: Reduces cost of a refitting kit from 50 to 25, as it's wholly cosmetic.
+  WeNeedMorePhoron:
+  - rscadd: Councillors lose Stewardry key except for Cofferers, who cannot take crafting
+      virtues
+  - rscadd: Added a confirmation prompt to "Start Now" if there's more than one client
+      in game, defaulting to NO on the left against normal intuition, to prevent accidentally
+      starting live server early due to roundstart focus hijack.
+  - rscadd: Nerfs STR and PER soft cap to 3% from 5%
+  - rscadd: Fixes random vices rolling two restricted vice, make it indicate what
+      extra vice you get
+  - admin: Add the ability for admins / coders to download player saves.
+  - bugfix: Give Councillors keep key back
+  probbrie:
+  - balance: added Dual Wield to Zeybek when they choose twin shamshirs
