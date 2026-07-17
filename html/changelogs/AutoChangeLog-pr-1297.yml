@@ -1,0 +1,5 @@
+author: "GoodGrief1488"
+delete-after: True
+changes:
+  - qol: "упростил использование кнута"
+  - balance: "сделал кнут эффективней"
