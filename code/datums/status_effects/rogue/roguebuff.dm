@@ -1,5 +1,27 @@
 /datum/status_effect/buff
 	status_type = STATUS_EFFECT_REFRESH
+	/// Buffs sharing this group are mutually exclusive; only the highest exclusive_priority stays.
+	var/exclusive_group = null
+	/// Higher wins within a group; on a tie the incumbent is kept.
+	var/exclusive_priority = 0
+	/// TRUE if refused on-apply by a stronger group member
+	var/rejected_by_exclusion = FALSE
+
+/datum/status_effect/buff/on_apply()
+	if(exclusive_group && owner)
+		var/list/outranked = list()
+		for(var/datum/status_effect/buff/rival in owner.status_effects)
+			if(rival == src || rival.exclusive_group != exclusive_group)
+				continue
+			if(rival.exclusive_priority >= exclusive_priority)
+				rejected_by_exclusion = TRUE
+				effectedstats = list()
+				owner.balloon_alert_to_viewers("superseded!")
+				return FALSE
+			outranked += rival
+		for(var/datum/status_effect/buff/loser in outranked)
+			qdel(loser) // Destroy() handles list cleanup + on_remove
+	return ..()
 
 
 /datum/status_effect/buff/drunk
@@ -578,8 +600,10 @@
 /datum/status_effect/buff/healing/tick()
 	if(block_combat_mode && owner.cmode)
 		return
-	if(HAS_TRAIT(owner, TRAIT_IRONMAN))
+	if(HAS_TRAIT(owner, TRAIT_NOHEAL) || HAS_TRAIT(owner, TRAIT_IRONMAN))
 		return
+	if(HAS_TRAIT(owner, TRAIT_HALFHEAL))
+		healing_on_tick /= 2
 	var/obj/effect/temp_visual/heal/H = new /obj/effect/temp_visual/heal_rogue(get_turf(owner))
 	H.color = "#FF0000"
 	if(owner.blood_volume < BLOOD_VOLUME_NORMAL)
@@ -666,6 +690,61 @@
 
 #undef REWIND_AURA
 
+//lasts shorter than magic, one chomp every 3 seconds is good enough, let's not forget food can have multiple slices. This does not heal wounds, wounds are healed automatically like psydonitian trait, but it consumes 1% hunger a tick.
+#define CONSUME_AURA "consumehealing"
+
+/datum/status_effect/buff/foodhealing
+	id = "consumehealing"
+	status_type = STATUS_EFFECT_UNIQUE
+	alert_type = /atom/movable/screen/alert/status_effect/buff/healing
+	duration = 4 SECONDS
+	examine_text = "<font color='#b3b3b3'>SUBJECTPRONOUN is healing unnaturally fast!</font>"
+	var/fare_power = 0
+	var/healing_on_tick = 1
+	var/outline_colour = "#8a8a8a"
+
+/datum/status_effect/buff/foodhealing/on_creation(mob/living/new_owner, new_healing_on_tick, new_fare_power)
+	if(!isnull(new_healing_on_tick))
+		healing_on_tick = new_healing_on_tick
+	if(!isnull(new_fare_power))
+		fare_power = new_fare_power
+	return ..()
+
+/datum/status_effect/buff/foodhealing/on_apply()
+	var/filter = owner.get_filter(CONSUME_AURA)
+	if(!filter)
+		owner.add_filter(CONSUME_AURA, 2, list("type" = "outline", "color" = outline_colour, "alpha" = 60, "size" = 1))
+	return TRUE
+
+/datum/status_effect/buff/foodhealing/on_remove()
+	. = ..()
+	owner.remove_filter(CONSUME_AURA)
+
+/datum/status_effect/buff/foodhealing/tick()
+	var/obj/effect/temp_visual/heal/H = new /obj/effect/temp_visual/psyheal_rogue(get_turf(owner))
+	H.color = "#bdbdbd"
+	// Base heal.
+	var/base_heal = healing_on_tick
+	// Fare: +10% healing per tier
+	var/fare_mult = 1 + (fare_power * 0.10)
+	// Nutrition multiplier
+	var/effective_nutrition = clamp(owner.nutrition, 0, NUTRITION_LEVEL_FULL)
+	var/hunger_ratio = (NUTRITION_LEVEL_FULL - effective_nutrition) / NUTRITION_LEVEL_FULL
+	var/nutrition_mult = 0.75 + (hunger_ratio * 0.75)
+	// Final healing
+	var/heal_amount = base_heal * fare_mult * nutrition_mult
+	owner.adjustBruteLoss(-heal_amount, 0)
+	owner.adjustFireLoss(-heal_amount, 0)
+	owner.adjustOxyLoss(-heal_amount, 0)
+	owner.adjustToxLoss(-heal_amount, 0)
+	owner.adjustOrganLoss(ORGAN_SLOT_BRAIN, -heal_amount)
+	owner.adjustCloneLoss(-heal_amount, 0)
+	owner.energy_add(10)
+	owner.update_damage_overlays()
+
+#undef CONSUME_AURA
+
+
 /atom/movable/screen/alert/status_effect/buff/healing/campfire
 	name = "Camp Rest"
 	desc = "The warmth of a fire and a bed soothes my ails."
@@ -694,7 +773,7 @@
 	return TRUE
 
 /datum/status_effect/buff/campfire_stamina/tick()
-	if(HAS_TRAIT(owner, TRAIT_IRONMAN))
+	if(HAS_TRAIT(owner, TRAIT_NOREGEN) || HAS_TRAIT(owner, TRAIT_IRONMAN))
 		return
 	owner.adjust_bodytemperature(8)
 	if(owner.in_combat_until > world.time)
@@ -714,8 +793,10 @@
 /datum/status_effect/buff/campfire/tick()
 	if(owner.in_combat_until > world.time)
 		return
-	if(HAS_TRAIT(owner, TRAIT_IRONMAN))
+	if(HAS_TRAIT(owner, TRAIT_NOHEAL) || HAS_TRAIT(owner, TRAIT_IRONMAN))
 		return
+	if(HAS_TRAIT(owner, TRAIT_HALFHEAL))
+		healing_on_tick /= 2
 	var/obj/effect/temp_visual/heal/H = new /obj/effect/temp_visual/heal_rogue/campfire(get_turf(owner))
 	H.color = "#c7aa5c"
 	var/bleeding = owner.bleed_rate > 1 ? TRUE : FALSE
@@ -775,8 +856,10 @@
 	owner.remove_filter(MIRACLE_BLOODHEAL_FILTER)
 
 /datum/status_effect/buff/bloodheal/tick()
-	if(HAS_TRAIT(owner, TRAIT_IRONMAN))
+	if(HAS_TRAIT(owner, TRAIT_NOHEAL) || HAS_TRAIT(owner, TRAIT_IRONMAN))
 		return
+	if(HAS_TRAIT(owner, TRAIT_HALFHEAL))
+		healing_on_tick /= 2
 	var/obj/effect/temp_visual/heal/H = new /obj/effect/temp_visual/heal_blood(get_turf(owner))
 	H.color = "#FF0000"
 	if(skill_level >= SKILL_LEVEL_JOURNEYMAN)
@@ -804,8 +887,10 @@
 	return TRUE
 
 /datum/status_effect/buff/healing/necras_vow/tick()
-	if(HAS_TRAIT(owner, TRAIT_IRONMAN))
+	if(HAS_TRAIT(owner, TRAIT_NOHEAL) || HAS_TRAIT(owner, TRAIT_IRONMAN))
 		return
+	if(HAS_TRAIT(owner, TRAIT_HALFHEAL))
+		healing_on_tick /= 2
 	var/obj/effect/temp_visual/heal/H = new /obj/effect/temp_visual/heal_rogue(get_turf(owner))
 	H.color = "#a5a5a5"
 	var/list/wCount = owner.get_wounds()
@@ -854,8 +939,10 @@
 	return TRUE
 
 /datum/status_effect/buff/psyhealing/tick()
-	if(HAS_TRAIT(owner, TRAIT_IRONMAN)) 
+	if(HAS_TRAIT(owner, TRAIT_NOHEAL) || HAS_TRAIT(owner, TRAIT_IRONMAN)) 
 		return
+	if(HAS_TRAIT(owner, TRAIT_HALFHEAL))
+		healing_on_tick /= 2
 	var/obj/effect/temp_visual/heal/H = new /obj/effect/temp_visual/psyheal_rogue(get_turf(owner))
 	H.color = "#d3d3d3"
 	var/list/wCount = owner.get_wounds()
@@ -919,8 +1006,10 @@
 	return ..()
 
 /datum/status_effect/buff/oremuncher/tick()
-	if(!HAS_TRAIT(owner, TRAIT_IRONMAN))
+	if(HAS_TRAIT(owner, TRAIT_NOHEAL) || !HAS_TRAIT(owner, TRAIT_IRONMAN))
 		return
+	if(HAS_TRAIT(owner, TRAIT_HALFHEAL))
+		healing_on_tick /= 2
 	var/obj/effect/temp_visual/heal/H = new /obj/effect/temp_visual/heal_rogue(get_turf(owner))
 	H.color = "#ceb8a3"
 	var/list/wCount = owner.get_wounds()
@@ -948,8 +1037,10 @@
 	return ..()
 
 /datum/status_effect/buff/ingotmuncher/tick()
-	if(!HAS_TRAIT(owner, TRAIT_IRONMAN))
+	if(HAS_TRAIT(owner, TRAIT_NOHEAL) || !HAS_TRAIT(owner, TRAIT_IRONMAN))
 		return
+	if(HAS_TRAIT(owner, TRAIT_HALFHEAL))
+		healing_on_tick /= 2
 	var/obj/effect/temp_visual/heal/H = new /obj/effect/temp_visual/heal_rogue(get_turf(owner))
 	H.color = "#ffffff"
 	var/list/wCount = owner.get_wounds()
@@ -987,8 +1078,10 @@
 	return ..()
 
 /datum/status_effect/buff/gemmuncher/tick()
-	if(!HAS_TRAIT(owner, TRAIT_IRONMAN))
+	if(HAS_TRAIT(owner, TRAIT_NOHEAL) || !HAS_TRAIT(owner, TRAIT_IRONMAN))
 		return
+	if(HAS_TRAIT(owner, TRAIT_HALFHEAL))
+		healing_on_tick /= 2
 	var/randomcolor = pick("#ff0000","#ffee00","#09ff00","#00f7ff","#0004ff","#ae00ff","#ff00dd")
 	var/obj/effect/temp_visual/heal/H = new /obj/effect/temp_visual/heal_rogue(get_turf(owner))
 	H.color = randomcolor
@@ -1068,7 +1161,7 @@
 	id = "diminish"
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/diminish
 	duration = 1 MINUTES
-	effectedstats = list(STATKEY_STR = -2, STATKEY_CON = -2)
+	effectedstats = list(STATKEY_STR = -2, STATKEY_CON = -2, STATKEY_PER = -3)
 
 /datum/status_effect/debuff/diminish/on_apply()
 	. = ..()
@@ -1077,18 +1170,16 @@
 	var/filter = owner.get_filter(DIMINISH_FILTER)
 	if(!filter)
 		owner.add_filter(DIMINISH_FILTER, 2, list("type" = "outline", "color" = outline_colour, "alpha" = 50, "size" = 1))
-	ADD_TRAIT(owner, TRAIT_REVERSE_GUIDANCE, MAGIC_TRAIT)
 
 /datum/status_effect/debuff/diminish/on_remove()
 	. = ..()
 	owner.remove_filter(DIMINISH_FILTER)
-	REMOVE_TRAIT(owner, TRAIT_REVERSE_GUIDANCE, MAGIC_TRAIT)
 #undef DIMINISH_FILTER
 
 /datum/status_effect/buff/reversion
 	id = "stasis"
 	alert_type = /atom/movable/screen/alert/status_effect/buff/stasis
-	duration = 15 SECONDS
+	duration = 25 SECONDS
 
 #define CRANKBOX_FILTER "crankboxbuff_glow"
 /atom/movable/screen/alert/status_effect/buff/churnerprotection
@@ -1362,6 +1453,26 @@
 	to_chat(owner, span_warning("I feel Dendor's blessing leave my body..."))
 	REMOVE_TRAIT(owner, TRAIT_LONGSTRIDER, id)
 	REMOVE_TRAIT(owner, TRAIT_STRONGBITE, id)
+
+/atom/movable/screen/alert/status_effect/buff/malumritual
+	name = "Blessing of Malum"
+	desc = "Tiredness and failure is not an option I must finish my work..."
+	icon_state = "buff"
+
+/datum/status_effect/buff/malumritual
+	id = "malumritual"
+	alert_type = /atom/movable/screen/alert/status_effect/buff/malumritual
+	duration = 20 MINUTES
+
+/datum/status_effect/buff/malumritual/on_apply()
+	. = ..()
+	to_chat(owner, span_warning("I feel Malum's persistance envelop me..."))
+	ADD_TRAIT(owner, TRAIT_MALUMCHOSEN , id)
+
+/datum/status_effect/buff/malumritual/on_remove()
+	. = ..()
+	to_chat(owner, span_warning("I feel Malum's blessing fade away..."))
+	REMOVE_TRAIT(owner, TRAIT_MALUMCHOSEN , id)
 
 /atom/movable/screen/alert/status_effect/buff/pacify
 	name = "Blessing of Eora"
@@ -1679,6 +1790,8 @@
 /datum/status_effect/buff/clash/limbguard/on_creation(mob/living/new_owner, ...)
 	. = ..()
 	shield_origin = owner.get_active_held_item()
+	if(!shield_origin)
+		shield_origin = owner.get_inactive_held_item()
 
 /datum/status_effect/buff/clash/limbguard/on_apply()
 	. = ..()
@@ -1829,61 +1942,6 @@
 /datum/status_effect/buff/clash/limbguard/guard_on_kick()
 	return
 
-#define BLOODRAGE_FILTER "bloodrage"
-
-/atom/movable/screen/alert/status_effect/buff/graggar_bloodrage
-	name = "BLOODRAGE"
-	desc = "GRAGGAR! GRAGGAR! GRAGGAR!"
-	icon_state = "bloodrage"
-
-/datum/status_effect/buff/bloodrage
-	id = "bloodrage"
-	alert_type = /atom/movable/screen/alert/status_effect/buff/graggar_bloodrage
-	var/outline_color = "#ad0202"
-	var/originalcmode = ""
-	duration = 15 SECONDS
-
-/datum/status_effect/buff/bloodrage/on_apply()
-	ADD_TRAIT(owner, TRAIT_STRENGTH_UNCAPPED, TRAIT_MIRACLE)
-	shake_camera(owner, 5, 2) //Aura
-	originalcmode = owner.cmode_music
-	owner.cmode_music = 'sound/music/combat_bloodrage.ogg' //I'LL FUCK ANYTHING THAT MOVES
-	to_chat(owner, span_userdanger(pick("KILL, FUCKING KILL! SLAUGHTER THEM!", "BLOOD, FUCKING SPILL THE BLOOD!", "BLOOD AND FURY, SPLITTING MY SKULL!", "I'LL KILL ANYTHING THAT MOVES!", "I'M FUCKING UNSTOPPABLE, I'LL BREAK THEM!")))
-	var/holyskill = owner.get_skill_level(/datum/skill/magic/holy)
-	duration = ((15 SECONDS) * holyskill)
-	var/filter = owner.get_filter(BLOODRAGE_FILTER)
-	if(!owner.cmode)	//Turns on combat mode
-		owner.toggle_cmode()
-	else		//Gigajank to reset your combat music
-		owner.toggle_cmode()
-		owner.toggle_cmode()
-	if(!filter)
-		owner.add_filter(BLOODRAGE_FILTER, 2, list("type" = "outline", "color" = outline_color, "alpha" = 60, "size" = 2))
-	if(!HAS_TRAIT(owner, TRAIT_DODGEEXPERT))
-		if(owner.STASTR < STRENGTH_SOFTCAP)
-			effectedstats = list(STATKEY_STR = (STRENGTH_SOFTCAP - owner.STASTR))
-			. = ..()
-			return TRUE
-	if(holyskill >= SKILL_LEVEL_APPRENTICE)
-		effectedstats = list(STATKEY_STR = 2)
-	else
-		effectedstats = list(STATKEY_STR = 1)
-	. = ..()
-	return TRUE
-
-/datum/status_effect/buff/bloodrage/on_remove()
-	. = ..()
-	REMOVE_TRAIT(owner, TRAIT_STRENGTH_UNCAPPED, TRAIT_MIRACLE)
-	owner.visible_message(span_warning("[owner] wavers, their rage simmering down."))
-	owner.OffBalance(3 SECONDS)
-	owner.remove_filter(BLOODRAGE_FILTER)
-	owner.emote("breathgasp", forced = TRUE)
-	owner.cmode_music = originalcmode
-	owner.Slowdown(3)
-	if(owner.cmode && !owner.has_status_effect(/datum/status_effect/buff/call_to_slaughter))	//No cmode, no point - More Gigajank for combat music UNLESS call to slaughter is active
-		owner.toggle_cmode()
-		owner.toggle_cmode()
-
 /datum/status_effect/buff/psydonic_endurance
 	id = "psydonic_endurance"
 	alert_type = /atom/movable/screen/alert/status_effect/buff/psydonic_endurance
@@ -1902,8 +1960,6 @@
 	name = "Psydonic Vitality"
 	desc = "I feel blessed, underneath this holy armor!"
 	icon_state = "stressvg"
-
-#undef BLOODRAGE_FILTER
 
 /datum/status_effect/buff/sermon
 	id = "sermon"
@@ -1979,6 +2035,9 @@
 
 /datum/status_effect/buff/adrenaline_rush/melee
 	effectedstats = list(STATKEY_WIL = 1, STATKEY_CON = 1)
+
+/datum/status_effect/buff/adrenaline_rush/graggar
+	effectedstats = list(STATKEY_CON = 3)
 
 /datum/status_effect/buff/nocblessing
 	id = "nocblessing"
@@ -2097,7 +2156,7 @@
 /datum/status_effect/buff/ravox_vow/proc/on_life()
 	SIGNAL_HANDLER
 
-	owner.heal_wounds(1)
+	owner.heal_wounds(0.2)
 
 /datum/status_effect/buff/ravox_vow/on_apply()
 	. = ..()
@@ -2155,6 +2214,7 @@
 /datum/status_effect/joybringer
 	id = "joybringer"
 	var/outline_colour = "#a529e8"
+	var/list/affected_mobs = list()
 	duration = -1
 	tick_interval = -1
 	examine_text = span_love("SUBJECTPRONOUN is bathed in Baotha's blessings!")
@@ -2179,22 +2239,74 @@
 
 	RegisterSignal(owner, COMSIG_LIVING_LIFE, PROC_REF(on_life))
 
-/datum/status_effect/joybringer/on_remove()
+/datum/status_effect/joybringer/on_remove() // TA EDIT START
 	. = ..()
+
+	clear_affected_mobs()
 
 	owner.remove_filter(JOYBRINGER_FILTER)
 	owner.remove_overlay(JOYBRINGER_LAYER)
 
 	UnregisterSignal(owner, COMSIG_LIVING_LIFE)
 
+/datum/status_effect/joybringer/proc/valid_target(mob/living/mob)
+	if(!owner || QDELETED(owner) || !mob || QDELETED(mob))
+		return FALSE
+
+	if(HAS_TRAIT(mob, TRAIT_CRACKHEAD) || HAS_TRAIT(mob, TRAIT_PSYDONITE))
+		return FALSE
+
+	var/turf/owner_turf = get_turf(owner)
+	var/turf/mob_turf = get_turf(mob)
+	if(!owner_turf || !mob_turf)
+		return FALSE
+
+	if(owner_turf.z != mob_turf.z)
+		return FALSE
+
+	if(get_dist(owner_turf, mob_turf) > 2)
+		return FALSE
+
+	return TRUE
+
+/datum/status_effect/joybringer/proc/clear_joybringer_debuff(mob/living/mob)
+	if(!mob || QDELETED(mob))
+		return
+
+	if(mob.has_status_effect(/datum/status_effect/debuff/joybringer_druqks))
+		mob.remove_status_effect(/datum/status_effect/debuff/joybringer_druqks)
+
+/datum/status_effect/joybringer/proc/clear_affected_mobs()
+	if(!affected_mobs)
+		return
+
+	for(var/mob/living/mob in affected_mobs)
+		clear_joybringer_debuff(mob)
+
+	affected_mobs.Cut()
+
 /datum/status_effect/joybringer/proc/on_life()
 	SIGNAL_HANDLER
 
+	var/turf/owner_turf = get_turf(owner)
+	if(!owner_turf)
+		clear_affected_mobs()
+		return
+
+	var/list/current_mobs = list()
 	for(var/mob/living/mob in get_hearers_in_view(2, owner))
-		if(HAS_TRAIT(mob, TRAIT_CRACKHEAD) || HAS_TRAIT(mob, TRAIT_PSYDONITE))
+		if(!valid_target(mob))
 			continue
 
+		current_mobs += mob
 		mob.apply_status_effect(/datum/status_effect/debuff/joybringer_druqks)
+
+	if(affected_mobs)
+		for(var/mob/living/old_mob in affected_mobs)
+			if(!(old_mob in current_mobs))
+				clear_joybringer_debuff(old_mob)
+
+	affected_mobs = current_mobs // TA EDIT END
 
 #undef JOYBRINGER_FILTER
 
@@ -2254,6 +2366,50 @@
 	REMOVE_TRAIT(owner, TRAIT_GRABIMMUNE, TRAIT_STATUS_EFFECT)
 	. = ..()
 
+/atom/movable/screen/alert/status_effect/buff/phase
+	name = "Phase"
+	desc = "I'm slipping between the realms!"
+	icon_state = "daggerdash"
+
+/datum/status_effect/buff/phase
+	id = "phase"
+	alert_type = /atom/movable/screen/alert/status_effect/buff/phase
+	effectedstats = list(STATKEY_SPD = 4)
+	status_type = STATUS_EFFECT_UNIQUE
+	duration = 5 SECONDS
+	var/original_alpha = 255
+
+/datum/status_effect/buff/phase/on_creation(mob/living/new_owner)
+	if(ishuman(new_owner))
+		var/mob/living/carbon/human/H = new_owner
+		switch(H.highest_ac_worn())
+			if(ARMOR_CLASS_NONE)
+				duration = 5 SECONDS
+				effectedstats[STATKEY_SPD] = 4
+			if(ARMOR_CLASS_LIGHT)
+				duration = 4 SECONDS
+				effectedstats[STATKEY_SPD] = 3
+			if(ARMOR_CLASS_MEDIUM)
+				duration = 3 SECONDS
+				effectedstats[STATKEY_SPD] = 2
+			if(ARMOR_CLASS_HEAVY)
+				duration = 2 SECONDS
+				effectedstats[STATKEY_SPD] = 1
+	. = ..()
+
+/datum/status_effect/buff/phase/on_apply()
+	owner.pass_flags |= PASSMOB
+	ADD_TRAIT(owner, TRAIT_GRABIMMUNE, TRAIT_STATUS_EFFECT)
+	original_alpha = owner.alpha
+	animate(owner, alpha = 180, time = 2)
+	. = ..()
+
+/datum/status_effect/buff/phase/on_remove()
+	owner.pass_flags &= ~PASSMOB
+	REMOVE_TRAIT(owner, TRAIT_GRABIMMUNE, TRAIT_STATUS_EFFECT)
+	animate(owner, alpha = original_alpha, time = 2)
+	. = ..()
+
 /datum/status_effect/buff/dagger_boost
 	id = "dagger_boost"
 	alert_type = /atom/movable/screen/alert/status_effect/buff/dagger_boost
@@ -2278,18 +2434,6 @@
 
 	if(!istype(M.get_active_held_item(), held_dagger))
 		M.remove_status_effect(/datum/status_effect/buff/dagger_boost)
-
-// special lirvas dragonskin buffs
-/datum/status_effect/buff/lirvan_broken_scales
-	id = "lirvan_broken_scales"
-	alert_type = /atom/movable/screen/alert/status_effect/buff/lirvan_broken_scales
-	effectedstats = list(STATKEY_SPD = 4, STATKEY_STR = -4)
-	duration = -1
-
-/atom/movable/screen/alert/status_effect/buff/lirvan_broken_scales
-	name = "Broken Scales"
-	desc = "My natural defenses are gone! I am lighter, but far weaker."
-	icon_state = "buff"
 
 // escalating buffs applied on bleed out tied to TRAIT_JOURNEYS_END, currently only used by mistwalker
 /atom/movable/screen/alert/status_effect/buff/journey_ending
@@ -2549,7 +2693,7 @@
 	if(tier > NECRACON_TIER_NORMAL)	//expert
 		ADD_TRAIT(owner, TRAIT_FORTITUDE, TRAIT_NECRACON)
 		if(HAS_TRAIT(owner, TRAIT_DNR))
-			ADD_TRAIT(owner, TRAIT_GUIDANCE, TRAIT_NECRACON)
+			owner.change_stat(STATKEY_PER, 3)
 	if(tier > NECRACON_TIER_EXPERT && HAS_TRAIT(owner, TRAIT_DNR))	//master+
 		ADD_TRAIT(owner, TRAIT_NOPAIN, TRAIT_NECRACON)
 
@@ -2559,7 +2703,8 @@
 	REMOVE_TRAIT(owner, TRAIT_ADRENALINE_RUSH, TRAIT_NECRACON)
 	if(tier > NECRACON_TIER_NORMAL)
 		REMOVE_TRAIT(owner, TRAIT_FORTITUDE, TRAIT_NECRACON)
-		REMOVE_TRAIT(owner, TRAIT_GUIDANCE, TRAIT_NECRACON)
+		if(HAS_TRAIT(owner, TRAIT_DNR))
+			owner.change_stat(STATKEY_PER, -3)
 	if(tier > NECRACON_TIER_EXPERT)
 		REMOVE_TRAIT(owner, TRAIT_NOPAIN, TRAIT_NECRACON)
 
