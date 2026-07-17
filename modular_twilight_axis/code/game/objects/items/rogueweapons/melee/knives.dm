@@ -212,15 +212,15 @@
 /datum/reagent/neurotoxin/on_mob_life(mob/living/carbon/M)
 	var/amt = volume 
 
-	if(amt >= 12)
+	if(amt >= 8)
 		if(prob(30))
 			to_chat(M, span_warning("WHAT THE-.. I CANT FEEL MY BODY!"))
 		M.Paralyze(600, 0)
 		M.emote("agony")
 
-	else if(amt >= 11)
+	else if(amt >= 7)
 		if(prob(15))
-			to_chat(M, span_warning("I LOST MY BALANCE! STOP IT!!.."))
+			to_chat(M, span_warning("I'M SO WEAK NOW! STOP IT!!.."))
 		M.apply_status_effect(/datum/status_effect/debuff/exposed)
 		M.Slowdown(5)
 
