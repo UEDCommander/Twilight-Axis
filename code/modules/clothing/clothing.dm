@@ -684,7 +684,7 @@ BLIND     // can't see anything
 			return examine_text
 
 	// Fake armor
-	if(armor.getRating("slash") == 0 && armor.getRating("stab") == 0 && armor.getRating("blunt") == 0 && armor.getRating("piercing") == 0)
+	if(armor.getRating("slash") == 0 && armor.getRating("stab") == 0 && armor.getRating("blunt") == 0 && armor.getRating("piercing") == 0 && armor.getRating("fire") == 0 && armor.getRating("bullet") == 0)
 		if(examine_highlight_status)
 			var/severity = examine_highlight_status[1]
 			var/labeled_string = get_examine_highlight_labeled_string(severity, examine_text)
@@ -699,15 +699,13 @@ BLIND     // can't see anything
 	str += "[colorgrade_rating("🪓 SLASH", armor.slash, elaborate = TRUE)] | "
 	str += "[colorgrade_rating("🗡️ STAB", armor.stab, elaborate = TRUE)] | "
 	str += "[colorgrade_rating("🏹 PIERCE", armor.piercing, elaborate = TRUE)]"
-	if(armor.fire > NONE || armor.acid > NONE || armor.bullet > NONE) //TA EDIT
+	if(armor.fire > NONE || armor.bullet > NONE)
 		str += "<br><b>RESIST:</b> "
 		var/list/resists = list()
 		if(armor.fire > NONE)
 			resists += colorgrade_rating("🔥 FIRE", armor.fire, elaborate = TRUE)
-		if(armor.acid > NONE)
-			resists += colorgrade_rating("🧪 ACID", armor.acid, elaborate = TRUE)
-		if(armor.bullet > NONE) //TA EDIT
-			resists += colorgrade_rating("💣 BULLET", armor.bullet, elaborate = TRUE) //TA EDIT
+		if(armor.bullet > NONE)
+			resists += colorgrade_rating("💣 BULLET", armor.bullet, elaborate = TRUE, max_tier = 5)
 		str += resists.Join(" | ")
 
 	if(examine_highlight_status)
