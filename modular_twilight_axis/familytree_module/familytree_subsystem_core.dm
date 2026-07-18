@@ -39,6 +39,7 @@ SUBSYSTEM_DEF(familytree)
 	var/ftlog_counter = 0
 	var/ftlog_error_count = 0
 	var/ftlog_warn_count = 0
+	var/verbose_logging = FALSE
 
 #define FTLOG_DEBUG "DEBUG"
 #define FTLOG_INFO  "INFO"
@@ -47,7 +48,8 @@ SUBSYSTEM_DEF(familytree)
 #define FTLOG_CRIT  "CRIT"
 
 /datum/controller/subsystem/familytree/proc/ftlog(msg, level = FTLOG_INFO)
-#ifdef FAMILYTREE_DEBUG_LOGGING
+	if(level == FTLOG_DEBUG && !verbose_logging)
+		return
 	if(!familytree_log_file)
 		if(GLOB.log_directory)
 			familytree_log_file = "[GLOB.log_directory]/ss_family.log"
@@ -59,8 +61,6 @@ SUBSYSTEM_DEF(familytree)
 	if(level == FTLOG_WARN)
 		ftlog_warn_count++
 	WRITE_LOG(familytree_log_file, "\[[logtime]] [level] #[ftlog_counter] [msg]")
-#endif
-	return
 
 /datum/controller/subsystem/familytree/proc/ftlog_state(tag = "SNAPSHOT")
 #ifdef FAMILYTREE_DEBUG_LOGGING
@@ -221,6 +221,9 @@ SUBSYSTEM_DEF(familytree)
 		ftlog("on_mob_created SKIP: dummy")
 		return
 	var/mob/living/carbon/human/H = new_mob
+	if(H.ai_controller)
+		ftlog("on_mob_created SKIP: AI-controlled NPC ([H.ai_controller]), not a real player character")
+		return
 	ftlog("on_mob_created PASS: registering [H.real_name] (ckey=[H.ckey] - may be empty, login will handle)")
 	register_human(H)
 	if(H.ckey)
