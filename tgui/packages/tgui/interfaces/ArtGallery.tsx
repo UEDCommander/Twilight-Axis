@@ -10,6 +10,7 @@ type PaintingMeta = {
   author_ckey?: string;
   ic_date?: string;
   real_date?: string;
+  round_id?: string;
 };
 
 type Data = {
@@ -27,7 +28,7 @@ export const ArtGallery = (props) => {
   const customMessage = useBackend<any>().data?.image_data;
 
   useEffect(() => {
-    if (customMessage && customMessage.id && customMessage.base64) {
+    if (customMessage?.id && customMessage?.base64) {
       if (!loadedImages[customMessage.id]) {
         setLoadedImages(prev => ({
           ...prev,
@@ -73,9 +74,9 @@ export const ArtGallery = (props) => {
                     <Stack vertical>
                       {data.paintings?.map(p => (
                         <Stack.Item key={p.id}>
-                          <Button 
-                            fluid 
-                            selected={selectedId === p.id} 
+                          <Button
+                            fluid
+                            selected={selectedId === p.id}
                             onClick={() => requestImage(p.id)}
                           >
                             {p.title} <br/>
@@ -94,8 +95,8 @@ export const ArtGallery = (props) => {
                         <Stack.Item>
                           {loadedImages[selectedId] ? (
                             <div style={{
-                              width: '256px', 
-                              height: '256px', 
+                              width: '256px',
+                              height: '256px',
                               backgroundColor: '#f5e8d3',
                               border: '2px solid #333',
                               backgroundImage: `url(data:image/png;base64,${loadedImages[selectedId]})`,
@@ -110,7 +111,7 @@ export const ArtGallery = (props) => {
                         <Stack.Item mt={2} textAlign="center">
                       <Box bold fontSize={2}>{data.paintings.find(p => p.id === selectedId)?.title}</Box>
                       <Box italic>Автор: {data.paintings.find(p => p.id === selectedId)?.author}</Box>
-                      
+
                       <Box color="#f4cf5c" fontSize="11px" mt={0.5}>
                         Дата создания: {data.paintings.find(p => p.id === selectedId)?.ic_date || 'До Эпохи Нового Порядка'}
                       </Box>
@@ -122,6 +123,9 @@ export const ArtGallery = (props) => {
                           </Box>
                           <Box color="label" fontSize="11px" mt={0.5}>
                             Создано: {data.paintings.find(p => p.id === selectedId)?.real_date || 'неизвестно'}
+                          </Box>
+                          <Box color="label" fontSize="11px" mt={0.5}>
+                            Раунд создания: {data.paintings.find(p => p.id === selectedId)?.round_id || 'неизвестно'}
                           </Box>
                         </>
                       )}
@@ -155,11 +159,11 @@ export const ArtGallery = (props) => {
                   <Stack vertical>
                     {data.deletion_logs?.map((log, index) => (
                       <Stack.Item key={index}>
-                        <Box style={{ 
-                          fontFamily: 'monospace', 
-                          borderBottom: '1px solid rgba(255,255,255,0.1)', 
+                        <Box style={{
+                          fontFamily: 'monospace',
+                          borderBottom: '1px solid rgba(255,255,255,0.1)',
                           padding: '6px 0',
-                          opacity: 0.9 
+                          opacity: 0.9
                         }}>
                           {log}
                         </Box>

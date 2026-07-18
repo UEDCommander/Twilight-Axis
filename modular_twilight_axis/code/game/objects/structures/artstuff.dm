@@ -9,6 +9,7 @@
 	var/painting_id
 	var/persistence_path = "data/paintings/"
 	var/ic_date
+	var/round_id
 
 /obj/item/canvas/attack_hand(mob/user)
 	. = ..()
@@ -32,16 +33,16 @@
 	if(istype(I, /obj/item/natural/feather))
 		var/new_author = input(user, "Кто автор этой картины?", "Подпись", user.real_name)
 		var/new_title = input(user, "Как называется эта картина?", "Название", "Без названия")
-		
+
 		if(new_author && new_title)
 			author = new_author
 			author_ckey = user.ckey
 			title = new_title
 			name = title
 			ic_date = get_ic_date_short_as_string()
-			
+			round_id = GLOB.rogue_round_id
 			desc = "Автор: [author]. Дата: [ic_date]."
-			
+
 			to_chat(user, span_notice("Вы наносите последние штрихи и подписываете холст..."))
 			if(save_to_disk())
 				to_chat(user, span_notice("Картина '[title]' подписана."))
@@ -69,7 +70,7 @@
 
 	if(icon)
 		data["canvas_data"] = icon2base64(icon)
-		
+
 	return data
 
 /obj/item/canvas/ui_act(action, list/params)
@@ -80,7 +81,7 @@
 		if("save_painting")
 			var/list/palette = params["palette"]
 			var/pixels_string = params["pixels"]
-			
+
 			if(!palette || !pixels_string || length(pixels_string) != 2048)
 				return TRUE
 
@@ -91,16 +92,16 @@
 				var/hex = copytext(pixels_string, pos, pos + 2)
 				var/color_idx = text2num(hex, 16)
 				var/color_hex = palette[color_idx + 1]
-				
+
 				var/idx = i - 1
 				var/px = (idx % 32) + 1
 				var/py = (floor(idx / 32)) + 1
-				
+
 				new_art.DrawBox(color_hex, px, py, px, py)
-			
+
 			src.icon = new_art
 			to_chat(usr, span_notice("Вы закончили рисовать."))
-			
+
 			SStgui.close_uis(src)
 			return TRUE
 
@@ -132,6 +133,7 @@
 	src.ic_date = data["ic_date"]
 	src.name = src.title
 	src.desc = "Painted by: [src.author]. Написана: [src.ic_date]."
+	src.round_id = data["round_id"]
 	return TRUE
 
 /obj/effect/spawner/roguetown/random_painting
@@ -167,9 +169,10 @@
 	data["title"] = title
 	data["id"] = painting_id
 	data["ic_date"] = ic_date
-	
+
 	var/full_path = "[persistence_path][painting_id].json"
 	data["real_date"] = time2text(world.realtime, "YYYY-MM-DD hh:mm:ss")
+	data["round_id"] = round_id
 	fdel(full_path)
 	text2file(json_encode(data), full_path)
 
@@ -204,10 +207,10 @@ var/global/const/art_gallery_log_path = "data/paintings/deletion_logs.json"
 	set name = "Art Gallery"
 	set category = "OOC"
 	set desc = "View paintings created by players."
-	
+
 	if(!glob_gallery)
 		glob_gallery = new()
-		
+
 	glob_gallery.ui_interact(usr)
 
 /datum/art_gallery
@@ -242,7 +245,7 @@ var/global/const/art_gallery_log_path = "data/paintings/deletion_logs.json"
 	var/list/data = list()
 	var/list/paintings = list()
 	var/list/files = flist(persistence_path)
-	
+
 	for(var/f in files)
 		if(findtext(f, ".json") && f != "deletion_logs.json")
 			var/id = replacetext(f, ".json", "")
@@ -256,9 +259,10 @@ var/global/const/art_gallery_log_path = "data/paintings/deletion_logs.json"
 						"author" = meta["author"],
 						"author_ckey" = meta["author_ckey"],
 						"ic_date" = meta["ic_date"],
-						"real_date" = meta["real_date"]
+						"real_date" = meta["real_date"],
+						"round_id" = meta["round_id"]
 					))
-			
+
 	data["paintings"] = paintings
 	return data
 
@@ -266,11 +270,11 @@ var/global/const/art_gallery_log_path = "data/paintings/deletion_logs.json"
 	var/list/data = list()
 	var/is_admin = user.client.holder ? TRUE : FALSE
 	data["is_admin"] = is_admin
-	
+
 	if(is_admin)
 		load_logs()
 		data["deletion_logs"] = art_gallery_deletion_logs
-		
+
 	return data
 
 /datum/art_gallery/ui_act(action, list/params, datum/tgui/ui)
@@ -283,7 +287,7 @@ var/global/const/art_gallery_log_path = "data/paintings/deletion_logs.json"
 			var/id = params["id"]
 			if(!id || findtext(id, "/") || findtext(id, "\\") || findtext(id, ".."))
 				return TRUE
-				
+
 			var/img_path = "[persistence_path][id].png"
 			if(fexists(img_path))
 				var/icon/I = icon(img_path)
@@ -294,10 +298,10 @@ var/global/const/art_gallery_log_path = "data/paintings/deletion_logs.json"
 		if("delete_painting")
 			if(!user.client.holder) return
 			var/id = params["id"]
-			
+
 			if(!id || findtext(id, "/") || findtext(id, "\\") || findtext(id, ".."))
 				return TRUE
-				
+
 			var/json_path = "[persistence_path][id].json"
 			if(fexists(json_path))
 				var/list/meta = json_decode(file2text(json_path))
@@ -305,13 +309,13 @@ var/global/const/art_gallery_log_path = "data/paintings/deletion_logs.json"
 					load_logs()
 					var/time_str = time2text(world.realtime, "YYYY-MM-DD hh:mm:ss")
 					var/log_entry = "\[[time_str]\] Admin [user.key] deleted '[meta["title"]]' (Author: [meta["author"]] / [meta["author_ckey"]])"
-					
+
 					art_gallery_deletion_logs += log_entry
 					save_logs() // Запись на диск
 
 			if(fexists("[persistence_path][id].png")) fdel("[persistence_path][id].png")
 			if(fexists("[persistence_path][id].json")) fdel("[persistence_path][id].json")
-			
+
 			// Закрываем окно TGUI. При повторном открытии список обновится сам!
 			SStgui.close_uis(src)
 			return TRUE

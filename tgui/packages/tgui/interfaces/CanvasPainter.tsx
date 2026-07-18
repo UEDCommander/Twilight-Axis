@@ -19,14 +19,14 @@ export const CanvasPainter = (props) => {
   const { act, data } = useBackend<Data>();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const baseImgRef = useRef<HTMLImageElement | null>(null);
-  
+
   const [isDrawing, setIsDrawing] = useState(false);
   const [color, setColor] = useState('#000000');
   const [pickerColor, setPickerColor] = useState('#000000');
   const [opacity, setOpacity] = useState(100);
   const [brushSize, setBrushSize] = useState(1);
   const [tool, setTool] = useState<'brush' | 'eraser' | 'bucket'>('brush');
-  
+
   const [colorHistory, setColorHistory] = useLocalState<string[]>('canvas_color_hist', ['#000000', '#ffffff', '#ff0000', '#00ff00', '#0000ff']);
   const [layers, setLayers] = useLocalState<Layer[]>('canvas_layers_v3', [{ id: Date.now(), name: 'Слой 1', visible: true, pixels: {} }]);
   const [activeLayerId, setActiveLayerId] = useLocalState<number>('canvas_active_layer', layers[0].id);
@@ -48,7 +48,7 @@ export const CanvasPainter = (props) => {
     const ctx = canvasRef.current?.getContext('2d');
     if (!ctx) return;
     ctx.clearRect(0, 0, 32, 32);
-    ctx.fillStyle = '#f5e8d3'; 
+    ctx.fillStyle = '#f5e8d3';
     ctx.fillRect(0, 0, 32, 32);
     if (baseImgRef.current) ctx.drawImage(baseImgRef.current, 0, 0, 32, 32);
 
@@ -87,12 +87,12 @@ export const CanvasPainter = (props) => {
 
   const performFill = (startX: number, startY: number) => {
     const layer = layers.find(l => l.id === activeLayerId);
-    if (!layer || !layer.visible) return;
+    if (!layer?.visible) return;
 
     const targetCoord = `${startX + 1},${32 - startY}`;
-    const targetColor = layer.pixels[targetCoord] || null; 
+    const targetColor = layer.pixels[targetCoord] || null;
     const newColor = getDrawColor();
-    
+
     if (targetColor === newColor) return;
 
     const newPixels = { ...layer.pixels };
@@ -102,11 +102,11 @@ export const CanvasPainter = (props) => {
     while (queue.length > 0) {
       const [cx, cy] = queue.shift()!;
       if (cx < 0 || cx >= 32 || cy < 0 || cy >= 32) continue;
-      
+
       const byondX = cx + 1;
       const byondY = 32 - cy;
       const key = `${byondX},${byondY}`;
-      
+
       if (visited.has(key)) continue;
       visited.add(key);
 
@@ -122,13 +122,13 @@ export const CanvasPainter = (props) => {
 
   const applyBrush = (htmlX: number, htmlY: number) => {
     if (tool === 'bucket') return;
-    
+
     const offset = Math.floor((brushSize - 1) / 2);
     const drawCol = getDrawColor();
 
     setLayers(layers.map(layer => {
       if (layer.id !== activeLayerId) return layer;
-      
+
       const newPixels = { ...layer.pixels };
 
       for (let dx = -offset; dx <= offset + (brushSize % 2 === 0 ? 1 : 0); dx++) {
@@ -136,7 +136,7 @@ export const CanvasPainter = (props) => {
           const px = htmlX + dx;
           const py = htmlY + dy;
           if (px < 0 || px >= 32 || py < 0 || py >= 32) continue;
-          
+
           const coord = `${px + 1},${32 - py}`;
           if (tool === 'eraser') delete newPixels[coord];
           else newPixels[coord] = drawCol;
@@ -179,12 +179,12 @@ export const CanvasPainter = (props) => {
       const htmlY = 32 - y;
       for (let x = 1; x <= 32; x++) {
         const htmlX = x - 1;
-        
+
         const idx = (htmlY * 32 + htmlX) * 4;
         const r = imgData[idx];
         const g = imgData[idx + 1];
         const b = imgData[idx + 2];
-        
+
         const colorHex = '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
 
         let colorIdx = palette.indexOf(colorHex);
@@ -201,9 +201,9 @@ export const CanvasPainter = (props) => {
       }
     }
 
-    act('save_painting', { 
-      palette: palette, 
-      pixels: pixelString 
+    act('save_painting', {
+      palette: palette,
+      pixels: pixelString
     });
 
     const resetId = Date.now();
@@ -248,7 +248,7 @@ export const CanvasPainter = (props) => {
                   />
                 </Section>
               </Stack.Item>
-              
+
               <Stack.Item width="100%">
                 <Section>
                   <Stack align="center" justify="space-between">
