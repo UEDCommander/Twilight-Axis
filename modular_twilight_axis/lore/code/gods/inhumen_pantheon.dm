@@ -153,7 +153,7 @@
 	desc = "Бог абсолютной свободы, анархии и восстания. «Через раздор к процветанию», обещает его главная заповедь, и его последователи пойдут на всё, чтобы претворить её в реальность, разрушив мировой порядок, каким мы его знаем."
 	undead_hater = TRUE
 	worshippers = "Разбойники, наёмники, революционеры, свободолюбивый люд."
-	/*miracles = list(/datum/action/cooldown/spell/touch/orison									        = CLERIC_ORI,
+	miracles = list(/datum/action/cooldown/spell/touch/orison									        = CLERIC_ORI,
 					/obj/effect/proc_holder/spell/self/twilight_shacklebreaker							= CLERIC_T0,
 					/datum/action/cooldown/spell/matthios/freemans_tools								= CLERIC_T0,
 					/obj/effect/proc_holder/spell/invoked/twilight_weightofchains						= CLERIC_T0,
@@ -164,11 +164,11 @@
 					/obj/effect/proc_holder/spell/invoked/twilight_churnwealthy							= CLERIC_T2,
 					/obj/effect/proc_holder/spell/self/twilight_amongus									= CLERIC_T2,
 					/obj/effect/proc_holder/spell/invoked/projectile/twilight_crownfortheking			= CLERIC_T2,
-					/obj/effect/proc_holder/spell/invoked/barter										= CLERIC_T2,
+					/datum/action/cooldown/spell/matthios/barter										= CLERIC_T2,
 					/obj/effect/proc_holder/spell/invoked/twilight_commieflag							= CLERIC_T3,
 					/obj/effect/proc_holder/spell/invoked/resurrect/twilight_matthios					= CLERIC_T3,
 					/obj/effect/proc_holder/spell/self/wildshape_twilight_wingsoffreedom				= CLERIC_T4,
-	)*/
+	)
 	confess_lines = list(
 		"ВСЕ ТИРАНЫ УМРУТ В ОДИНОЧЕСТВЕ!",
 		"ПУТЬ К ПРОЦВЕТАНИЮ ЛЕЖИТ ЧЕРЕЗ РАЗДОР!",
