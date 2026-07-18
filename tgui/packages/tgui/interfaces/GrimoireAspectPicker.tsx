@@ -8,7 +8,7 @@ import { GrimoireTabBar } from './Grimoire/GrimoireTabBar';
 import { GrimoireUtilitiesDetail } from './Grimoire/GrimoireUtilitiesDetail';
 import { GrimoireUtilityList } from './Grimoire/GrimoireUtilityList';
 import { cls } from './Grimoire/helpers';
-import { type Aspect, type Data, type Tab } from './Grimoire/types';
+import type { Aspect, Data, Tab } from './Grimoire/types';
 
 export const GrimoireAspectPicker = () => {
   const { data, act } = useBackend<Data>();
@@ -94,8 +94,7 @@ export const GrimoireAspectPicker = () => {
   const utilitiesFull = utility_points_spent >= max_utilities;
 
   const allFilled =
-    attuned_majors.length >= max_majors &&
-    attuned_minors.length >= max_minors;
+    attuned_majors.length >= max_majors && attuned_minors.length >= max_minors;
   const hasAny = attuned_majors.length > 0 || attuned_minors.length > 0;
   const hasUnbinds =
     staged_unbind_aspects.length > 0 || staged_unbind_utilities.length > 0;
@@ -129,9 +128,7 @@ export const GrimoireAspectPicker = () => {
 
   const getSealLabel = (): string => {
     if (!initial_setup && hasUnbinds) {
-      return sealReady
-        ? 'Seal the Circuit'
-        : 'Confirm Changes';
+      return sealReady ? 'Seal the Circuit' : 'Confirm Changes';
     }
     if (utilityOnly) {
       return sealReady
@@ -251,7 +248,6 @@ export const GrimoireAspectPicker = () => {
                     aspect={selected}
                     isAttuned={false}
                     isLocked={true}
-  
                     isPendingUnbind={false}
                     slotsFull={true}
                     tab={tab}
@@ -279,7 +275,6 @@ export const GrimoireAspectPicker = () => {
                   aspect={selected}
                   isAttuned={isAttuned}
                   isLocked={isLocked}
-
                   isPendingUnbind={isPendingUnbind}
                   slotsFull={slotsFull}
                   tab={tab}
