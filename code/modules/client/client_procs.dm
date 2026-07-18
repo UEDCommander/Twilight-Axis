@@ -360,6 +360,10 @@ GLOBAL_LIST_EMPTY(respawncounts)
 	return 1
 */
 
+#if (PRELOAD_RSC == 0)
+GLOBAL_LIST_EMPTY(external_rsc_urls)
+#endif
+
 /client/New(TopicData)
 	var/tdata = TopicData //save this for later use
 	TopicData = null							//Prevent calls to client.Topic from connect

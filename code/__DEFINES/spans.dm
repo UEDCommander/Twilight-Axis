@@ -66,6 +66,7 @@
 #define span_medradio(str) ("<span class='medradio'>" + (str) + "</span>")
 #define span_memo(str) ("<span class='memo'>" + (str) + "</span>")
 #define span_memoedit(str) ("<span class='memoedit'>" + (str) + "</span>")
+#define span_reallybigredtext(str) ("<span class='reallybigredtext'>" + (str) + "</span>")
 // TA EDIT END
 #define span_mind_control(str) ("<span class='mind_control'>" + (str) + "</span>")
 #define span_monkeyhive(str) ("<span class='monkeyhive'>" + (str) + "</span>")
