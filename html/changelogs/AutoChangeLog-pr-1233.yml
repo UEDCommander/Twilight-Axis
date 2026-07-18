@@ -1,7 +1,0 @@
-author: "sinerume"
-delete-after: True
-changes:
-  - rscadd: "Лессер мендинг для ритуала"
-  - rscadd: "Перенос лат и копья Баоты в модуль"
-  - balance: "Переделаны статы коифа"
-  - bugfix: "Возвращен мендинг"
