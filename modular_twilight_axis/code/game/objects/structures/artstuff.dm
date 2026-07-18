@@ -169,6 +169,7 @@
 	data["ic_date"] = ic_date
 	
 	var/full_path = "[persistence_path][painting_id].json"
+	data["real_date"] = time2text(world.realtime, "YYYY-MM-DD hh:mm:ss")
 	fdel(full_path)
 	text2file(json_encode(data), full_path)
 
@@ -254,7 +255,8 @@ var/global/const/art_gallery_log_path = "data/paintings/deletion_logs.json"
 						"title" = meta["title"],
 						"author" = meta["author"],
 						"author_ckey" = meta["author_ckey"],
-						"ic_date" = meta["ic_date"]
+						"ic_date" = meta["ic_date"],
+						"real_date" = meta["real_date"]
 					))
 			
 	data["paintings"] = paintings

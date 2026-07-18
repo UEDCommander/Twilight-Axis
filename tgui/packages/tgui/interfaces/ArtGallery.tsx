@@ -9,6 +9,7 @@ type PaintingMeta = {
   author: string;
   author_ckey?: string;
   ic_date?: string;
+  real_date?: string;
 };
 
 type Data = {
@@ -107,17 +108,24 @@ export const ArtGallery = (props) => {
                         </Stack.Item>
 
                         <Stack.Item mt={2} textAlign="center">
-                          <Box bold fontSize={2}>{data.paintings.find(p => p.id === selectedId)?.title}</Box>
-                          <Box italic>Автор: {data.paintings.find(p => p.id === selectedId)?.author}</Box>
-                          <Box color="#f4cf5c" fontSize="11px" mt={0.5}>
-                            Дата создания: {data.paintings.find(p => p.id === selectedId)?.ic_date || 'До Эпохи Нового Порядка'}
+                      <Box bold fontSize={2}>{data.paintings.find(p => p.id === selectedId)?.title}</Box>
+                      <Box italic>Автор: {data.paintings.find(p => p.id === selectedId)?.author}</Box>
+                      
+                      <Box color="#f4cf5c" fontSize="11px" mt={0.5}>
+                        Дата создания: {data.paintings.find(p => p.id === selectedId)?.ic_date || 'До Эпохи Нового Порядка'}
+                      </Box>
+
+                      {data.is_admin && (
+                        <>
+                          <Box color="label" fontSize="11px" mt={0.5}>
+                            Ckey автора: {data.paintings.find(p => p.id === selectedId)?.author_ckey || 'неизвестно'}
                           </Box>
-                          {data.is_admin && (
-                            <Box color="label" fontSize="11px" mt={0.5}>
-                              Ckey автора: {data.paintings.find(p => p.id === selectedId)?.author_ckey || 'неизвестно'}
-                            </Box>
-                          )}
-                        </Stack.Item>
+                          <Box color="label" fontSize="11px" mt={0.5}>
+                            Создано: {data.paintings.find(p => p.id === selectedId)?.real_date || 'неизвестно'}
+                          </Box>
+                        </>
+                      )}
+                    </Stack.Item>
 
                         {data.is_admin && (
                           <Stack.Item mt={3}>
