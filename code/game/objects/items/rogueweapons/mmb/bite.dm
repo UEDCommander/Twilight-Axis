@@ -120,7 +120,7 @@
 		return
 
 	next_attack_msg.Cut()
-
+	user.break_invisibility_from_combat()
 	user.do_attack_animation_simple(src, ATTACK_EFFECT_BITE)
 	playsound(user, 'sound/gore/flesh_eat_01.ogg', vol = 50, vary = FALSE, extrarange = -2, ignore_walls = FALSE, quiet = TRUE)
 	var/nodmg = FALSE
@@ -304,6 +304,7 @@
 		return FALSE*/
 
 	user.changeNext_move(1.2 SECONDS) // One chew every 1.2 seconds
+	user.break_invisibility_from_combat()
 	var/mob/living/carbon/C = grabbed
 	var/damage = user.get_punch_dmg()
 	if(HAS_TRAIT(user, TRAIT_STRONGBITE))
@@ -405,6 +406,7 @@
 			qdel(src)
 			break
 
+		user.break_invisibility_from_combat()
 		user.drinksomeblood(C, sublimb_grabbed)
 		if(!do_after(user, 2 SECONDS, grabbed))
 			break
