@@ -173,7 +173,7 @@
 
 /datum/loadout_item/donator/universal/belt_bronze
 	name = "Gift - Belt of Bronze Maille"
-	path = /obj/item/storage/belt/rogue/leather/donator_bronze 
+	path = /obj/item/storage/belt/rogue/leather/donator_bronze
 
 /datum/loadout_item/donator/universal/belt_iron
 	name = "Gift - Belt of Iron Maille"
@@ -425,12 +425,12 @@
 /datum/loadout_item/donator/dakken
 	name = "Donator Kit - Armoured Avantyne Barbute"
 	path = /obj/item/enchantingkit/dakken_zizhelm
-	ckeywhitelist = list("dakken12") 
+	ckeywhitelist = list("dakken12")
 
 /datum/loadout_item/donator/dakken/sword
 	name = "Donator Kit - Avantyne Threaded Sword"
 	path = /obj/item/enchantingkit/dakken_alloybsword
-	ckeywhitelist = list("dakken12") 
+	ckeywhitelist = list("dakken12")
 
 /datum/loadout_item/donator/stinketh
 	name = "Donator Kit - Silver Shashka"
@@ -626,11 +626,11 @@
     name = "Donator Kit - Gre'as'anto d'Shar"
     path = /obj/item/enchantingkit/olygsword
     ckeywhitelist = list("olympus7")
-	
+
 /datum/loadout_item/donator/bobby
 	name = "Donator Kit - Holy Astratan Bascinet"
 	path = /obj/item/enchantingkit/bobby_helm
-	ckeywhitelist = list("spartanbobby") 
+	ckeywhitelist = list("spartanbobby")
 
 /datum/loadout_item/donator/ollanius_sword
 	name = "Donator Kit - Azurosa-Wrapped Sword"
@@ -651,5 +651,10 @@
 	name = "Donator Kit - Frozen Vow"
 	path = /obj/item/enchantingkit/morto_staff
 	ckeywhitelist = list("mortosasye")
+
+/datum/loadout_item/donator/racobio_staff
+	name = "Donator Kit - Obsidian Tower"
+	path = /obj/item/enchantingkit/racobio_staff
+	ckeywhitelist = list("racobio")
 	sort_category = "Donator"
 */
