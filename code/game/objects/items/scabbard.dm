@@ -575,7 +575,7 @@
 	special = /datum/special_intent/limbguard
 	cant_strip = TRUE
 
-	max_integrity = 200
+	max_integrity = 0
 
 /obj/item/rogueweapon/scabbard/sword/kazengun/noparry
 	name = "ceremonial kazengun scabbard"
@@ -585,7 +585,6 @@
 	can_parry = FALSE
 	sewrepair = TRUE
 	special = null
-	max_integrity = 0
 
 
 /obj/item/rogueweapon/scabbard/sword/kazengun/steel
