@@ -65,7 +65,7 @@
 	if(UH && UH.used_intent)
 		if(UH.used_intent.blade_class == BCLASS_STAB)
 			chance_to_hit += 10
-		if(UH.used_intent.blade_class == BCLASS_HALFSWORD)
+		if(UH.used_intent.blade_class == BCLASS_PICK)
 			chance_to_hit += 20	//Double that of stab
 		if(UH.used_intent.blade_class == BCLASS_CUT)
 			chance_to_hit += 6
