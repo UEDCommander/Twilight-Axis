@@ -76,6 +76,10 @@ const TRAILING_MASKED_DESCRIPTOR_REGEX = / \[[^\]]+\]$/;
 const TRAILING_DUPLICATE_SUFFIX_REGEX = / \(\d+\)$/;
 const EMPTY_TARGETS: OrbitTarget[] = [];
 const ROLE_GROUP_COLORS: Record<string, RoleColor> = {
+  'Ducal Family': {
+    backgroundColor: '#aa83b9',
+    color: '#443a39',
+  },
   Noblemen: {
     backgroundColor: '#aa83b9',
     color: '#443a39',
@@ -112,6 +116,10 @@ const ROLE_GROUP_COLORS: Record<string, RoleColor> = {
     backgroundColor: '#819e82',
     color: '#443a39',
   },
+  ATC: {
+    backgroundColor: '#c86e3a',
+    color: '#443a39',
+  },
   'Azurian Trading Company': {
     backgroundColor: '#c86e3a',
     color: '#443a39',
@@ -146,14 +154,19 @@ const LESSER_VAMPIRE_ROLE_NAMES = [
 ] as const;
 const ALIVE_NORMAL_GROUP_ORDER = [
   'Noblemen',
+  'Ducal Family',
+  'Retinue',
   'Courtiers',
   'Garrison',
   'Church',
   'Inquisition',
-  'Yeomen',
-  'Peasants',
-  'Sidefolk',
   'Wanderers',
+  'Peasants',
+  'Burghers',
+  'ATC',
+  'Azurian Trading Company',
+  'Sidefolk',
+  'Yeomen',
 ] as const;
 const ALIVE_NORMAL_GROUP_ORDER_INDEX: Map<string, number> = new Map(
   ALIVE_NORMAL_GROUP_ORDER.map((label, index) => [label, index]),
