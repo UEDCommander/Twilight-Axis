@@ -83,11 +83,50 @@
 
 	return FALSE
 
+/mob/living/proc/erp_can_do_sex(silent = FALSE, force = FALSE)
+	if(force)
+		return TRUE
+
+	if(!client)
+		return FALSE
+
+	if(stat != CONSCIOUS)
+		if(!silent)
+			to_chat(src, span_warning("I can't do this."))
+		return FALSE
+
+	if(!ishuman(src))
+		if(!silent)
+			to_chat(src, span_warning("I can't do this."))
+		return FALSE
+
+	var/mob/living/carbon/human/human_actor = src
+
+	if(human_actor.mind && human_actor.mind.has_antag_datum(/datum/antagonist/zombie))
+		if(!silent)
+			to_chat(src, span_warning("I can't do this."))
+		return FALSE
+
+	if((human_actor.mind && human_actor.mind.has_antag_datum(/datum/antagonist/skeleton)) || istype(human_actor, /mob/living/carbon/human/species/skeleton))
+		if(!silent)
+			to_chat(src, span_warning("I can't do this."))
+		return FALSE
+
+	if(human_actor.is_erp_blocked_as_target())
+		return FALSE
+
+	if(human_actor.client && human_actor.client.prefs && !human_actor.client.prefs.sexable)
+		if(!silent)
+			to_chat(src, span_warning("You don't want to do this. (ERP preference)"))
+		return FALSE
+
+	return TRUE
+
 /mob/living/carbon/human/proc/is_erp_defiant_in_combat()
 	return defiant && cmode
 
 /mob/living/carbon/human/proc/is_erp_defiant()
-	return defiant && client.prefs.sexable
+	return defiant && (!client || !client.prefs || !client.prefs.sexable)
 
 /mob/living/carbon/human/proc/has_erp_leprosy()
 	if(HAS_TRAIT(src, TRAIT_LEPROSY))
@@ -139,6 +178,21 @@
 
 	return erp_try_start(initiator, src, user)
 
+/mob/living/simple_animal/proc/is_erp_blocked_as_target()
+	if(locate(/obj/shapeshift_holder) in src)
+		return FALSE
+	if(istype(src, /mob/living/simple_animal/hostile/retaliate/rogue/dragon))
+		return FALSE
+	if(istype(src, /mob/living/simple_animal/hostile/retaliate/rogue/voiddragon))
+		return FALSE
+	if(istype(src, /mob/living/simple_animal/hostile/retaliate/rogue/revenant/dragon))
+		return FALSE
+	if(istype(src, /mob/living/simple_animal/hostile/retaliate/rogue/werewolf_npc))
+		return FALSE
+	if(istype(src, /mob/living/simple_animal/hostile/retaliate/rogue/hag_shapeshift))
+		return FALSE
+	return TRUE
+
 /mob/living/carbon/human/proc/set_sex_surrender_to(mob/living/carbon/human/mob_object)
 	if(mob_object)
 		sex_surrender_ref = WEAKREF(mob_object)
@@ -172,7 +226,8 @@
 
 /mob/living/carbon/human/Login()
 	. = ..()
-	client?.prefs?.apply_erp_kinks_to_mob(src)
+	if(client && client.prefs)
+		client.prefs.apply_erp_kinks_to_mob(src)
 	SSerp.apply_prefs_for_mob(src)
 	erp_resync_after_body_restore()
 
@@ -203,14 +258,15 @@
 	if(!original)
 		return
 
-	if(ispath(internal_organs_slot?[ORGAN_SLOT_PENIS]))
-		internal_organs_slot[ORGAN_SLOT_PENIS] = null
-	if(ispath(internal_organs_slot?[ORGAN_SLOT_TESTICLES]))
-		internal_organs_slot[ORGAN_SLOT_TESTICLES] = null
-	if(ispath(internal_organs_slot?[ORGAN_SLOT_BREASTS]))
-		internal_organs_slot[ORGAN_SLOT_BREASTS] = null
-	if(ispath(internal_organs_slot?[ORGAN_SLOT_VAGINA]))
-		internal_organs_slot[ORGAN_SLOT_VAGINA] = null
+	if(internal_organs_slot)
+		if(ispath(internal_organs_slot[ORGAN_SLOT_PENIS]))
+			internal_organs_slot[ORGAN_SLOT_PENIS] = null
+		if(ispath(internal_organs_slot[ORGAN_SLOT_TESTICLES]))
+			internal_organs_slot[ORGAN_SLOT_TESTICLES] = null
+		if(ispath(internal_organs_slot[ORGAN_SLOT_BREASTS]))
+			internal_organs_slot[ORGAN_SLOT_BREASTS] = null
+		if(ispath(internal_organs_slot[ORGAN_SLOT_VAGINA]))
+			internal_organs_slot[ORGAN_SLOT_VAGINA] = null
 
 	if(original.getorganslot(ORGAN_SLOT_TESTICLES) && !getorganslot(ORGAN_SLOT_TESTICLES))
 		var/obj/item/organ/testicles/T = new
@@ -304,7 +360,7 @@
 	if(!erp_can_use_menu_as_actor(actor, silent, force))
 		return null
 
-	var/mob/living/carbon/human/consent = SSerp.get_consent_mob_for_target(target_atom)
+	var/mob/living/consent = SSerp.get_consent_mob_for_target(target_atom)
 	if(!consent)
 		return null
 
@@ -318,44 +374,36 @@
 
 	EC.add_partner_atom(target_atom)
 	EC.open_ui(actor)
+
 	return EC
 
 /proc/erp_can_use_menu_as_actor(mob/living/actor, silent = FALSE, force = FALSE)
 	if(!actor || !istype(actor))
 		return FALSE
 
-	if(force)
-		return TRUE
-
-	var/mob/living/carbon/human/human_actor = actor
-	if(!human_actor.can_do_sex)
-		if(!silent)
-			to_chat(actor, span_warning("I can't do this."))
-		return FALSE
-
-	if(human_actor.is_erp_blocked_as_target())
-		return FALSE
-
-	if(actor.client && actor.client.prefs && !actor.client.prefs.sexable)
-		if(!silent)
-			to_chat(actor, span_warning("You don't want to do this. (ERP preference)"))
-		return FALSE
-
-	return TRUE
+	return actor.erp_can_do_sex(silent, force)
 
 
 /proc/erp_can_target_atom_for_menu(mob/living/actor, atom/target_atom, silent = FALSE, force = FALSE)
 	if(!actor || !target_atom || QDELETED(target_atom))
 		return FALSE
 
-	var/mob/living/carbon/human/consent = SSerp.get_consent_mob_for_target(target_atom)
+	var/mob/living/consent = SSerp.get_consent_mob_for_target(target_atom)
 	if(!consent)
 		return FALSE
 
 	if(force)
 		return TRUE
 
-	if(consent.is_erp_blocked_as_target())
+	var/mob/living/carbon/human/human_consent = consent
+	if(istype(human_consent) && human_consent.is_erp_blocked_as_target())
+		to_chat(actor, span_warning("Blocked by leprosy or defiant combat mode."))
+		to_chat(consent, span_warning("Blocked by leprosy or defiant combat mode."))
+		return FALSE
+	var/mob/living/simple_animal/simple_consent = consent
+	if(istype(simple_consent) && simple_consent.is_erp_blocked_as_target())
+		if(!silent)
+			to_chat(actor, span_warning("[consent] can't be used as an ERP target."))
 		return FALSE
 
 	if(!consent.client)

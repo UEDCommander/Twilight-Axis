@@ -24,14 +24,13 @@ SUBSYSTEM_DEF(treasury)
 	priority = FIRE_PRIORITY_WATER_LEVEL
 	var/list/tax_rates = list(
 		TAX_CATEGORY_CONTRACT_LEVY = 0.20,
-		TAX_CATEGORY_HEADEATER_LEVY = 0.30,
+		TAX_CATEGORY_HEADEATER_LEVY = 0.15,
 		TAX_CATEGORY_IMPORT_TARIFF = 0.15,
 		TAX_CATEGORY_EXPORT_DUTY = 0.15,
 		TAX_CATEGORY_FINE = 1.0,
+		TAX_CATEGORY_ESTATE_LEVY = 0.15, //TA EDIT
 	)
 	var/trade_spread = 0.10
-	var/mint_multiplier = 0.8
-	var/minted = 0
 	var/autoexport_percentage = 0.6
 	var/list/bank_accounts = list()
 	var/datum/fund/discretionary_fund
@@ -147,9 +146,6 @@ SUBSYSTEM_DEF(treasury)
 		stockpile_datums += D
 		if(D.trade_good_id)
 			stockpile_by_trade_good[D.trade_good_id] = D
-	for(var/path in subtypesof(/datum/roguestock/bounty))
-		var/datum/D = new path
-		stockpile_datums += D
 	autoset_stockpile_limits()
 	return ..()
 
@@ -412,13 +408,19 @@ SUBSYSTEM_DEF(treasury)
 		return FALSE
 	if(HAS_TRAIT(recipient, TRAIT_OUTLAW))
 		return FALSE
+	var/datum/job/J = SSjob.GetJob(recipient.job) //TA EDIT START
+	if(HAS_TRAIT(recipient, TRAIT_NOBLE))
+		if(!J)
+			return FALSE
+		else if(!(J.department_flag & NOBLEMEN))
+			return FALSE //TA EDIT END
 	var/datum/fund/account = get_account(recipient)
 	if(!account)
 		create_bank_account(recipient)
 		account = get_account(recipient)
 	if(!account)
 		return FALSE
-	var/source = recipient.job == "Merchant" ? "Azurian Trading Company" : "Noble Estate"
+	var/source = recipient.job == "Merchant" ? "Azurian Trading Company" : "Treasury Sponsorship" //TA EDIT
 	var/payout = is_starter ? amount + ESTATE_STARTER_BONUS : amount
 	if(!mint(account, payout, source))
 		return FALSE
@@ -635,7 +637,7 @@ SUBSYSTEM_DEF(treasury)
 		lines += "[pretty] [verb] from [old_pct]% to [new_pct]%."
 
 	if(rejected_concordat)
-		to_chat(usr, span_warning("The Concordat of Zenitstadt forbids any levy below [round(CONCORDAT_TITHE_RATE * 100)]% while in force - the Church's tithe must be honoured."))
+		to_chat(usr, span_warning("The Twilight Concordat forbids any levy below [round(CONCORDAT_TITHE_RATE * 100)]% while in force - the Church's tithe must be honoured.")) //TA EDIT
 
 	if(!length(lines))
 		return
@@ -643,7 +645,7 @@ SUBSYSTEM_DEF(treasury)
 	levy_rates_changed_day = GLOB.dayspassed
 	var/final_text = jointext(lines, "<br>")
 	if(concordat_active)
-		final_text += "<br><i>By the Concordat of Zenitstadt, [round(CONCORDAT_TITHE_RATE * 100)]% of every taxed transaction is tithed to the Church of Azuria, drawn from the Crown's share.</i>"
+		final_text += "<br><i>By the Twilight Concordat, [round(CONCORDAT_TITHE_RATE * 100)]% of every taxed transaction is tithed to the Church of Azuria, drawn from the Crown's share.</i>" //TA EDIT
 	var/final_announcement_text = bad_guy ? bad_announcement_text : good_announcement_text
 	priority_announce(final_text, final_announcement_text, pick('sound/misc/royal_decree.ogg', 'sound/misc/royal_decree2.ogg'), "Captain", strip_html = FALSE)
 	log_game("TAX RATES: [usr ? key_name(usr) : "system"] changed levy rates - [jointext(lines, " | ")]")
@@ -712,6 +714,8 @@ SUBSYSTEM_DEF(treasury)
 			return "Import Tariff"
 		if(TAX_CATEGORY_EXPORT_DUTY)
 			return "Export Duty"
+		if(TAX_CATEGORY_ESTATE_LEVY) //TA EDIT
+			return "Estate Peasants Levy" //TA EDIT
 		if(TAX_CATEGORY_FINE)
 			return "Fine"
 	return capitalize(category)
@@ -752,7 +756,7 @@ SUBSYSTEM_DEF(treasury)
 		return POLL_TAX_CAT_GUILDS
 	if(H.job == "Merchant")
 		return POLL_TAX_CAT_MERCHANT
-	if((H.job in list("Innkeeper", "Head Physician", "Apothecary", "Bathmaster", "Town Crier", "Magicians Associate")) || HAS_TRAIT(H, TRAIT_RESIDENT))
+	if((H.job in list("Innkeeper", "Head Physician", "Apothecary", "Bathmaster", "Magicians Associate")) || HAS_TRAIT(H, TRAIT_RESIDENT))
 		return POLL_TAX_CAT_BURGHER
 	if(H.job in GLOB.wanderer_positions)
 		return POLL_TAX_CAT_ADVENTURER

@@ -7,73 +7,122 @@
 	id = "hungryt1"
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/hungryt1
 	effectedstats = list(STATKEY_CON = -1)
-	duration = 100
+	duration = -1
 	needs_processing = FALSE
+	status_type = STATUS_EFFECT_REFRESH
 
 /atom/movable/screen/alert/status_effect/debuff/hungryt1
 	name = "Hungry"
-	desc = "Hunger weakens this living body."
+	desc = "My stomach growls and my body yearns for food."
 	icon_state = "hunger1"
 
 /datum/status_effect/debuff/hungryt2
 	id = "hungryt2"
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/hungryt2
 	effectedstats = list(STATKEY_STR = -2, STATKEY_CON = -2, STATKEY_WIL = -1)
-	duration = 100
+	duration = -1
 	needs_processing = FALSE
+	status_type = STATUS_EFFECT_REFRESH
 
 /atom/movable/screen/alert/status_effect/debuff/hungryt2
 	name = "Hungry"
-	desc = "This living body suffers heavily from hunger."
+	desc = "Hunger gnaws at my strength. I should eat soon."
 	icon_state = "hunger2"
 
 /datum/status_effect/debuff/hungryt3
 	id = "hungryt3"
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/hungryt3
 	effectedstats = list(STATKEY_STR = -5, STATKEY_CON = -3, STATKEY_WIL = -2)
-	duration = 100
+	duration = -1
 	needs_processing = FALSE
+	status_type = STATUS_EFFECT_REFRESH
 
 /atom/movable/screen/alert/status_effect/debuff/hungryt3
 	name = "Hungry"
-	desc = "My body can barely hold it!"
+	desc = "My body is beginning to fail from starvation!"
 	icon_state = "hunger3"
+
+
 
 /datum/status_effect/debuff/thirstyt1
 	id = "thirsty1"
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/thirstyt1
 	effectedstats = list(STATKEY_WIL = -1)
-	duration = 100
+	duration = -1
 	needs_processing = FALSE
+	status_type = STATUS_EFFECT_REFRESH
 
 /atom/movable/screen/alert/status_effect/debuff/thirstyt1
 	name = "Thirsty"
-	desc = "I need water."
+	desc = "My mouth feels a little dry."
 	icon_state = "thirst1"
 
 /datum/status_effect/debuff/thirstyt2
 	id = "thirsty2"
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/thirstyt2
 	effectedstats = list(STATKEY_SPD = -1, STATKEY_WIL = -2)
-	duration = 100
+	duration = -1
 	needs_processing = FALSE
+	status_type = STATUS_EFFECT_REFRESH
 
 /atom/movable/screen/alert/status_effect/debuff/thirstyt2
 	name = "Thirsty"
-	desc = "My mouth feels much drier."
+	desc = "My throat is dry, and it's harder to focus."
 	icon_state = "thirst2"
 
 /datum/status_effect/debuff/thirstyt3
 	id = "thirsty3"
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/thirstyt3
 	effectedstats = list(STATKEY_STR = -1, STATKEY_SPD = -2, STATKEY_WIL = -3)
-	duration = 100
+	duration = -1
 	needs_processing = FALSE
+	status_type = STATUS_EFFECT_REFRESH
 
 /atom/movable/screen/alert/status_effect/debuff/thirstyt3
 	name = "Thirsty"
-	desc = "I urgently need water!"
+	desc = "I urgently need to drink something! Anything!"
 	icon_state = "thirst3"
+
+
+
+/datum/status_effect/debuff/vthirstt1
+	id = "vthirst1"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/vthirstt1
+	effectedstats = list(STATKEY_CON = -1)
+	duration = -1
+	needs_processing = FALSE
+	status_type = STATUS_EFFECT_REFRESH
+
+/atom/movable/screen/alert/status_effect/debuff/vthirstt1
+	name = "Blood Starved"
+	desc = "Food and drink brings no comfort. The thought of consuming blood lingers in my mind."
+	icon_state = "vblood1"
+
+/datum/status_effect/debuff/vthirstt2
+	id = "vthirst2"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/vthirstt2
+	effectedstats = list(STATKEY_CON = -2, STATKEY_LCK = -2)
+	duration = -1
+	needs_processing = FALSE
+	status_type = STATUS_EFFECT_REFRESH
+
+/atom/movable/screen/alert/status_effect/debuff/vthirstt2
+	name = "Blood Starved"
+	desc = "My fangs ache and I am twitchy. Every heartbeat nearby draws my attention."
+	icon_state = "vblood2"
+
+/datum/status_effect/debuff/vthirstt3
+	id = "vthirst3"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/vthirstt3
+	effectedstats = list(STATKEY_STR = 4, STATKEY_SPD = -2, STATKEY_CON = -4, STATKEY_LCK = -4)
+	duration = -1
+	needs_processing = FALSE
+	status_type = STATUS_EFFECT_REFRESH
+
+/atom/movable/screen/alert/status_effect/debuff/vthirstt3
+	name = "Blood Starved"
+	desc = "<font color='#ff0000'><b>I CAN'T TAKE IT ANYMORE!! BLOOD!! WHERE IS BLOOD?! I NEED BLOOD!! I WANT BLOOD!!</b></font>"
+	icon_state = "vblood3"
 
 /////////
 
@@ -148,7 +197,7 @@
 
 /atom/movable/screen/alert/status_effect/debuff/bleedingt1
 	name = "Dizzy"
-	desc = ""
+	desc = "I've lost a bit of blood, and my humors feel imbalanced.."
 	icon_state = "bleed1"
 
 /datum/status_effect/debuff/bleedingworse
@@ -172,7 +221,7 @@
 
 /atom/movable/screen/alert/status_effect/debuff/bleedingt2
 	name = "Faint"
-	desc = ""
+	desc = "I've lost some blood, and it's hard to keep myself steady.."
 	icon_state = "bleed2"
 
 /datum/status_effect/debuff/bleedingworst
@@ -196,7 +245,7 @@
 
 /atom/movable/screen/alert/status_effect/debuff/bleedingt3
 	name = "Drained"
-	desc = ""
+	desc = "I've lost a lot of blood, and I can barely keep myself conscious.."
 	icon_state = "bleed3"
 
 /datum/status_effect/debuff/sleepytime
@@ -258,6 +307,17 @@
 	desc = "My muscles need some sleep to recover."
 	icon_state = "muscles"
 
+/datum/status_effect/debuff/sunder_stacks
+	id = "sundered"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/sunder_stacks
+	effectedstats = list(STATKEY_STR = -1, STATKEY_WIL = -1, STATKEY_CON = -1, STATKEY_SPD = -1, STATKEY_LCK = -1)	//Slightly punishing.
+	duration = 10 SECONDS	//Punishing and tied to the duration of your sundering stacks.
+
+/atom/movable/screen/alert/status_effect/debuff/sunder_stacks
+	name = "Sundered!"
+	desc = "Something has been taken from me, and it will take time to recover."
+	icon_state = "luxstrain"
+
 /datum/status_effect/debuff/devitalised
 	id = "devitalised"
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/devitalised
@@ -273,7 +333,8 @@
 
 /atom/movable/screen/alert/status_effect/debuff/devitalised
 	name = "Devitalised"
-	desc = "Something has been taken from me, and it will take time to recover."
+	desc = "Something vital has been taken from me; my heart beats in arrythmia, as it struggles to restore what has been lost."
+	icon_state = "lux"
 
 /datum/status_effect/debuff/vamp_dreams
 	id = "sleepytime"
@@ -291,13 +352,12 @@
 	effectedstats = list(STATKEY_STR = -1, STATKEY_WIL = -1, STATKEY_CON = -1, STATKEY_SPD = -1, STATKEY_LCK = -1)
 	duration = 1 HOURS // Punishing AS FUCK, but not as punishing as being dead.
 
-
 /atom/movable/screen/alert/status_effect/debuff/ritualdefiled
-	name = "Tainted Lux"
-	desc = "My Lux has been tainted in a vile heretic ritual."
+	name = "Defilementia"
+	desc = "My very spirit aches, as my body struggles against the lux-cursing whims of a forbidden ritual!"
+	icon_state = "rituos_cooldown_greater"
 
 /// SURRENDERING DEBUFFS
-
 /datum/status_effect/debuff/breedable
 	id = "breedable"
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/breedable
@@ -343,7 +403,7 @@
 	desc = "I can barely feel my limbs!"
 	icon_state = "chilled"
 
-
+/// RITUOS DEBUFFS
 /datum/status_effect/debuff/ritesexpended
 	id = "ritesexpended"
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/ritesexpended
@@ -354,79 +414,161 @@
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/armamentrites
 	duration = 2 HOURS
 
+/atom/movable/screen/alert/status_effect/debuff/ritesexpended
+	name = "Rituos Fatigatio"
+	desc = "My ritual is complete, yet not without cost. I must gift my lux tyme to recover, before I can conduct another rite."
+	icon_state = "rituos_cooldown"
+
 /datum/status_effect/debuff/lux_exhausted
 	id = "lux_exhausted"
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/lux_exhausted
 	effectedstats = list(STATKEY_STR = -2, STATKEY_WIL = -2, STATKEY_LCK = -2)
 	duration = 2 HOURS
 
-/atom/movable/screen/alert/status_effect/debuff/ritesexpended
-	name = "Rites Complete"
-	desc = "It will take time before I can next perform a rite."
-
-/atom/movable/screen/alert/status_effect/debuff/armamentrites
-	name = "Armament Rites Complete"
-	desc = "It will take time before I can next perform a rite."
-
 /atom/movable/screen/alert/status_effect/debuff/lux_exhausted
-	name = "Lux Exhausted"
-	desc = "My lux is spent, leaving body and will diminished."
+	name = "Rituos Langouria"
+	desc = "Body and will alike, sacrificed to complete the rites for another. Your will shall be done, but it will be quite some time before your lux can sustain another rite."
+	icon_state = "rituos_exchange"
 
 /datum/status_effect/debuff/ritesexpended_heavy
 	id = "ritesexpended_heavy"
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/ritesexpended_heavy
 	duration = 1 HOURS
 
+/atom/movable/screen/alert/status_effect/debuff/armamentrites
+	name = "Rituos Desicco"
+	desc = "My ritual is complete, yet not without cost. I must gift my lux plenty of tyme to recover, before I can conduct another rite."
+	icon_state = "rituos_cooldown_greater"
+
 /atom/movable/screen/alert/status_effect/debuff/ritesexpended_heavy
-	name = "Rites Complete"
-	desc = "It will take a lot of time before I can perform a next rite. I am drained."
+	name = "Rituos Desicco"
+	desc = "My ritual is complete, yet not without cost. I must gift my lux plenty of tyme to recover, before I can conduct another rite."
+	icon_state = "rituos_cooldown_greater"
 
 /atom/movable/screen/alert/status_effect/debuff/ravox_spirit_backlash
 	name = "Spiritual Backlash"
-	desc = "Myne body weak, myne muscles burn- but I must fight on."
+	desc = "Myne body weak, myne muscles burn - but I must fight on!"
 	icon_state = "call_to_arms_negative"
 
 /atom/movable/screen/alert/status_effect/debuff/ravox_warrior_spirit
-	name = "Lux-strain"
-	desc = "My spirit is momentarily stretched thin."
-	icon_state = "astrata_gaze"
+	name = "Luxstrain"
+	desc = "My spirit is momentarily stretched thin!"
+	icon_state = "luxstrain"
 
-//For revive - your body DIDN'T rot, but it did suffer damage. Unlike being rotted, this one is only timed. Not forever.
+/// RESURRECTION DEBUFFS
 /datum/status_effect/debuff/revived
-	id = "revived"
+	id = "revived" //For revive - your body DIDN'T rot, but it did suffer damage. Unlike being rotted, this one is only timed. Not forever.
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/revived
 	effectedstats = list(STATKEY_STR = -1, STATKEY_PER = -1, STATKEY_INT = -1, STATKEY_WIL = -1, STATKEY_CON = -1, STATKEY_SPD = -1, STATKEY_LCK = -1)
 	duration = 15 MINUTES		//Should be long enough to stop someone from running back into battle. Plus, this stacks with body-rot debuff. RIP.
 
 /atom/movable/screen/alert/status_effect/debuff/revived
-	name = "Revival Sickness"
-	desc = "You felt lyfe itself course through you, restoring your lux and your essance. You.. live - but your body aches. It still needs time to recover.."
+	name = "Revived" //Formerly 'Revival Sickness'.
+	desc = "Brought back from death's sweet embrace, you walk amongst the living once more. Yet, it is not without consequence - your body aches, your spirit wanes, and your fate is still uncertain."
 	icon_state = "revived"
 
-//For de-rot - your body ROTTED. Harsher penalty for longer, can be fully off-set with a cure-rot potion.
+/datum/status_effect/debuff/revived/on_apply()
+	. = ..()
+	owner.add_stress(/datum/stressevent/resurrected)
+	switch(owner.patron?.type)
+		if(/datum/patron/old_god) //Pseudoplaceholder. Feel free to rewrite, if desired.
+			to_chat(owner, span_gamedeadsay("Blinding light, enveloping warmth, unconditional love. The darkness recedes behind me, as I come closer to the end of the tunnel - yet, just before I crest the horizon, something jerks me back into the inky-black.."))
+		if(/datum/patron/divine/undivided) //Pseudoplaceholder. Feel free to rewrite, if desired.
+			to_chat(owner, span_gamedeadsay("Blinding light, enveloping warmth, unconditional love. The darkness recedes behind me, as I come closer to the end of the tunnel - yet, just before I crest the horizon, something jerks me back into the inky-black.."))
+		if(/datum/patron/divine/astrata)
+			to_chat(owner, span_gamedeadsay("It was so cold without Her light. I felt it in my bones and my skin and my insides. Permeating darkness - consuming what little light I took with me. I will never take Her warmth for granted again.."))
+		if(/datum/patron/divine/noc)
+			to_chat(owner, span_gamedeadsay("There, at the edge of reality, laid a singular point of light. The more I focused upon it, the more it expanded. A tapestry of stars, speckled amongst a sea of phlogiston, forming indecipherable truths for me to ponder. I shouldn't have stared for so long.."))
+		if(/datum/patron/divine/necra)
+			to_chat(owner, span_gamedeadsay("Her halls were beautiful. Cold. Sterile. The world seems so much more chaotic compared to her demesne. I wasn't meant to come back.."))
+		if(/datum/patron/divine/pestra)
+			to_chat(owner, span_gamedeadsay("I trailed my body as it laid slumped over in that terrible, terrible place. To see my life spilling out onto the soil, to see my flesh wither into crusted rot, and to feel my grasp on this world slipping; it was too much for anyone to bare, let alone me.."))
+		if(/datum/patron/divine/malum)
+			to_chat(owner, span_gamedeadsay("The heat of the forge was overwhelming. My skin was tempered into moving steel and living armor. They fitted me with weapons of war and sent me to the line. There were so many others. All perfect in their construction. Waking up was the sweetest relief.."))
+		if(/datum/patron/divine/dendor)
+			to_chat(owner, span_gamedeadsay("The hunting grounds! Absolute freedom - primal violence and dancing madmen. So many were consumed by the beasts. But I was faster, more cunning, staying just ahead of the Mad God.."))
+		if(/datum/patron/divine/xylix)
+			to_chat(owner, span_gamedeadsay("The play has come to a close, yet the crowd hungers for an encore. Amidst a sea of tossed rosas, who am I to deny the audience what they crave the most? I clear my throat and prepare.."))
+		if(/datum/patron/divine/eora)
+			to_chat(owner, span_gamedeadsay("I woke upon a bed of silken sheets and creamy pillows, surrounded by my family. They looked overjoyed to see me - but I could hardly see their faces. They smiled and spoke, reaching out to welcome me. I wish I could remember what they looked like.."))
+		if(/datum/patron/divine/abyssor)
+			to_chat(owner, span_gamedeadsay("The rushing currents swept me down, down. Down towards the sleeping God. My lungs cried out in pain as I took saltwater into them. Vision clouding with red and black. His eye opened. His eye opened his eye opened HIS EYE OPENED HIS EYE OPENED HE WAS STIRRING-"))
+		if(/datum/patron/divine/ravox)
+			to_chat(owner, span_gamedeadsay("One by one - the injustices I committed were set upon the scales. Sweat ran down my back as I watched those that I saved plead my case. One by one - the scale lifted so slowly. The line of petitioners growing shorter.."))
+		if(/datum/patron/inhumen/matthios) //Pseudoplaceholder. Feel free to rewrite, if desired.
+			to_chat(owner, span_gamedeadsay("It was so cold without Her light. I felt it in my bones and my skin and my insides. Permeating darkness - consuming what little light I took with me. I will never take Her warmth for granted again.."))
+		if(/datum/patron/inhumen/graggar) //Pseudoplaceholder. Feel free to rewrite, if desired.
+			to_chat(owner, span_gamedeadsay("One by one - the injustices I committed were set upon the scales. Sweat ran down my back as I watched those that I saved plead my case. One by one - the scale lifted so slowly. The line of petitioners growing shorter.."))
+		if(/datum/patron/inhumen/baotha) //Pseudoplaceholder. Feel free to rewrite, if desired.
+			to_chat(owner, span_gamedeadsay("I woke upon a bed of silken sheets and creamy pillows, surrounded by my family. They looked overjoyed to see me - but I could hardly see their faces. They smiled and spoke, reaching out to welcome me. I wish I could remember what they looked like.."))
+		if(/datum/patron/inhumen/zizo) //Pseudoplaceholder. Feel free to rewrite, if desired.
+			to_chat(owner, span_gamedeadsay("There, at the edge of reality, laid a singular point of light. The more I focused upon it, the more it expanded. A tapestry of stars, speckled amongst a sea of phlogiston, forming indecipherable truths for me to ponder. I shouldn't have stared for so long.."))
+		if(/datum/patron/godless) //Pseudoplaceholder. Feel free to rewrite, if desired.
+			to_chat(owner, span_gamedeadsay("I saw my entire lyfe flash before my eyes, and then-.. nothing. No light, no darkness; complete, utter nothingness - save for a single thought, sinking into the inky-blackness.. and into whatever awaited on the other side. Suddenly, I feel myself yanked in a non-existing direction!"))
+		else
+			to_chat(owner, span_gamedeadsay("Blinding light, enveloping warmth, unconditional love. The darkness recedes behind me, as I come closer to the end of the tunnel - yet, just before I crest the horizon, something jerks me back into the inky-black.."))
+
+/datum/status_effect/debuff/revived/on_remove()
+	. = ..()
+	owner.remove_stress(/datum/stressevent/resurrected)
+
+// /datum/status_effect/debuff/revived_addendum
+//	id = "revived_addendum"
+//	alert_type = /atom/movable/screen/alert/status_effect/debuff/revived_addendum
+//	duration = 5 MINUTES		//If timed right, it should naturally end alongside the 'Death's Door' debuff. Purely cosmetic, for the sake of keeping some continuity with the effects of resurrection.
+
+//	/atom/movable/screen/alert/status_effect/debuff/revived_addendum
+//	name = "Resurr.."
+//	desc = "You can feel yourself, in both body and soul, becoming fully grounded once more. Tyme will tell if you'll lyve to see tomorrow, however, or if this is merely an intermission.."
+//	icon_state = "revived_addendum"
+
+// /datum/status_effect/debuff/revived/on_remove()
+//	owner.apply_status_effect(/datum/status_effect/debuff/revival_addendum) //Cosmetic continuance, to ensure it ends with the 'Permadeath' debuff.*/ //Readd when someone can figure out how to un-errorify this.
+//	. = ..()
+
 /datum/status_effect/debuff/rotted
-	id = "rotted_body"
+	id = "rotted_body" //For de-rot - your body ROTTED. Harsher penalty for longer, can be fully off-set with a cure-rot potion.
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/rotted
 	effectedstats = list(STATKEY_STR = -2, STATKEY_PER = -2, STATKEY_INT = -2, STATKEY_WIL = -2, STATKEY_CON = -2, STATKEY_SPD = -2, STATKEY_LCK = -2)
-	duration = 30 MINUTES	//Back to a temporary 30 min duration. It hurts.
+	duration = 30 MINUTES	// Back to a temporary 30 minute duration. It hurts.
 
 /atom/movable/screen/alert/status_effect/debuff/rotted
-	name = "Body Rot Paralysis"
-	desc = "You came back from death, but everything aches.. you can feel it in your muscles. Even in your nose, you can smell something putrid and foul. You live yet, but at what cost..?"
-	icon_state = "rotted_body"
+	name = "Atrophia"
+	desc = "You came back from death, but everything aches.. you can feel it in your muscles, your bones.. Even in your nose, you can smell something putrid and foul. You.. live yet, but at what cost.. ?"
+	icon_state = "revived_rot"
 
-//Replaces the flat-stat change, this should ONLY apply to zombies who have been dead for some time. Makes them easier to kill.
 /datum/status_effect/debuff/rotted_zombie
-	id = "rotted_zombie"
+	id = "rotted_zombie" //Replaces the flat-stat change, this should ONLY apply to zombies who have been dead for some time. Makes them easier to kill.
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/rotted_zombie
-	effectedstats = list(STATKEY_CON = -8)
-	//No duration = infinate in time - this is removed on de-rot miricle OR de-rot surgery. Won't be applied unless you've been a zombie for ~20 min.
+	effectedstats = list(STATKEY_CON = -8) //No duration = infinate in time - this is removed on de-rot miricle OR de-rot surgery. Won't be applied unless you've been a zombie for ~20 min.
 
 /atom/movable/screen/alert/status_effect/debuff/rotted_zombie
-	name = "Decomposing Corpse"
-	desc = "You've been dead for some time.. your body is finally starting to give out on you."
-	icon_state = "rotted_body"	//Temp holdover, no idea what I'd do for a new icon for this.
+	name = "Decomposing"
+	desc = "Rotting flesh, dangling innards - the decay of what once was, no longer guarded by lyfe's thrumbings. Your spirit is struggling to remain rooted within this world.."
+	icon_state = "rot"
 
+/datum/status_effect/debuff/permadeath
+	id = "permadeath"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/permadeath
+	duration = 60 MINUTES //Effectively determines how long a character is threatened with permadeath. Kicks into gear once the initial deathmark-imposed grace period completes. Timed to match Revival Sickness.
+
+/atom/movable/screen/alert/status_effect/debuff/permadeath
+	name = "Death's Door"
+	desc = "Your heart beats with arrythmic fright, as an otherworldly chill rolls through your very spirit. Should you perish again within a half-dae's tyme, nothing will be able to bring you back from death's grasp."
+	icon_state = "permadeath"
+
+/datum/status_effect/debuff/permadeath/on_apply()
+	. = ..()
+	ADD_TRAIT(owner, TRAIT_DNR, id)
+	owner.add_stress(/datum/stressevent/permadeath_threat)
+
+/datum/status_effect/debuff/permadeath/on_remove()
+	. = ..()
+	REMOVE_TRAIT(owner, TRAIT_DNR, id)
+	owner.remove_stress(/datum/stressevent/permadeath_threat)
+	owner.add_stress(/datum/stressevent/permadeath_end)
+
+/// CONT. DEBUFFS
 /datum/status_effect/debuff/dazed
 	id = "dazed"
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/dazed
@@ -571,9 +713,6 @@
 	effectedstats = list(STATKEY_LCK = -2, STATKEY_INT = -2, STATKEY_SPD = -1, STATKEY_WIL = -1, STATKEY_CON = -1)
 	duration = -1
 
-
-
-
 /atom/movable/screen/alert/status_effect/debuff/excomm
 	name = "Excommunicated!"
 	desc = "The Ten have forsaken me!"
@@ -641,14 +780,14 @@
 	icon_state = "apostate"
 
 /datum/status_effect/debuff/hereticsermon
-	id = "Heretic on sermon!"
+	id = "Heathen's Voyeurism!"
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/hereticsermon
 	effectedstats = list(STATKEY_INT = -2, STATKEY_SPD = -2, STATKEY_LCK = -2)
 	duration = 20 MINUTES
 
 /atom/movable/screen/alert/status_effect/debuff/hereticsermon
-	name = "Heretic on sermon!"
-	desc = "I was on the sermon. My patron is not proud of me."
+	name = "Heathen's Voyeurism!"
+	desc = "I was on the sermon, and my patron is not proud of me."
 	icon_state = "hereticsermon"
 
 /datum/status_effect/debuff/lost_naledi_mask
@@ -826,7 +965,7 @@
 			PM.backdrop(owner)
 
 /atom/movable/screen/alert/status_effect/debuff/vampbite
-	name = "Vampire biten"
+	name = "Vampyrebiten"
 	desc = "You are feeling something... Interesting.."
 	icon_state = "acid"
 
@@ -911,7 +1050,7 @@
 
 
 /datum/status_effect/debuff/necrandeathdoorwilloss
-	id = "Necran Deathly calm!"
+	id = "Necran Deathly Calm"
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/necranwilloss
 	effectedstats = list(STATKEY_WIL = -4)
 	var/blimmune = FALSE
@@ -951,13 +1090,13 @@
 			owner.remove_status_effect(/datum/status_effect/debuff/necrandeathdoorwilloss)
 
 /atom/movable/screen/alert/status_effect/debuff/necranwilloss
-	name = "Necran Deathly calm!"
+	name = "Necran Deathly Calm"
 	desc = "I am on the edge of my lady's realm. My motivation slackens with such deathly tranquility."
-	icon_state = "debuff"
+	icon_state = "necravow"
 	color ="#af9f9f"
 
 /datum/status_effect/debuff/deathdoorwilloss
-	id = "Deathly calm!"
+	id = "Deathly Calm"
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/deathdoorwilloss
 	effectedstats = list(STATKEY_WIL = -8)
 	var/blimmune = FALSE
@@ -994,9 +1133,9 @@
 		owner.remove_status_effect(/datum/status_effect/debuff/deathdoorwilloss)
 
 /atom/movable/screen/alert/status_effect/debuff/deathdoorwilloss
-	name = "Deathly calm!"
+	name = "Deathly Calm"
 	desc = "I am on the edge of Death's realm. It is hard to feel motivated with such deathly tranquility."
-	icon_state = "debuff"
+	icon_state = "necravow"
 	color ="#af9f9f"
 
 /datum/status_effect/debuff/no_coom_cheating //Gets triggered when someone sets their arousal, prevents orgasms from sating vice/giving mood boosts
@@ -1066,7 +1205,7 @@
 	var/mob/living/carbon/human/H = owner
 	var/datum/physiology/phy = H.physiology 
 	var/pain_mod = phy.pain_mod
-	phy.pain_mod = pain_mod * 1.25 // this then gets reduced by wil, among other things. change as needed.
+	phy.pain_mod = pain_mod * 1.15 // this then gets reduced by wil, among other things. change as needed.
 	H.visible_message(span_warning("[owner] looks to be in great pain, their wounds BLACKENING!"), span_danger("EVERYTHING HURTS!! MY WOUNDS PAIN HAS INCREASED!!"))
 
 /datum/status_effect/debuff/sensitive_nerves/on_remove()
@@ -1076,7 +1215,7 @@
 	var/mob/living/carbon/human/H = owner
 	var/datum/physiology/phy = H.physiology 
 	var/pain_mod = phy.pain_mod
-	phy.pain_mod = pain_mod / 1.25 // this should be a define fuuuck
+	phy.pain_mod = pain_mod / 1.15 // this should be a define fuuuck
 	H.visible_message(span_warning("[owner]'s wounds suddenly return to normal!"), span_warning("My magickally induced pain subsides!"))
 
 

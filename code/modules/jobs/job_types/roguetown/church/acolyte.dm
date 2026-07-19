@@ -17,10 +17,11 @@
 	min_pq = 4 //A step above sexton, should funnel new players to the sexton role to learn miracles at a more sedate pace
 	max_pq = null
 	round_contrib_points = 5
+	same_job_respawn_delay = 20 MINUTES
 
 	//No nobility for you, being a member of the clergy means you gave UP your nobility. It says this in many of the church tutorial texts.
 	virtue_restrictions = list(/datum/virtue/utility/noble)
-	job_traits = list(TRAIT_RITUALIST, TRAIT_GRAVEROBBER, TRAIT_HOMESTEAD_EXPERT, TRAIT_CLERGY, TRAIT_MARRIAGE_CAPABLE)
+	job_traits = list(TRAIT_RITUALIST, TRAIT_GRAVEROBBER, TRAIT_HOMESTEAD_EXPERT, TRAIT_CLERGY)
 	advclass_cat_rolls = list(CTAG_ACOLYTE = 2)
 	job_subclasses = list(
 		/datum/advclass/acolyte
@@ -42,7 +43,7 @@
 	subclass_skills = list(
 		/datum/skill/combat/wrestling = SKILL_LEVEL_APPRENTICE,
 		/datum/skill/combat/unarmed = SKILL_LEVEL_APPRENTICE,
-		/datum/skill/combat/staves = SKILL_LEVEL_APPRENTICE,
+		/datum/skill/combat/staves = SKILL_LEVEL_JOURNEYMAN,
 		/datum/skill/misc/medicine = SKILL_LEVEL_JOURNEYMAN,
 		/datum/skill/craft/alchemy = SKILL_LEVEL_APPRENTICE,
 		/datum/skill/misc/reading = SKILL_LEVEL_JOURNEYMAN,
@@ -55,6 +56,7 @@
 	subclass_stashed_items = list(
 		"The Verses and Acts of the Ten" = /obj/item/book/rogue/bibble,
 	)
+	tempo_capable = FALSE
 
 /datum/outfit/job/roguetown/monk
 	name = "Acolyte"
@@ -66,20 +68,31 @@
 /datum/outfit/job/roguetown/monk/basic/pre_equip(mob/living/carbon/human/H)
 	..()
 	H.adjust_blindness(-3)
-	belt = /obj/item/storage/belt/rogue/leather/rope
+	belt = /obj/item/storage/belt/rogue/leather/rope/upgraded
 	beltr = /obj/item/storage/belt/rogue/pouch/coins/mid
 	beltl = /obj/item/storage/keyring/acolyte
 	backl = /obj/item/storage/backpack/rogue/satchel
+	head = /obj/item/clothing/head/roguetown/roguehood/undivided
+	cloak = /obj/item/clothing/cloak/undivided
+	armor = /obj/item/clothing/suit/roguetown/shirt/robe/undivided
 	backpack_contents = list(/obj/item/ritechalk, /obj/item/mini_flagpole/church)
 	H.cmode_music = 'sound/music/cmode/church/combat_acolyte.ogg' // has to be defined here for the selection below to work. sm1 please rewrite cmusic to apply pre-equip.
 	switch(H.patron?.type)
 		if(/datum/patron/divine/undivided)
-			head = /obj/item/clothing/head/roguetown/roguehood/undivided
+			var/colors = list("Normal", "Clerical")
+			var/colorchoice = input(H,"Choose style", "TAKE UP FASHION") as anything in colors
+			switch(colorchoice)
+				if("Normal")
+					head = /obj/item/clothing/head/roguetown/roguehood/undivided
+					cloak = /obj/item/clothing/cloak/undivided
+					armor = /obj/item/clothing/suit/roguetown/shirt/robe/undivided
+				if("Clerical")
+					head = /obj/item/clothing/head/roguetown/roguehood/undividedcleric
+					cloak = /obj/item/clothing/cloak/undividedcleric
+					armor = /obj/item/clothing/suit/roguetown/shirt/robe/undividedcleric
 			neck = /obj/item/clothing/neck/roguetown/psicross/undivided
 			wrists = /obj/item/clothing/wrists/roguetown/wrappings
 			shoes = /obj/item/clothing/shoes/roguetown/sandals
-			armor = /obj/item/clothing/suit/roguetown/shirt/robe/undivided
-			cloak = /obj/item/clothing/cloak/undivided
 			shirt = /obj/item/clothing/suit/roguetown/armor/vestments_padded
 		if(/datum/patron/divine/astrata)
 			head = /obj/item/clothing/head/roguetown/roguehood/astrata
@@ -93,7 +106,7 @@
 			neck = /obj/item/clothing/neck/roguetown/psicross/noc
 			wrists = /obj/item/clothing/wrists/roguetown/nocwrappings
 			shoes = /obj/item/clothing/shoes/roguetown/sandals
-			cloak = /obj/item/clothing/suit/roguetown/shirt/robe/noc // this robe is broken unless its in the cloak slot
+			armor = /obj/item/clothing/suit/roguetown/shirt/robe/noc // this robe is broken unless its in the cloak slot
 			shirt = /obj/item/clothing/suit/roguetown/armor/vestments_padded
 		if(/datum/patron/divine/abyssor) // the deep calls!
 			shirt = /obj/item/clothing/suit/roguetown/armor/vestments_padded
@@ -178,6 +191,33 @@
 			var/datum/inspiration/I = new /datum/inspiration(H)
 			I.grant_inspiration(H, bard_tier = BARD_T2)
 			shirt = /obj/item/clothing/suit/roguetown/armor/vestments_padded
+			if(H.mind)
+				var/instruments = list("Harp","Lute","Accordion","Guitar","Hurdy-Gurdy","Viola","Vocal Talisman", "Psyaltery", "Flute", "Drum", "Shamisen")
+				var/instrument_choice = tgui_input_list(H, "Choose your instrument.", "TAKE UP ARMS", instruments)
+				H.set_blindness(0)
+				switch(instrument_choice)
+					if("Harp")
+						backr = /obj/item/rogue/instrument/harp
+					if("Lute")
+						backr = /obj/item/rogue/instrument/lute
+					if("Accordion")
+						backr = /obj/item/rogue/instrument/accord
+					if("Guitar")
+						backr = /obj/item/rogue/instrument/guitar
+					if("Hurdy-Gurdy")
+						backr = /obj/item/rogue/instrument/hurdygurdy
+					if("Viola")
+						backr = /obj/item/rogue/instrument/viola
+					if("Vocal Talisman")
+						backr = /obj/item/rogue/instrument/vocals
+					if("Psyaltery")
+						backr = /obj/item/rogue/instrument/psyaltery
+					if("Flute")
+						backr = /obj/item/rogue/instrument/flute
+					if("Drum")
+						backr = /obj/item/rogue/instrument/drum
+					if("Shamisen")
+						backr = /obj/item/rogue/instrument/shamisen
 		else
 			head = /obj/item/clothing/head/roguetown/roguehood/astrata
 			neck = /obj/item/clothing/neck/roguetown/psicross/astrata

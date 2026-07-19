@@ -157,8 +157,10 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["no_language_fonts"]	>> no_language_fonts
 	S["no_language_icon"]	>> no_language_icon
 	S["no_redflash"]		>> no_redflash
+	S["top_examine"]		>> top_examine
 	S["crt"]				>> crt
 	S["grain"]				>> grain
+	S["icon_scaling"]		>> icon_scaling
 	S["sexable"]			>> sexable
 	S["shake"]				>> shake
 	S["mastervol"]			>> mastervol
@@ -196,6 +198,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	// Custom hotkeys
 	S["key_bindings"]		>> key_bindings
 
+	S["no_runechat_animation"] >> no_runechat_animation //TA EDIT
 	S["defiant"]			>> defiant
 	// TA Addition start - new ERP SYSTEM
 	S["erp_custom_actions"] >> erp_custom_actions	
@@ -226,6 +229,9 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	preferred_ui_language = sanitize_preferred_ui_language(preferred_ui_language)
 	buttons_locked	= sanitize_integer(buttons_locked, 0, 1, initial(buttons_locked))
 	windowflashing	= sanitize_integer(windowflashing, 0, 1, initial(windowflashing))
+	crt			= sanitize_integer(crt, 0, 1, initial(crt))
+	grain			= sanitize_integer(grain, 0, 1, initial(grain))
+	icon_scaling	= sanitize_integer(icon_scaling, 0, 1, initial(icon_scaling))
 	default_slot	= sanitize_integer(default_slot, 1, max_save_slots, initial(default_slot))
 	toggles			= sanitize_integer(toggles, 0, INFINITY, initial(toggles))
 	combat_toggles = sanitize_integer(combat_toggles, 0, INFINITY, initial(combat_toggles))
@@ -275,6 +281,25 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 			key_bindings -= key
 	// End
 
+/client/verb/export_savefile()
+	set name = "Export Preferences"
+	set desc = "Export your preferences to a file."
+	set category = "OOC"
+	if(!prefs.path)
+		return
+
+	if(alert("Are you sure you want to export your preferences? This will create a file on your computer that contains your preferences.", "Export Preferences", "Yes", "No") == "No")
+		return
+
+	if(!fexists(prefs.path))
+		to_chat(src, span_warning("No savefile, what?!"))
+		return
+
+	var/file_name = "[ckey].sav"
+	var/exportable_file = file(prefs.path)
+
+	DIRECT_OUTPUT(src, ftp(exportable_file, file_name))
+
 /datum/preferences/proc/save_preferences()
 	if(!path)
 		return FALSE
@@ -307,7 +332,10 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["no_language_fonts"], no_language_fonts)
 	WRITE_FILE(S["no_language_icon"], no_language_icon)
 	WRITE_FILE(S["no_redflash"], no_redflash)
+	WRITE_FILE(S["top_examine"], top_examine)
 	WRITE_FILE(S["crt"], crt)
+	WRITE_FILE(S["grain"], grain)
+	WRITE_FILE(S["icon_scaling"], icon_scaling)
 	WRITE_FILE(S["sexable"], sexable)
 	WRITE_FILE(S["shake"], shake)
 	WRITE_FILE(S["lastclass"], lastclass)
@@ -360,6 +388,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["attack_blip_frequency"] , attack_blip_frequency)
 	WRITE_FILE(S["compliance_notifs"], compliance_notifs)
 	WRITE_FILE(S["defiant"], defiant)
+	WRITE_FILE(S["no_runechat_animation"], no_runechat_animation) //TA EDIT
 	// TA Addition start - new ERP SYSTEM
 	WRITE_FILE(S["erp_custom_actions"], erp_custom_actions)
 	WRITE_FILE(S["erp_kink_prefs"], erp_kink_prefs)
@@ -436,6 +465,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		statpack = pick(GLOB.statpacks)
 		statpack = GLOB.statpacks[statpack]
 		//statpack = new statpack
+
 
 /datum/preferences/proc/copy_virtue_choices(list/choices)
 	if(!islist(choices))
@@ -529,6 +559,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["loadout_1_hex"] >> loadout_1_hex
 	S["loadout_2_hex"] >> loadout_2_hex
 	S["loadout_3_hex"] >> loadout_3_hex
+
 
 /datum/preferences/proc/_load_height(S)
 	var/preview_height
@@ -670,6 +701,10 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		selected_patron = GLOB.patronlist[patron_typepath]
 		if(!selected_patron) //failsafe
 			selected_patron = GLOB.patronlist[default_patron]
+
+	S["have_manor"] >> have_manor  //TA EDIT
+	S["manor_name"] >> manor_name  //TA EDIT
+	S["manor_type"] >> manor_type  //TA EDIT
 
 	//Custom names
 	for(var/custom_name_id in GLOB.preferences_custom_names)
@@ -971,6 +1006,9 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["feature_mcolor3"]		, features["mcolor3"])
 	WRITE_FILE(S["feature_ethcolor"]	, features["ethcolor"])
 	WRITE_FILE(S["nickname"]			, nickname)
+	WRITE_FILE(S["have_manor"]		, have_manor) //TA EDIT
+	WRITE_FILE(S["manor_name"]		, manor_name) //TA EDIT
+	WRITE_FILE(S["manor_type"]		, manor_type) //TA EDIT
 	WRITE_FILE(S["highlight_color"]		, highlight_color)
 	WRITE_FILE(S["taur_type"]			, taur_type)
 	WRITE_FILE(S["taur_color"]			, taur_color)
@@ -1046,7 +1084,9 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["titles_pref"] , titles_pref)
 	WRITE_FILE(S["clothes_pref"] , clothes_pref)
 	WRITE_FILE(S["statpack"] , statpack.type)
+
 	write_clean_virtue_paths(S, virtue ? virtue.type : /datum/virtue/none, virtuetwo ? virtuetwo.type : /datum/virtue/none, virtue_origin ? virtue_origin.type : /datum/virtue/none, virtue ? virtue.picked_choices : null, virtuetwo ? virtuetwo.picked_choices : null)
+
 	WRITE_FILE(S["race_bonus"], race_bonus)
 	var/combat_music_save_type = default_cmusic_type // TA EDIT START
 	if(!custom_cmode_enabled && combat_music)

@@ -79,6 +79,12 @@
 		var/mob/dead/observer/observer = mob
 		if(world.time < observer.next_gmove)
 			return FALSE
+		// TA EDIT START
+		if(n && direct)
+			var/turf/target_turf = get_step(get_turf(observer), direct)
+			if(!observer.can_move_near_body(target_turf))
+				return FALSE
+		// TA EDIT END
 	else if(world.time < move_delay) //do not move anything ahead of this check please
 		return FALSE
 	next_move_dir_add = 0
@@ -86,10 +92,17 @@
 	var/old_move_delay = move_delay
 	if(istype(mob, /mob/dead/observer))
 		var/mob/dead/observer/observer = mob
-		observer.next_gmove = world.time + (world.tick_lag * GLOB.observer_move_delay_multiplier)
+		var/observer_delay_multiplier = GLOB.observer_move_delay_multiplier
+
+		// TA EDIT START
+		if(!istype(observer, /mob/dead/observer/admin) && !istype(observer, /mob/dead/observer/eye))
+			observer_delay_multiplier = 6
+		// TA EDIT END
+
+		observer.next_gmove = world.time + (world.tick_lag * observer_delay_multiplier)
 		move_delay = world.time
 	else
-		move_delay = world.time + world.tick_lag //this is here because Move() can now be called mutiple times per tick
+		move_delay = world.time + world.tick_lag
 	if(!mob || !mob.loc)
 		return FALSE
 	if(!n || !direct)
@@ -114,6 +127,12 @@
 				to_chat(src, span_warning("My spirit hasn't manifested yet."))
 		return FALSE
 	if(mob.force_moving)
+		return FALSE
+
+	var/mob/living/sliding_mob = mob
+	var/datum/status_effect/ice_slide/ice_sliding = sliding_mob.has_status_effect(/datum/status_effect/ice_slide)
+	if(ice_sliding)
+		ice_sliding.steer(direct)
 		return FALSE
 
 	if(mob.shifting)
@@ -462,6 +481,8 @@
 	switch(mob.zone_selected)
 		if(BODY_ZONE_R_ARM)
 			next_in_line = BODY_ZONE_PRECISE_R_HAND
+//.		if(BODY_ZONE_PRECISE_R_HAND) // ta edit
+//			next_in_line = BODY_ZONE_PRECISE_R_INHAND // ta edit
 		else
 			next_in_line = BODY_ZONE_R_ARM
 
@@ -498,6 +519,8 @@
 	switch(mob.zone_selected)
 		if(BODY_ZONE_L_ARM)
 			next_in_line = BODY_ZONE_PRECISE_L_HAND
+//		if(BODY_ZONE_PRECISE_L_HAND) // ta edit
+//			next_in_line = BODY_ZONE_PRECISE_L_INHAND // ta edit
 		else
 			next_in_line = BODY_ZONE_L_ARM
 
@@ -583,7 +606,7 @@
 
 //* Updates a mob's sneaking status, rendering them invisible or visible in accordance to their status. TODO:Fix people bypassing the sneak fade by turning, and add a proc var to have a timer after resetting visibility.
 /mob/living/update_sneak_invis(reset = FALSE) //Why isn't this in mob/living/living_movements.dm? Why, I'm glad you asked!
-	if(has_status_effect(/datum/status_effect/stealth_revealed) && !reset)
+	if(in_combat_until > world.time && !reset)
 		return
 	if(!reset && world.time < mob_timers[MT_INVISIBILITY]) // Check if the mob is affected by the invisibility spell
 		rogue_sneaking = TRUE
@@ -703,9 +726,12 @@
 		switch(intent)
 			if(MOVE_INTENT_SNEAK)
 				var/mob/living/L = src
-				if(!L.has_status_effect(/datum/status_effect/stealth_revealed))
+				if(L.has_status_effect(/datum/status_effect/buff/fly))
+					to_chat(src, span_warning("I can't sneak while flying!"))
+				else
 					m_intent = MOVE_INTENT_SNEAK
-					update_sneak_invis()
+					if(L.in_combat_until < world.time)
+						update_sneak_invis()
 
 			if(MOVE_INTENT_WALK)
 				m_intent = MOVE_INTENT_WALK

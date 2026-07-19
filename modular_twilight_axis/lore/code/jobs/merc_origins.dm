@@ -111,3 +111,6 @@
 
 /datum/advclass/mercenary/twilight_conquistador
 	origin_limits = list(/datum/virtue/origin/etrusca)
+
+/datum/advclass/mercenary/twilight_hussar
+	origin_limits = list(/datum/virtue/origin/avar)

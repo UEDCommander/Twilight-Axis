@@ -375,7 +375,6 @@
 /datum/admins/proc/adjustpq(mob/living/M in GLOB.mob_list)
 	set name = "Adjust PQ of Anything"
 	set desc = "Adjust a player's PQ"
-	set category = "Game Master"
 	set hidden = 1
 
 	if(!check_rights())
@@ -553,6 +552,11 @@
 	set desc="Start the round RIGHT NOW"
 	set name="Start Now"
 	if(SSticker.current_state == GAME_STATE_PREGAME || SSticker.current_state == GAME_STATE_STARTUP)
+		var/player_count = length(GLOB.clients)
+		// Idiot proof for accidental click due to focus hijack / testing server
+		if(player_count > 1)
+			if(alert(usr, "There are [player_count] players connected. Are you sure you want to start the round RIGHT NOW?", "Start Now", "Yes", "No") != "Yes")
+				return 0
 		SSticker.start_immediately = TRUE
 		log_admin("[usr.key] has started the game.")
 		var/msg = ""
@@ -583,7 +587,6 @@
 	SSblackbox.record_feedback("nested tally", "admin_toggle", 1, list("Toggle Entering", "[GLOB.enter_allowed ? "Enabled" : "Disabled"]")) //If you are copy-pasting this, ensure the 2nd parameter is unique to the new proc!
 
 /datum/admins/proc/toggleAI()
-	set category = "Server"
 	set desc="People can't be AI"
 	set name="Toggle AI"
 	set hidden = 1
@@ -598,7 +601,6 @@
 	SSblackbox.record_feedback("nested tally", "admin_toggle", 1, list("Toggle AI", "[!alai ? "Disabled" : "Enabled"]")) //If you are copy-pasting this, ensure the 2nd parameter is unique to the new proc!
 
 /datum/admins/proc/toggleaban()
-	set category = "Server"
 	set desc="Respawn basically"
 	set name="Toggle Respawn"
 	set hidden = 1
@@ -748,7 +750,6 @@
 	SSblackbox.record_feedback("nested tally", "admin_toggle", 1, list("Toggle Tinted Welding Helmets", "[GLOB.tinted_weldhelh ? "Enabled" : "Disabled"]")) //If you are copy-pasting this, ensure the 2nd parameter is unique to the new proc!
 
 /datum/admins/proc/toggleguests()
-	set category = "Server"
 	set desc="Guests can't enter"
 	set name="Toggle guests"
 	set hidden = 1
@@ -881,9 +882,19 @@
 	set category = "Admin.Special"
 	set name = "Back to Lobby"
 
+	if(!mob)
+		return
+
+	if(tgui_alert(usr, "Are you sure you want to return to the lobby? This will remove your current character from the round.", "Back to Lobby", list("Cancel", "Return to Lobby")) != "Return to Lobby")
+		return
+
+	if(!ishuman(mob))
+		mob.returntolobby()
+		return
+
 	var/mob/living/carbon/human/H = mob
 	var/datum/job/mob_job
-	var/target_job = SSrole_class_handler.get_advclass_by_name(H.advjob)
+	var/datum/advclass/target_job = H.get_advclass_datum()
 
 	if(H.mind)
 		mob_job = SSjob.GetJob(H.mind.assigned_role)
@@ -900,7 +911,8 @@
 	else
 		alert(usr, "Target has no mind!") // Optional Error check that may or may not be neccessary
 	GLOB.chosen_names -= H.real_name
-	LAZYREMOVE(GLOB.actors_list[SSjob.bitflag_to_department(mob_job.department_flag, mob_job.obsfuscated_job)], H.mobid)
+	if(mob_job)
+		LAZYREMOVE(GLOB.actors_list[SSjob.bitflag_to_department(mob_job.department_flag, mob_job.obsfuscated_job)], H.mobid)
 	LAZYREMOVE(GLOB.roleplay_ads, H.mobid)
 	H.returntolobby()
 

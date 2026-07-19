@@ -480,8 +480,6 @@
 				var/mob/living/carbon/human/newmob = M.change_mob_type( /mob/living/carbon/human , null, null, delmob )
 				if(posttransformoutfit && istype(newmob))
 					newmob.equipOutfit(posttransformoutfit)
-			if("monkey")
-				M.change_mob_type( /mob/living/carbon/monkey , null, null, delmob )
 			if("cat")
 				M.change_mob_type( /mob/living/simple_animal/pet/cat , null, null, delmob )
 			if("runtime")
@@ -718,32 +716,6 @@
 		Game() // updates the main game menu
 		HandleFSecret()
 
-	else if(href_list["monkeyone"])
-		if(!check_rights(R_SPAWN))
-			return
-
-		var/mob/living/carbon/human/H = locate(href_list["monkeyone"])
-		if(!istype(H))
-			to_chat(usr, "This can only be used on instances of type /mob/living/carbon/human.")
-			return
-
-		log_admin("[key_name(usr)] attempting to monkeyize [key_name(H)].")
-		message_admins(span_adminnotice("[key_name_admin(usr)] attempting to monkeyize [key_name_admin(H)]."))
-		H.monkeyize()
-
-	else if(href_list["humanone"])
-		if(!check_rights(R_SPAWN))
-			return
-
-		var/mob/living/carbon/monkey/Mo = locate(href_list["humanone"])
-		if(!istype(Mo))
-			to_chat(usr, "This can only be used on instances of type /mob/living/carbon/monkey.")
-			return
-
-		log_admin("[key_name(usr)] attempting to humanize [key_name(Mo)].")
-		message_admins(span_adminnotice("[key_name_admin(usr)] attempting to humanize [key_name_admin(Mo)]."))
-		Mo.humanize()
-
 	else if(href_list["corgione"])
 		if(!check_rights(R_SPAWN))
 			return
@@ -808,7 +780,10 @@
 			to_chat(usr, span_warning("[M] doesn't seem to have an active client."))
 			return
 		var/datum/job/mob_job
-		var/target_job = SSrole_class_handler.get_advclass_by_name(M.advjob)
+		var/datum/advclass/target_job
+		if(ishuman(M))
+			var/mob/living/carbon/human/H = M
+			target_job = H.get_advclass_datum()
 		if(M.mind)
 			if(mob_job)
 				mob_job.current_positions = max(0, mob_job.current_positions - 1)
@@ -1677,9 +1652,11 @@
 		check_teams()
 
 	else if(href_list["editpq"])
-		if(!check_rights(R_BAN))
+		if(!can_adjust_playerquality(usr.client, TRUE))
 			return
 		var/mob/M = locate(href_list["mob"]) in GLOB.mob_list
+		if(!M || !M.client)
+			return
 		var/client/mob_client = M.client
 		var/amt2change = input("How much to modify the PQ by? (20 to -20, or 0 to just add a note)") as null|num
 		if(!check_rights(R_BAN,0))
@@ -1696,13 +1673,12 @@
 				to_chat(C, "<span class=\"admin\"><span class=\"prefix\">ADMIN LOG:</span> <span class=\"message linkify\">Your PQ has been adjusted by [amt2change] by [usr.key] for reason: [raisin]</span></span>")
 				return
 	else if(href_list["showpq"])
-		var/rank_name = usr.client?.holder?.rank.name // TA EDIT
-		if(rank_name in list("Eventmin", "Coder", "Developer")) // TA EDIT
-			return // TA EDIT
-		if(!check_rights(R_BAN))
-			return
 		var/mob/M = locate(href_list["mob"]) in GLOB.mob_list
+		if(!M || !M.client)
+			return
 		var/client/mob_client = M.client
+		if(!can_view_playerquality_of(usr.client, mob_client.ckey, TRUE))
+			return
 		check_pq_menu(mob_client.key)
 
 	else if(href_list["edittriumphs"])

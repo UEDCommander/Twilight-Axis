@@ -79,7 +79,7 @@ GLOBAL_LIST_EMPTY(respawncounts)
 			return
 
 	var/stl = CONFIG_GET(number/second_topic_limit)
-	if (!holder && stl)
+	if (!holder && stl && href_list["window_id"] != "statbrowser")
 		var/second = round(world.time, 10)
 		if (!topiclimiter)
 			topiclimiter = new(LIMITER_SIZE)
@@ -228,7 +228,7 @@ GLOBAL_LIST_EMPTY(respawncounts)
 			else
 				to_chat(src, span_warning("You already voted on the [schizo.voice_names[voice.client.ckey]] answer!"))
 		return
-	
+
 	if(href_list["viewchronicle"])
 		var/tab = href_list["chronicletab"] || "The Realm"
 		show_chronicle(tab)
@@ -237,6 +237,11 @@ GLOBAL_LIST_EMPTY(respawncounts)
 	if(href_list["vieweconomics"])
 		var/datum/economic_chronicle/chronicle = get_economic_chronicle()
 		chronicle.ui_interact(mob)
+		return
+
+	if(href_list["open_encyclopedia"])
+		var/datum/recipe_wiki/wiki = get_recipe_wiki()
+		wiki.show_library(mob)
 		return
 
 	if(href_list["commandbar_typing"])
@@ -355,6 +360,10 @@ GLOBAL_LIST_EMPTY(respawncounts)
 	return 1
 */
 
+#if (PRELOAD_RSC == 0)
+GLOBAL_LIST_EMPTY(external_rsc_urls)
+#endif
+
 /client/New(TopicData)
 	var/tdata = TopicData //save this for later use
 	TopicData = null							//Prevent calls to client.Topic from connect
@@ -368,6 +377,7 @@ GLOBAL_LIST_EMPTY(respawncounts)
 	stat_panel = new(src, "statbrowser")
 	stat_panel.subscribe(src, PROC_REF(on_stat_panel_message))
 
+	winset(src, null, "browser-options=find,refresh")
 	initialize_commandbar_spy()
 
 	GLOB.ahelp_tickets.ClientLogin(src)
@@ -496,11 +506,19 @@ GLOBAL_LIST_EMPTY(respawncounts)
 			alert(mob, "You have logged in already with another key this round, please log out of this one NOW or risk being banned!")
 
 	tgui_panel.initialize()
+	/* //TA EDIT BEGIN
 	stat_panel.initialize(
 		inline_html = file("html/statbrowser.html"),
 		inline_js = file("html/statbrowser.js"),
 		inline_css = file("html/statbrowser.css"),
 	)
+	*/
+
+	stat_panel.initialize(
+		inline_html = file("ta_statpanel/dist/ta-statbrowser-bundle.html"),
+	)
+
+	//TA EDIT END
 	apply_statbrowser_theme()
 	addtimer(CALLBACK(src, PROC_REF(check_panel_loaded)), 30 SECONDS)
 
@@ -1288,9 +1306,6 @@ GLOBAL_LIST_EMPTY(respawncounts)
 /client/New()
 	..()
 	fullscreen()
-	if(byond_version >= 516) // Enable 516 compat browser storage mechanisms
-		winset(src, null, "browser-options=find,byondstorage")
-	// byondstorage,devtools <- other options
 
 /client/proc/give_award(achievement_type, mob/user)
 	return	player_details.achievements.unlock(achievement_type, mob/user)
@@ -1416,7 +1431,7 @@ GLOBAL_LIST_EMPTY(respawncounts)
 	for(var/procpath/verb_to_init as anything in verbstoprocess)
 		if(!verb_to_init)
 			continue
-		if(GLOB.browserpanel_hidden_verbs["[verb_to_init]"])
+		if(verb_to_init.hidden)
 			continue
 		if(!istext(verb_to_init.category))
 			continue

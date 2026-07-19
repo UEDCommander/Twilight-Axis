@@ -44,7 +44,9 @@
 	to_chat(H, span_warning("You father your unholy cause through the most time-tested of ways: hard, heavy steel in both arms and armor."))
 	H.set_blindness(0)
 	if(H.mind)
-		var/weapons = list("Longsword", "Mace", "Flail", "Axe", "Billhook")
+		var/weapons = list("Longsword", "Mace", "Flail", "Battle Axe", "Billhook")
+		if(!HAS_TRAIT(H, TRAIT_PSYDONIAN_GRIT)) //Remove Regular Axe BEFORE choice, is picked (so we don't mislead)
+			weapons += "Steel Axe"
 		var/weapon_choice = input(H, "Choose your weapon.", "TAKE UP ARMS") as anything in weapons
 		switch(weapon_choice)
 			if("Longsword")
@@ -67,12 +69,15 @@
 					beltr = /obj/item/rogueweapon/flail/sflail/psyflail
 				else
 					beltr = /obj/item/rogueweapon/flail/sflail
-			if("Axe")
+			if("Steel Axe")
+				H.adjust_skillrank_up_to(/datum/skill/combat/axes, SKILL_LEVEL_EXPERT, TRUE)
+				beltr = /obj/item/rogueweapon/stoneaxe/woodcut/steel
+			if("Battle Axe")
 				H.adjust_skillrank_up_to(/datum/skill/combat/axes, SKILL_LEVEL_EXPERT, TRUE)
 				if(HAS_TRAIT(H, TRAIT_PSYDONIAN_GRIT))
 					beltr = /obj/item/rogueweapon/stoneaxe/battle/psyaxe
 				else
-					beltr = /obj/item/rogueweapon/stoneaxe/woodcut/steel
+					beltr = /obj/item/rogueweapon/stoneaxe/battle
 			if("Billhook")
 				l_hand = /obj/item/rogueweapon/scabbard/gwstrap
 				H.adjust_skillrank_up_to(/datum/skill/combat/polearms, SKILL_LEVEL_EXPERT, TRUE)
@@ -86,7 +91,6 @@
 
 	// You can convert those the church has shunned.
 	H.mind?.AddSpell(new /datum/action/cooldown/spell/convert_heretic)
-	H.mind?.AddSpell(new /datum/action/cooldown/spell/miracle/intervention)
 	if (istype (H.patron, /datum/patron/inhumen/zizo))
 		if(H.mind)
 			H.mind.AddSpell(new /datum/action/cooldown/spell/minion_order)
@@ -248,14 +252,14 @@
 			H.change_stat(STATKEY_PER, 2)
 			H.equip_to_slot_or_del(new /obj/item/clothing/neck/roguetown/psicross/undivided, SLOT_RING, TRUE)
 			H.adjust_skillrank(/datum/skill/magic/holy, 1, TRUE)
-			if(H.mind)
+			if(H.mind) //To make it obviously not clergy related
 				var/cloaks = list("Cloak", "Tabard")
 				var/cloakchoice = input(H,"Choose your covering", "TAKE UP FASHION") as anything in cloaks
 				switch(cloakchoice)
 					if("Cloak")
-						H.equip_to_slot_or_del(new /obj/item/clothing/cloak/undivided, SLOT_CLOAK, TRUE)
+						H.equip_to_slot_or_del(new /obj/item/clothing/cloak/undividedcleric, SLOT_CLOAK, TRUE)
 					if("Tabard")
-						H.equip_to_slot_or_del(new /obj/item/clothing/cloak/templar/undivided, SLOT_CLOAK, TRUE)
+						H.equip_to_slot_or_del(new /obj/item/clothing/cloak/templar/undividedcleric, SLOT_CLOAK, TRUE)
 		if(/datum/patron/old_god)
 			H.equip_to_slot_or_del(new /obj/item/clothing/neck/roguetown/psicross/silver, SLOT_RING, TRUE)
 			H.equip_to_slot_or_del(new /obj/item/clothing/suit/roguetown/armor/chainmail/hauberk/ornate, SLOT_ARMOR, TRUE)
@@ -526,7 +530,10 @@
 			"WHO IS YOUR SHEPHERD!?",
 		)
 		src.visible_message(span_warning("[src] shoves the decrepit zcross into [H]'s lux!"))
-		say(pick(faith_lines), spans = list("torture"))
+		if(HAS_TRAIT(src, TRAIT_UNFORGIVABLE))
+			say(pick(faith_lines), spans = list("bloody"))//Vheslynites aren't people.
+		else
+			say(pick(faith_lines), spans = list("torture"))
 		H.emote("agony", forced = TRUE)
 
 		if(!(do_mob(src, H, 10 SECONDS)))

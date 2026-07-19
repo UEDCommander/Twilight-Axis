@@ -48,6 +48,8 @@
 	reach = 3
 	icon_state = "inlash"
 	item_d_type = "slash"
+	effective_range = 1
+	effective_range_type = EFF_RANGE_ABOVE
 
 //Exclusive variant to whips with alloyed tips and high Strength requirements. On par with a traditional lash, but can dismember from afar.
 /datum/intent/whip/lash/master
@@ -70,6 +72,8 @@
 	reach = 2
 	icon_state = "incrack"
 	item_d_type = "slash"
+	effective_range = 1
+	effective_range_type = EFF_RANGE_ABOVE
 
 //Bludgeon = Sidegrade of the Crack that functions like a ranged mace. Unique to the Nagaika, or the Steppsman's whip.
 /datum/intent/whip/crack/blunt
@@ -139,6 +143,16 @@
 	minstr = 11
 	possible_item_intents = list(/datum/intent/whip/lash/master, /datum/intent/whip/crack, /datum/intent/whip/punish)
 	smeltresult = /obj/item/ingot/bronze
+
+/obj/item/rogueweapon/whip/blacksteel
+	name = "blacksteel whip"
+	desc = "An elegant whip, corded from besilked leather and tipped with blacksteel. Too refined for torture, too precious for combat; what is one to do with such an enigmatic tool?"
+	icon_state = "bs_whip"
+	force = 23
+	possible_item_intents = list(/datum/intent/whip/lash/master, /datum/intent/whip/crack, /datum/intent/whip/punish)
+	minstr = 9
+	wdefense = 1
+	smeltresult = /obj/item/ingot/blacksteel
 
 /obj/item/rogueweapon/whip/antique/psywhip
 	name = "Daybreak"

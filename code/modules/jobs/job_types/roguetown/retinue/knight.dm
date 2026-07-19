@@ -38,15 +38,9 @@
 /datum/job/roguetown/knight/after_spawn(mob/living/L, mob/M, latejoin = TRUE)
 	..()
 	if(ishuman(L))
+	//	addtimer(CALLBACK(L, TYPE_PROC_REF(/mob, cloak_and_title_setup)), 50)
+
 		var/mob/living/carbon/human/H = L
-	/*	if(istype(H.cloak, /obj/item/clothing/cloak)) //TA EDIT
-			var/obj/item/clothing/S = H.cloak
-			var/index = findtext(H.real_name, " ")
-			if(index)
-				index = copytext(H.real_name, 1,index)
-			if(!index)
-				index = H.real_name
-			S.name = "[S.name] ([index])" */
 		var/prev_real_name = H.real_name
 		var/prev_name = H.name
 		var/honorary = "Ser"
@@ -62,6 +56,7 @@
 				if(MF.known_people)
 					MF.known_people -= prev_real_name
 					H.mind.person_knows_me(MF)
+
 
 /datum/outfit/job/roguetown/knight/post_equip(mob/living/carbon/human/H)  //TA EDIT
 	..()
@@ -120,7 +115,7 @@
 
 /datum/outfit/job/roguetown/knight/heavy/pre_equip(mob/living/carbon/human/H)
 	..()
-	H.dna.species.soundpack_m = new /datum/voicepack/male/knight()
+	H.dna.species.soundpack_m = GLOB.voice_packs[/datum/voicepack/male/knight]
 	add_verb(H, /mob/proc/haltyell)
 
 	H.adjust_blindness(-3)
@@ -172,6 +167,7 @@
 			"Slitted Kettle" = /obj/item/clothing/head/roguetown/helmet/heavy/knight/skettle,
 			"Visored Barbute" = /obj/item/clothing/head/roguetown/helmet/heavy/barbute/visor,
 			"Great Barbute" = /obj/item/clothing/head/roguetown/helmet/heavy/barbute/great,
+			"Volfskulle Bascinet"		= /obj/item/clothing/head/roguetown/helmet/heavy/volfplate,
 			"None"
 		)
 		var/helmchoice = input(H, "Choose your Helm.", "TAKE UP HELMS") as anything in helmets
@@ -220,6 +216,7 @@
 	)
 	if(H.mind)
 		SStreasury.grant_savings(ECONOMIC_UPPER_CLASS, H)
+		H.mind.AddSpell(new /datum/action/cooldown/spell/takeprotege)
 
 /datum/advclass/knight/footknight
 	name = "Foot Knight"
@@ -254,7 +251,7 @@
 
 /datum/outfit/job/roguetown/knight/footknight/pre_equip(mob/living/carbon/human/H)
 	..()
-	H.dna.species.soundpack_m = new /datum/voicepack/male/knight()
+	H.dna.species.soundpack_m = GLOB.voice_packs[/datum/voicepack/male/knight]
 	add_verb(H, /mob/proc/haltyell)
 
 	H.adjust_blindness(-3)
@@ -294,6 +291,7 @@
 			"Slitted Kettle"	= /obj/item/clothing/head/roguetown/helmet/heavy/knight/skettle,
 			"Visored Barbute" = /obj/item/clothing/head/roguetown/helmet/heavy/barbute/visor,
 			"Great Barbute" = /obj/item/clothing/head/roguetown/helmet/heavy/barbute/great,
+			"Volfskulle Bascinet"		= /obj/item/clothing/head/roguetown/helmet/heavy/volfplate,
 			"None"
 		)
 		var/helmchoice = input(H, "Choose your Helm.", "TAKE UP HELMS") as anything in helmets
@@ -342,6 +340,7 @@
 	)
 	if(H.mind)
 		SStreasury.grant_savings(ECONOMIC_UPPER_CLASS, H)
+		H.mind.AddSpell(new /datum/action/cooldown/spell/takeprotege)
 
 /datum/advclass/knight/mountedknight
 	name = "Mounted Knight"
@@ -384,7 +383,7 @@
 
 /datum/outfit/job/roguetown/knight/mountedknight/pre_equip(mob/living/carbon/human/H)
 	..()
-	H.dna.species.soundpack_m = new /datum/voicepack/male/knight()
+	H.dna.species.soundpack_m = GLOB.voice_packs[/datum/voicepack/male/knight]
 	add_verb(H, /mob/proc/haltyell)
 
 	if(H.mind)
@@ -446,6 +445,7 @@
 			"Slitted Kettle"	= /obj/item/clothing/head/roguetown/helmet/heavy/knight/skettle,
 			"Visored Barbute" = /obj/item/clothing/head/roguetown/helmet/heavy/barbute/visor,
 			"Great Barbute" = /obj/item/clothing/head/roguetown/helmet/heavy/barbute/great,
+			"Volfskulle Bascinet"		= /obj/item/clothing/head/roguetown/helmet/heavy/volfplate,
 			"None"
 		)
 		var/helmchoice = input(H, "Choose your Helm.", "TAKE UP HELMS") as anything in helmets
@@ -494,6 +494,7 @@
 	)
 	if(H.mind)
 		SStreasury.grant_savings(ECONOMIC_UPPER_CLASS, H)
+		H.mind.AddSpell(new /datum/action/cooldown/spell/takeprotege)
 
 
 /datum/advclass/knight/irregularknight
@@ -533,7 +534,7 @@
 
 /datum/outfit/job/roguetown/knight/irregularknight/pre_equip(mob/living/carbon/human/H)
 	..()
-	H.dna.species.soundpack_m = new /datum/voicepack/male/knight()
+	H.dna.species.soundpack_m = GLOB.voice_packs[/datum/voicepack/male/knight]
 	add_verb(H, /mob/proc/haltyell)
 	backpack_contents = list(
 		/obj/item/rogueweapon/huntingknife/idagger/steel/special = 1,
@@ -544,7 +545,7 @@
 
 	H.adjust_blindness(-3)
 	if(H.mind)
-		var/weapons = list("Rapier + Longbow","Estoc + Recurve Bow","Stecher + Recurve Bow","Sabre + Buckler","Whip + Crossbow","Poleaxe + Sling", "Shamshir + Pistol")
+		var/weapons = list("Rapier + Longbow","Estoc + Recurve Bow","Stecher + Recurve Bow","Sabre + Buckler","Whip + Crossbow","Poleaxe + Sling", "Shamshir + Pistol", "Rapier + Pistol")
 		var/armor_options = list("Light Armor", "Medium Armor", "Medium Cuirass")
 		var/weapon_choice = input(H, "Choose your weapon.", "TAKE UP ARMS") as anything in weapons
 		var/armor_choice = input(H, "Choose your armor.", "TAKE UP ARMS") as anything in armor_options
@@ -598,6 +599,18 @@
 					/obj/item/rogueweapon/scabbard/sheath/noble = 1,
 					/obj/item/twilight_powderflask = 1)
 
+			if("Rapier + Pistol")
+				r_hand = /obj/item/rogueweapon/sword/rapier
+				backl = /obj/item/rogueweapon/scabbard/sword/noble
+				beltr = /obj/item/gun/ballistic/twilight_firearm/arquebus_pistol
+				beltl = /obj/item/quiver/twilight_bullet/lead
+				H.adjust_skillrank_up_to(/datum/skill/combat/twilight_firearms, 4, TRUE)
+				backpack_contents = list(
+					/obj/item/rogueweapon/huntingknife/idagger/steel/special = 1,
+					/obj/item/rope/chain = 1,
+					/obj/item/rogueweapon/scabbard/sheath/noble = 1,
+					/obj/item/twilight_powderflask = 1)
+
 		switch(armor_choice)
 			if("Light Armor")
 				shirt = /obj/item/clothing/suit/roguetown/armor/gambeson/heavy
@@ -628,6 +641,7 @@
 			"Slitted Kettle" = /obj/item/clothing/head/roguetown/helmet/heavy/knight/skettle,
 			"Visored Barbute" = /obj/item/clothing/head/roguetown/helmet/heavy/barbute/visor,
 			"Great Barbute" = /obj/item/clothing/head/roguetown/helmet/heavy/barbute/great,
+			"Volfskulle Bascinet"		= /obj/item/clothing/head/roguetown/helmet/heavy/volfplate,
 			"None"
 		)
 
@@ -665,6 +679,7 @@
 
 	if(H.mind)
 		SStreasury.grant_savings(ECONOMIC_UPPER_CLASS, H)
+		H.mind.AddSpell(new /datum/action/cooldown/spell/takeprotege)
 
 
 /datum/advclass/knight/knightchampion
@@ -713,6 +728,8 @@
 		/datum/virtue/utility/riding
 	)
 
+	tempo_capable = FALSE
+
 /datum/outfit/job/roguetown/knightchampion/pre_equip(mob/living/carbon/human/H)
 	backpack_contents = list(
 		/obj/item/rogueweapon/huntingknife/idagger/steel/special = 1,
@@ -736,7 +753,8 @@
 	H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/order/takeaim)
 	H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/order/hold)
 	H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/order/onfeet)
-	H.dna.species.soundpack_m = new /datum/voicepack/male/knight()
+	H.mind.AddSpell(new /datum/action/cooldown/spell/takeprotege)
+	H.dna.species.soundpack_m = GLOB.voice_packs[/datum/voicepack/male/knight]
 
 	add_verb(H, list(
 		/mob/living/carbon/human/proc/request_outlaw,
@@ -867,6 +885,7 @@
 		"Slitted Kettle"	= /obj/item/clothing/head/roguetown/helmet/heavy/knight/skettle,
 		"Visored Barbute" = /obj/item/clothing/head/roguetown/helmet/heavy/barbute/visor,
 		"Great Barbute" = /obj/item/clothing/head/roguetown/helmet/heavy/barbute/great,
+		"Volfskulle Bascinet"		= /obj/item/clothing/head/roguetown/helmet/heavy/volfplate,
 		"None"
 	)
 	var/helmchoice = input(H, "Choose your Helm.", "TAKE UP HELMS") as anything in helmets

@@ -109,11 +109,13 @@ GLOBAL_PROTECT(admin_verbs_admin)
 	/client/proc/resetasaycolor,
 	/client/proc/toggleadminhelpsound,
 	/client/proc/respawn_character,
+	/client/proc/clear_job_respawn_delay,
 	/client/proc/discord_id_manipulation, /* No Discord implementation? */
 	/datum/admins/proc/sleep_view,
 	/datum/admins/proc/wake_view,
 	/datum/admins/proc/extend_round,
 	/client/proc/cmd_admin_set_ic_date, /* Set custom IC date for events */
+	/client/proc/log_viewer_new,
 	)
 GLOBAL_LIST_INIT(admin_verbs_ban, list(
 	/client/proc/unban_panel,
@@ -176,6 +178,7 @@ GLOBAL_PROTECT(admin_verbs_server)
 //	/datum/admins/proc/toggleAI,
 	/client/proc/cmd_admin_delete,		/*delete an instance/object/mob/etc*/
 	/client/proc/cmd_debug_del_all,
+	/client/proc/cmd_controller_view_ui,
 	/client/proc/toggle_random_events,
 	/client/proc/forcerandomrotate,
 	/client/proc/adminchangemap,
@@ -184,7 +187,8 @@ GLOBAL_PROTECT(admin_verbs_server)
 //	/datum/admins/proc/BC_RemoveKeyVerb,
 //	/datum/admins/proc/admin_add_donator_verb,
 //	/datum/admins/proc/admin_remove_donator_verb,
-	/client/proc/toggle_hub
+	/client/proc/toggle_hub,
+  /client/proc/download_player_save
 	)
 GLOBAL_LIST_INIT(admin_verbs_debug, world.AVerbsDebug())
 GLOBAL_PROTECT(admin_verbs_debug)
@@ -192,6 +196,7 @@ GLOBAL_PROTECT(admin_verbs_debug)
 	return list(
 	/client/proc/debug_variables,		/*allows us to -see- the variables of any instance in the game. +VAREDIT needed to modify*/
 	/client/proc/restart_controller,
+	/client/proc/cmd_controller_view_ui,
 	/client/proc/cmd_admin_list_open_jobs,
 	/client/proc/Debug2,
 	/client/proc/cmd_debug_mob_lists,
@@ -286,6 +291,7 @@ GLOBAL_LIST_INIT(admin_verbs_hideable, list(
 //	/client/proc/everyone_random,
 	/datum/admins/proc/toggleAI,
 	/client/proc/restart_controller,
+	/client/proc/cmd_controller_view_ui,
 	/client/proc/cmd_admin_list_open_jobs,
 	/client/proc/callproc,
 	/client/proc/callproc_datum,
@@ -536,7 +542,6 @@ GLOBAL_PROTECT(admin_verbs_hideable)
 
 /client/proc/stresstest_chat()
 	set name = "Stress Chat"
-	set category = "Debug"
 	set hidden = TRUE
 
 	if(!holder)
@@ -589,7 +594,6 @@ GLOBAL_PROTECT(admin_verbs_hideable)
 
 /client/proc/secrets()
 	set name = "Secrets"
-	set category = "Admin.Admin"
 	set hidden = 1
 	if (holder)
 		holder.Secrets()
@@ -792,23 +796,23 @@ GLOBAL_PROTECT(admin_verbs_hideable)
 	set category = "Admin.Special"
 	set name = "Force Speech"
 	set desc = ""
-	
+
 	if(!L)
 		to_chat(usr, span_warning("No mob selected."))
 		return
-	
+
 	if(!isliving(L))
 		to_chat(usr, span_warning("Target must be a living mob."))
 		return
-	
+
 	if(!L.loc)
 		to_chat(usr, span_warning("Target mob has no location."))
 		return
-	
+
 	var/message = input(usr, "What do you want them to say?", "Force Say") as text | null
 	if(!message)
 		return
-	
+
 	L.say(message)
 	log_admin("[key_name(usr)] forced [key_name(L)] at [AREACOORD(L)] to say \"[message]\"")
 	message_admins(span_adminnotice("[key_name_admin(usr)] forced [key_name_admin(L)] at [AREACOORD(L)] to say \"[message]\""))
@@ -817,7 +821,7 @@ GLOBAL_PROTECT(admin_verbs_hideable)
 /client/proc/togglebuildmodeself()
 	set name = "Toggle Build Mode"
 	set category = "Admin.Special"
-	if (!(holder.rank.rights & R_BUILD))
+	if(!holder || !(holder.rank?.rights & R_BUILD))
 		return
 	if(src.mob)
 		togglebuildmode(src.mob)
@@ -873,7 +877,6 @@ GLOBAL_PROTECT(admin_verbs_hideable)
 
 /client/proc/toggle_AI_interact()
 	set name = "Toggle Admin AI Interact"
-	set category = "Admin.Admin"
 	set desc = ""
 	set hidden = 1
 
@@ -894,7 +897,6 @@ GLOBAL_PROTECT(admin_verbs_hideable)
 	to_chat(src, span_interface("Lobby OOC visibility is now [show_lobby_ooc ? "ON" : "OFF"]."))
 
 /client/proc/end_party()
-	set category = "Game Master"
 	set name = "EndPlaytest"
 	set hidden = 1
 	if(!holder)
@@ -973,7 +975,7 @@ GLOBAL_PROTECT(admin_verbs_hideable)
 			scom_announce("An unknown force has erased the bounty on [target_name]. The gods are displeased.")
 			message_admins("[ADMIN_LOOKUPFLW(src)] has removed the bounty on [ADMIN_LOOKUPFLW(target_name)]")
 			return
-	to_chat(src, "Error. Bounty no longer active.") 
+	to_chat(src, "Error. Bounty no longer active.")
 
 /client/proc/enable_browser_debug()
 	set category = "Debug"
@@ -982,5 +984,5 @@ GLOBAL_PROTECT(admin_verbs_hideable)
 		return
 
 	to_chat(src, "Browser tools are now enabled.")
-	winset(src, null, "browser-options=devtools,find,byondstorage")
+	winset(src, null, "browser-options=devtools,find,refresh")
 

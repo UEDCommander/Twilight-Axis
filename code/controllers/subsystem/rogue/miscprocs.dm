@@ -1,3 +1,10 @@
+// Multiplier to standardize values per second to how long a prayer loop takes
+#define PRAYER_DEVOTION_TIME_MULT 3
+// Amount of devotion before holy skill is factored in per prayer loop
+#define PRAYER_DEVOTION_BASE 0.5 * PRAYER_DEVOTION_TIME_MULT
+// Amount of devotion per holy skill level per prayer loop
+#define PRAYER_DEVOTION_SKILL 1 * PRAYER_DEVOTION_TIME_MULT
+
 // Cleric Holder Datums
 /datum/devotion
 	/// Mob that owns this datum
@@ -20,8 +27,8 @@
 	var/passive_devotion_gain = 0
 	/// How much progression is gained per process call
 	var/passive_progression_gain = 0
-	/// How much devotion is gained per prayer cycle
-	var/prayer_effectiveness = 2
+	/// How much % devotion is gained per prayer cycle
+	var/prayer_effectiveness = 1
 	/// Spells we have granted thus far
 	var/list/granted_spells
 
@@ -131,6 +138,18 @@
 		REMOVE_TRAIT(holder, TRAIT_PSYDONITE_2, ROUNDSTART_TRAIT)
 	//TA EDIT END
 
+/datum/devotion/proc/get_progression_requirement_for_tier(cleric_tier)
+	switch(cleric_tier)
+		if(CLERIC_T1)
+			return CLERIC_REQ_1
+		if(CLERIC_T2)
+			return CLERIC_REQ_2
+		if(CLERIC_T3)
+			return CLERIC_REQ_3
+		if(CLERIC_T4)
+			return CLERIC_REQ_4
+	return null
+
 //The main proc that distributes all the needed devotion tweaks to the given class.
 //cleric_tier 		- The cleric tier that the holder will get spells of immediately.
 //passive_gain 		- Passive devotion gain, if any, will begin processing this datum.
@@ -143,6 +162,11 @@
 	if(devotion_limit) //Upper devotion limit - Limits gain to that tier's miracles. Mostly used by Templars / Paladins.
 		max_devotion = devotion_limit
 		max_progression = devotion_limit
+	else if(cleric_tier > CLERIC_T0 && !start_maxed)
+		var/tier_limit = get_progression_requirement_for_tier(cleric_tier)
+		if(tier_limit)
+			max_devotion = tier_limit
+			max_progression = tier_limit
 	if(passive_gain)
 		passive_devotion_gain = passive_gain
 		passive_progression_gain = passive_gain
@@ -194,10 +218,11 @@
 			break
 		if(!do_after(src, 30))
 			break
-		var/devotion_multiplier = 1
+		// Values standardized for 3 seconds.
+		var/devotion_multiplier = PRAYER_DEVOTION_BASE
 		if(mind)
-			devotion_multiplier += (get_skill_level(/datum/skill/magic/holy) / SKILL_LEVEL_LEGENDARY)
-		var/prayer_effectiveness = round(devotion.prayer_effectiveness * devotion_multiplier)
+			devotion_multiplier += (get_skill_level(/datum/skill/magic/holy) * PRAYER_DEVOTION_TIME_MULT)
+		var/prayer_effectiveness = round(devotion.prayer_effectiveness * devotion_multiplier, 0.1)
 		devotion.update_devotion(prayer_effectiveness, prayer_effectiveness)
 		prayersesh += prayer_effectiveness
 	visible_message("[src] concludes their prayer.", "I conclude my prayer.")
@@ -296,3 +321,7 @@
 	var/datum/component/ore_sight/COS = GetComponent(/datum/component/ore_sight)
 	if(COS)
 		COS.change_range()
+
+#undef PRAYER_DEVOTION_TIME_MULT
+#undef PRAYER_DEVOTION_BASE
+#undef PRAYER_DEVOTION_SKILL

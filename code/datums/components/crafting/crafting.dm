@@ -230,7 +230,8 @@
 	var/list/contents = get_surroundings(user)
 	var/list/found_tools = list() //TA EDIT
 //	var/send_feedback = 1
-	var/turf/T = get_step(user, user.dir)
+	var/build_dir = user.dir
+	var/turf/T = get_step(user, build_dir)
 	if(isopenturf(T) && R.wallcraft)
 		to_chat(user, span_warning("Need to craft this on a wall."))
 		return
@@ -300,6 +301,8 @@
 							prob2craft += ((10-L.STAINT)*-1)*2
 						if(HAS_TRAIT(L, TRAIT_INTELLECTUAL) && L.STAINT > 8)
 							prob2craft += 5
+						if(HAS_TRAIT(L, TRAIT_MALUMCHOSEN))
+							prob2craft += 20
 					prob2craft = CLAMP(prob2craft, 0, 99)
 					if(i == 100 && prob2craft > 0)
 						prob2craft = 100
@@ -317,7 +320,7 @@
 						for(var/IT in L)
 							var/atom/movable/I = new IT(T)
 							I.CheckParts(parts, R)
-							I.OnCrafted(user.dir, user)
+							I.OnCrafted(build_dir, user)
 							if(isitem(I))
 								var/obj/item/CI = I
 								CI.was_crafted = TRUE
@@ -332,7 +335,7 @@
 						if(ispath(R.result, /turf))
 							var/turf/X = T.PlaceOnTop(R.result)
 							if(X)
-								X.OnCrafted(user.dir, user)
+								X.OnCrafted(build_dir, user)
 								X.add_fingerprint(user)
 								if(R.loud)
 									X.loud_message("Construction sounds can be heard")
@@ -346,7 +349,7 @@
 							if(R.diagonal)
 								I.OnCrafted(I.SelectDiagDirection(), user)
 							else
-								I.OnCrafted(user.dir, user)
+								I.OnCrafted(build_dir, user)
 							if(isitem(I))
 								var/obj/item/CI = I
 								CI.was_crafted = TRUE
