@@ -1431,6 +1431,74 @@
 	icon = 'icons/obj/items/donor_weapons_64.dmi'
 	icon_state = "dasfox_lance"
 
+/obj/item/rogueweapon/sword/long/etruscan/freifechter/tyesca
+	name = "reliquary Reformist montante"
+	desc = "Once upon a time, such swords as these were the Etruscan Isles' specialty for two handed combat. This one has been forged shorter in an archaic \
+	pattern, utilized by old Fencers who wished to have a more defensively capable blade for use in the field. Transformed from simple sword to reliquary of \
+	the past, a time capsule decorated by bronze, red silk and black prayer beads. A simple engraving on the crossguard pleads; 'Draw Me Only At The End.'"
+	icon = 'icons/obj/items/donor_weapons_64.dmi'
+	icon_state = "tyesca_sword"
+
+/obj/item/rogueweapon/scabbard/sword/tyesca
+	name = "reliquary montante scabbard"
+	desc = "A scabbard designed in equal parts to match the sword it was crafted for. Catches and loops sit for prayer beads and drapes of silk to hang down \
+	the bronze-and-pewter decorated length. The throat and locket are forged to make the bottom of a Psycross when held upright, allowing the sword when \
+	sheathed to complete the piece as a mark of faith when placed away from the world. Down the length, it preaches; 'There Is No World To Lyve In Which A \
+	Sword Is The Answer.'"
+	icon_state = "reliquaryscabbard"
+	item_state = "reliquaryscabbard"
+	valid_blade = /obj/item/rogueweapon/sword/long/etruscan/freifechter
+	cant_strip = TRUE
+
+/obj/item/clothing/suit/roguetown/armor/plate/cuirass/fencer/tyesca
+	name = "fencing brigandine"
+	desc = "A lightweight set of Szöréndnížine brigandine, designed in part to match the archaic Etruscan sets that came over at the head of the Reformation. \
+	A sewn in surcoat bearing the City-State's colors is sewn in as the interior lining, showing the Elephantine heraldry on the interior."
+	icon_state = "fencerbrig"
+	item_state = "fencerbrig"
+	icon = 'icons/clothing/donor_clothes.dmi'
+	mob_overlay_icon = 'icons/clothing/onmob/donor_clothes.dmi'
+
+/obj/item/clothing/suit/roguetown/armor/brigandine/light/tyesca
+	name = "fencing brigandine"
+	desc = "A lightweight set of Szöréndnížine brigandine, designed in part to match the archaic Etruscan sets that came over at the head of the Reformation. \
+	A sewn in surcoat bearing the City-State's colors is sewn in as the interior lining, showing the Elephantine heraldry on the interior."
+	icon_state = "fencerbrig"
+	item_state = "fencerbrig"
+	icon = 'icons/clothing/donor_clothes.dmi'
+	mob_overlay_icon = 'icons/clothing/onmob/donor_clothes.dmi'
+
+/obj/item/clothing/cloak/raincloak/tyesca
+	name = "\improper Szöréndnížine banner-cloak"
+	desc = "A harsh reality that comes from yils of travel is the lack of protections one might have. This cloak is designed from the repurposed canvas \
+	of a Szöréndnížine banner that's often in the belongings of Freelancers so far from home. Both serving as a reminder of what they travel and fight \
+	for, and some protection from the elements."
+	icon_state = "fencercloak"
+	item_state = "fencercloak"
+	icon = 'icons/clothing/donor_clothes.dmi'
+	mob_overlay_icon = 'icons/clothing/onmob/donor_clothes.dmi'
+	boobed = FALSE
+	sleeved = 'icons/clothing/onmob/donor_sleeves_armor.dmi'
+	sleevetype = "feather_cloak"
+	hoodtype = /obj/item/clothing/head/hooded/rainhood/tyesca
+
+/obj/item/clothing/head/hooded/rainhood/tyesca
+	name = "\improper Szöréndnížine banner-hood"
+	desc = "Coming from the depths of a repurposed banner for use as a cloak, this hood will serve well in its heavy canvas to keep the wind and light \
+	rain from the wearer's head and face. At least, for the most part."
+	icon_state = "fencerhood"
+	item_state = "fencerhood"
+	slot_flags = ITEM_SLOT_HEAD
+	dynamic_hair_suffix = ""
+	edelay_type = 1
+	body_parts_covered = HEAD
+	flags_inv = HIDEEARS|HIDEFACE|HIDEHAIR|HIDEFACIALHAIR|HIDETAIL
+	block2add = FOV_BEHIND
+	icon = 'icons/clothing/donor_clothes.dmi'
+	mob_overlay_icon = 'icons/clothing/onmob/donor_clothes.dmi'
+
+
+
 //IamCrystalClear
 /obj/item/clothing/mask/rogue/iamcrystalclear
 	name = "porcelain mask"
