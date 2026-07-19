@@ -595,7 +595,7 @@
 	possible_item_intents = list(SHIELD_BASH_METAL, SHIELD_BLOCK, SHIELD_SMASH_METAL)
 	wdefense = 9
 	coverage = 10
-	bullet_damage_mult = 0.6 // 40% damage reduction
+	bullet_damage_mult = 0.6 //TA EDIT
 	attacked_sound = list('sound/combat/parry/shield/metalshield (1).ogg','sound/combat/parry/shield/metalshield (2).ogg','sound/combat/parry/shield/metalshield (3).ogg')
 	parrysound = list('sound/combat/parry/shield/metalshield (1).ogg','sound/combat/parry/shield/metalshield (2).ogg','sound/combat/parry/shield/metalshield (3).ogg')
 	max_integrity = 130
