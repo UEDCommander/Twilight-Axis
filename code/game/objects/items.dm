@@ -1870,7 +1870,7 @@ GLOBAL_VAR_INIT(rpg_loot_items, FALSE)
 		if(EXAMINEHIGHLIGHT_HERESYSEVERITY_ODD)
 			return "Нечто необычное"
 		if(EXAMINEHIGHLIGHT_VIBE_FRIEND)
-			return "Заклятый союзник"
+			return "Верный союзник"
 		if(EXAMINEHIGHLIGHT_VIBE_FOE)
 			return "Заклятый противник"
 		if(EXAMINEHIGHLIGHT_VIBE_CROWN)
@@ -1878,7 +1878,7 @@ GLOBAL_VAR_INIT(rpg_loot_items, FALSE)
 		if(EXAMINEHIGHLIGHT_VIBE_GOLGATHA)
 			return "Благословленное"
 		if(EXAMINEHIGHLIGHT_HERESYSEVERITY_VERYODD)
-			return "ВЕРОЯТНАЯ ЕРЕСЬ"
+			return "ОЧЕНЬ ПОДОЗРИТЕЛЬНО"
 	return null
 
 /// See `proc/get_examine_highlight_status()` and `code\__DEFINES\highlight_examine_defines.dm`. 

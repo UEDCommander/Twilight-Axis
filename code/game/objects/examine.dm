@@ -54,7 +54,7 @@
 		var/mob/living/L = user
 		if(istype(L.patron, /datum/patron/inhumen))
 			return FALSE
-	switch(severity)
+	/*switch(severity)
 		if(EXAMINEHIGHLIGHT_HERESYSEVERITY_ALARMING)
 			return TRUE
 		if(EXAMINEHIGHLIGHT_HERESYSEVERITY_SUSPICIOUS)
@@ -62,8 +62,8 @@
 				return TRUE
 		if(EXAMINEHIGHLIGHT_HERESYSEVERITY_ODD)
 			if(HAS_TRAIT(user, TRAIT_INQUISITION))
-				return TRUE
-	return FALSE //TA EDIT END
+				return TRUE*/
+	return TRUE //TA EDIT END
 
 /obj/item/examine(mob/user)
 	. = ..()
