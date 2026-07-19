@@ -1,11 +1,8 @@
 import { useState } from 'react';
 import { useBackend } from 'tgui/backend';
-import { classes } from 'tgui-core/react';
 import { Window } from 'tgui/layouts';
 import {
-  DmIcon,
   Button,
-  Icon,
   Box,
   ProgressBar,
   Stack,
@@ -317,7 +314,7 @@ export const LoadoutPanel = () => {
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
                           }}
-                          tooltip={item}
+                          title={item}
                         >
                           {item}
                         </Box>
@@ -428,7 +425,7 @@ export const LoadoutPanel = () => {
                           }}
                           tooltip={
                             `${item?.unavailable
-                              ? item?.unavailableReason || (item?.requiredTier ? "Недоступно. Требуется уровень:"+item.requiredTier : 'Недоступно.')
+                              ? item?.unavailableReason || (item?.requiredTier ? `Недоступно. Требуется уровень: ${item.requiredTier}` : 'Недоступно.')
                               : item?.name || 'Без названия'}`}
                           onClick={() => {
                             if (selectedSet.has(item?.name)) {
