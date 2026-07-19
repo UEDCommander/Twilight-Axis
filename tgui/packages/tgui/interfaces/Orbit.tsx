@@ -45,6 +45,11 @@ type RoleGroup = {
   items: OrbitTargetIndexed[];
 };
 
+type RoleColor = {
+  backgroundColor: string;
+  color: string;
+};
+
 type OrbitTargetIndexed = OrbitTarget & {
   searchKey: string;
   displayName: string;
@@ -54,6 +59,7 @@ type OrbitTargetIndexed = OrbitTarget & {
   groupKey: string;
   healthStateColor: string;
   healthTextColor: string;
+  roleStateColor?: string;
   roleTextColor?: string;
 };
 
@@ -69,13 +75,91 @@ const UNASSIGNED_ROLE_LABEL = 'Unassigned';
 const TRAILING_MASKED_DESCRIPTOR_REGEX = / \[[^\]]+\]$/;
 const TRAILING_DUPLICATE_SUFFIX_REGEX = / \(\d+\)$/;
 const EMPTY_TARGETS: OrbitTarget[] = [];
+const ROLE_GROUP_COLORS: Record<string, RoleColor> = {
+  'Ducal Family': {
+    backgroundColor: '#aa83b9',
+    color: '#443a39',
+  },
+  Courtiers: {
+    backgroundColor: '#81adc8',
+    color: '#443a39',
+  },
+  Retinue: {
+    backgroundColor: '#223273',
+    color: '#ffffff',
+  },
+  Garrison: {
+    backgroundColor: '#b18484',
+    color: '#443a39',
+  },
+  Church: {
+    backgroundColor: '#c0ba8d',
+    color: '#443a39',
+  },
+  Inquisition: {
+    backgroundColor: '#cc4242',
+    color: '#443a39',
+  },
+  Wanderers: {
+    backgroundColor: '#819e82',
+    color: '#443a39',
+  },
+  Peasants: {
+    backgroundColor: '#b09262',
+    color: '#443a39',
+  },
+  Burghers: {
+    backgroundColor: '#c86e3a',
+    color: '#443a39',
+  },
+  Sidefolk: {
+    backgroundColor: '#65b2b5',
+    color: '#443a39',
+  },
+  ATC: {
+    backgroundColor: '#c86e3a',
+    color: '#443a39',
+  },
+  'Azurian Trading Company': {
+    backgroundColor: '#c86e3a',
+    color: '#443a39',
+  },
+  'Ghost and Other Roles': {
+    backgroundColor: '#2e0073',
+    color: '#ffffff',
+  },
+  'Antagonist Positions': {
+    backgroundColor: '#361f1f',
+    color: '#ffffff',
+  },
+};
+const GHOST_AND_OTHER_ROLE_NAMES = [
+  'necromancer skeleton',
+  'lich skeleton',
+  'unbound death knight',
+  'death knight',
+  'dark itinerant',
+] as const;
+const LESSER_ANTAGONIST_ROLE_NAMES = [
+  'wretch',
+  'dreamwalker',
+  'gnoll',
+  'vampire',
+] as const;
+const LESSER_VAMPIRE_ROLE_NAMES = [
+  'lesser vampire',
+  'thinblood vampire',
+  'ancillae vampire',
+  'vampire spawn',
+] as const;
 const ALIVE_NORMAL_GROUP_ORDER = [
-  'Noblemen',
+  'Ducal Family',
   'Courtiers',
+  'Retinue',
   'Garrison',
   'Church',
   'Inquisition',
-  'Yeomen',
+  'Burghers',
   'Peasants',
   'Sidefolk',
   'Wanderers',
@@ -123,6 +207,38 @@ function getAntagFamilyLabel(item: OrbitTargetIndexed) {
   }
 
   return null;
+}
+
+function roleNameMatches(roleLabelLower: string, roleNames: readonly string[]) {
+  return roleNames.some(
+    (roleName) =>
+      roleLabelLower === roleName || roleLabelLower.includes(roleName),
+  );
+}
+
+function getRoleColor(
+  item: OrbitTarget,
+  roleLabelLower: string,
+  groupKey: string,
+) {
+  if (roleNameMatches(roleLabelLower, GHOST_AND_OTHER_ROLE_NAMES)) {
+    return ROLE_GROUP_COLORS['Ghost and Other Roles'];
+  }
+
+  if (
+    LESSER_ANTAGONIST_ROLE_NAMES.some(
+      (roleName) => roleLabelLower === roleName,
+    ) ||
+    roleNameMatches(roleLabelLower, LESSER_VAMPIRE_ROLE_NAMES)
+  ) {
+    return undefined;
+  }
+
+  if (item.antag_group || groupKey === 'Antagonists') {
+    return ROLE_GROUP_COLORS['Antagonist Positions'];
+  }
+
+  return ROLE_GROUP_COLORS[groupKey];
 }
 
 function getAntagTier(item: OrbitTargetIndexed, familyLabel: string | null): AntagTier | null {
@@ -341,6 +457,24 @@ function buildItemTooltip(
   return `${fullName} | ${roleText} | ${healthText} health`;
 }
 
+function getRoleGroupKey(department: string | undefined, roleLabel: string) {
+  const normalizedDepartment = department?.trim();
+
+  if (
+    normalizedDepartment === 'Vanguard' ||
+    normalizedDepartment === 'Town Guard' ||
+    normalizedDepartment === 'City Watch'
+  ) {
+    return 'Garrison';
+  }
+
+  if (normalizedDepartment === 'Noblemen') {
+    return 'Ducal Family';
+  }
+
+  return normalizedDepartment || roleLabel;
+}
+
 function buildIndexedTarget(
   item: OrbitTarget,
   sectionKey: OrbitSectionKey,
@@ -348,11 +482,8 @@ function buildIndexedTarget(
   const displayName = getDisplayName(item.full_name);
   const roleLabel = getRoleLabel(item);
   const healthStateColor = getHealthStateColor(item.health_percent);
-  const roleTextColor = item.selection_color
-    ? getTextColorForBackground(item.selection_color)
-    : undefined;
-
-  const groupKey = item.department || roleLabel;
+  const groupKey = getRoleGroupKey(item.department, roleLabel);
+  const roleColor = getRoleColor(item, roleLabel.toLowerCase(), groupKey);
 
   return {
     ...item,
@@ -364,7 +495,8 @@ function buildIndexedTarget(
     groupKey,
     healthStateColor,
     healthTextColor: getTextColorForBackground(healthStateColor),
-    roleTextColor,
+    roleStateColor: roleColor?.backgroundColor,
+    roleTextColor: roleColor?.color,
   };
 }
 
@@ -379,9 +511,13 @@ type OrbitTargetButtonProps = {
 
 const OrbitTargetButton = memo((props: OrbitTargetButtonProps) => {
   const { item, selected, sectionColor, colorMode, showRole, onOrbit } = props;
-  const appliedColor = colorMode === 'health' ? item.healthStateColor : item.selection_color;
+  const appliedColor =
+    colorMode === 'health' ? item.healthStateColor : item.roleStateColor;
   const hasSelectionColor = !!appliedColor;
-  const textColor = colorMode === 'health' ? item.healthTextColor : item.roleTextColor;
+  const textColor =
+    colorMode === 'health' ? item.healthTextColor : item.roleTextColor;
+  const fallbackColor =
+    colorMode === 'role' && showRole ? undefined : sectionColor;
   const buttonStyle = hasSelectionColor
     ? {
         backgroundColor: appliedColor,
@@ -393,7 +529,7 @@ const OrbitTargetButton = memo((props: OrbitTargetButtonProps) => {
   return (
     <Stack.Item>
       <Button
-        color={hasSelectionColor ? 'transparent' : sectionColor}
+        color={hasSelectionColor ? 'transparent' : fallbackColor}
         onClick={() => onOrbit(item.ref)}
         selected={selected}
         style={buttonStyle}

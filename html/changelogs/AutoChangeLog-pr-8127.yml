@@ -1,5 +1,0 @@
-author: "Ollanius"
-delete-after: True
-changes:
-  - bugfix: "Purchasing a refitting kit now properly vends a refitting kit."
-  - balance: "Reduces cost of a refitting kit from 50 to 25, as it's wholly cosmetic."
