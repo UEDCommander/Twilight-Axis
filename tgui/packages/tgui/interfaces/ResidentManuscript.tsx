@@ -580,7 +580,7 @@ export const ResidentManuscript = () => {
     useState<OwnerStatusKey>(ownerStatusKey);
 
   const canEdit = !!permissions.can_edit;
-  const showVerification = !is_owner;
+  const showVerification = !Boolean(is_owner);
   const defectKeys = verification.defect_note_keys ?? [];
   const defectNotes = defectKeys.map((key) => texts.defects[key] || key);
   const validationNote = verification.note_key
@@ -1184,25 +1184,6 @@ const PROFILE_EMBLEMS: Record<DocumentProfileId, ReactNode> = {
         d="M56 24 Q54 34 56 42 Q60 34 56 24 Z"
       />
       <circle className="ResidentManuscript__crestGem" cx="48" cy="62" r="3" />
-    </>
-  ),
-  retinue: (
-    <>
-      <path
-        className="ResidentManuscript__crestEmblem"
-        d="M48 22 L52 28 L52 72 L48 78 L44 72 L44 28 Z"
-      />
-      <path
-        className="ResidentManuscript__crestQuarter"
-        d="M28 42 L48 54 L68 42"
-        fill="none"
-      />
-      <path
-        className="ResidentManuscript__crestQuarter"
-        d="M28 60 L48 72 L68 60"
-        fill="none"
-      />
-      <circle className="ResidentManuscript__crestGem" cx="48" cy="32" r="3" />
     </>
   ),
 };

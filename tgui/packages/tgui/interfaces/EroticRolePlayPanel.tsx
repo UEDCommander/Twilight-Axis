@@ -901,7 +901,7 @@ const PenisTuningPanel: React.FC<{
   onSetClimaxMode: (mode: string) => void;
 }> = ({ enabled, showKnotToggle, doKnotAction, canKnot, climaxMode, climaxModes, onToggleKnot, onSetClimaxMode }) => {
   if (!enabled) return null;
-  const modes = climaxModes?.length
+  const modes = climaxModes && climaxModes.length
     ? climaxModes
     : [{ id: 'outside', name: 'НАРУЖУ' }, { id: 'inside', name: 'ВНУТРЬ' }];
   return (
