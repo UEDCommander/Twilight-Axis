@@ -308,16 +308,16 @@ export const LoadoutPanel = () => {
                           gap: '6px',
                         }}
                       >
-                        <Box
+                        <div
+                          title={item}
                           style={{
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
                           }}
-                          title={item}
                         >
                           {item}
-                        </Box>
+                        </div>
                         <Button
                           color="danger"
                           onClick={() => act('remove', { item })}
