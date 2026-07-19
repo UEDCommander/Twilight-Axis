@@ -32,10 +32,15 @@
 		/datum/skill/misc/tracking = SKILL_LEVEL_APPRENTICE,
 		/datum/skill/misc/riding = SKILL_LEVEL_JOURNEYMAN,
 	)
+	subclass_virtues = list(
+		/datum/virtue/utility/riding
+	)
 
 /datum/outfit/job/roguetown/mercenary/twilight_gunslinger/pre_equip(mob/living/carbon/human/H)
 	..()
 	H.set_blindness(0)
+	if(H.mind)
+		H.mind.teach_crafting_recipe(/datum/crafting_recipe/roguetown/survival/paper_cartridge)
 	beltl = /obj/item/quiver/twilight_bullet/paper/lead
 	beltr = /obj/item/gun/ballistic/twilight_firearm/arquebus_pistol/puffer
 	backl = /obj/item/storage/backpack/rogue/satchel/otavan

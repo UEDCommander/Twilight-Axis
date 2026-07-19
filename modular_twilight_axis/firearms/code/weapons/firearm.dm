@@ -350,12 +350,13 @@
 		if(V.breech_loaded && locktype != "Breech")
 			to_chat(user, "<span class='warning'>The [V.name] can only be loaded into breech-loaded weapons!</span>")
 			return
-		if((loc == user) && (user.get_inactive_held_item() != src))
+		if((loc == user) && (user.get_inactive_held_item() != src) && !(V.breech_loaded))
 			return
 		if (bolt_type == BOLT_TYPE_NO_BOLT || internal_magazine)
 			if(locktype == "Breech")
 				if(breech_open == TRUE)
-					playsound(src, "modular_twilight_axis/firearms/sound/musketcock.ogg",  100, FALSE)
+					if(istype(V, /obj/item/ammo_casing/caseless/rogue/twilight_lead/paper))
+						playsound(src, "modular_twilight_axis/firearms/sound/puffer_reload.ogg",  100, FALSE)
 					to_chat(user, span_info("You begin loading [src]..."))
 					if(move_after(user, load_time_skill, target = user))
 						if (chambered && !chambered.BB)
@@ -364,7 +365,7 @@
 							chambered = null
 						var/num_loaded = magazine.attackby(A, user, params, TRUE)
 						if (num_loaded)
-							playsound(src, "modular_twilight_axis/firearms/sound/insert_paper.ogg",  100, FALSE)
+							playsound(src, "modular_twilight_axis/firearms/sound/insert.ogg",  100, FALSE)
 							user.visible_message("<span class='notice'>[user] inserts [V.name] into the breech of [src].</span>")
 							if(!gunpowder)
 								gunpowder = "black gunpowder"
@@ -374,6 +375,10 @@
 								icon = advanced_icon_r
 							A.update_icon()
 							update_icon()
+					else
+						to_chat(user, "<span class='warning'>You fumble the reload, dropping the [V.name]!</span>")
+						V.forceMove(drop_location())
+						return
 				else
 					to_chat(user, span_info("You must open the breech first!"))
 					return
