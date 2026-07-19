@@ -52,6 +52,7 @@
 				var/pos = length(file_data["[escaped]"]["[category]"]) + 1
 				file_data["[escaped]"]["[category]"]["[pos]"] = mob_data
 	WRITE_FILE(json_file, json_encode(file_data))
+	dump_chronicle_stats()
 	SSblackbox.record_feedback("nested tally", "round_end_stats", num_survivors, list("survivors", "total"))
 	SSblackbox.record_feedback("nested tally", "round_end_stats", num_escapees, list("escapees", "total"))
 	SSblackbox.record_feedback("nested tally", "round_end_stats", GLOB.joined_player_list.len, list("players", "total"))
@@ -95,8 +96,9 @@
 	status_flags |= GODMODE
 	ai_controller?.set_ai_status(AI_STATUS_OFF)
 	if(client)
-		client.verbs |= /client/proc/lobbyooc
-		client.verbs |= /client/proc/view_stats
+		add_verb(client, /client/proc/lobbyooc)
+		add_verb(client, /client/proc/view_stats)
+		client.init_verbs()
 		client.show_game_over()
 
 /mob/living/do_game_over()
@@ -146,6 +148,8 @@
 			round_end_music = 5 // 5%
 		if(17 to 21)
 			round_end_music = 6 // 5%
+		if(22 to 26)
+			round_end_music = 7 // 5%
 		else
 			round_end_music = rand(0, 1)
 
@@ -159,17 +163,21 @@
 				if(1)
 					C.mob.playsound_local(C.mob, 'modular_twilight_axis/sound/music/roundend.ogg', 100, FALSE)
 				if(2)
-					C.mob.playsound_local(C.mob, 'sound/music/roundend_mirthful.ogg', 100, FALSE) //Hildegard Von Blingin and Whitney Avalon's transformative cover of 'Manchild' by Sabrina Carpenter, circa 2026.
+					C.mob.playsound_local(C.mob, 'modular_twilight_axis/sound/music/roundend6.ogg', 100, FALSE) // Die Toteninsel Emptiness
 				if(3)
 					C.mob.playsound_local(C.mob, 'modular_twilight_axis/sound/music/roundend2.ogg', 100, FALSE)
 				if(4)
 					C.mob.playsound_local(C.mob, 'modular_twilight_axis/sound/music/roundend3.ogg', 100, FALSE)
 				if(5)
-					C.mob.playsound_local(C.mob, 'modular_twilight_axis/sound/music/roundend4.ogg', 100, FALSE)
+					C.mob.playsound_local(C.mob, 'modular_twilight_axis/sound/music/roundend4.ogg', 100, FALSE) // [FFXIV] Heavensward - Dragonsong
 				if(6)
 					C.mob.playsound_local(C.mob, 'modular_twilight_axis/sound/music/roundend5.ogg', 100, FALSE)
+				if(7)
+					C.mob.playsound_local(C.mob, 'modular_twilight_axis/sound/music/roundend7.ogg', 100, FALSE)
+
 		if(isliving(C.mob) && C.ckey)
 			key_list += C.ckey
+	var/favor_bonus = SSmerchant_trade ? SSmerchant_trade.favor_triumph_bonus() : 0
 	for(var/mob/living/carbon/human/H in GLOB.player_list)
 		if(H.stat != DEAD)
 			if(H.get_triumphs() < 0)
@@ -180,6 +188,9 @@
 				if(job && job.round_contrib_points)
 					to_chat(H, "\n<font color='purple'><b>[job.round_contrib_points]</b> ROUND CONTRIBUTOR POINTS AWARDED. Thank you for playing!</font>")
 					add_roundpoints(job.round_contrib_points, H.ckey)
+		if(favor_bonus > 0 && H.ckey && H.job && (H.job == "Merchant" || H.job == "Shophand"))
+			H.adjust_triumphs(favor_bonus)
+			to_chat(H, "\n<font color='purple'><b>+[favor_bonus] TRIUMPHS</b> awarded for trade volume earned with the Azurian Trading Company.</font>")
 	add_roundplayed(key_list)
 
 	update_god_rankings()
@@ -420,7 +431,7 @@
 	if(!previous)
 		var/list/report_parts = list(personal_report(C), GLOB.common_report)
 		content = report_parts.Join()
-		C.verbs -= /client/proc/show_previous_roundend_report
+		remove_verb(C, /client/proc/show_previous_roundend_report)
 		fdel(filename)
 		text2file(content, filename)
 	else

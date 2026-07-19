@@ -10,7 +10,7 @@
 	var/next_activation = 0
 	var/end_activation = 0
 	var/ignite_chance = 2
-	var/traits_applied = list(TRAIT_NOPAIN, TRAIT_NOPAINSTUN, TRAIT_NOMOOD, TRAIT_NOHUNGER, TRAIT_NOBREATH, TRAIT_DEATHLESS, TRAIT_BLOODLOSS_IMMUNE, TRAIT_LONGSTRIDER, TRAIT_STRONGBITE, TRAIT_STRENGTH_UNCAPPED, TRAIT_GRABIMMUNE, TRAIT_TEMPO)
+	var/traits_applied = list(TRAIT_NOPAIN, TRAIT_NOPAINSTUN, TRAIT_NOMOOD, TRAIT_NOHUNGER, TRAIT_NOBREATH, TRAIT_DEATHLESS, TRAIT_BLOODLOSS_IMMUNE, TRAIT_LONGSTRIDER, TRAIT_STRONGBITE, TRAIT_STRENGTH_UNCAPPED, TRAIT_GRABIMMUNE, TRAIT_TEMPO, TRAIT_STUNIMMUNE)
 	var/stat_bonus_martyr = 3
 	var/mob/living/current_holder
 	var/is_active = FALSE
@@ -50,6 +50,7 @@
 	RegisterSignal(parent, COMSIG_ITEM_DROPPED, PROC_REF(on_drop))
 	RegisterSignal(parent, COMSIG_ITEM_AFTERATTACK, PROC_REF(item_afterattack))
 	RegisterSignal(parent, COMSIG_PARENT_EXAMINE, PROC_REF(on_examine))
+	RegisterSignal(parent, COMSIG_ITEM_BROKEN, PROC_REF(on_item_broken), override = TRUE)
 
 	var/obj/item/I = parent
 	inactive_intents = I.possible_item_intents.Copy()
@@ -248,7 +249,32 @@
 				else
 					activate(user)
 		else
-			to_chat(user, span_info("You must be holding the sword in your active hand!"))
+			to_chat(user, span_info("You must be holding the weapon in your active hand!"))
+
+#define WEAPON_SWORD /obj/item/rogueweapon/sword/long/martyr
+#define WEAPON_AXE /obj/item/rogueweapon/greataxe/steel/doublehead/martyr
+#define WEAPON_MACE /obj/item/rogueweapon/mace/goden/martyr
+#define WEAPON_TRIDENT /obj/item/rogueweapon/spear/partizan/martyr
+
+/datum/component/martyrweapon/proc/on_item_broken(mob/user)
+	SIGNAL_HANDLER
+	var/obj/item/I = parent
+	I.visible_message(span_danger("[I] begins to glimmer and whine. It's changing..!"))
+	SSroguemachine.martyrweapon = null
+	addtimer(CALLBACK(src, PROC_REF(summon_weapon), I), 5 SECONDS, TIMER_UNIQUE)
+
+/datum/component/martyrweapon/proc/summon_weapon(obj/item/rogueweapon/weapon)
+	var/weapontype = pick(WEAPON_SWORD, WEAPON_MACE, WEAPON_TRIDENT, WEAPON_AXE)
+	var/obj/item/rogueweapon/newweapon = new weapontype(get_turf(weapon))
+	newweapon.visible_message(span_danger("[newweapon] hardens itself, finally."))
+	SSroguemachine.martyrweapon = newweapon
+	QDEL_NULL(weapon)
+	return
+
+#undef WEAPON_SWORD
+#undef WEAPON_AXE
+#undef WEAPON_MACE
+#undef WEAPON_TRIDENT
 
 //IF it gets dropped, somehow (likely delimbing), turn it off immediately.
 /datum/component/martyrweapon/proc/on_drop(datum/source, mob/user)
@@ -347,15 +373,15 @@
 	var/obj/item/I = parent
 	if(!tonormal)
 		if(current_state == STATE_MARTYR || current_state == STATE_MARTYRULT)
-			I.toggle_state = "[initial(I.icon_state)]_ulton"
+			I.override_state = "[initial(I.icon_state)]_ulton"
 		else
-			I.toggle_state = "[initial(I.icon_state)]_on"
-		I.item_state = "[I.toggle_state][I.wielded ? "1" : ""]"
-		I.icon_state = "[I.toggle_state][I.wielded ? "1" : ""]"
+			I.override_state = "[initial(I.icon_state)]_on"
+		I.item_state = "[I.override_state][I.wielded ? "1" : ""]"
+		I.icon_state = "[I.override_state][I.wielded ? "1" : ""]"
 	else
 		I.icon_state = initial(I.icon_state)
 		I.item_state = initial(I.item_state)
-		I.toggle_state = null
+		I.override_state = null
 
 	current_holder.regenerate_icons()
 
@@ -468,7 +494,7 @@
 	faction = "Station"
 	tutorial = "Martyrs are hand-picked among the most devout of the Holy See. They are given one of the See's cherished relics to protect the Church, and to inspire hope and lead by example of grace, kindness and vicious intolerance to any who do not share the belief of the Ten. They have sworn an Oath in the sight of the gods, and will fulfill it to the bitter end."
 	allowed_sexes = list(MALE, FEMALE)
-	forbidden_races = list(RACES_CONSTRUCT RACES_DESPISED)
+	forbidden_races = list(RACES_CONSTRUCT RACES_DESPISED RACES_OOZE)
 	allowed_patrons = list(/datum/patron/divine/undivided)
 	outfit = /datum/outfit/job/roguetown/martyr
 	min_pq = 15 //Cus it's a Martyr of the Ten. Get it.
@@ -486,7 +512,7 @@
 	//No undeath-adjacent virtues for a role that can sacrifice itself. The Ten like their sacrifices 'pure'. (I actually didn't want to code returning those virtue traits post-sword use)
 	//They get those traits during sword activation, anyway.
 	//Dual wielder is there to stand-in for ambidextrous in case they activate their sword in their off-hand.
-	virtue_restrictions = list(/datum/virtue/utility/noble, /datum/virtue/combat/rotcured, /datum/virtue/utility/hollow, /datum/virtue/combat/dualwielder, /datum/virtue/heretic/zchurch_keyholder)
+	virtue_restrictions = list(/datum/virtue/utility/noble, /datum/virtue/combat/second_chance, /datum/virtue/utility/hollow, /datum/virtue/combat/dualwielder, /datum/virtue/heretic/zchurch_keyholder)
 
 	advclass_cat_rolls = list(CTAG_MARTYR = 2)
 	job_subclasses = list(
@@ -554,7 +580,7 @@
 		/obj/item/rogueweapon/scabbard/sheath = 1,
 		/obj/item/mini_flagpole/church,
 		)
-	H.dna.species.soundpack_m = new /datum/voicepack/male/knight()
+	H.dna.species.soundpack_m = GLOB.voice_packs[/datum/voicepack/male/knight]
 	H.AddComponent(/datum/component/wise_tree_alert)
 	if(H.mind)
 		var/helmets = list("Holy Silver Bascinet","Holy Silver Armet")
@@ -566,7 +592,7 @@
 			if("Holy Silver Armet")
 				head = /obj/item/clothing/head/roguetown/helmet/heavy/holysee/alt
 	if(H.mind)
-		SStreasury.give_money_account(ECONOMIC_UPPER_CLASS, H, "Church Funding.")
+		SStreasury.grant_savings(ECONOMIC_UPPER_CLASS, H)
 		var/obj/effect/proc_holder/spell/targeted/martyr_select_weapon/sel = new
 		var/obj/effect/proc_holder/spell/invoked/martyr_summon_weapon/sum = new
 
@@ -579,8 +605,6 @@
 /obj/item/rogueweapon/sword/long/martyr
 	force = 30
 	force_wielded = 36
-	possible_item_intents = list(/datum/intent/sword/cut, /datum/intent/sword/thrust, /datum/intent/sword/strike)
-	gripped_intents = list(/datum/intent/sword/cut, /datum/intent/sword/thrust, /datum/intent/sword/strike, /datum/intent/sword/chop)
 	icon_state = "martyrsword"
 	item_state = "martyrsword"
 	lefthand_file = 'icons/mob/inhands/weapons/roguemartyr_lefthand.dmi'
@@ -605,8 +629,9 @@
 	dropshrink = 1
 	smeltresult = null
 	is_silver = TRUE
-	toggle_state = null
+	override_state = null
 	is_important = TRUE
+	alt_grips = list(/datum/alt_grip/mordhau/sword/lesser, /datum/alt_grip/halfsword/lesser)
 	special = /datum/special_intent/martyr_astrata_verdict
 
 /obj/item/rogueweapon/sword/long/martyr/ComponentInitialize()
@@ -673,7 +698,7 @@
 				H.ignite_mob()
 			return FALSE
 		else	//Everyone else
-			to_chat(user, span_warning("A painful jolt across your entire body sends you to the ground. You cannot touch [src]]."))
+			to_chat(user, span_warning("A painful jolt across your entire body sends you to the ground. You cannot touch [src]."))
 			H.emote("groan", forced = TRUE)
 			H.Stun(10)
 			return FALSE
@@ -715,7 +740,7 @@
 	associated_skill = /datum/skill/combat/axes
 	smeltresult = null
 	is_silver = TRUE
-	toggle_state = null
+	override_state = null
 	is_important = TRUE
 	special = /datum/special_intent/martyr_ravox_charge
 
@@ -791,7 +816,7 @@
 				H.ignite_mob()
 			return FALSE
 		else	//Everyone else
-			to_chat(user, span_warning("A painful jolt across your entire body sends you to the ground. You cannot touch [src]]."))
+			to_chat(user, span_warning("A painful jolt across your entire body sends you to the ground. You cannot touch [src]."))
 			H.emote("groan", forced = TRUE)
 			H.Stun(10)
 			return FALSE
@@ -821,7 +846,7 @@
 	associated_skill = /datum/skill/combat/maces
 	smeltresult = null
 	is_silver = TRUE
-	toggle_state = null
+	override_state = null
 	is_important = TRUE
 	special = /datum/special_intent/martyr_malum_hammerfall
 
@@ -893,7 +918,7 @@
 				H.ignite_mob()
 			return FALSE
 		else	//Everyone else
-			to_chat(user, span_warning("A painful jolt across your entire body sends you to the ground. You cannot touch [src]]."))
+			to_chat(user, span_warning("A painful jolt across your entire body sends you to the ground. You cannot touch [src]."))
 			H.emote("groan", forced = TRUE)
 			H.Stun(10)
 			return FALSE
@@ -923,7 +948,7 @@
 	associated_skill = /datum/skill/combat/polearms
 	smeltresult = null
 	is_silver = TRUE
-	toggle_state = null
+	override_state = null
 	is_important = TRUE
 	throwforce = 40
 	var/is_being_thrown_by_special = FALSE
@@ -997,7 +1022,7 @@
 				H.ignite_mob()
 			return FALSE
 		else	//Everyone else
-			to_chat(user, span_warning("A painful jolt across your entire body sends you to the ground. You cannot touch [src]]."))
+			to_chat(user, span_warning("A painful jolt across your entire body sends you to the ground. You cannot touch [src]."))
 			H.emote("groan", forced = TRUE)
 			H.Stun(10)
 			return FALSE
@@ -1060,7 +1085,7 @@
 				H.ignite_mob()
 			return FALSE
 		else	//Everyone else
-			to_chat(user, span_warning("A painful jolt across your entire body sends you to the ground. You cannot touch [src]]."))
+			to_chat(user, span_warning("A painful jolt across your entire body sends you to the ground. You cannot touch [src]."))
 			H.emote("groan", forced = TRUE)
 			H.Stun(10)
 			return FALSE
@@ -1107,7 +1132,7 @@
 				H.ignite_mob()
 			return FALSE
 		else	//Everyone else
-			to_chat(user, span_warning("A painful jolt across your entire body sends you to the ground. You cannot touch [src]]."))
+			to_chat(user, span_warning("A painful jolt across your entire body sends you to the ground. You cannot touch [src]."))
 			H.emote("groan", forced = TRUE)
 			H.Stun(10)
 			return FALSE
@@ -1155,7 +1180,7 @@
 				H.ignite_mob()
 			return FALSE
 		else	//Everyone else
-			to_chat(user, span_warning("A painful jolt across your entire body sends you to the ground. You cannot touch [src]]."))
+			to_chat(user, span_warning("A painful jolt across your entire body sends you to the ground. You cannot touch [src]."))
 			H.emote("groan", forced = TRUE)
 			H.Stun(10)
 			return FALSE
@@ -1202,7 +1227,7 @@
 				H.ignite_mob()
 			return FALSE
 		else	//Everyone else
-			to_chat(user, span_warning("A painful jolt across your entire body sends you to the ground. You cannot touch [src]]."))
+			to_chat(user, span_warning("A painful jolt across your entire body sends you to the ground. You cannot touch [src]."))
 			H.emote("groan", forced = TRUE)
 			H.Stun(10)
 			return FALSE
@@ -1253,7 +1278,7 @@
 				H.ignite_mob()
 			return FALSE
 		else	//Everyone else
-			to_chat(user, span_warning("A painful jolt across your entire body sends you to the ground. You cannot touch [src]]."))
+			to_chat(user, span_warning("A painful jolt across your entire body sends you to the ground. You cannot touch [src]."))
 			H.emote("groan", forced = TRUE)
 			H.Stun(10)
 			return FALSE

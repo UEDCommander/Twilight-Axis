@@ -63,7 +63,10 @@
 // Phase gates for join/create matching. Do not bypass without updating AI_NAVIGATION.md gotchas.
 #define FAMILYTREE_JOIN_CREATE_DELAY (2 MINUTES)
 #define FAMILYTREE_RELATIVE_JOIN_DELAY (5 MINUTES)
-#define FAMILYTREE_PREFERRED_MIN_HOUSE_SIZE 5
+#define FAMILYTREE_PREFERRED_MIN_HOUSE_SIZE 3
+#define FAMILYTREE_PLAYERS_PER_TARGET_HOUSE 10
+#define FAMILYTREE_MAX_RANDOM_RELATIVES 3
+#define FAMILYTREE_DONATOR_RELATIVES_TIER 1
 
 #define ANY_GENDER 1
 #define SAME_GENDER 2
@@ -133,6 +136,7 @@
 #include "familytree_holy_verbs.dm"
 #include "familytree_lifecycle.dm"
 #include "familytree_subsystem_core.dm"
+#include "familytree_royal_harem.dm"
 #include "familytree_subsystem_helpers.dm"
 #include "familytree_subsystem_matching.dm"
 #include "familytree_subsystem_royal.dm"

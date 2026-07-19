@@ -98,6 +98,30 @@ GLOBAL_LIST_INIT(stress_messages, world.file2list("strings/rt/stress_messages.tx
 	else
 		remove_stress(/datum/stressevent/pallid_outdoors)
 
+	if(HAS_TRAIT(src, TRAIT_SUNLIGHT_SENSITIVE) || HAS_TRAIT(src, TRAIT_BLACKBLOOD))
+		var/turf/T = get_turf(src)
+		if(T.can_see_sky() && GLOB.tod == "day")
+			if(HAS_TRAIT(src, TRAIT_WEATHER_PROTECTED))
+				add_stress(/datum/stressevent/lesser_sun_sensitivity)
+			else
+				if(HAS_TRAIT(src, TRAIT_SUNLIGHT_SENSITIVE))
+					src.set_blurriness(100)
+					apply_status_effect(/datum/status_effect/debuff/badvision)
+					add_stress(/datum/stressevent/sun_sensitivity_dark)
+				else
+					add_stress(/datum/stressevent/sun_sensitivity)
+		else
+			remove_stress(/datum/stressevent/lesser_sun_sensitivity)
+			remove_stress(/datum/stressevent/sun_sensitivity)
+			remove_stress(/datum/stressevent/sun_sensitivity_dark)
+			if(HAS_TRAIT(src, TRAIT_SUNLIGHT_SENSITIVE))
+				src.set_blurriness(0)
+				remove_status_effect(/datum/status_effect/debuff/badvision)
+	else
+		remove_stress(/datum/stressevent/sun_sensitivity_dark)
+		remove_stress(/datum/stressevent/lesser_sun_sensitivity)
+		remove_stress(/datum/stressevent/sun_sensitivity)
+
 	var/ascending = (new_stress > oldstress)
 
 	if(new_stress != oldstress)
@@ -216,7 +240,14 @@ GLOBAL_LIST_INIT(stress_messages, world.file2list("strings/rt/stress_messages.tx
 	stress_freakout()
 
 /mob/living/carbon/proc/stress_freakout()
-	if(HAS_TRAIT(src, TRAIT_NOMOOD))
+	var/determination = src.STAWIL * 4
+	if(HAS_TRAIT(src, TRAIT_NOMOOD) || stat != CONSCIOUS)
+		return
+	if(HAS_TRAIT(src, TRAIT_STEELHEARTED) || HAS_TRAIT(src, TRAIT_PSYDONIAN_GRIT) && prob(determination))
+		if(HAS_TRAIT(src, TRAIT_PSYDONIAN_GRIT))
+			to_chat(src, span_boldred("--PRAY!! WEEP!! ENDURE!!"))
+		else
+			to_chat(src, span_boldred("Deep breaths, deep breaths... I can handle this."))
 		return
 	to_chat(src, span_boldred("I PANIC!!!"))
 	Stun(2 SECONDS)

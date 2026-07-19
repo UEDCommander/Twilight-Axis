@@ -967,6 +967,7 @@ GLOBAL_VAR_INIT(pixel_diff_time, 1)
 	var/obj/effect/temp_visual/dir_setting/attack_effect/firstatk = new(first_step, newdir)
 	firstatk.icon_state = visual_effect_icon
 	firstatk.mouse_opacity = MOUSE_OPACITY_TRANSPARENT
+	firstatk.layer = ABOVE_MOB_LAYER
 	var/dist = get_dist(src, A)
 	if(dist > 1)	//2+ tiles, we trace a path to the target.
 		for(var/i = 1, i<dist, i++)
@@ -1041,17 +1042,19 @@ GLOBAL_VAR_INIT(pixel_diff_time, 1)
 	acted_explosions += ex_id
 	return TRUE
 
-//TODO: Better floating
 /atom/movable/proc/float(on)
 	if(throwing)
 		return
 	if(on && !(movement_type & FLOATING))
-		animate(src, pixel_y = pixel_y + 2, time = 1 SECONDS, loop = -1, flags = ANIMATION_RELATIVE)
-		animate(pixel_y = pixel_y - 2, time = 1 SECONDS, loop = -1, flags = ANIMATION_RELATIVE)
 		setMovetype(movement_type | FLOATING)
-	else if (!on && (movement_type & FLOATING))
-		animate(src, pixel_y = initial(pixel_y), time = 1 SECONDS)
+		float_bob()
+	else if(!on && (movement_type & FLOATING))
 		setMovetype(movement_type & ~FLOATING)
+		animate(src, pixel_y = base_pixel_y, time = 5)
+
+/atom/movable/proc/float_bob()
+	animate(src, pixel_y = base_pixel_y + 2, time = 10, easing = SINE_EASING, loop = -1)
+	animate(pixel_y = base_pixel_y - 2, time = 10, easing = SINE_EASING)
 
 /* Language procs */
 /atom/movable/proc/get_language_holder(shadow=TRUE)

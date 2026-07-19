@@ -86,7 +86,7 @@
 	return TRUE
 
 /datum/keybinding/carbon/toggle_arc_mode
-	hotkey_keys = list("CtrlG")
+	hotkey_keys = list("ShiftG")
 	name = "toggle_arc_mode"
 	full_name = "Toggle Spell Alt Mode"
 	description = "Toggle alt mode on the currently active spell - arc mode for projectiles, ward type cycling, etc."
@@ -203,6 +203,20 @@
 		return FALSE
 	var/mob/living/carbon/C = user.mob
 	C.mmb_intent_change(QINTENT_SPECIAL)
+	return TRUE
+
+/datum/keybinding/carbon/cycle_mmb_intent
+	hotkey_keys = list()
+	name = "cycle_mmb_intent"
+	full_name = "Cycle MMB Intent"
+	description = "Cycles the middle-mouse-button intent through bite, jump, kick, special, and nothing."
+	category = CATEGORY_CARBON
+
+/datum/keybinding/carbon/cycle_mmb_intent/down(client/user)
+	if (!iscarbon(user.mob))
+		return FALSE
+	var/mob/living/carbon/C = user.mob
+	C.cycle_mmb_intent()
 	return TRUE
 
 /*

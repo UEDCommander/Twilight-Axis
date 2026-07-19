@@ -64,6 +64,8 @@ GLOBAL_LIST_INIT(primordial_wounds, init_primordial_wounds())
 	var/disabling = FALSE
 	/// If TRUE, this is a crit wound
 	var/critical = FALSE
+	/// Some wounds cause instant death for SHATTER_KILL, which is basically critical weakness but softer, unique part is that we handle chest-wounds w/ unique traitcheck
+	var/shatter_wound = FALSE
 	/// Some wounds cause instant death for CRITICAL_WEAKNESS
 	var/mortal = FALSE
 	/// Amount we heal passively while sleeping
@@ -269,6 +271,8 @@ GLOBAL_LIST_INIT(primordial_wounds, init_primordial_wounds())
 		werewolf_infect_attempt()
 	if(mortal && HAS_TRAIT(affected, TRAIT_CRITICAL_WEAKNESS))
 		affected.death()
+	if(shatter_wound && HAS_TRAIT(affected, TRAIT_SHATTER_KILL))
+		affected.death()
 
 /// Removes this wound from a given, simpler than adding to a bodypart - No extra effects
 /datum/wound/proc/remove_from_mob()
@@ -299,7 +303,7 @@ GLOBAL_LIST_INIT(primordial_wounds, init_primordial_wounds())
 		if(!owner || QDELETED(owner) || QDELETED(src))
 			return FALSE
 
-	if(!HAS_TRAIT(owner, TRAIT_PARALYSIS) && owner.blood_volume > BLOOD_VOLUME_SURVIVE && owner.stat < UNCONSCIOUS) //TA EDIT START
+	if(!HAS_TRAIT(owner, TRAIT_PARALYSIS) && owner.blood_volume > BLOOD_VOLUME_SURVIVE && owner.stat < UNCONSCIOUS && !HAS_TRAIT(src, TRAIT_BLACKBLOOD)) //TA EDIT START
 		var/healamount = 0
 		if(HAS_TRAIT(owner, TRAIT_PSYDONITE_4))
 			healamount = 0.4 + (owner.STAWIL * 0.1)
@@ -314,8 +318,10 @@ GLOBAL_LIST_INIT(primordial_wounds, init_primordial_wounds())
 				return FALSE
 		//TA EDIT END
 
-	if(HAS_TRAIT(owner, TRAIT_PSYDONITE) && !passive_healing)
-		heal_wound(0.6)
+	if(HAS_TRAIT(owner, TRAIT_PSYDONITE) && !passive_healing && !HAS_TRAIT(src, TRAIT_BLACKBLOOD))
+
+		if(!istype(src, /datum/wound/slash/incision))
+			heal_wound(0.6)
 		if(!owner || QDELETED(owner) || QDELETED(src))
 			return FALSE
 
@@ -330,9 +336,10 @@ GLOBAL_LIST_INIT(primordial_wounds, init_primordial_wounds())
 	if (!owner.client)
 		return
 
-	if (HAS_TRAIT(owner, TRAIT_PSYDONITE) && !passive_healing)
+	if (HAS_TRAIT(owner, TRAIT_PSYDONITE) && !passive_healing && !HAS_TRAIT(src, TRAIT_BLACKBLOOD))
 		heal_wound(0.6) // psydonites are supposed to apparently slightly heal wounds whether dead or alive
-
+		if(!istype(src, /datum/wound/slash/incision))
+			heal_wound(0.6)
 	return TRUE
 
 /// Setter for any adjustments we make to our bleed_rate, propagating them to the host bodypart.
@@ -359,6 +366,7 @@ GLOBAL_LIST_INIT(primordial_wounds, init_primordial_wounds())
 			var/datum/hud/hud_used = bodypart_owner.owner.hud_used
 			if(hud_used?.zone_select)
 				hud_used.zone_select.update_limb(bodypart_owner.body_zone)
+
 /// Heals this wound by the given amount, and deletes it if it's healed completely
 /datum/wound/proc/heal_wound(heal_amount)
 	// Wound cannot be healed normally, whp is null
@@ -458,7 +466,7 @@ GLOBAL_LIST_INIT(primordial_wounds, init_primordial_wounds())
 		severityval = clamp(severityval, 0, 5)
 		if(severityval)
 			severity = severityval
-		
+
 	name = "[newname  ? "[newname] " : ""][initial(name)]"	//[adjective] [name], aka, "gnarly slash" or "slash"
 	if(name != oldname)
 		owner.visible_message(span_red("The [oldname] on [owner]'s [lowertext(bodyzone2readablezone(bodypart_to_zone(bodypart_owner)))] gets worse!"))
@@ -504,6 +512,11 @@ GLOBAL_LIST_INIT(primordial_wounds, init_primordial_wounds())
 		clotting_rate = max(0.01, (clotting_rate - CLOT_DECREASE_PER_HIT))
 		clotting_threshold += CLOT_THRESHOLD_INCREASE_PER_HIT
 	..()
+
+/datum/wound/proc/handle_ooze_wound(obj/item/bodypart/affected)
+	if(bodypart_owner || owner || QDELETED(affected) || QDELETED(affected.owner))
+		return FALSE
+	return TRUE
 
 #undef CLOT_THRESHOLD_INCREASE_PER_HIT
 #undef CLOT_DECREASE_PER_HIT

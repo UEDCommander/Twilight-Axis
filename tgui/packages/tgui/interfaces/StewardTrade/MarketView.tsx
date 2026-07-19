@@ -1,11 +1,11 @@
 import { useState } from 'react';
 
 import { useBackend } from '../../backend';
-import { groupByCategory } from './helpers';
-import type { Data, MarketRegionOption, MarketRow } from './types';
 import {
+  BUTTON_BG,
   badgeStyle,
   cardStyle,
+  FONT_BODY,
   INK,
   INK_FAINT,
   INK_SOFT,
@@ -18,20 +18,18 @@ import {
   subTabBarStyle,
   subTabStyle,
 } from '../common/parchment';
+import { groupByCategory } from './helpers';
+import type { Data, MarketRegionOption, MarketRow } from './types';
 
 type Side = 'import' | 'export';
 
-type OnTrade = (req: {
-  side: Side;
-  regionId: string;
-  goodId: string;
-}) => void;
+type OnTrade = (req: { side: Side; regionId: string; goodId: string }) => void;
 
 const promptNumber = (label: string, current: number): number | null => {
   const raw = window.prompt(label, String(current));
   if (raw === null) return null;
   const n = parseInt(raw, 10);
-  if (isNaN(n) || n < 0) return null;
+  if (Number.isNaN(n) || n < 0) return null;
   return n;
 };
 
@@ -39,11 +37,10 @@ const promptMultiplier = (label: string): number | null => {
   const raw = window.prompt(label, '1.0');
   if (raw === null) return null;
   const n = parseFloat(raw);
-  if (isNaN(n) || n <= 0) return null;
+  if (Number.isNaN(n) || n <= 0) return null;
   return n;
 };
 
-// ── Market view ──────────────────────────────────────────────────
 export const MarketView = (props: { data: Data; onTrade: OnTrade }) => {
   const { act } = useBackend<Data>();
   const {
@@ -63,7 +60,6 @@ export const MarketView = (props: { data: Data; onTrade: OnTrade }) => {
   );
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
-  // If the selected category disappears (e.g. good toggled off mid-session), fall back.
   const activeGroup =
     groups.find((g) => g.category === activeCategory) ?? groups[0];
 
@@ -88,10 +84,10 @@ export const MarketView = (props: { data: Data; onTrade: OnTrade }) => {
           justifyContent: 'space-between',
           gap: '12px',
           marginBottom: '6px',
-          fontSize: '12px',
+          fontSize: FONT_BODY,
         }}
       >
-        <div style={{ color: INK_SOFT, fontStyle: 'italic' }}>
+        <div style={{ color: INK_SOFT }}>
           Crown spread on held stockpile:{' '}
           <span style={{ color: SEAL_AMBER, fontWeight: 'bold' }}>
             {total_arbitrage_potential}m
@@ -101,7 +97,10 @@ export const MarketView = (props: { data: Data; onTrade: OnTrade }) => {
         <div style={{ display: 'flex', gap: '6px' }}>
           <button
             type="button"
-            style={inkButtonStyle({ color: SEAL_AMBER, disabled: aldermanActing })}
+            style={inkButtonStyle({
+              color: SEAL_AMBER,
+              disabled: aldermanActing,
+            })}
             disabled={aldermanActing}
             onClick={() => {
               const raw = window.prompt(
@@ -110,7 +109,7 @@ export const MarketView = (props: { data: Data; onTrade: OnTrade }) => {
               );
               if (raw === null) return;
               const n = parseInt(raw, 10);
-              if (isNaN(n) || n < 0 || n > 100) return;
+              if (Number.isNaN(n) || n < 0 || n > 100) return;
               act('set_autoexport_percentage', { pct: n });
             }}
             title={
@@ -123,7 +122,10 @@ export const MarketView = (props: { data: Data; onTrade: OnTrade }) => {
           </button>
           <button
             type="button"
-            style={inkButtonStyle({ color: SEAL_GREEN, disabled: aldermanActing })}
+            style={inkButtonStyle({
+              color: SEAL_GREEN,
+              disabled: aldermanActing,
+            })}
             disabled={aldermanActing}
             onClick={() => act('export_surplus_all')}
             title={
@@ -162,7 +164,10 @@ export const MarketView = (props: { data: Data; onTrade: OnTrade }) => {
           </button>
           <button
             type="button"
-            style={inkButtonStyle({ color: SEAL_BLUE, disabled: aldermanActing })}
+            style={inkButtonStyle({
+              color: SEAL_BLUE,
+              disabled: aldermanActing,
+            })}
             disabled={aldermanActing}
             onClick={() => {
               const m = promptMultiplier(
@@ -180,7 +185,10 @@ export const MarketView = (props: { data: Data; onTrade: OnTrade }) => {
           </button>
           <button
             type="button"
-            style={inkButtonStyle({ color: SEAL_GREEN, disabled: aldermanActing })}
+            style={inkButtonStyle({
+              color: SEAL_GREEN,
+              disabled: aldermanActing,
+            })}
             disabled={aldermanActing}
             onClick={() => {
               const m = promptMultiplier(
@@ -199,7 +207,7 @@ export const MarketView = (props: { data: Data; onTrade: OnTrade }) => {
         </div>
       </div>
       {market_rows.length === 0 ? (
-        <div style={{ textAlign: 'center', fontStyle: 'italic', color: INK_SOFT }}>
+        <div style={{ textAlign: 'center', color: INK_SOFT }}>
           No goods accepted at present.
         </div>
       ) : (
@@ -224,16 +232,17 @@ export const MarketView = (props: { data: Data; onTrade: OnTrade }) => {
                   justifyContent: 'flex-end',
                   gap: '6px',
                   marginBottom: '6px',
-                  fontSize: '11px',
+                  fontSize: FONT_BODY,
                   color: INK_SOFT,
                 }}
               >
-                <span style={{ fontStyle: 'italic' }}>
-                  {activeGroup.label}:
-                </span>
+                <span>{activeGroup.label}:</span>
                 <button
                   type="button"
-                  style={inkButtonStyle({ color: SEAL_GREEN, disabled: aldermanActing })}
+                  style={inkButtonStyle({
+                    color: SEAL_GREEN,
+                    disabled: aldermanActing,
+                  })}
                   disabled={aldermanActing}
                   onClick={() =>
                     act('export_surplus_category', {
@@ -250,10 +259,15 @@ export const MarketView = (props: { data: Data; onTrade: OnTrade }) => {
                 </button>
                 <button
                   type="button"
-                  style={inkButtonStyle({ color: INK, disabled: aldermanActing })}
+                  style={inkButtonStyle({
+                    color: INK,
+                    disabled: aldermanActing,
+                  })}
                   disabled={aldermanActing}
                   onClick={() =>
-                    act('autoprice_category', { category: activeGroup.category })
+                    act('autoprice_category', {
+                      category: activeGroup.category,
+                    })
                   }
                   title={
                     aldermanActing
@@ -265,10 +279,15 @@ export const MarketView = (props: { data: Data; onTrade: OnTrade }) => {
                 </button>
                 <button
                   type="button"
-                  style={inkButtonStyle({ color: INK, disabled: aldermanActing })}
+                  style={inkButtonStyle({
+                    color: INK,
+                    disabled: aldermanActing,
+                  })}
                   disabled={aldermanActing}
                   onClick={() =>
-                    act('autolimit_category', { category: activeGroup.category })
+                    act('autolimit_category', {
+                      category: activeGroup.category,
+                    })
                   }
                   title={
                     aldermanActing
@@ -280,7 +299,10 @@ export const MarketView = (props: { data: Data; onTrade: OnTrade }) => {
                 </button>
                 <button
                   type="button"
-                  style={inkButtonStyle({ color: SEAL_BLUE, disabled: aldermanActing })}
+                  style={inkButtonStyle({
+                    color: SEAL_BLUE,
+                    disabled: aldermanActing,
+                  })}
                   disabled={aldermanActing}
                   onClick={() => {
                     const m = promptMultiplier(
@@ -302,7 +324,10 @@ export const MarketView = (props: { data: Data; onTrade: OnTrade }) => {
                 </button>
                 <button
                   type="button"
-                  style={inkButtonStyle({ color: SEAL_GREEN, disabled: aldermanActing })}
+                  style={inkButtonStyle({
+                    color: SEAL_GREEN,
+                    disabled: aldermanActing,
+                  })}
                   disabled={aldermanActing}
                   onClick={() => {
                     const m = promptMultiplier(
@@ -324,7 +349,10 @@ export const MarketView = (props: { data: Data; onTrade: OnTrade }) => {
                 </button>
                 <button
                   type="button"
-                  style={inkButtonStyle({ color: SEAL_GREEN, disabled: aldermanActing })}
+                  style={inkButtonStyle({
+                    color: SEAL_GREEN,
+                    disabled: aldermanActing,
+                  })}
                   disabled={aldermanActing}
                   onClick={() =>
                     act('accept_category', { category: activeGroup.category })
@@ -339,7 +367,10 @@ export const MarketView = (props: { data: Data; onTrade: OnTrade }) => {
                 </button>
                 <button
                   type="button"
-                  style={inkButtonStyle({ color: SEAL_RED, disabled: aldermanActing })}
+                  style={inkButtonStyle({
+                    color: SEAL_RED,
+                    disabled: aldermanActing,
+                  })}
                   disabled={aldermanActing}
                   onClick={() =>
                     act('reject_category', { category: activeGroup.category })
@@ -368,9 +399,17 @@ export const MarketView = (props: { data: Data; onTrade: OnTrade }) => {
                     <div style={{ marginBottom: '4px' }}>
                       <span style={{ fontWeight: 'bold' }}>{name}</span>
                       {eventColor && (
-                        <span style={badgeStyle(eventColor)}>{row.event_tag}</span>
+                        <span style={badgeStyle(eventColor)}>
+                          {row.event_tag}
+                        </span>
                       )}
-                      <span style={{ color: INK_FAINT, marginLeft: '8px', fontSize: '11px' }}>
+                      <span
+                        style={{
+                          color: INK_FAINT,
+                          marginLeft: '8px',
+                          fontSize: FONT_BODY,
+                        }}
+                      >
                         Stock: {row.stock}/{row.stock_limit}
                       </span>
                     </div>
@@ -410,7 +449,6 @@ export const MarketView = (props: { data: Data; onTrade: OnTrade }) => {
   );
 };
 
-// ── Per-side block (buy or sell) ─────────────────────────────────
 const SideBlock = (props: {
   side: Side;
   label: string;
@@ -437,10 +475,10 @@ const SideBlock = (props: {
   if (regions.length === 0) {
     return (
       <div style={sideLineStyle}>
-        <span style={{ color: INK_FAINT, fontVariant: 'small-caps', width: '34px' }}>
-          {label}:
-        </span>
-        <span style={{ fontStyle: 'italic', color: INK_FAINT, marginLeft: '6px' }}>
+        <span style={{ color: INK_FAINT, width: '34px' }}>{label}:</span>
+        <span
+          style={{ fontStyle: 'italic', color: INK_FAINT, marginLeft: '6px' }}
+        >
           {unavailableLabel}
         </span>
       </div>
@@ -453,9 +491,7 @@ const SideBlock = (props: {
   return (
     <>
       <div style={sideLineStyle}>
-        <span style={{ color: INK_FAINT, fontVariant: 'small-caps', width: '34px' }}>
-          {label}:
-        </span>
+        <span style={{ color: INK_FAINT, width: '34px' }}>{label}:</span>
         <RegionRow
           side={side}
           color={color}
@@ -464,7 +500,9 @@ const SideBlock = (props: {
           isPrimary
           onTrade={onTrade}
         />
-        <span style={{ color: INK_FAINT, fontSize: '11px', marginLeft: '8px' }}>
+        <span
+          style={{ color: INK_FAINT, fontSize: FONT_BODY, marginLeft: '8px' }}
+        >
           ({regions.length} region{regions.length === 1 ? '' : 's'})
         </span>
         {others.length > 0 && (
@@ -480,7 +518,10 @@ const SideBlock = (props: {
       </div>
       {expanded &&
         others.map((r) => (
-          <div key={r.region_id} style={{ ...sideLineStyle, marginLeft: '40px' }}>
+          <div
+            key={r.region_id}
+            style={{ ...sideLineStyle, marginLeft: '40px' }}
+          >
             <RegionRow
               side={side}
               color={color}
@@ -495,7 +536,6 @@ const SideBlock = (props: {
   );
 };
 
-// ── One region line (used for primary + expanded entries) ────────
 const RegionRow = (props: {
   side: Side;
   color: string;
@@ -516,7 +556,14 @@ const RegionRow = (props: {
       ? SEAL_BLUE
       : SEAL_GREEN;
   return (
-    <span style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
+    <span
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '4px',
+        flexWrap: 'wrap',
+      }}
+    >
       <span>
         {regionName} @{' '}
         <span style={{ color: SEAL_AMBER }}>{region.unit_price}m/u</span>
@@ -530,16 +577,21 @@ const RegionRow = (props: {
             style={{
               color: capacityColor,
               marginLeft: '4px',
-              fontSize: '11px',
+              fontSize: FONT_BODY,
             }}
           >
             [{region.capacity_today}/{region.capacity_total}]
           </span>
         )}
       </span>
-      {!!region.is_blockaded && <span style={badgeStyle(SEAL_RED)}>BLOCKADED</span>}
+      {!!region.is_blockaded && (
+        <span style={badgeStyle(SEAL_RED)}>BLOCKADED</span>
+      )}
       {saturated && (
-        <span style={badgeStyle(INK_FAINT)} title="No remaining capacity today - oversupply decay applies.">
+        <span
+          style={badgeStyle(INK_FAINT)}
+          title="No remaining capacity today - oversupply decay applies."
+        >
           SATURATED
         </span>
       )}
@@ -564,23 +616,22 @@ const sideLineStyle = {
   display: 'flex',
   flexWrap: 'wrap' as const,
   alignItems: 'center',
-  fontSize: '12px',
+  fontSize: FONT_BODY,
   marginBottom: '3px',
 };
 
 const chevronStyle = {
   fontFamily: 'inherit',
-  fontSize: '12px',
+  fontSize: FONT_BODY,
   padding: '1px 6px',
   marginLeft: '6px',
   border: `1px solid ${INK_FAINT}`,
-  background: 'rgba(255,248,220,0.5)',
+  background: BUTTON_BG,
   color: INK_SOFT,
   cursor: 'pointer',
   borderRadius: '2px',
 };
 
-// ── Stockpile management strip (Steward-only controls; visible to Alderman) ──
 const stripStyle: React.CSSProperties = {
   display: 'flex',
   flexWrap: 'wrap',
@@ -589,7 +640,7 @@ const stripStyle: React.CSSProperties = {
   marginTop: '6px',
   paddingTop: '6px',
   borderTop: `1px dashed ${INK_FAINT}`,
-  fontSize: '11px',
+  fontSize: FONT_BODY,
   color: INK_SOFT,
 };
 
@@ -612,13 +663,11 @@ const stripValueButtonStyle: React.CSSProperties = {
   cursor: 'pointer',
   textDecoration: 'underline dotted',
   fontFamily: 'inherit',
-  fontSize: '11px',
+  fontSize: FONT_BODY,
 };
 
 const flagPillStyle = (active: boolean): React.CSSProperties => ({
-  fontSize: '9px',
-  fontVariant: 'small-caps',
-  letterSpacing: '1px',
+  fontSize: FONT_BODY,
   padding: '0 4px',
   border: `1px solid ${active ? SEAL_GREEN : INK_FAINT}`,
   color: active ? SEAL_GREEN : INK_FAINT,
@@ -628,10 +677,7 @@ const flagPillStyle = (active: boolean): React.CSSProperties => ({
   fontFamily: 'inherit',
 });
 
-const StockpileStrip = (props: {
-  row: MarketRow;
-  aldermanActing: boolean;
-}) => {
+const StockpileStrip = (props: { row: MarketRow; aldermanActing: boolean }) => {
   const { act } = useBackend<Data>();
   const { row, aldermanActing } = props;
   const goodId = row.good_id;
@@ -662,12 +708,18 @@ const StockpileStrip = (props: {
   };
   const editLimit = () => {
     if (aldermanActing) return;
-    const n = promptNumber(`Set stockpile limit for ${goodId}`, row.stock_limit);
+    const n = promptNumber(
+      `Set stockpile limit for ${goodId}`,
+      row.stock_limit,
+    );
     if (n !== null) act('set_stockpile_limit', { good_id: goodId, limit: n });
   };
 
   return (
-    <div style={stripStyleEffective} title={aldermanActing ? blockTitle : undefined}>
+    <div
+      style={stripStyleEffective}
+      title={aldermanActing ? blockTitle : undefined}
+    >
       <span style={stripCellStyle}>
         Buy:{' '}
         <button

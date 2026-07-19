@@ -79,6 +79,11 @@
 			user.playsound_local(user, 'sound/magic/PSY.ogg', 100, FALSE, -1)
 			playsound(target, 'sound/magic/PSY.ogg', 100, FALSE, -1)
 			return FALSE
+		if(HAS_TRAIT(target, TRAIT_UNFORGIVABLE))
+			target.visible_message(span_info("[target] stirs for a moment, the miracle dissipates."), span_notice("A dull warmth swells in your hollow husk of a body, only to fade as quickly as it arrived."))
+			user.playsound_local(user, 'sound/magic/PSY.ogg', 100, FALSE, -1)
+			playsound(target, 'sound/magic/PSY.ogg', 100, FALSE, -1)
+			return FALSE
 		if(target.has_status_effect(/datum/status_effect/buff/baothablessing))
 			to_chat(user, span_warning("They're already blessed by these effects!"))
 			revert_cast()
@@ -169,15 +174,15 @@
 			if(thing.reagents.holder_full() || (user.devotion.devotion - fatigue_used <= 0))
 				break
 
-			var/water_qty = max(1, holy_skill) + 1
+			var/water_qty = max(2, holy_skill*2)
 			var/list/water_contents = list(/datum/reagent/medicine/loversruin = water_qty)
 			var/datum/reagents/reagents_to_add = new()
 			reagents_to_add.add_reagent_list(water_contents)
-			reagents_to_add.trans_to(thing, reagents_to_add.total_volume, transfered_by = user, method = INGEST)
+			reagents_to_add.trans_to(thing, reagents_to_add.total_volume, transfered_by = user)
 
 			fatigue_spent += fatigue_used
 			user.stamina_add(fatigue_used)
-			user.devotion?.update_devotion(-1.0)
+			user.devotion?.update_devotion(-1.5)
 
 			if(prob(80))
 				playsound(user, 'sound/items/fillcup.ogg', 55, TRUE)
@@ -218,8 +223,8 @@
 /obj/item/clothing/ring/griefflower
 	name = "rosa ring"
 	desc = "Once a flower of love, now touched by Baotha's hand. Its petals whisper of desire, despair, and the kind of longing that never dies. Worn by those who cannot let go."
-	icon_state = "peaceflower"
-	item_state = "peaceflower"
+	icon_state = "baothaflower"
+	item_state = "baothaflower"
 	icon = 'icons/roguetown/items/produce.dmi'
 	mob_overlay_icon = 'icons/roguetown/clothing/onmob/head_items.dmi'
 
@@ -227,11 +232,16 @@
 	. = ..()
 	if(slot == SLOT_RING)
 		user.apply_status_effect(/datum/status_effect/buff/griefflower)
+		user.remove_status_effect(/datum/status_effect/debuff/joybringer_druqks)
 
 /obj/item/clothing/ring/griefflower/dropped(mob/living/carbon/human/user)
 	. = ..()
 	if(istype(user) && user?.wear_ring == src)
 		user.remove_status_effect(/datum/status_effect/buff/griefflower)
+
+/obj/item/clothing/ring/griefflower/get_examine_highlight_status()
+	// The rosa ring is supposed to be 'discrete', so it doesn't look heretical to a casual observer.
+	return null
 
 // Insufflation - effectively just drugging yourself. Lets you pick, the same as Enrapturing Powder. T1, for now, to make up for the loss of the Baotha Blessing buff.
 
@@ -312,6 +322,7 @@
 	invocation_type = "emote"
 	invocations = list("flicks their wrist, filling the air in front of them with a fine powder.")
 	devotion_cost = 30
+	human_req = TRUE
 
 /obj/effect/proc_holder/spell/invoked/projectile/blowingdust/cast(list/targets, mob/user = user)
 	switch(user.rmb_intent.name)
@@ -369,6 +380,8 @@
 	. = ..()
 	if(!istype(M))
 		return
+	if(out_of_effective_range())
+		return
 	if(target)
 		to_chat(target, span_warning("Gah! Something.. got in my - eyes.."))
 		M.blur_eyes(2)
@@ -393,6 +406,7 @@
 	recharge_time = 5 MINUTES
 	miracle = TRUE
 	devotion_cost = 75
+	human_req = TRUE
 
 /obj/effect/proc_holder/spell/invoked/lasthigh/cast(list/targets, mob/living/user)
 	if(isliving(targets[1]))

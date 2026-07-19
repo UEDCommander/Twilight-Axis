@@ -7,7 +7,7 @@ import {
   Stack,
   Tabs,
 } from 'tgui-core/components';
-import { BooleanLike } from 'tgui-core/react';
+import type { BooleanLike } from 'tgui-core/react';
 
 import { useBackend } from '../backend';
 import { Window } from '../layouts';
@@ -471,8 +471,7 @@ export const AdminTicketPanel = (props) => {
                   </Stack.Item>
 
                   {/* Conversation view + input */}
-                  <>
-                      <Stack.Item grow>
+                  <Stack.Item grow>
                         <Section fill scrollable title="Conversation">
                           <Stack vertical>
                             {selected_ticket.messages.length === 0 ? (
@@ -601,13 +600,13 @@ export const AdminTicketPanel = (props) => {
                                   icon="user-secret"
                                   tooltip={
                                     admin_hide_charname
-                                      ? 'Character name hidden — click to show it'
-                                      : 'Character name visible — click to hide it'
+                                      ? 'Stealth Mode Active — click to disable'
+                                      : 'Stealth Mode Inactive — click to enable'
                                   }
                                   selected={!!admin_hide_charname}
                                   onClick={() => act('toggle_charname')}
                                 >
-                                  {admin_hide_charname ? 'Anon' : 'Named'}
+                                  {admin_hide_charname ? 'Stealth ON' : 'Stealth OFF'}
                                 </Button>
                                 <Button
                                   icon="image"
@@ -759,8 +758,6 @@ export const AdminTicketPanel = (props) => {
                           </Section>
                         </Stack.Item>
                       )}
-                    </>
-
 
                 </>
               ) : (

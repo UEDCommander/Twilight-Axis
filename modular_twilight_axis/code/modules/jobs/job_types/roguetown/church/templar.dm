@@ -100,13 +100,17 @@
 	switch(H.patron?.type)
 		if(/datum/patron/divine/undivided)
 			wrists = /obj/item/clothing/neck/roguetown/psicross/undivided
-			var/cloaks = list("Cloak", "Tabard")
+			var/cloaks = list("Cloak", "Tabard", "Clerical Cloak", "Clerical Tabard")
 			var/cloakchoice = input(H,"Choose your covering", "TAKE UP FASHION") as anything in cloaks
 			switch(cloakchoice)
 				if("Cloak")
 					cloak = /obj/item/clothing/cloak/undivided
 				if("Tabard")
 					cloak = /obj/item/clothing/cloak/templar/undivided
+				if("Clerical Cloak")
+					cloak = /obj/item/clothing/cloak/undividedcleric
+				if("Clerical Tabard")
+					cloak = /obj/item/clothing/cloak/templar/undividedcleric
 			mask = /obj/item/clothing/mask/rogue/facemask/steel
 		if(/datum/patron/divine/astrata)
 			head = /obj/item/clothing/head/roguetown/roguehood/astrata
@@ -130,7 +134,7 @@
 			cloak = /obj/item/clothing/cloak/tabard/crusader/dendor
 			mask = /obj/item/clothing/head/roguetown/dendormask/armored
 			H.cmode_music = 'sound/music/cmode/garrison/combat_warden.ogg'
-//			H.AddSpell(new /obj/effect/proc_holder/spell/self/conjure_armor/vines)
+			H.mind.AddSpell(new /datum/action/cooldown/spell/conjure_arcyne_ward/druid)
 		if(/datum/patron/divine/necra)
 			head = /obj/item/clothing/head/roguetown/necrahood
 			wrists = /obj/item/clothing/neck/roguetown/psicross/necra

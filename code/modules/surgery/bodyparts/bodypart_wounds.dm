@@ -65,6 +65,12 @@
 /obj/item/bodypart/proc/add_wound(datum/wound/wound, silent = FALSE, crit_message = FALSE)
 	if(!wound || !owner || (owner.status_flags & GODMODE))
 		return
+	if(isooze(owner) && wound.severity >= WOUND_SEVERITY_MODERATE) // Handles wounds for murklings.
+		if(ispath(wound, /datum/wound))
+			wound = new wound()
+		if(is_ooze_wound(wound))
+			handle_ooze_wounds(wound, silent, crit_message)
+			return
 	if(ispath(wound, /datum/wound))
 		var/datum/wound/primordial_wound = GLOB.primordial_wounds[wound]
 		if(!primordial_wound.can_apply_to_bodypart(src))
@@ -72,7 +78,7 @@
 		wound = new wound()
 	else if(!istype(wound))
 		return
-	else if(!wound.can_apply_to_bodypart(src))
+	if(!wound.can_apply_to_bodypart(src))
 		qdel(wound)
 		return
 	if(!wound.apply_to_bodypart(src, silent, crit_message))
@@ -131,7 +137,7 @@
 	return bleed_rate
 
 /// Called after a bodypart is attacked so that wounds and critical effects can be applied
-/obj/item/bodypart/proc/bodypart_attacked_by(bclass = BCLASS_BLUNT, dam, mob/living/user, zone_precise = src.body_zone, silent = FALSE, crit_message = FALSE, armor, obj/item/weapon, pen_info)
+/obj/item/bodypart/proc/bodypart_attacked_by(bclass = BCLASS_BLUNT, dam, mob/living/user, zone_precise = src.body_zone, silent = FALSE, crit_message = FALSE, armor, obj/item/weapon, pen_info, no_crit = FALSE)
 	RETURN_TYPE(/datum/wound)
 	if(!bclass || !dam || !owner || (owner.status_flags & GODMODE))
 		return null
@@ -164,6 +170,8 @@
 			dam += 10
 		if(istype(user.rmb_intent, /datum/rmb_intent/weak))
 			do_crit = FALSE
+	if(no_crit)
+		do_crit = FALSE
 
 	var/datum/wound/dynwound = manage_dynamic_wound(bclass, dam, armor, pen_info)
 
@@ -172,6 +180,10 @@
 		var/sundering = HAS_TRAIT(owner, TRAIT_SILVER_WEAK) && istype(weapon) && weapon?.is_silver && psyblessed?.is_blessed
 		var/crit_attempt = try_crit(sundering ? BCLASS_SUNDER : bclass, dam, user, zone_precise, silent, crit_message)
 		if(crit_attempt)
+			if(bclass == BCLASS_BURN && user && user != owner)
+				shake_camera(user, 2, 2)
+				flash_color(user, "#a83c1a", 15)
+				playsound(user, 'sound/combat/crit.ogg', 70, FALSE)
 			if(ishuman(owner))
 				var/mob/living/carbon/human/human_owner = owner
 				human_owner.hud_used?.stressies?.flick_pain(TRUE)
@@ -181,7 +193,8 @@
 				if(!suppress_attack_blip)
 					if(user)
 						user.emote("attack", forced = TRUE)
-				human_owner.emote("paincrit", forced = TRUE)
+				if(bclass != BCLASS_BURN)
+					human_owner.emote("paincrit", forced = TRUE)
 
 			if(user)
 				if(user.has_flaw(/datum/charflaw/addiction/thrillseeker))
@@ -231,12 +244,16 @@
 			woundtype = /datum/wound/dynamic/puncture
 		if(BCLASS_PICK, BCLASS_PIERCE)
 			woundtype = /datum/wound/dynamic/gouge
+		if(BCLASS_BURN)
+			woundtype = /datum/wound/dynamic/burn
 		if(BCLASS_LASHING)
 			woundtype = /datum/wound/dynamic/lashing
 		if(BCLASS_PUNISH)
 			woundtype = /datum/wound/dynamic/punish
 		else	//Wrong bclass type for wounds, skip adding this.
 			return
+	if(isooze(owner) && is_ooze_wound(woundtype))
+		woundtype = /datum/wound/dynamic/ooze
 	var/datum/wound/dynwound = has_wound(woundtype)
 	var/exposed = owner.has_status_effect(/datum/status_effect/debuff/exposed)
 	if(!isnull(dynwound))
@@ -263,6 +280,10 @@
 	if(user && dam)
 		if(user.goodluck(2))
 			dam += 10
+	if(bclass in GLOB.charring_bclasses)
+		used = round(damage_dividend * 20 + (dam / 3))
+		if(prob(used))
+			attempted_wounds += /datum/wound/charring
 	if(bclass in GLOB.dislocation_bclasses)
 		used = round(damage_dividend * 20 + (dam / 3))
 		if(user && istype(user.rmb_intent, /datum/rmb_intent/strong))
@@ -292,20 +313,25 @@
 			else if(istype(user.rmb_intent, /datum/rmb_intent/aimed))
 				used += 10
 		if(prob(used))
-			attempted_wounds += /datum/wound/artery
+			if(HAS_TRAIT(src, TRAIT_IRONMAN))
+				attempted_wounds += /datum/wound/integrity
+			else
+				attempted_wounds += /datum/wound/artery
+
 	if(bclass in GLOB.whipping_bclasses)
-		used = round(damage_dividend * 20 + (dam / 3))
 		if(user && istype(user.rmb_intent, /datum/rmb_intent/strong))
 			dam += 10
 		if(HAS_TRAIT(src, TRAIT_CRITICAL_WEAKNESS))
-			attempted_wounds += /datum/wound/artery		//basically does sword-tier wounds.
-		if(prob(used))
-			attempted_wounds += /datum/wound/scarring
+			if(HAS_TRAIT(src, TRAIT_IRONMAN))
+				attempted_wounds += /datum/wound/integrity	
+			else
+				attempted_wounds += /datum/wound/artery		//basically does sword-tier wounds.
 	if((bclass in GLOB.sunder_bclasses))
 		if(HAS_TRAIT(owner, TRAIT_SILVER_WEAK) && !owner.has_status_effect(STATUS_EFFECT_ANTIMAGIC))
 			used = round(damage_dividend * 20 + (dam / 2))
 			if(prob(used))
 				attempted_wounds += /datum/wound/sunder
+				owner.add_stress(/datum/stressevent/sundercritted) //You're still being sundered, sire.
 	// Check if critical resistance applies
 	var/has_crit_attempt = length(attempted_wounds)
 	if(!has_crit_attempt)
@@ -335,6 +361,10 @@
 	if(user && dam)
 		if(user.goodluck(2))
 			dam += 10
+	if(bclass in GLOB.charring_bclasses)
+		used = round(damage_dividend * 20 + (dam / 3))
+		if(prob(used))
+			attempted_wounds += /datum/wound/charring/chest
 	if((bclass in GLOB.cbt_classes) && (zone_precise == BODY_ZONE_PRECISE_GROIN))
 		var/cbt_multiplier = 1
 		if(user && HAS_TRAIT(user, TRAIT_NUTCRACKER))
@@ -365,11 +395,18 @@
 				used += 10
 		if(prob(used))
 			if(zone_precise == BODY_ZONE_PRECISE_STOMACH)
-				attempted_wounds += /datum/wound/slash/disembowel
+				if(!HAS_TRAIT(owner, TRAIT_IRONMAN)) // pointless to disembowel them, as they don't die to tox anyway
+					attempted_wounds += /datum/wound/slash/disembowel
 			if(owner.has_wound(/datum/wound/fracture/chest) || (bclass in GLOB.artery_heart_bclasses) || HAS_TRAIT(owner, TRAIT_CRITICAL_WEAKNESS))
-				attempted_wounds += /datum/wound/artery/chest
+				if(HAS_TRAIT(owner, TRAIT_IRONMAN))			
+					attempted_wounds += /datum/wound/integrity/chest
+				else
+					attempted_wounds += /datum/wound/artery/chest
 			else
-				attempted_wounds += /datum/wound/artery
+				if(HAS_TRAIT(owner, TRAIT_IRONMAN))			
+					attempted_wounds += /datum/wound/integrity
+				else
+					attempted_wounds += /datum/wound/artery
 	if(bclass in GLOB.whipping_bclasses)
 		used = round(damage_dividend * 20 + (dam / 4))
 		if(user)
@@ -377,14 +414,21 @@
 				dam += 10
 		if(prob(used))
 			if(HAS_TRAIT(owner, TRAIT_CRITICAL_WEAKNESS))
-				attempted_wounds += /datum/wound/artery/chest
-			else
-				attempted_wounds += /datum/wound/scarring
+				if(HAS_TRAIT(owner, TRAIT_IRONMAN))			
+					attempted_wounds += /datum/wound/integrity/chest
+				else
+					attempted_wounds += /datum/wound/artery/chest
 	if(bclass in GLOB.sunder_bclasses)
 		if(HAS_TRAIT(owner, TRAIT_SILVER_WEAK) && !owner.has_status_effect(STATUS_EFFECT_ANTIMAGIC))
 			used = round(damage_dividend * 20 + (dam / 2))
-			if(prob(used))
-				attempted_wounds += list(/datum/wound/sunder/chest)
+			if(prob(used) && !owner.mind)
+				attempted_wounds += /datum/wound/sunder/chest
+			if(prob(used) && owner.sunder_stacks > 100 && owner.mind)
+				attempted_wounds += /datum/wound/sunder/chest
+			if(prob(used) && owner.sunder_stacks < 150 && owner.mind) //We don't want too many stacks or we'll never recover.
+				owner.sunder_stacks += 40
+				to_chat(owner, span_userdanger("A CRITICAL BLOW SUNDERS ME WITH SACRED FLAME!"))
+				owner.add_stress(/datum/stressevent/sundercritted)
 	// Check if critical resistance applies
 	var/has_crit_attempt = length(attempted_wounds)
 	if(!has_crit_attempt)
@@ -421,6 +465,10 @@
 	if(user && dam)
 		if(user.goodluck(2))
 			dam += 10
+	if(bclass in GLOB.charring_bclasses)
+		used = round(damage_dividend * 20 + (dam / 3))
+		if(prob(used))
+			attempted_wounds += /datum/wound/charring/head
 	if((bclass in GLOB.dislocation_bclasses) && (total_dam >= max_damage))
 		used = round(damage_dividend * 20 + (dam / 3))
 		if(prob(used))
@@ -479,7 +527,10 @@
 					used += 10
 		var/artery_type = /datum/wound/artery
 		if(zone_precise == BODY_ZONE_PRECISE_NECK)
-			artery_type = /datum/wound/artery/neck
+			if(HAS_TRAIT(owner, TRAIT_IRONMAN))			
+				artery_type = /datum/wound/integrity/neck
+			else
+				artery_type = /datum/wound/artery/neck
 		if(prob(used))
 			attempted_wounds += artery_type
 			if(bclass in GLOB.stab_bclasses)
@@ -514,8 +565,14 @@
 	if(bclass in GLOB.sunder_bclasses)
 		if(HAS_TRAIT(owner, TRAIT_SILVER_WEAK) && !owner.has_status_effect(STATUS_EFFECT_ANTIMAGIC))
 			used = round(damage_dividend * 20 + (dam / 2), 1)
-			if(prob(used))
+			if(prob(used) && !owner.mind)
 				attempted_wounds += /datum/wound/sunder/head
+			if(prob(used) && owner.sunder_stacks > 100 && owner.mind)
+				attempted_wounds += /datum/wound/sunder/head
+			if(prob(used) && owner.sunder_stacks < 150 && owner.mind) //We don't want too many stacks or we'll never recover.
+				owner.sunder_stacks += 40
+				to_chat(owner, span_userdanger("A CRITICAL BLOW SUNDERS ME WITH SACRED FLAME!"))
+				owner.add_stress(/datum/stressevent/sundercritted)
 	var/has_crit_attempt = length(attempted_wounds) || try_knockout
 	if(!has_crit_attempt)
 		return FALSE
@@ -757,3 +814,18 @@
 		var/datum/status_effect/debuff/crit_resistance_cd/crit_resist_tracker_actual = crit_resist_tracker
 		// Iterate stack by 1 and then see if we can crit this hit
 		return !crit_resist_tracker_actual.try_crit()
+
+/obj/item/bodypart/proc/handle_ooze_wounds(datum/wound/wound, silent = FALSE, crit_message = FALSE)
+	if(!wound.handle_ooze_wound(src))
+		return
+	if(!istype(src, /obj/item/bodypart/head/))
+		if(crit_message)
+			var/message = "<span class='crit'><b>Critical hit!</b> The [src] melts apart into goop!</span>"
+			if(message)
+				owner.next_attack_msg += " [message]"
+		src.dismember()
+	else
+		if(has_wound(/datum/wound/slime/knockout))
+			add_wound(/datum/wound/slime/paralyze, silent, crit_message)
+		else
+			add_wound(/datum/wound/slime/knockout, silent, crit_message)

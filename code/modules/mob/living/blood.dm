@@ -14,15 +14,6 @@
 	if(stat != DEAD && bleed_rate)
 		to_chat(src, span_warning("The blood soaks through my bandage."))
 
-/mob/living/carbon/monkey/handle_blood()
-	if((bodytemperature <= TCRYO) || HAS_TRAIT(src, TRAIT_HUSK)) //cryosleep or husked people do not pump the blood.
-		return
-	//Blood regeneration if there is some space
-	if(blood_volume < BLOOD_VOLUME_NORMAL)
-		blood_volume += 0.1 // regenerate blood VERY slowly
-		if((blood_volume < BLOOD_VOLUME_OKAY) && !HAS_TRAIT(src, TRAIT_BLOODLOSS_IMMUNE))
-			adjustOxyLoss(round((BLOOD_VOLUME_NORMAL - blood_volume) * 0.02, 1))
-
 /mob/living/proc/handle_blood()
 	if((bodytemperature <= TCRYO) || HAS_TRAIT(src, TRAIT_HUSK)) //cryosleep or husked people do not pump the blood.
 		return
@@ -166,13 +157,16 @@
 						remove_status_effect(/datum/status_effect/debuff/bleedingworse)
 
 			if(blood_volume <= BLOOD_VOLUME_BAD)
-				adjustOxyLoss(blood_volume <= BLOOD_VOLUME_SURVIVE ? 3 : 1)
+				var/oxy_amt = blood_volume <= BLOOD_VOLUME_SURVIVE ? 3 : 1
+				if(!client)
+					oxy_amt *= 3
+				adjustOxyLoss(oxy_amt)
 				if(world.time >= last_gasp)
 					last_gasp = world.time + rand(3 SECONDS, 9 SECONDS)
 					if(ishuman(src))
 						var/mob/living/carbon/human/H = src
 						H.deathgasp_noise() // wanton noise pollution, blame RYON >:(
-						if(H.mind || H.mind.key) // NPC filter
+						if(H.mind && H.mind.key) // NPC filter
 							H.deathgasp_visual()
 							if(prob(50)) // mostly to halve the potential chatlog spam, we don't care if it never appears or always appear, on the former, tough luck, on the latter, drama queen
 								emote(pick("struggles to breathe, deathly pale!"))
@@ -221,20 +215,21 @@
 	if(!iscarbon(src) && !HAS_TRAIT(src, TRAIT_SIMPLE_WOUNDS))
 		return FALSE
 
+	if(HAS_TRAIT(src, TRAIT_CRITICAL_RESISTANCE))	// We apply the major multipliers first.
+		amt *= CRIT_RESISTANCE_EFFECTIVE_BLEEDRATE
+	else if(HAS_TRAIT(src, TRAIT_BLOOD_RESISTANCE))
+		amt *= BLOOD_RESISTANCE_EFFECTIVE_BLEEDRATE
+
 	//For each CON above 10, we bleed slower.
 	//Consequently, for each CON under 10 we bleed faster.
 	var/conbonus = 1
 	if(STACON >= CONSTITUTION_BLEEDRATE_CAP)
 		conbonus = CONSTITUTION_BLEEDRATE_CAP - 10
 	else if(STACON != 10)
-		conbonus = STACON - 10
-		amt -= amt * (conbonus * CONSTITUTION_BLEEDRATE_MOD)
-		if(HAS_TRAIT(src, TRAIT_CRITICAL_RESISTANCE))
-			amt = amt * CRIT_RESISTANCE_EFFECTIVE_BLEEDRATE
-		if(HAS_TRAIT(src, TRAIT_BLOOD_RESISTANCE))
-			amt *= BLOOD_RESISTANCE_EFFECTIVE_BLEEDRATE
 		if(HAS_TRAIT(src, TRAIT_CRITICAL_WEAKNESS))
 			amt = amt * 2
+		conbonus = STACON - 10
+		amt -= amt * (conbonus * CONSTITUTION_BLEEDRATE_MOD) // We reduce it by a flat value.
 	if(surrendering)
 		amt = amt / 4 // Helps yield condition not be a bloodloss failure state. Approx to grabbing all of your bodyparts at once
 	blood_volume = max(blood_volume - amt, 0)
@@ -273,7 +268,7 @@
 	return
 
 /mob/living/carbon/human/get_blood_color()
-	return dna?.species?.blood_color
+	return dna?.species?.blood_color || BLOOD_COLOR_RED
 
 /****************************************************
 				BLOOD TRANSFERS
@@ -352,10 +347,6 @@
 	if(blood_volume)
 		return /datum/reagent/blood
 
-/mob/living/carbon/monkey/get_blood_id()
-	if(!(HAS_TRAIT(src, TRAIT_HUSK)))
-		return /datum/reagent/blood
-
 /mob/living/carbon/human/get_blood_id()
 	if(HAS_TRAIT(src, TRAIT_HUSK))
 		return
@@ -407,13 +398,12 @@
 		W.water_volume = 10
 		W.update_icon()
 		return
-	new /obj/effect/decal/cleanable/blood/splatter(T)
-	var/current_blood_color = get_blood_color()
-	if(current_blood_color)
-		for(var/obj/effect/decal/cleanable/blood/B in T)
-			if(istype(B, /obj/effect/decal/cleanable/blood/footprints))
-				continue
-			B.set_blood_color(current_blood_color)
+	var/current_blood_color = get_blood_color() || BLOOD_COLOR_RED
+	new /obj/effect/decal/cleanable/blood/splatter(T, current_blood_color)
+	for(var/obj/effect/decal/cleanable/blood/B in T)
+		if(istype(B, /obj/effect/decal/cleanable/blood/footprints))
+			continue
+		B.set_blood_color(current_blood_color)
 	T?.pollute_turf(/datum/pollutant/metallic_scent, 30)
 
 //to add splatters of blood onto nearby walls. When provided a certain force amount, also increases the range at which blood can appear on the walls.
@@ -472,6 +462,10 @@
 		else
 			D = new(T)
 			D.set_blood_color(get_blood_color())
+
+/mob/living/carbon/human/add_drip_floor(turf/T, amt)
+	if(!(NOBLOOD in dna.species.species_traits))
+		..()
 
 /mob/living/carbon/human/add_splatter_floor(turf/T, small_drip)
 	if(!(NOBLOOD in dna.species.species_traits))
