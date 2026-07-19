@@ -59,12 +59,12 @@
 	var/classchoice = input(H, "Choose your archetypes", "Available archetypes") as anything in classes
 	var/crimes = list("I'm nobody", "They fear me")
 	var/crimeschoice = input(H, "Who am I?", "How much have I done?") as anything in crimes
+	H.set_blindness(0)
+	H.change_stat(STATKEY_PER, 3)
+	H.change_stat(STATKEY_WIL, 2)
+	H.change_stat(STATKEY_CON, 2)
 	switch(classchoice)
 		if("Kaper")
-			H.set_blindness(0)
-			H.change_stat(STATKEY_PER, 3)
-			H.change_stat(STATKEY_WIL, 2)
-			H.change_stat(STATKEY_CON, 2)
 			H.change_stat(STATKEY_SPD, 2)
 			H.adjust_skillrank_up_to(/datum/skill/combat/swords, SKILL_LEVEL_EXPERT, TRUE)
 			wrists = /obj/item/clothing/wrists/roguetown/bracers/leather/heavy
@@ -92,11 +92,8 @@
 					backr = /obj/item/gun/ballistic/twilight_firearm/arquebus
 					H.change_stat(STATKEY_PER, 1)
 					H.change_stat(STATKEY_SPD, 1)
+					H.adjust_skillrank_up_to(/datum/skill/combat/twilight_firearms, SKILL_LEVEL_MASTER, TRUE)
 		if("Wōkòu")
-			H.set_blindness(0)
-			H.change_stat(STATKEY_PER, 3)
-			H.change_stat(STATKEY_WIL, 2)
-			H.change_stat(STATKEY_CON, 2)
 			H.change_stat(STATKEY_SPD, 2)
 			H.adjust_skillrank_up_to(/datum/skill/combat/swords, SKILL_LEVEL_EXPERT, TRUE)
 			mask = /obj/item/clothing/mask/rogue/facemask/steel/kazengun
@@ -123,12 +120,9 @@
 					H.put_in_hands(new /obj/item/grapplinghook)
 					H.change_stat(STATKEY_PER, 1)
 					H.change_stat(STATKEY_SPD, 1)
+					H.adjust_skillrank_up_to(/datum/skill/combat/twilight_firearms, SKILL_LEVEL_MASTER, TRUE)
 
 		if("Reaver")
-			H.set_blindness(0)
-			H.change_stat(STATKEY_PER, 3)
-			H.change_stat(STATKEY_WIL, 2)
-			H.change_stat(STATKEY_CON, 2)
 			REMOVE_TRAIT(H, TRAIT_DODGEEXPERT, ADVENTURER_TRAIT)
 			ADD_TRAIT(H, TRAIT_MEDIUMARMOR, TRAIT_GENERIC)
 			shirt = /obj/item/clothing/suit/roguetown/armor/chainmail/hauberk
@@ -176,12 +170,10 @@
 					H.change_stat(STATKEY_STR, 2)
 					H.adjust_skillrank_up_to(/datum/skill/combat/axes, SKILL_LEVEL_EXPERT, TRUE)
 
-			switch(crimeschoice)
-				if("I'm nobody")
-					backr = /obj/item/gun/ballistic/twilight_firearm/arquebus
-				if("They fear me")
-					wretch_select_bounty(H)
-					H.put_in_hands(new /obj/item/grapplinghook)
-					backr = /obj/item/gun/ballistic/twilight_firearm/arquebus
-					H.change_stat(STATKEY_PER, 1)
-					H.change_stat(STATKEY_CON, 1)
+			backr = /obj/item/gun/ballistic/twilight_firearm/arquebus
+			if(crimeschoice == "They fear me")
+				wretch_select_bounty(H)
+				H.put_in_hands(new /obj/item/grapplinghook)
+				H.change_stat(STATKEY_PER, 1)
+				H.change_stat(STATKEY_CON, 1)
+				H.adjust_skillrank_up_to(/datum/skill/combat/twilight_firearms, SKILL_LEVEL_MASTER, TRUE)
