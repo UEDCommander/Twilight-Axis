@@ -78,7 +78,6 @@
 	user.changeNext_move(CLICK_CD_MELEE)
 	//TA edit - Bard chages start
 	if(playing)
-		stop_music(user)
 		return
 	ui_interact(user)
 	//TA edit - Bard chages end

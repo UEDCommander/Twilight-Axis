@@ -81,6 +81,7 @@
 	var/datum/bard_timed_phrase/phrase = phrases[index]
 	var/text = istext(new_text) ? new_text : "[new_text]"
 	phrase.text = trimtext(copytext(text, 1, MAX_MESSAGE_LEN))
+	sync_lyrics_from_phrases()
 	return TRUE
 
 /datum/bard_timed_track/proc/export_data()
@@ -125,7 +126,14 @@
 		phrases += phrase
 		if(phrases.len >= BARD_TRACK_MAX_PHRASES)
 			break
+	sync_lyrics_from_phrases()
 	return TRUE
+
+/datum/bard_timed_track/proc/sync_lyrics_from_phrases()
+	var/list/imported_lines = list()
+	for(var/datum/bard_timed_phrase/phrase as anything in phrases)
+		imported_lines += phrase.text
+	lyrics = jointext(imported_lines, "\n")
 
 /proc/bard_track_file_duration_seconds(song_file)
 	. = BARD_TRACK_DEFAULT_DURATION_SECONDS
@@ -190,7 +198,11 @@
 /obj/item/rogue/instrument
 	var/repeat_enabled = FALSE
 	var/mob/living/current_player = null
+	var/datum/bard_timed_track/current_track = null
+	var/current_track_title = null
 	var/music_started_at = 0
+	var/music_playback_id = 0
+	var/music_stop_token = 0
 	var/auto_singing_title = null
 	var/band_invite_active = FALSE
 	var/band_invite_until = 0
@@ -241,6 +253,7 @@
 	return stressevent
 
 /obj/item/rogue/instrument/proc/stop_music(mob/living/user)
+	music_stop_token++
 	playing = FALSE
 	groupplaying = FALSE
 	if(soundloop)
@@ -252,8 +265,29 @@
 		player.bard_auto_song_token++
 		player.remove_status_effect(/datum/status_effect/buff/playing_music)
 	current_player = null
+	current_track = null
+	current_track_title = null
 	music_started_at = 0
+	music_playback_id++
 	auto_singing_title = null
+
+/obj/item/rogue/instrument/proc/song_duration_loop(mob/living/user, token)
+	set waitfor = FALSE
+	if(!user || !current_player || token != music_stop_token)
+		return
+	var/datum/bard_timed_track/track = current_track || get_selected_track()
+	var/duration_ticks = max(round((track?.duration_seconds || BARD_TRACK_DEFAULT_DURATION_SECONDS) * 10), 1)
+	sleep(duration_ticks)
+	if(QDELETED(src) || QDELETED(user) || token != music_stop_token || !playing || current_player != user)
+		return
+	if(repeat_enabled)
+		music_started_at = world.time
+		music_playback_id++
+		SStgui.update_uis(src)
+		INVOKE_ASYNC(src, PROC_REF(song_duration_loop), user, token)
+	else
+		stop_music(user)
+		SStgui.update_uis(src)
 
 /obj/item/rogue/instrument/proc/play_track(mob/living/user, datum/bard_timed_track/track)
 	if(!user || !track || playing || !(src in user.held_items) || user.get_inactive_held_item())
@@ -270,7 +304,12 @@
 	user.apply_status_effect(/datum/status_effect/buff/playing_music, stressevent, note_color)
 	user.bard_music_playing = TRUE
 	current_player = user
+	current_track = track
+	current_track_title = track.title
 	music_started_at = world.time
+	music_playback_id++
+	music_stop_token++
+	INVOKE_ASYNC(src, PROC_REF(song_duration_loop), user, music_stop_token)
 	record_round_statistic(STATS_SONGS_PLAYED)
 
 /obj/item/rogue/instrument/proc/start_auto_song(mob/living/user, datum/bard_timed_track/track)
@@ -278,6 +317,8 @@
 		return
 	if(!playing)
 		play_track(user, track)
+	else if(current_track && current_track != track)
+		return
 	if(!playing || !track.phrases.len)
 		return
 	user.bard_auto_singing = TRUE
@@ -412,10 +453,12 @@
 	if(!ui)
 		ui = new(user, src, "BardMusicLibrary", "Music")
 		ui.open()
+	ui.set_autoupdate(band_invite_active)
 
 /obj/item/rogue/instrument/ui_data(mob/user)
 	ensure_timed_tracks()
 	var/datum/bard_timed_track/selected = get_selected_track()
+	var/datum/bard_timed_track/playing_track = current_track || selected
 	var/list/tracks = list()
 	for(var/song_title in song_list)
 		var/datum/bard_timed_track/track = timed_tracks[song_title]
@@ -453,7 +496,14 @@
 		"is_expert" = user?.mind && user.get_skill_level(/datum/skill/misc/music) >= SKILL_LEVEL_EXPERT,
 		"playing" = playing,
 		"repeat_enabled" = repeat_enabled,
+		"repeat_mode" = repeat_enabled ? "repeat" : "once",
+		"elapsed_seconds" = playing ? max(round((world.time - music_started_at) / 10), 0) : 0,
+		"progress_ratio" = (playing && playing_track?.duration_seconds) ? min(max(((world.time - music_started_at) / 10) / playing_track.duration_seconds, 0), 1) : 0,
+		"playback_id" = music_playback_id,
 		"auto_singing_title" = auto_singing_title,
+		"playing_track_title" = current_track_title,
+		"playing_duration_seconds" = playing_track?.duration_seconds || 0,
+		"playing_duration_label" = bard_track_format_duration(playing_track?.duration_seconds || 0),
 		"band_invite_active" = band_invite_active,
 		"band_invite_seconds_left" = band_invite_active ? max(round((band_invite_until - world.time) / 10), 0) : 0,
 		"band_members" = member_data,
@@ -557,6 +607,9 @@
 		if("toggle_repeat")
 			repeat_enabled = !repeat_enabled
 			return TRUE
+		if("set_repeat_mode")
+			repeat_enabled = params["mode"] == "repeat"
+			return TRUE
 		if("sing_track")
 			var/song_title = params["title"]
 			if(song_list[song_title])
@@ -566,8 +619,14 @@
 				if(user.bard_auto_singing && auto_singing_title == track.title)
 					stop_auto_song(user)
 					return TRUE
-				if(playing && curfile != track.file_path)
-					stop_music(user)
+				start_auto_song(user, track)
+			return TRUE
+		if("toggle_sing")
+			var/datum/bard_timed_track/track = get_selected_track()
+			if(track?.custom)
+				if(user.bard_auto_singing && auto_singing_title == track.title)
+					stop_auto_song(user)
+					return TRUE
 				start_auto_song(user, track)
 			return TRUE
 		if("cancel_band")

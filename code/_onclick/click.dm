@@ -121,6 +121,11 @@
 
 	last_client_interact = world.time
 
+	//TA edit - Bard chages start
+	if(handle_bard_audience_click(A, modifiers))
+		return
+	//TA edit - Bard chages end
+
 	if(check_click_intercept(params,A))
 		return
 
