@@ -107,7 +107,7 @@ const roleGroupColors: Record<
     color: '#443a39',
   },
   Retinue: {
-    backgroundColor: '#c86e3a',
+    backgroundColor: '#223273',
     color: '#443a39',
   },
   Garrison: {
@@ -134,8 +134,12 @@ const roleGroupColors: Record<
     backgroundColor: '#b09262',
     color: '#443a39',
   },
+  Sidefolk: {
+    backgroundColor: '#65b2b5',
+    color: '#443a39',
+  },
   Burghers: {
-    backgroundColor: '#819e82',
+    backgroundColor: '#c86e3a',
     color: '#443a39',
   },
   ATC: {
