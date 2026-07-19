@@ -80,10 +80,6 @@ const ROLE_GROUP_COLORS: Record<string, RoleColor> = {
     backgroundColor: '#aa83b9',
     color: '#443a39',
   },
-  Noblemen: {
-    backgroundColor: '#aa83b9',
-    color: '#443a39',
-  },
   Courtiers: {
     backgroundColor: '#81adc8',
     color: '#443a39',
@@ -153,20 +149,16 @@ const LESSER_VAMPIRE_ROLE_NAMES = [
   'vampire spawn',
 ] as const;
 const ALIVE_NORMAL_GROUP_ORDER = [
-  'Noblemen',
   'Ducal Family',
-  'Retinue',
   'Courtiers',
+  'Retinue',
   'Garrison',
   'Church',
   'Inquisition',
-  'Wanderers',
-  'Peasants',
   'Burghers',
-  'ATC',
-  'Azurian Trading Company',
+  'Peasants',
   'Sidefolk',
-  'Yeomen',
+  'Wanderers',
 ] as const;
 const ALIVE_NORMAL_GROUP_ORDER_INDEX: Map<string, number> = new Map(
   ALIVE_NORMAL_GROUP_ORDER.map((label, index) => [label, index]),
@@ -473,7 +465,9 @@ function buildIndexedTarget(
     item.department === 'Town Guard' ||
     item.department === 'City Watch'
       ? 'Garrison'
-      : item.department || roleLabel;
+      : item.department === 'Noblemen'
+        ? 'Ducal Family'
+        : item.department || roleLabel;
   const roleColor = getRoleColor(item, roleLabel.toLowerCase(), groupKey);
 
   return {
