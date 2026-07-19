@@ -13,8 +13,8 @@ type OnagerData = {
   max_distance: number;
 };
 
-export const Onager = (props, context) => {
-  const { act, data } = useBackend<OnagerData>(context);
+export const Onager = () => {
+  const { act, data } = useBackend<OnagerData>();
   
   if (!data) {
     return (
@@ -40,7 +40,7 @@ export const Onager = (props, context) => {
     padding: '0',
     textAlign: 'center',
     lineHeight: '30px', // Центровка иконки по вертикали
-  };
+  } as const;
 
   return (
     <Window
@@ -122,7 +122,7 @@ export const Onager = (props, context) => {
                     minValue={min_distance}
                     maxValue={max_distance}
                     step={1}
-                    fill // Растягивает слайдер на всю ширину
+                    width="100%" // Растягивает слайдер на всю ширину
                     onChange={(e, value) => act('set_distance', { dist: value })}
                   />
                   <Box mt={0.5} textAlign="center" color="label" fontSize="0.8em">

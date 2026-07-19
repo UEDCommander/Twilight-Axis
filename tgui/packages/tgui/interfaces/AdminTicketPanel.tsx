@@ -7,7 +7,7 @@ import {
   Stack,
   Tabs,
 } from 'tgui-core/components';
-import { BooleanLike } from 'tgui-core/react';
+import type { BooleanLike } from 'tgui-core/react';
 
 import { useBackend } from '../backend';
 import { Window } from '../layouts';
@@ -471,7 +471,7 @@ export const AdminTicketPanel = (props) => {
                   </Stack.Item>
 
                   {/* Conversation view + input */}
-                  <>
+                  
                       <Stack.Item grow>
                         <Section fill scrollable title="Conversation">
                           <Stack vertical>
@@ -759,7 +759,7 @@ export const AdminTicketPanel = (props) => {
                           </Section>
                         </Stack.Item>
                       )}
-                    </>
+                    
 
 
                 </>

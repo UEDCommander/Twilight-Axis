@@ -3,7 +3,7 @@ import { memo, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Icon } from 'tgui-core/components';
 
-import { backendSuspendStart, globalStore, useBackend } from '../backend';
+import { useBackend } from '../backend';
 import { Window } from '../layouts';
 
 type FamilyType = 'none' | 'member';
@@ -444,12 +444,6 @@ const FamilyTypeCardView = memo(function FamilyTypeCardView(
 
 const FAMILY_WINDOW_FULLSCREEN_SIZE = 10000;
 
-function closeFamilyWindow() {
-  if (globalStore) {
-    globalStore.dispatch(backendSuspendStart());
-  }
-}
-
 function fitFamilyWindowToScreen() {
   const pixelRatio = window.devicePixelRatio || 1;
   const screen = window.screen as Screen & {
@@ -739,7 +733,7 @@ export const FamilySettingsPanel = () => {
               role="button"
               tabIndex={0}
               title="Закрыть"
-              onClick={closeFamilyWindow}>
+              onClick={() => act('close')}>
               <Icon name="xmark" />
             </div>
           </div>

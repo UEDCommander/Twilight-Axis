@@ -1,16 +1,14 @@
 import { useState } from 'react';
 import { useBackend } from 'tgui/backend';
-import { classes } from 'tgui-core/react';
 import { Window } from 'tgui/layouts';
 import {
-  DmIcon,
   Button,
-  Icon,
   Box,
   ProgressBar,
   Stack,
   Tabs,
   Input,
+  Tooltip,
 } from 'tgui-core/components';
 
 interface Data {
@@ -311,16 +309,17 @@ export const LoadoutPanel = () => {
                           gap: '6px',
                         }}
                       >
-                        <Box
-                          style={{
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                          }}
-                          tooltip={item}
-                        >
-                          {item}
-                        </Box>
+                        <Tooltip content={item}>
+                          <Box
+                            style={{
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {item}
+                          </Box>
+                        </Tooltip>
                         <Button
                           color="danger"
                           onClick={() => act('remove', { item })}
@@ -428,7 +427,7 @@ export const LoadoutPanel = () => {
                           }}
                           tooltip={
                             `${item?.unavailable
-                              ? item?.unavailableReason || (item?.requiredTier ? "Недоступно. Требуется уровень:"+item.requiredTier : 'Недоступно.')
+                              ? item?.unavailableReason || (item?.requiredTier ? `Недоступно. Требуется уровень:${item.requiredTier}` : 'Недоступно.')
                               : item?.name || 'Без названия'}`}
                           onClick={() => {
                             if (selectedSet.has(item?.name)) {
