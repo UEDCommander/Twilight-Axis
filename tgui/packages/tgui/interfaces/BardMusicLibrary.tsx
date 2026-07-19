@@ -84,12 +84,6 @@ export const BardMusicLibrary = () => {
 
   const updateLyrics = (value: string) => {
     setLyricsDraft(value);
-    if (canEditSelected) {
-      act('set_lyrics', {
-        lyrics: value,
-        spacing: spacingDraft,
-      });
-    }
   };
 
   useEffect(() => {
@@ -126,31 +120,11 @@ export const BardMusicLibrary = () => {
                     Repeat
                   </Button>
                   <Button
-                    icon="users"
-                    selected={band_invite_active}
-                    disabled={band_invite_active && !is_band_leader}
-                    onClick={() => act('invite_band')}
-                  >
-                    Invite band
-                  </Button>
-                  <Button
                     icon={playing ? 'stop' : 'play'}
                     disabled={!selected}
                     onClick={() => act('play')}
                   >
                     {playing ? 'Stop' : 'Play'}
-                  </Button>
-                  <Button
-                    icon="save"
-                    disabled={!canEditSelected}
-                    onClick={() =>
-                      act('set_lyrics', {
-                        lyrics: lyricsDraft,
-                        spacing: spacingDraft,
-                      })
-                    }
-                  >
-                    Build records
                   </Button>
                   <Button
                     icon="trash"
@@ -378,7 +352,24 @@ export const BardMusicLibrary = () => {
                         </Box>
                       </Section>
                     ) : activeTab === 'text' ? (
-                      <Section fill title="Input text">
+                      <Section
+                        fill
+                        title="Input text"
+                        buttons={
+                          <Button
+                            icon="save"
+                            disabled={!canEditSelected}
+                            onClick={() =>
+                              act('set_lyrics', {
+                                lyrics: lyricsDraft,
+                                spacing: spacingDraft,
+                              })
+                            }
+                          >
+                            Build records
+                          </Button>
+                        }
+                      >
                         <TextArea
                           height="100%"
                           fluid

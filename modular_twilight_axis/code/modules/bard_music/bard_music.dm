@@ -58,16 +58,16 @@
 	phrases = bard_track_build_phrases(lyrics, phrase_spacing_seconds)
 
 /datum/bard_timed_track/proc/set_spacing(new_spacing)
-	phrase_spacing_seconds = clamp(round(text2num("[new_spacing]"), 0.1), 0.1, 120)
+	phrase_spacing_seconds = clamp(round(bard_track_num(new_spacing), 0.1), 0.1, 120)
 	rebuild_from_lyrics(lyrics)
 
 /datum/bard_timed_track/proc/set_phrase_time(index, new_time)
-	index = round(text2num("[index]"))
+	index = round(bard_track_num(index))
 	if(index < 1 || index > phrases.len)
 		return FALSE
 	var/datum/bard_timed_phrase/base_phrase = phrases[index]
 	var/old_time = base_phrase.time
-	var/target_time = max(round(text2num("[new_time]"), 0.1), 0)
+	var/target_time = max(round(bard_track_num(new_time), 0.1), 0)
 	var/delta = target_time - old_time
 	for(var/i in index to phrases.len)
 		var/datum/bard_timed_phrase/phrase = phrases[i]
@@ -75,11 +75,12 @@
 	return TRUE
 
 /datum/bard_timed_track/proc/set_phrase_text(index, new_text)
-	index = round(text2num("[index]"))
+	index = round(bard_track_num(index))
 	if(index < 1 || index > phrases.len)
 		return FALSE
 	var/datum/bard_timed_phrase/phrase = phrases[index]
-	phrase.text = trimtext(copytext("[new_text]", 1, MAX_MESSAGE_LEN))
+	var/text = istext(new_text) ? new_text : "[new_text]"
+	phrase.text = trimtext(copytext(text, 1, MAX_MESSAGE_LEN))
 	return TRUE
 
 /datum/bard_timed_track/proc/export_data()
@@ -98,6 +99,8 @@
 	return json_encode(export_data())
 
 /datum/bard_timed_track/proc/import_json(raw_json)
+	if(!raw_json)
+		return FALSE
 	var/list/data = safe_json_decode(raw_json)
 	if(!islist(data))
 		return FALSE
@@ -106,18 +109,18 @@
 		return FALSE
 	if(data["spacing_seconds"])
 		var/imported_spacing = data["spacing_seconds"]
-		phrase_spacing_seconds = clamp(round(text2num("[imported_spacing]"), 0.1), 0.1, 120)
+		phrase_spacing_seconds = clamp(round(bard_track_num(imported_spacing), 0.1), 0.1, 120)
 	phrases = list()
 	for(var/list/entry as anything in imported_phrases)
 		if(!islist(entry))
 			continue
 		var/imported_text = entry["text"]
-		var/text = trimtext("[imported_text]")
+		var/text = trimtext(istext(imported_text) ? imported_text : "[imported_text]")
 		if(!text)
 			continue
 		var/datum/bard_timed_phrase/phrase = new
 		var/imported_time = entry["time"]
-		phrase.time = max(text2num("[imported_time]"), 0)
+		phrase.time = max(bard_track_num(imported_time), 0)
 		phrase.text = text
 		phrases += phrase
 		if(phrases.len >= BARD_TRACK_MAX_PHRASES)
@@ -132,8 +135,16 @@
 	if(length_ticks)
 		. = max(round(length_ticks / 10), 1)
 
+/proc/bard_track_num(value, fallback = 0)
+	if(isnum(value))
+		return value
+	if(istext(value))
+		var/parsed = text2num(value)
+		return isnum(parsed) ? parsed : fallback
+	return fallback
+
 /proc/bard_track_format_duration(total_seconds)
-	total_seconds = max(round(text2num("[total_seconds]")), 0)
+	total_seconds = max(round(bard_track_num(total_seconds)), 0)
 	var/minutes = round(total_seconds / 60)
 	var/seconds = total_seconds % 60
 	return "[minutes]:[seconds < 10 ? "0[seconds]" : seconds]"
@@ -362,7 +373,7 @@
 
 /obj/item/rogue/instrument/proc/auto_song_loop(mob/living/user, datum/bard_timed_track/track, token)
 	set waitfor = FALSE
-	while(playing && current_player == user && user?.bard_auto_singing && user.bard_auto_song_token == token && track?.phrases?.len)
+	while(!QDELETED(src) && !QDELETED(user) && !QDELETED(track) && playing && current_player == user && user?.bard_auto_singing && user.bard_auto_song_token == token && track?.phrases?.len)
 		var/elapsed_seconds = max((world.time - music_started_at) / 10, 0)
 		if(track.duration_seconds > 0 && repeat_enabled)
 			elapsed_seconds = elapsed_seconds % track.duration_seconds
@@ -378,7 +389,7 @@
 			var/delay = max(round((phrase.time - last_time) * 10), 0)
 			if(delay)
 				sleep(delay)
-			if(!playing || current_player != user || !user.bard_auto_singing || user.bard_auto_song_token != token)
+			if(QDELETED(src) || QDELETED(user) || QDELETED(track) || !playing || current_player != user || !user.bard_auto_singing || user.bard_auto_song_token != token)
 				return
 			if(phrase.text)
 				user.say(phrase.text, forced = "bard auto song")
@@ -389,6 +400,8 @@
 		var/remainder = max(round((track.duration_seconds - last_time) * 10), 0)
 		if(remainder)
 			sleep(remainder)
+		if(QDELETED(src) || QDELETED(user) || QDELETED(track) || !playing || current_player != user || !user.bard_auto_singing || user.bard_auto_song_token != token)
+			return
 
 /obj/item/rogue/instrument/ui_state(mob/user)
 	return GLOB.hold_or_view_state
@@ -467,7 +480,7 @@
 			if(track?.custom)
 				if(params["spacing"])
 					var/spacing = params["spacing"]
-					track.phrase_spacing_seconds = clamp(round(text2num("[spacing]"), 0.1), 0.1, 120)
+					track.phrase_spacing_seconds = clamp(round(bard_track_num(spacing), 0.1), 0.1, 120)
 				track.rebuild_from_lyrics(params["lyrics"])
 			return TRUE
 		if("set_spacing")
@@ -525,7 +538,7 @@
 			new_track.set_song(songname, song_file, TRUE)
 			if(params["spacing"])
 				var/spacing = params["spacing"]
-				new_track.phrase_spacing_seconds = clamp(round(text2num("[spacing]"), 0.1), 0.1, 120)
+				new_track.phrase_spacing_seconds = clamp(round(bard_track_num(spacing), 0.1), 0.1, 120)
 			new_track.rebuild_from_lyrics(params["lyrics"])
 			timed_tracks[songname] = new_track
 			music_panel_selected = songname
@@ -534,7 +547,12 @@
 			if(playing)
 				stop_music(user)
 			else
-				play_track(user, get_selected_track())
+				var/datum/bard_timed_track/track = get_selected_track()
+				var/play_mode = alert(user, "How do you want to perform [track?.title]?", "Play Music", "Solo", "Group", "Cancel")
+				if(play_mode == "Solo")
+					play_track(user, track)
+				else if(play_mode == "Group")
+					start_band_invite(user)
 			return TRUE
 		if("toggle_repeat")
 			repeat_enabled = !repeat_enabled
@@ -551,9 +569,6 @@
 				if(playing && curfile != track.file_path)
 					stop_music(user)
 				start_auto_song(user, track)
-			return TRUE
-		if("invite_band")
-			start_band_invite(user)
 			return TRUE
 		if("cancel_band")
 			if(user == band_invite_leader)
