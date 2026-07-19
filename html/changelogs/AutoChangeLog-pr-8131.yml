@@ -1,0 +1,4 @@
+author: "WeNeedMorePhoron"
+delete-after: True
+changes:
+  - rscadd: "Added a confirmation prompt to \"Start Now\" if there's more than one client in game, defaulting to NO on the left against normal intuition, to prevent accidentally starting live server early due to roundstart focus hijack."

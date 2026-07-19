@@ -35,7 +35,6 @@
     )
 
 	extra_context = "This subclass gain the Wound Heal miracle and the Convert Heretic spell."
-	tempo_capable = FALSE
 
 /datum/outfit/job/roguetown/wretch/heretic
 	has_loadout = TRUE
@@ -92,7 +91,6 @@
 
 	// You can convert those the church has shunned.
 	H.mind?.AddSpell(new /datum/action/cooldown/spell/convert_heretic)
-	H.mind?.AddSpell(new /datum/action/cooldown/spell/miracle/intervention)
 	if (istype (H.patron, /datum/patron/inhumen/zizo))
 		if(H.mind)
 			H.mind.AddSpell(new /datum/action/cooldown/spell/minion_order)
@@ -319,7 +317,6 @@
         "Sewing Kit" =  /obj/item/repair_kit,
     )
 	extra_context = "This subclass gain the Wound Heal miracle and the Convert Heretic spell."
-	tempo_capable = FALSE
 
 
 /datum/outfit/job/roguetown/wretch/hereticspy

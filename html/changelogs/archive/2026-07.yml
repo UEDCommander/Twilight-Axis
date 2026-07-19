@@ -663,11 +663,17 @@
   - rscdel: T5 Presence ability 'Majesty' is gone, I physically can't save this one.
       Sorry chief.
 2026-07-09:
+  7erracotta:
+  - rscadd: added new sprites for the loincloth, also added the belt shawl
+  - rscadd: added new sprites
+  - bugfix: fixed the handles of the macauhuitls
   Ollanius:
   - rscadd: Adds missing recipe for blacksteel fishing rods.
   - balance: Silver and Psydonic Knuckledusters no longer spawn with blessings.
   - balance: Fluted armor properly requires +1 Steel Ingot, now, instead of +1 Iron
       Ingot.
+  Ryan180602:
+  - rscadd: volfhelm bascinet to paladin, ke, knightly journey knight, knight
   SomeDeviant:
   - rscdel: Removed error-causing trait string from drown check
   - bugfix: Drowning runtime
@@ -676,5 +682,335 @@
   THE GRAND DUKE OF AZURE PEAK:
   - bugfix: heater shield silverface item will no longer dispense wooden one
   - bugfix: griddlewiener should show up now. or is it griddleweiner. griddlewieiner.
+  WeNeedMorePhoron:
+  - rscdel: Town Crier role has undergone euthanasia after a long and agonizing 9
+      months death.
+  - rscdel: Town crier related mechanics like loudmouth channel and streetpipes has
+      been removed
+  - rscdel: Town Crier house repurposed temporarily into a generic towner house for
+      future mapping purpose
+  - rscdel: Zizo's bane sleep gas only activate if you step on it with low for / attack
+      it
+  - rscadd: Mimic no longer immune to fire damage
+  - rscdel: Remove lance special
+  borneblood:
+  - balance: Removes the mutual Immobilize from Bite.
+  mumblemancer:
+  - bugfix: you can no longer hide under bedrolls or eoran flowerbeds
   radarseas:
   - rscdel: DEBUG - Zombification (whatever goes here) tochat
+2026-07-10:
+  Dorodomki:
+  - rscadd: Added new fur boots to loadout
+  - bugfix: 'fixed a typo on the flower crown for loadout
+
+      :cl:'
+  Kell-E:
+  - balance: Siegebows are now louder and deal significant damage to any terrain they
+      collide with.
+  - bugfix: Siegebows no longer delete (any) turf on contact.
+  Lamasmaster:
+  - balance: Noc Miracles Overhaul
+  OrbisAnima:
+  - bugfix: Fixes Briar curse to deal true brute damate to the user instead of the
+      target, on top of adding 10 extra force to regular and wielded. Reduced the
+      true damage dealt to 5 from 10.
+  Ryan180602:
+  - rscadd: let people vote only when readied up
+  - balance: rebalanced gamemodes.
+  TankTheBirb:
+  - bugfix: Forlorn Hope goedendag loadout now boosts correct polearm skill instead
+      of staves
+  WeNeedMorePhoron:
+  - rscadd: Fixed various exploits and such that leads to overly easy crafting money
+      making
+  bearrrrrrrr:
+  - rscadd: vheslyn ultrasun event
+  borneblood:
+  - rscadd: Mimics jumpscare you now.
+  - rscadd: Underdweller Origin can choose Sunlight Sensitivity, similar to Naledi
+      Complex.
+  mumblemancer:
+  - rscadd: loudmouth gear now available thru various means
+  string-thing:
+  - rscadd: added CON buff of 1 to fortifying vapors
+  yyzsong:
+  - spellcheck: Removes extraneous right square bracket in Martyr weapon touch interactions
+  - code_imp: Corrects bed proc typepath typo
+2026-07-11:
+  Happyowl93:
+  - rscadd: Added autogrinder for the rotational network
+  KatTheFox:
+  - rscadd: Small, non-hostile animals can now be picked up; they can be worn on the
+      head or, for flying mobs, perch on your shoulder.
+  - rscdel: Familiar transform ability has been removed, as they have been migrated
+      to the new mob pickup system
+  Ketrai:
+  - rscadd: Hag moss autoharvest.
+  - qol: Hag transmutation now explains the boon tiers better.
+  - bugfix: Abyssorite ritualists can once again draw storm runes.
+  Lamasmaster:
+  - balance: Malum Miracles and Passives
+  Ollanius:
+  - bugfix: Orles can now be properly dyed in two altering variants.
+  - rscadd: Reshades the dyeable orle to match the greyscaled tabard.
+  - rscadd: Headbands and undervestments can now be adjusted via RMB.
+  - rscadd: Slimmed-down versions of steel plate armor, available via Triumph elixirs
+      or a craftable tool.
+  - bugfix: Fixes a potential exploit that could allow Enchanting Kit-forked tools
+      to upgrade lesser forms of armor.
+  - rscadd: Gilded versions of steel plat earmor, available via the 'Decorated' smithing
+      tier. Entirely cosmetic.
+  Ryan180602:
+  - bugfix: gnoll migrants are disabled on psydon gamemodes. if a gamemode isn't meant
+      to have gnolls
+  Vladmar11:
+  - bugfix: "\u0418\u0441\u043F\u0440\u0430\u0432\u043B\u0435\u043D \u0431\u0430\u0433\
+      \ \u0441 \u0440\u0435\u0433\u0435\u043D\u043E\u043C \u0431\u0440\u043E\u043D\
+      \u0438 \u0411\u0430\u043E\u0442\u044B \u0432\u043E \u0432\u0440\u0435\u043C\u044F\
+      \ \u0431\u043E\u044F"
+  - bugfix: "\u0418\u0441\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0430 \u043F\u0440\
+      \u043E\u0431\u043B\u0435\u043C\u0430 \u0438\u0437-\u0437\u0430 \u043A\u043E\u0442\
+      \u043E\u0440\u043E\u0439 \u0430\u0443\u0440\u0430 \u0411\u0430\u043E\u0442\u044B\
+      \ \u043D\u0435 \u0443\u0431\u0438\u0440\u0430\u043B\u0430\u0441\u044C \u0443\
+      \ \u043F\u0435\u0440\u0441\u043E\u043D\u0430\u0436\u0435\u0439, \u0447\u0442\
+      \u043E \u0443\u0448\u043B\u0438 \u0437\u0430 \u0435\u0435 \u0440\u0430\u0434\
+      \u0438\u0443\u0441"
+  - rscadd: "\u041B\u043E\u0434\u0430\u0443\u0442 \u043C\u0435\u043D\u044E \u0431\u044B\
+      \u043B\u043E \u043F\u0435\u0440\u0435\u0440\u0430\u0431\u043E\u0442\u0430\u043D\
+      \u043E \u0438 \u0441\u0434\u0435\u043B\u0430\u043D\u043E \u0431\u043E\u043B\u0435\
+      \u0435 \u043A\u043E\u043C\u043F\u0430\u043A\u0442\u043D\u044B\u043C"
+  - bugfix: "\u0418\u0441\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u044B \u043B\u0430\
+      \u0433\u0438 \u043F\u0440\u0438 \u043E\u0442\u043A\u0440\u044B\u0442\u0438\u0438\
+      \ \u043B\u043E\u0434\u0430\u0443\u0442\u0430"
+  WeNeedMorePhoron:
+  - rscadd: Raised the per client topic limit to 200 and no longer count the statpanel
+      to hopefully alleviates issues
+  - rscadd: 'Shuffle some south terrorbog quest spots around/:cl:
+
+      <!-- Both :cl:''s are required for the changelog to work! You can put your name
+      to the right of the first :cl: if you want to overwrite your GitHub username
+      as author ingame. -->
+
+      <!-- You can use multiple of the same prefix (they''re only used for the icon
+      ingame) and delete the unneeded ones. Despite some of the tags, changelogs should
+      generally represent how a player might be affected by the changes rather than
+      a summary of the PR''s contents. -->'
+  borneblood:
+  - bugfix: Apothecary gets staves instead of polearms
+  - bugfix: Fixed a racial boon choice not working.
+  - bugfix: fixed mannequins not having pants slot
+  - bugfix: fixed being able to punch your own gear
+  - refactor: Reworked Dual Wielder virtue.
+  - bugfix: fixed light sunderbolts
+  - bugfix: fixed prosthetics having the wrong speed malus value, and weirdness with
+      Bronze Limbs virtue
+  plsleavemealon:
+  - bugfix: fixed clockwork drill wielded force
+  radarseas:
+  - rscadd: Added a few catagories to the wretch shop, exclusive to wretches. This
+      is mostly up-priced black market stuff and down-priced prosthetics so you can
+      de-nugget your fellow soft-antag back into being able to play the round without
+      medical skill.
+  - balance: Wretches can buy more supplies from camp + Get Bronze/weaponry, for gimmiciness
+  string-thing:
+  - bugfix: fixed con buff on fort. vapours
+2026-07-12:
+  Kell-E:
+  - bugfix: Fixes siege bow zombie walls
+  Ryan180602:
+  - qol: Admins don't need to ready up to vote.
+  - qol: End round votes can be done from lobby now again
+  ShiroseSchnee:
+  - rscadd: Adds new donator item for ShiroseSchnee
+  borneblood:
+  - bugfix: fixed tomato on a fundamental level
+  - bugfix: fixed Avantail and Chainmantle
+2026-07-13:
+  7erracotta:
+  - rscadd: Added Saree's and Dhoti's
+  KatTheFox:
+  - bugfix: Elemental and void familiars can now resist to break out of tool transformations
+  - balance: Tier 1 earthen forge no longer halves the durability of conjured items
+  Ketrai:
+  - rscadd: Abyssor's power shifts, tidal spires now produce darkwater.
+  - bugfix: zizo's pet cemetery event being unable to run
+  Lamasmaster:
+  - balance: Bishop Combat Skills were changed. Bishop now gains Master Unarmed instead
+      of Master Polearms.
+  - balance: Ravox Vow wound heal rate was reduced.
+  - bugfix: Noc T4 hopefully
+  Ollanius:
+  - bugfix: Haubyrines no longer inherit unintended coverage of the groin.
+  - balance: Haubyrines cannot be worn by those with TRAIT_ARCYNE or TRAIT_CIVILIZEDBARBARIAN;
+      magicka casters and dedicated pugilists, more plainly.
+  - code_imp: Added new tags in armour_filtering.dm that allows for tagged items to
+      be unwearable by those with TRAIT_ARCYNE, TRAIT_CIVILIZEDBARBARIAN, or TRAIT_DODGEEXPERT--
+      independently or all together. Check out chainmail.dm for an example of how
+      to add multiple tags to the same armor-filtering component.
+  - rscadd: Shotstakes can now be made from any stationary heat source, courtesy of
+      a single recipe per stake.
+  Ryan180602:
+  - bugfix: painting crashes + other bugs
+  - bugfix: errant hair editor bugs
+  - refactor: cleans up ghost mob code.
+  - bugfix: fixed bugs with the profane dagger that did not actually put the player
+      client in the dagger.
+  - bugfix: fixed ghost polling for scried clients.
+  - bugfix: prevents scried clients from jumping around with double click to move
+      turf.
+  WeNeedMorePhoron:
+  - bugfix: Potentially fixes spells and attacks fizzling when you move your mouse
+      after charging
+  - rscadd: Reworked the entirety of mage schools
+  - rscadd: Added Conjuration School
+  - rscadd: Reworked Augmentation School to remove statbuffs in favor of situational
+      buff
+  - rscadd: Reworked burn to actually critical you and bleed you and be fatal, instead
+      of being an armor piercing damage type
+  - rscadd: Uppercut and Arcyne Descent Special should not bug out anymore
+  - rscadd: Tried to improve pet AI, may or may not work
+  - rscadd: Added Verglas Rune
+  - rscdel: Killed teleportation ruine
+  - rscadd: Kingsfield BLockade is now in the Grove
+2026-07-14:
+  borneblood:
+  - rscadd: added a way to access either of the Bishop's holy staves
+  - bugfix: fixed the staff of the shepherd's missing interactions
+  - rscadd: Added 'Pouched Suspenders' as a cosmetic for the loadout.
+  - bugfix: frei swords can now block projectiles on halfsword intent's block
+2026-07-15:
+  7erracotta:
+  - rscadd: glazed pottery, dye-brush on some/most normal pottery yields this
+  FreeStylaLT:
+  - bugfix: Fixed portable hookah not being craftable. It now accepts any type of
+      candle.
+  - qol: Naledi origin Strict choice will no longer instantly grant the related mask
+      debuffs. The mask still spawns in the player's stash.
+  - code_imp: RClick emotes had their wording changed for better clarity.
+  Lamasmaster:
+  - balance: Graggar Miracles
+  OrbisAnima:
+  - code_imp: Adds new tech for enchantments that allow to add right click effects
+      on items enchanted.
+  - bugfix: Fixes Revealing light. Its light now works with weapons, and also calculates
+      as a movable light, so it actually follows the item enchanted, it can also be
+      turned off and on with right click on it.
+  - balance: Revealing Light Enchantment is now based on the light cantrip, making
+      the light to be white and have a higher range, but be less powerful when competing
+      with other effects.
+  - rscadd: Adds a new T1 Fae enchantment, Fair Seeming. It cleans the user after
+      a 2 second action, even removing the sewer grime. You could get soap for a fraction
+      of the value, but, who am I to tell you how to use your money.
+  Quinalion:
+  - rscadd: "\u0421\u043E\u0431\u0441\u0442\u0432\u0435\u043D\u043D\u044B\u0439 \u0434\
+      \u0440\u0438\u043F \u043D\u0430\u043B\u0435\u0434\u0438\u0439\u0441\u043A\u043E\
+      \u043C\u0443 \u043C\u0430\u0433\u0443 \u0438\u043D\u043A\u0432\u0438\u0437\u0438\
+      \u0446\u0438\u0438."
+  - balance: "\u041F\u0440\u0430\u0432\u043A\u0438 \u0432 \u043F\u043E\u0434\u043A\
+      \u043B\u0430\u0441\u0441 \u043D\u0430\u043B\u0435\u0434\u0438\u0439\u0441\u043A\
+      \u043E\u0433\u043E \u043C\u0430\u0433\u0430 \u0438\u043D\u043A\u0432\u0438\u0437\
+      \u0438\u0446\u0438\u0438."
+  SomeDeviant:
+  - bugfix: fixed non-job locked and non-trait locked travel tiles functioning properly
+  Ssheya:
+  - rscadd: "\u0412\u044B\u0431\u043E\u0440 \u0443 \u0430\u043A\u043E\u043B\u0438\u0442\
+      \u043E\u0432 \u0438 \u0442\u0435\u043C\u043F\u043B\u0430\u0440\u043E\u0432 \u043C\
+      \u0435\u0436\u0434\u0443 \u0441\u0435\u0440\u044B\u043C\u0438 \u0438 \u0433\u043E\
+      \u043B\u0443\u0431\u044B\u043C\u0438 \u043E\u0434\u0435\u044F\u043D\u0438\u044F\
+      \u043C\u0438"
+  Vladmar11:
+  - bugfix: "\u0418\u0441\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u043E \u043F\u043E\
+      \u044F\u0432\u043B\u0435\u043D\u0438\u0435 \u0432\u0442\u043E\u0440\u043E\u0439\
+      \ \u0441\u0442\u0430\u0442\u043F\u0430\u043D\u0435\u043B\u0438 \u043F\u0440\u0438\
+      \ \u0437\u0430\u0445\u043E\u0434\u0435 \u0432 \u0440\u0430\u0443\u043D\u0434\
+      \ \u0441 \u0432\u043A\u043B\u044E\u0447\u0435\u043D\u043D\u043E\u0439 \u0432\
+      \u043A\u043B\u0430\u0434\u043A\u043E\u0439 Round Info"
+  WeNeedMorePhoron:
+  - rscadd: Removed gems from stockpile after it was blatantly used while not reported
+      for transmuting gems and reselling them. The margins on this operation is a
+      bit too high.
+  - rscdel: Unpowercreep Levy, Removes Deceiving Meekness and Leech Resistance from
+      Levy. (So that you would take Dendor for the Bog or suffer the realistic consequences).
+      Originally I suggested bog cream, but bog cream was not implemented, and I don't
+      have the enery in me to actually make it myself as a replacement
+  - rscadd: Replaced Self Reliance, the wretch trait, with Homestead Expert, their
+      original trait
+  - rscdel: Removed every single subclass choices from Levy. They keep weapon choices.
+      They included notdoctor, not squire, not armsman, dexpert, homesteader that
+      had statweight of 8 etc. - too much, so they are gone.
+  - bugfix: Upper Cut / Arcyne Descent Reset your position even if it fails.
+  - rscadd: Cantor now pick between T2 miracles access and loses vicious mockery and
+      bardic or T1 and Bardic Inspiration
+  - bugfix: Remove unused damoverlay and age keys from icon. Probably not useful
+  - bugfix: Stopped update_hair from forcing a full body redraw, by adding in sprite
+      accessories and hair cache key icon to save performance. Report any oddities
+  borneblood:
+  - rscadd: NOHEAL and NOREGEN traits! Use them responsibly, dev-senpais!
+  - rscadd: Drinking blood transfers some reagents to yourself and also TOX damage.
+  - balance: Blackblooded should not benefit from most healing potions anymore, and
+      their on-eat heal should be stopped by silver fire stacks.
+  - balance: Plenty of Blackblood adjustments to make them less oppressive to fight
+      against.
+  - bugfix: Some Nasty Eater trait interactions added to prevent vomiting out nasty
+      things.
+  kiwedespars:
+  - bugfix: graggar organs event fixed (hacky, no longer requires hearts)
+  - bugfix: graggar culling now works properly.
+2026-07-16:
+  FreeStylaLT:
+  - rscadd: Added a heel-morphing elixir, that could add heels (and the appropriate
+      SFX) to any shoewear item.
+  - rscadd: Added a heelification elixir to Donator-exclusive loadot.
+  - rscadd: Added a heelification elixir to the Luxury section of the -Faces as well
+      as some loot drops in dungeons.
+  - rscadd: Added a heelification elixir to the squirely storage loot pool and the
+      Bootcheck miracle.
+  - sound: Added heel footstep SFX.
+  - balance: Non-Ascendant Heretic Wretches are now limited to T2 miracles.
+  - balance: Wound Heal miracle is only granted to Heretic Wretches upon the completion
+      of a rites ritual.
+  - refactor: Refactored how virtues are saved / loaded. Be warned! Your virtues may
+      have been reset.
+  Kelshark:
+  - qol: Instruments can play songs longer than 4 minutes without abrupt cut-off and
+      loop.
+  Lamasmaster:
+  - balance: Matthios Miracles
+  Quinalion:
+  - rscadd: Allow lighting another player's zigarette using Prestidigitation's intent
+      spark when targeting their mouth
+  ToasterStrudes:
+  - rscadd: Adds LEVITATION, a cantrip able to be purchased for 1 point.
+  WeNeedMorePhoron:
+  - rscadd: :)
+  - balance: Horde now inflicts a partial summon backlash, shorter and weaker than
+      the full on one as it is a core design principle that the summoner MUST loses
+      something for getting a free goon. It also don't stun you
+  - balance: Conjure CD increased to 4 minutes base and dismiss to 10 seconds. I don't
+      want them to be "free", and originally I wanted dismiss to count partial health
+      to penalize you, but I am fine with knowing when to pre-emptively dismiss your
+      summon as a form of skill expression. 4 minutes base means they couldn't easily
+      throw new one back into the fray immediately and should be pressured properly,
+      and 10 seconds with cancel ability means they should be able to see the red
+      intent, run at you, and tap you (or you run away, but I might improve leashing
+      code)
+  - balance: Based on feedback, I reduced the aggressive stat scaling on Conjure Champion
+      and also made it so that Mastery summon a buffed up steel dude instead of a
+      blacksteel dude.
+  - rscadd: Added aetherknife, ported from our downstream Ochre Valley, using the
+      unused throw_knifecorrupt sprite for now.
+  bearrrrrrrr:
+  - rscadd: Tithebound balancing and feature pack. New weapon and subclass, and two
+      new specials.
+  borneblood:
+  - bugfix: Bless now should be more neutral-grounded to prevent metagaming.
+  - rscadd: Added icons for vampire thirst.
+  - bugfix: Fixed the oddity around vampire's thirst debuff, and thirst for normal
+      people appearing twice.
+  - bugfix: Fixed a weird behavior of Vampire Spawn Protection.
+  - refactor: Refactored(-ish?) the nutrition code.
+  mumblemancer:
+  - bugfix: wildshaping will no longer remove your tired status
+  probbrie:
+  - rscadd: Added wide palmate antlers to character customisation.
