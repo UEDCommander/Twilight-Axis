@@ -1223,3 +1223,30 @@
   - code_imp: added code ready for implimentation into Vheslyn Cultists
   yyzsong:
   - rscadd: Gold bowl smithing recipe
+2026-07-19:
+  Clem-The-Duck:
+  - rscadd: Makes it possible to layer a fluted cuirass with a hauberk
+  Dorodomki:
+  - rscadd: 'Added new weapons for unarmed, iron claws, iron grip bludgeon and iron
+      knuckles + their recipes
+
+      :cl:'
+  FreeStylaLT:
+  - qol: Guarded now obscures Nobility.
+  Quinalion:
+  - balance: Grenzelhoft Boots now count as positive armor for TRAIT_FENCERDEXTERITY.
+  - rscadd: Freifechter mercenaries now start with a pouch of copper coins.
+  - bugfix: Fixed Freifechter mercenary equipment.
+  SpadesNeil:
+  - image: structure.dmi now has a fallback image
+  WeNeedMorePhoron:
+  - rscadd: Optimized the floating function used by levitation to not eat up 0.25%
+      of the server CPU. report any issue
+  - bugfix: Bathhouse tile that requires job OR trait works again
+  mumblemancer:
+  - rscadd: spider silk (drow) shirt available in cultural imports of merchant
+  racobio:
+  - rscadd: Added racobio's donator item and sprites for it
+  radarseas:
+  - balance: trait_shatterkill has been re-tuned. Skeletons no longer die to rib fractures,
+      instead it disables their legs. Aim for the head on shamblers, sire.

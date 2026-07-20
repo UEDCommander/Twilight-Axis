@@ -3687,6 +3687,12 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	donatitem = TRUE
 	donat_tier = 2
 
+/datum/loadout_item/donator/racobio_staff
+	name = "Donator Kit - Obsidian Tower - Required: Grand Staff"
+	category = list("Оружие", "Донат")
+	path = /obj/item/enchantingkit/racobio_staff
+	donatitem = TRUE
+	donat_tier = 2
 
 /datum/loadout_item/donator/universal/cloak_goldmaillekini
 	name = "Donator Item - Golden Maillekini"
