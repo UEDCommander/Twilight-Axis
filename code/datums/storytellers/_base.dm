@@ -223,7 +223,8 @@
 			return
 		if(track == EVENT_TRACK_CHARACTER_INJECTION && !SSticker?.HasRoundStarted())
 			var/list/guaranteed_events = mode.storyteller_guaranteed_events(valid_events)
-			var/guaranteed_only = length(mode.opened_hard_antags()) || active_preset()?.guaranteed_hard
+			var/datum/storyteller/preset = active_preset()
+			var/guaranteed_only = length(mode.opened_hard_antags()) || preset?.guaranteed_hard
 			if(guaranteed_only)
 				var/list/filtered_out_events = list()
 				for(var/datum/round_event_control/antagonist/solo/event as anything in valid_events)
