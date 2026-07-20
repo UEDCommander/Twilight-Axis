@@ -65,7 +65,7 @@
 	H.change_stat(STATKEY_CON, 2)
 	switch(classchoice)
 		if("Kaper")
-			ADD_TRAIT(H, TRAIT_DODGEEXPERT, ADVENTURER_TRAIT)
+			ADD_TRAIT(H, TRAIT_DODGEEXPERT, TRAIT_GENERIC)
 			H.change_stat(STATKEY_SPD, 2)
 			H.adjust_skillrank_up_to(/datum/skill/combat/swords, SKILL_LEVEL_EXPERT, TRUE)
 			wrists = /obj/item/clothing/wrists/roguetown/bracers/leather/heavy
@@ -94,7 +94,7 @@
 					H.change_stat(STATKEY_PER, 1)
 					H.change_stat(STATKEY_SPD, 1)
 		if("Wōkòu")
-			ADD_TRAIT(H, TRAIT_DODGEEXPERT, ADVENTURER_TRAIT)
+			ADD_TRAIT(H, TRAIT_DODGEEXPERT, TRAIT_GENERIC)
 			H.change_stat(STATKEY_SPD, 2)
 			H.adjust_skillrank_up_to(/datum/skill/combat/swords, SKILL_LEVEL_EXPERT, TRUE)
 			mask = /obj/item/clothing/mask/rogue/facemask/steel/kazengun
