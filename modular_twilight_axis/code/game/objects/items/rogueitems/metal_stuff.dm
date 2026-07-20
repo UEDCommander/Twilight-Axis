@@ -1,7 +1,7 @@
 /obj/item/craft_kit
 	name = "iron craftkit"
 	desc = "An empty metal box that is suitable for storing various pieces of hardware and other scrap. \
-	Fill with reguired metal objects to create a varios items"
+	Fill with reguired metal objects to create a various items."
 	icon_state = "craft_kit_iron"
 	icon = 'modular_twilight_axis/icons/roguetown/items/misc.dmi'
 	grid_width = 64
