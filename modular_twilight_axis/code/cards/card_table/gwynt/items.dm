@@ -183,12 +183,26 @@
 		to_chat(user, span_warning("This card belongs to another deck faction."))
 		return FALSE
 	var/datum/preferences/P = user.client?.prefs
-	card_ids += single.card_id
-	if(!P?.ccg_save_deck_snapshot(card_ids, faction_id, leader_id))
-		card_ids.Cut(card_ids.len, card_ids.len + 1)
-		to_chat(user, span_warning("The card battle deck failed to save. The card was not added."))
+	if(!P)
+		to_chat(user, span_warning("The card collection is unavailable. The card was not added."))
 		return FALSE
+	if(!single.pooled && !P.ccg_add_known_card(single.card_id))
+		to_chat(user, span_warning("The card could not be added to your collection. Try again."))
+		return FALSE
+	card_ids += single.card_id
+	if(!P.ccg_save_deck_snapshot(card_ids, faction_id, leader_id))
+		card_ids.Cut(card_ids.len, card_ids.len + 1)
+		if(!single.pooled)
+			to_chat(user, span_warning("The card was saved to your collection, but the deck failed to save."))
+			SStgui.update_user_uis(user)
+			qdel(single)
+		else
+			to_chat(user, span_warning("The card battle deck failed to save. The card was not added."))
+		return FALSE
+	if(!single.pooled && single.source_ckey && single.source_ckey != user.ckey)
+		ccg_award_trade_progress(single.source_ckey, user)
 	to_chat(user, span_notice("You add [card.name] to the card battle deck."))
+	SStgui.update_user_uis(user)
 	qdel(single)
 	return TRUE
 
