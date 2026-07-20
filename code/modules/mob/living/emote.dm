@@ -1282,12 +1282,6 @@ var/list/zone_translations = list(
 	emote_type = EMOTE_AUDIBLE
 	show_runechat = FALSE
 
-/mob/living/carbon/human/verb/emote_sniff()
-	set name = "Sniff"
-	set category = "Emotes.Noises"
-
-	emote("sniff", intentional = TRUE)
-
 /datum/emote/living/snore
 	key = "snore"
 	key_third_person = "snores"
