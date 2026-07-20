@@ -658,6 +658,8 @@ export const CardDeckBuilder = () => {
 
   const cards = data.cards || [];
   const selected = data.selected || [];
+  const displayMode = data.displayMode || 'setup';
+  const collectionMode = displayMode === 'pool';
   const selectedCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     for (const id of selected) {
@@ -676,6 +678,9 @@ export const CardDeckBuilder = () => {
 
   const filteredCards = cards
     .filter((card) => {
+      if (!card.known) {
+        return false;
+      }
       if (row !== 'all' && card.row !== row) {
         return false;
       }
@@ -729,13 +734,6 @@ export const CardDeckBuilder = () => {
       }
       return a.name.localeCompare(b.name);
     });
-  const filteredKnownDistinctCount = filteredCards.filter(
-    (card) => card.known,
-  ).length;
-  const filteredDistinctRatio = filteredCards.length
-    ? filteredKnownDistinctCount / filteredCards.length
-    : 0;
-
   const selectedCards = selected
     .map((id) => cards.find((card) => card.id === id))
     .filter(Boolean) as Card[];
@@ -759,7 +757,6 @@ export const CardDeckBuilder = () => {
 
   const deckRatio = data.deckSize > 0 ? data.selectedCount / data.deckSize : 0;
   const isPhysicalDeck = data.mode === 'build';
-  const displayMode = data.displayMode || 'setup';
   const showPool = displayMode !== 'deck';
   const showDeck = displayMode !== 'pool';
   const currentFaction = data.factions?.find(
@@ -861,7 +858,7 @@ export const CardDeckBuilder = () => {
                 [
                   ['setup', 'Setup'],
                   ['deck', 'Deck Only'],
-                  ['pool', 'Pool Only'],
+                  ['pool', 'Collection'],
                 ] as const
               ).map(([key, label]) => (
                 <Button
@@ -885,7 +882,7 @@ export const CardDeckBuilder = () => {
             }}
           >
             {showPool && (
-              <Section title="Pool" fill scrollable>
+              <Section title={collectionMode ? 'Collection' : 'Pool'} fill scrollable>
                 <Panel style={{ marginBottom: '10px' }}>
                   <div
                     style={{
@@ -973,40 +970,38 @@ export const CardDeckBuilder = () => {
                     </>
                   )}
                   <div style={{ color: '#cbd5e1', fontSize: '12px' }}>
-                    Cards in pool: {data.knownRareCount}
-                  </div>
-                  <div style={{ marginTop: '8px' }}>
-                    <PanelLabel>Collected card types</PanelLabel>
-                    <ProgressBar
-                      value={filteredDistinctRatio}
-                      ranges={{ good: [0, 1] }}
-                    >
-                      {filteredKnownDistinctCount} / {filteredCards.length}
-                    </ProgressBar>
+                    Cards in collection: {data.knownRareCount}
                   </div>
                 </Panel>
                 <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                   {filteredCards.map((card) => {
                     const selectedCount = selectedCounts[card.id] || 0;
                     const ownedCount = card.ownedCount || 0;
-                    const factionLocked = !card.factionAllowed;
+                    const factionLocked = !collectionMode && !card.factionAllowed;
                     const unavailable = !card.known || factionLocked;
                     return (
                       <CardFace
                         key={card.id}
                         card={card}
                         count={
-                          ownedCount - selectedCount > 0
+                          collectionMode
+                            ? ownedCount
+                            : ownedCount - selectedCount > 0
                             ? ownedCount - selectedCount
                             : 0
                         }
                         unavailable={unavailable}
                         disabled={
-                          unavailable ||
-                          data.selectedCount >= data.deckSize ||
-                          selectedCount >= ownedCount
+                          !collectionMode &&
+                            (unavailable ||
+                              data.selectedCount >= data.deckSize ||
+                              selectedCount >= ownedCount)
                         }
-                        onClick={() => act('add', { card: card.id })}
+                        onClick={
+                          collectionMode
+                            ? undefined
+                            : () => act('add', { card: card.id })
+                        }
                       />
                     );
                   })}
