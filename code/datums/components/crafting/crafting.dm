@@ -145,12 +145,12 @@
 		if(istype(I, /obj/item/storage))
 			for(var/obj/item/SI in I.contents)
 				possible_tools += SI.type
-				actual_tools[SI.type] += SI //TA EDIT
+				actual_tools[SI.type] = SI //TA EDIT
 				if(SI.tool_behaviour)
 					present_qualities.Add(SI.tool_behaviour)
 
 		possible_tools += I.type
-		actual_tools[I.type] += I //TA EDIT
+		actual_tools[I.type] = I //TA EDIT
 
 		if(I.tool_behaviour)
 			present_qualities.Add(I.tool_behaviour)
