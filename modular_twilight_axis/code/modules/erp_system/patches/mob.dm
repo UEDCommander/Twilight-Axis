@@ -115,7 +115,7 @@
 	if(human_actor.is_erp_blocked_as_target())
 		return FALSE
 
-	if(actor.is_blocked_by_auto_song())
+	if(human_actor.is_blocked_by_auto_song())
 		if(!silent)
 			to_chat(actor, span_warning("I can't use the ERP panel while performing the song."))
 		return FALSE
