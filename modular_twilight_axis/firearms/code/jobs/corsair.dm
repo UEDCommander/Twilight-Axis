@@ -16,7 +16,7 @@
 	outfit = /datum/outfit/job/roguetown/wretch/twilight_corsair
 	category_tags = list(CTAG_WRETCH)
 	class_select_category = CLASS_CAT_RANGER
-	traits_applied = list(TRAIT_FIREARMS_MARKSMAN, TRAIT_DODGEEXPERT)
+	traits_applied = list(TRAIT_FIREARMS_MARKSMAN)
 	maximum_possible_slots = 2
 	classes = list("Kaper" = "During the Twilight War, you served aboard a Reichsmarine warship, intercepting, \
 	boarding and ravaging Golden Empire's trade vessels on Kaiser's orders. \
@@ -65,6 +65,7 @@
 	H.change_stat(STATKEY_CON, 2)
 	switch(classchoice)
 		if("Kaper")
+			ADD_TRAIT(H, TRAIT_DODGEEXPERT, ADVENTURER_TRAIT)
 			H.change_stat(STATKEY_SPD, 2)
 			H.adjust_skillrank_up_to(/datum/skill/combat/swords, SKILL_LEVEL_EXPERT, TRUE)
 			wrists = /obj/item/clothing/wrists/roguetown/bracers/leather/heavy
@@ -94,6 +95,7 @@
 					H.change_stat(STATKEY_SPD, 1)
 					H.adjust_skillrank_up_to(/datum/skill/combat/twilight_firearms, SKILL_LEVEL_MASTER, TRUE)
 		if("Wōkòu")
+			ADD_TRAIT(H, TRAIT_DODGEEXPERT, ADVENTURER_TRAIT)
 			H.change_stat(STATKEY_SPD, 2)
 			H.adjust_skillrank_up_to(/datum/skill/combat/swords, SKILL_LEVEL_EXPERT, TRUE)
 			mask = /obj/item/clothing/mask/rogue/facemask/steel/kazengun
@@ -123,13 +125,12 @@
 					H.adjust_skillrank_up_to(/datum/skill/combat/twilight_firearms, SKILL_LEVEL_MASTER, TRUE)
 
 		if("Reaver")
-			REMOVE_TRAIT(H, TRAIT_DODGEEXPERT, ADVENTURER_TRAIT)
 			ADD_TRAIT(H, TRAIT_MEDIUMARMOR, TRAIT_GENERIC)
 			shirt = /obj/item/clothing/suit/roguetown/armor/chainmail/hauberk
 			armor = /obj/item/clothing/suit/roguetown/armor/plate/cuirass/fluted
 			pants = /obj/item/clothing/under/roguetown/chainlegs
 			shoes = /obj/item/clothing/shoes/roguetown/boots/armor/iron
-			cloak = /obj/item/clothing/cloak/eastcloak2
+			cloak = /obj/item/clothing/cloak/darkcloak
 			wrists = /obj/item/clothing/wrists/roguetown/bracers/iron
 			gloves = /obj/item/clothing/gloves/roguetown/plate/iron
 			neck = /obj/item/clothing/neck/roguetown/chaincoif/chainmantle
