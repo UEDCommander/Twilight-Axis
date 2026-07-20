@@ -483,6 +483,19 @@
 	powder_loaded = FALSE
 	rammed = FALSE
 
+	var/skill = 0
+	if(user && isliving(user))
+		var/mob/living/L = user
+		skill = L.get_skill_level(/datum/skill/combat/twilight_firearms)
+	
+	var/misfire_chance = max(0, 25 - (skill * 5))
+	
+	if(prob(misfire_chance))
+		src.visible_message(span_danger("[src] разрывается на части!"))
+		explosion(get_turf(src), 1, 2, 4, 0, TRUE, FALSE, 2)
+		qdel(src)
+		return
+
 	if((world.time - last_fired) < cooldown)
 		barrel_integrity -= 2
 	else
