@@ -882,7 +882,7 @@ const RowView = ({
         background:
           'linear-gradient(90deg, rgba(45,30,18,0.92), rgba(116,91,58,0.78) 18%, rgba(72,55,35,0.84) 74%, rgba(22,19,18,0.9)), repeating-linear-gradient(0deg, rgba(255,255,255,0.05) 0 1px, transparent 1px 18px)',
         boxShadow: 'inset 0 0 16px rgba(0,0,0,0.55)',
-        overflow: 'hidden',
+        overflow: 'visible',
       }}
     >
       {weathered && (
@@ -1166,7 +1166,7 @@ const BattleBoard = ({ data }: { data: Data }) => (
         'radial-gradient(circle at 50% 48%, rgba(120,82,42,0.55), transparent 44%), linear-gradient(90deg, #17100b, #5a3b1e 9%, #2a1c12 50%, #5a3b1e 91%, #130d09)',
       boxShadow:
         'inset 0 0 0 2px rgba(255,255,255,0.08), inset 0 0 38px rgba(0,0,0,0.9), 0 12px 30px rgba(0,0,0,0.55)',
-      overflow: 'hidden',
+      overflow: 'visible',
     }}
   >
     <div
