@@ -1800,7 +1800,7 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	donat_tier = 2
 
 /datum/loadout_item/donator_strudel3
-	name = "Donator Kit - Etruscan Design Cloak - Required: Poncho (Only Woman, No Small Races)"
+	name = "Donator Kit - Etruscan Design Cloak - Required: Poncho (No Small Races)"
 	category = list("Плащи", "Донат")
 	path = /obj/item/enchantingkit/strudel3
 	donatitem = TRUE
