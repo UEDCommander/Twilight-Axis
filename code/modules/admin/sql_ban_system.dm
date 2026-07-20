@@ -160,8 +160,6 @@
 		return role
 	if(role == ROLE_CULT)
 		return "Zizo Cultist"
-	if(role == ROLE_LACKEY)
-		return "Zizo Cult Lackey"
 	var/list/linked_roles = ta_roleban_equivalent_roles(role)
 	linked_roles -= role
 	if(role == "Sergeant-at-Arms")
@@ -310,7 +308,7 @@
 		"Sidefolk" = ta_roleban_panel_list(GLOB.sidefolk_positions, null),
 		"Ghost and Other Roles" = list(ROLE_NECRO_SKELETON, ROLE_LICH_SKELETON, ROLE_UNBOUND_DEATHKNIGHT, ROLE_DARK_ITINERANT),
 		"Antagonist Positions" = ta_roleban_panel_list(list(ROLE_ASCENDANT, ROLE_ASPIRANT, ROLE_BANDIT, "Freeman", "Lost Grenzel", ROLE_NBEAST, ROLE_WEREWOLF, ROLE_LICH, ROLE_PREBEL, ROLE_CULT), null),
-		"Lesser Antagonst Positions" = list(ROLE_WRETCH, ROLE_DREAMWALKER, ROLE_GNOLL, ROLE_VAMPIRE, ROLE_LACKEY),
+		"Lesser Antagonst Positions" = list(ROLE_WRETCH, ROLE_DREAMWALKER, ROLE_GNOLL, ROLE_VAMPIRE),
 	)
 	for(var/group_name in group_sources)
 		var/list/display_roles = list()
