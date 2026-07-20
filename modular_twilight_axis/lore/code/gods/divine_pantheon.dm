@@ -101,7 +101,7 @@
 	domain = "Луна, знания, сумерки, аркана, контроль, сны."
 	desc = "Богиня знаний, ночи, Луны, и тайн. Первая владыка Арканы. Нок сестра-близнец перворожденной Астраты. Увидав впервые Луну, она нарекла её своим владением, и каждый раз возносит ее в небеса над Гриморией, чтобы осветить темную ночь для тех кто следует ей."
 	worshippers = "Жрецы Патриархата Двергейла, маги, ученые, писцы, амбициозные личности, исследователи."
-	miracles = list(/datum/action/cooldown/spell/touch/orison				= CLERIC_ORI,
+/*	miracles = list(/datum/action/cooldown/spell/touch/orison				= CLERIC_ORI,
 					/datum/action/cooldown/spell/noc/sight					= CLERIC_T0,
 					/datum/action/cooldown/spell/darkvision/miracle			= CLERIC_T0,
 					/datum/action/cooldown/spell/miracle/heal				= CLERIC_T1,
@@ -114,7 +114,7 @@
 					/datum/action/cooldown/spell/noc/spellpack				= CLERIC_T3,
 					/datum/action/cooldown/spell/noc/grimoire				= CLERIC_T4,
 					/obj/effect/proc_holder/spell/invoked/resurrect/noc		= CLERIC_T4,
-	)
+	)*/
 	confess_lines = list(
 		"НОК - ЭТО НОЧЬ!",
 		"НОК ВСЕ ВИДИТ!",
@@ -214,6 +214,19 @@
 	domain = "Смерть, жизнь, цикл, судьба."
 	desc = "Госпожа загробного мира, та-что-знает-всё, что было и что предстоит, средняя дочь Псайдона, что всегда оставалась в тени, без устали неся возложенное на неё отцом бремя."
 	worshippers = "Скорбящие, могильщики, мертвецы, философы."
+	miracles = list(/datum/action/cooldown/spell/touch/orison						= CLERIC_ORI,
+					/obj/effect/proc_holder/spell/invoked/necras_sight				= CLERIC_T0,
+					/datum/action/cooldown/spell/touch/shroud_of_tranquility = CLERIC_T0,
+					/datum/action/cooldown/spell/miracle/heal 						= CLERIC_T1,
+					/datum/action/cooldown/spell/miracle/bloodmiracle				= CLERIC_T1,
+					/obj/effect/proc_holder/spell/invoked/avert						= CLERIC_T1,
+					/obj/effect/proc_holder/spell/self/locate_dead 					= CLERIC_T1,
+					/obj/effect/proc_holder/spell/invoked/fog_ward					= CLERIC_T1,
+					/obj/effect/proc_holder/spell/invoked/raise_spirits_vengeance	= CLERIC_T2,
+					/datum/action/cooldown/spell/miracle/necra_consecrate			= CLERIC_T2,
+					/obj/effect/proc_holder/spell/invoked/bless_cross				= CLERIC_T3,
+					/obj/effect/proc_holder/spell/invoked/deaths_door				= CLERIC_T4
+	)
 	confess_lines = list(
 		"ВСЕ ДУШИ ПОПАДАЮТ К НЕКРЕ!",
 		"ЛЕДИ В ВУАЛИ - НАШ ПОСЛЕДНИЙ ПОКОЙ!",

@@ -10,15 +10,6 @@
 	if(world.time > last_fatigued + delay) //regen fatigue 
 		var/added = energy / max_energy
 		added = round(-10 + (added * - 40))
-	
-		if(ishuman(src))
-			var/mob/living/carbon/human/H = src
-			if(H.breath_remaining <= 0) added = 0 
-			
-			else if((H.is_swimming || H.is_underwater) && !H.resting && H.stat == CONSCIOUS)
-				added = 0 
-		
-		
 		if(src.climbing) // no stam regen while climbing guh
 			added = 0
 		if(HAS_TRAIT(src, TRAIT_MISSING_NOSE))
@@ -62,7 +53,7 @@
 		return TRUE
 	if(HAS_TRAIT(src, TRAIT_INFINITE_ENERGY))
 		return TRUE
-	if(m_intent == MOVE_INTENT_RUN && (mobility_flags & MOBILITY_STAND))
+	if(added < 0 && m_intent == MOVE_INTENT_RUN && (mobility_flags & MOBILITY_STAND))
 		if(isnull(buckled))
 			mind && mind.add_sleep_experience(/datum/skill/misc/athletics, (STAINT*0.02))
 	energy += added
@@ -108,13 +99,14 @@
 
 	return nutrition_amount
 
-/mob/living/stamina_add(added as num, emote_override, force_emote = TRUE) //call update_stamina here and set last_fatigued, return false when not enough fatigue left
+/mob/living/stamina_add(added as num, emote_override, force_emote = TRUE, energy_loss_mult = 0.6) // TA EDIT
 	if(HAS_TRAIT(src, TRAIT_INFINITE_STAMINA))
 		return TRUE
 
 	var/true_added = added
-	if(HAS_TRAIT(src, TRAIT_FORTITUDE))
-		added = added * 0.5
+	if(added > 0)
+		if(HAS_TRAIT(src, TRAIT_FORTITUDE))
+			added = added * 0.75
 
 	if(added < 0 && HAS_TRAIT(src, TRAIT_FROZEN_STAMINA))
 		added = 0
@@ -126,7 +118,7 @@
 
 	stamina = CLAMP(stamina+added, 0, max_stamina)
 	if(added > 0)
-		energy_add(added * -1)
+		energy_add(added * -energy_loss_mult) // TA EDIT
 		adjust_nutrition(-stamina_nutrition_mod(added))
 	if(added >= 5)
 		if(energy <= 0)
@@ -171,17 +163,6 @@
 		else
 			emote(emote_override, forced = force_emote)
 
-		var/turf/T = get_turf(src)
-		if(istype(T, /turf/open/water/transparent))
-			var/turf/below = GET_TURF_BELOW(T)
-			if(below && istype(below, /turf/open/water/transparent))
-				visible_message(span_danger("[src] loses all stamina and sinks into the depths!"))
-				forceMove(below)
-				set_resting(TRUE)
-			else
-				
-				set_resting(TRUE)
-
 		blur_eyes(2)
 		last_fatigued = world.time + 3 SECONDS //extra time before fatigue regen sets in
 		stop_attack()
@@ -196,7 +177,7 @@
 		if(energy <= 0)
 			addtimer(CALLBACK(src, PROC_REF(Knockdown), 30), 1 SECONDS)
 			var/area/rogue/our_area = get_area(src)
-			if(our_area.necra_area)
+			if(our_area && our_area.necra_area) // TA EDIT
 				src.extract_from_deaths_edge()
 		addtimer(CALLBACK(src, PROC_REF(Immobilize), 30), 1 SECONDS)
 		if(iscarbon(src))
@@ -254,6 +235,51 @@
 				continue
 			animate(whole_screen, transform = newmatrix, time = 1, easing = QUAD_EASING)
 			animate(transform = -newmatrix, time = 30, easing = QUAD_EASING)
+
+/mob/living/carbon/proc/freak_out_targeted(mob/target)
+	if(mob_timers["freakout"])
+		if(world.time < mob_timers["freakout"] + 10 SECONDS)
+			flash_fullscreen("stressflash")
+			return
+	if(HAS_TRAIT(src, TRAIT_NOMOOD))
+		return
+	mob_timers["freakout"] = world.time
+	shake_camera(src, 1, 3)
+	flash_fullscreen("stressflash")
+	changeNext_move(CLICK_CD_EXHAUSTED)
+	add_stress(/datum/stressevent/freakout)
+	emote("fatigue", forced = TRUE)
+	if(hud_used)
+		var/turf/T = get_turf(target)
+		var/target_x = (loc.x - T.x) * 32
+		var/target_y = (loc.y - T.y) * 32
+		var/matrix/skew = matrix(target_x, target_y, MATRIX_TRANSLATE)
+		skew.Scale(2.5)
+		var/matrix/newmatrix = skew
+		for(var/C in hud_used.plane_masters)
+			var/atom/movable/screen/plane_master/whole_screen = hud_used.plane_masters[C]
+			if(whole_screen.plane == HUD_PLANE)
+				continue
+			animate(whole_screen, transform = newmatrix, time = 3, easing = QUAD_EASING)
+			animate(transform = -newmatrix, time = 40, easing = QUAD_EASING)
+
+/mob/living/carbon/proc/freak_out_mimic(mob/target)
+	if(mob_timers["freakout"])
+		if(world.time < mob_timers["freakout"] + 10 SECONDS)
+			flash_fullscreen("stressflash")
+			return
+	if(HAS_TRAIT(src, TRAIT_NOMOOD))
+		return
+	mob_timers["freakout"] = world.time
+	shake_camera(src, 1, 3)
+	flash_fullscreen("stressflash")
+	changeNext_move(CLICK_CD_EXHAUSTED)
+	add_stress(/datum/stressevent/mimic_jumpscare)
+	var/randdelay = rand(5, 150)
+	var/balloon_text = pick("<font color='#ffffff'>WHAT IS THAT?!</font>","<font color='#ffffff'>WTF?!</font>","<font color='#ffffff'>WHAT?!</font>","<font color='#ffffff'>WHAT THE-?!</font>","<font color='#ffffff'>MIMIC?!</font>","<font color='#ffffff'>SERIOUSLY?!</font>","<font color='#ffffff'>REALLY?!</font>",)
+	spawn(randdelay)
+		balloon_alert_to_viewers(balloon_text, balloon_text, DEFAULT_MESSAGE_RANGE)
+		emote("scream", forced = TRUE)
 
 /mob/living/proc/stamina_reset()
 	stamina = 0

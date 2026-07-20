@@ -72,11 +72,20 @@
 
 	var/class_tempo_faction = null
 
+	var/tempo_capable = TRUE
+
 /datum/advclass/New()
 	if(ispath(age_mod) && !istype(age_mod))
 		var/datum/class_age_mod/newmod = new age_mod()
 		age_mod = newmod
 	. = ..()
+
+/mob/living/carbon/human/proc/get_advclass_datum()
+	RETURN_TYPE(/datum/advclass)
+	if(mind?.picked_advclass)
+		return mind.picked_advclass
+	if(advjob)
+		return SSrole_class_handler.get_advclass_by_name(advjob)
 
 /datum/advclass/proc/equipme(mob/living/carbon/human/H, dummy = FALSE)
 	// input sleeps....
@@ -107,8 +116,9 @@
 		ADD_TRAIT(H, trait, ADVENTURER_TRAIT)
 
 	if(noble_income)
+		var/already_has_income = !isnull(SStreasury.noble_incomes[H])
 		SStreasury.noble_incomes[H] = noble_income
-		SStreasury.grant_estate_income(H, noble_income, TRUE)
+		SStreasury.grant_estate_income(H, noble_income, !already_has_income)
 
 	if(adaptive_name)
 		H.adaptive_name = TRUE
@@ -248,4 +258,3 @@
 
 //Final proc in the set for really silly shit
 ///datum/advclass/proc/extra_slop_proc_ending(mob/living/carbon/human/H)
-

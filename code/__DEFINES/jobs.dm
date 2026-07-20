@@ -19,6 +19,8 @@
 
 #define JOB_DISPLAY_ORDER_DEFAULT 0
 
+#define HOMESTEADER_TITLE_COOLDOWN (15 MINUTES)
+
 #define NOBLEMEN			(1<<0)
 
 #define LORD		(1<<0)
@@ -84,7 +86,6 @@
 #define APOTHECARY	(1<<5)
 #define INNKEEPER	(1<<6)
 #define BATHMASTER	(1<<7)
-#define CRIER		(1<<8)
 #define APPRENTICE	(1<<9) //Readd the mage part if you are going to add any other role that uses this tag or use ASSOCIATE to avoid weird spacing.
 #define MAYOR	(1<<10) //TA_EDIT
 #define BAILIFF	(1<<11) //TA_EDIT
@@ -137,6 +138,8 @@
 
 #define SLOP				(1<<13)
 
+#define ATC					(1<<14)
+
 #define TESTER		(1<<0)
 
 
@@ -148,6 +151,7 @@
 #define JCOLOR_VANGUARD "#790f73"
 #define JCOLOR_CHURCH "#b0955d"
 #define JCOLOR_BURGHER "#759259"
+#define JCOLOR_ATC "#5b9bd5"
 #define JCOLOR_PEASANT "#685542"
 #define JCOLOR_SIDEFOLK "#aea176"
 #define JCOLOR_WANDERER  "#23763a"
@@ -166,10 +170,12 @@
 	"Vanguard" = JCOLOR_VANGUARD,\
 	"Church" = JCOLOR_CHURCH,\
 	"Burghres" = JCOLOR_BURGHER,\
+	"Azurian Trading Company" = JCOLOR_ATC,\
 	"Peasants" = JCOLOR_PEASANT,\
 	"Inquisition" = JCOLOR_INQUISITION,\
 	"Sidefolk" = JCOLOR_SIDEFOLK,\
 	"Wanderers" = JCOLOR_WANDERER,\
+	"Antagonists" = JCOLOR_ANTAGONIST,\
 )
 
 // Ducal Family
@@ -216,8 +222,11 @@
 #define JDO_ACOLYTE 5.4
 #define JDO_SEXTON 5.5
 
-// Town Burghers
+// Azurian Trading Company
 #define JDO_MERCHANT 6
+#define JDO_SHOPHAND 6.05
+
+// Town Burghers
 #define JDO_GUILDMASTER 6.1
 #define JDO_GUILDSMAN 6.2
 #define JDO_TAILOR 6.3
@@ -225,7 +234,6 @@
 #define JDO_APOTHECARY 6.5
 #define JDO_INNKEEPER 6.6
 #define JDO_BATHMASTER 6.7
-#define JDO_CRIER 6.8
 #define JDO_APPRENTICE 6.9
 #define JDO_MAYOR 7.0 //TA_EDIT
 #define JDO_BAILIFF 7.1 //TA_EDIT
@@ -235,7 +243,6 @@
 #define JDO_COOK 7.1
 #define JDO_TAPSTER 7.2
 #define JDO_SERVANT 7.3
-#define JDO_SHOPHAND 7.4
 #define JDO_SOILSON 7.5
 #define JDO_VILLAGER 7.6
 

@@ -48,7 +48,8 @@
 	response_harm_continuous = "kicks"
 	response_harm_simple = "kick"
 	faction = list(FACTION_ROGUEANIMAL, FACTION_NEUTRAL)
-	speed = 0.8
+	speed = 0
+	move_to_delay = 2
 	breedchildren = 0 //Yeah no, I'm not falling for this one.
 	dodgetime = 20
 	held_items = list(null, null)
@@ -103,6 +104,15 @@
 /mob/living/simple_animal/pet/familiar/restrained(ignore_grab)
 	return !isturf(src.loc)
 
+/mob/living/simple_animal/pet/familiar/become_item()
+	var/obj/item/mob_item/orb = ..()
+	orb.slot_flags = ITEM_SLOT_HIP|ITEM_SLOT_NECK|ITEM_SLOT_RING // little pendant-esque thing
+	orb.filters += filter(type = "drop_shadow", x=0, y=0, size=1, offset = 2, color = GLOW_COLOR_ARCANE)
+	orb.desc = "A small orb, containing the spirit of [name]."
+	orb.can_container = TRUE
+	orb.w_class = WEIGHT_CLASS_SMALL
+	return orb
+
 /mob/living/simple_animal/pet/familiar/Initialize()
 	. = ..()
 	ADD_TRAIT(src, TRAIT_NOFALLDAMAGE1, TRAIT_GENERIC)
@@ -154,8 +164,8 @@
 
 /mob/living/simple_animal/pet/familiar/proc/TryAddFlight()
 	if(movement_type & (FLYING | FLOATING))
-		verbs += list(/mob/living/simple_animal/proc/fly_up,
-		/mob/living/simple_animal/proc/fly_down)
+		add_verb(src, list(/mob/living/simple_animal/proc/fly_up,
+		/mob/living/simple_animal/proc/fly_down))
 
 // they can wear pouches and amulets around their neck, for sovl
 /mob/living/simple_animal/pet/familiar/can_equip(obj/item/I, slot, disable_warning, bypass_equip_delay_self)
@@ -442,7 +452,7 @@
 		span_info("As your flame grows, you can manifest it more violently, surging around you to burn anything unfortunate enough to be nearby.")
 	)
 	inherent_spell = list(/obj/effect/proc_holder/spell/invoked/incendiary_bite)
-	t1_spell = /obj/effect/proc_holder/spell/invoked/matthios_firebreath/infernal
+	t1_spell = /datum/action/cooldown/spell/matthios/raze/infernal
 	t2_spell = /obj/effect/proc_holder/spell/self/infernal_surge
 	var/healing_range = 1
 	var/static/list/acceptable_beds = list(/obj/structure/bed, /obj/structure/flora/roguetree/stump, /obj/item/bedsheet)
@@ -456,6 +466,11 @@
 	src.set_light_color(LIGHT_COLOR_FIRE)
 	if(src.light_system == STATIC_LIGHT)
 		src.update_light()
+	ADD_TRAIT(src, TRAIT_NOFIRE, "[type]")
+	ADD_TRAIT(src, TRAIT_NOBREATH, TRAIT_GENERIC)
+	ADD_TRAIT(src, TRAIT_TOXIMMUNE, TRAIT_GENERIC)
+	ADD_TRAIT(src, TRAIT_SILVER_WEAK, TRAIT_GENERIC)
+	weather_immunities += "lava"
 
 /mob/living/simple_animal/pet/familiar/infernal/is_aligned_leyline(obj/structure/leyline/ley)
 	return istype(ley, /obj/structure/leyline/normal/decap)
@@ -476,7 +491,7 @@
 	var/list/hearers_in_range = get_hearers_in_LOS(healing_range, src, RECURSIVE_CONTENTS_CLIENT_MOBS)
 	for(var/mob/living/carbon/human/human in hearers_in_range)
 		var/distance = get_dist(src, human)
-		if(distance > healing_range || human.construct)
+		if(distance > healing_range || HAS_TRAIT(owner, TRAIT_NOREGEN) || HAS_TRAIT(human, TRAIT_IRONMAN))
 			continue
 		if(!human.has_status_effect(/datum/status_effect/buff/campfire_stamina))
 			to_chat(human, span_info("The warmth of [src.name]'s flames comforts me, affording me a short rest. I would need to lie down on a bed to get a better rest."))
@@ -501,7 +516,7 @@
 	var/datum/skill/craft/cooking/cs = user?.get_skill_level(/datum/skill/craft/cooking)
 	var/cooktime_divisor = get_cooktime_divisor(cs)
 	if(istype(I, /obj/item/reagent_containers/food/snacks))
-		if(istype(I, /obj/item/reagent_containers/food/snacks/egg))
+		if(istype(I, /obj/item/reagent_containers/food/snacks/rogue/egg))
 			to_chat(user, "<span class='warning'>I wouldn't be able to cook this over the fire...</span>")
 			return FALSE
 		var/obj/item/A = user.get_inactive_held_item()
@@ -515,7 +530,6 @@
 			if(foundstab)
 				var/prob2spoil = 33
 				if(cs)
-					to_chat(world,span_warning("[cs]"))
 					prob2spoil = 1
 				var/already_rolled = FALSE
 				user.visible_message("<span class='notice'>[user] starts to cook [I] over [src.name]'s flame...</span>")

@@ -51,7 +51,8 @@
 		playsound(user, pick('sound/foley/waterwash (1).ogg','sound/foley/waterwash (2).ogg'), 70, FALSE)
 		if(do_after(user,2 SECONDS, target = src))
 			reagents.trans_to(I, reagents.total_volume)
-	return TRUE
+		return TRUE
+	. = ..()
 
 /obj/item/reagent_containers/glass/bucket/pot/aalloy
 	name = "decrepit pot"
@@ -59,7 +60,6 @@
 	icon_state = "apote"
 	volume = 120
 	color = "#bb9696"
-	sellprice = 25
 
 /obj/item/reagent_containers/glass/bucket/pot/stone
 	name = "stone pot"
@@ -92,7 +92,6 @@
 	dropshrink = 0.7
 	icon_state = "teapot"
 	volume = 120
-	sellprice = 20
 
 /obj/item/reagent_containers/glass/bucket/pot/teapot/getonmobprop(tag)
 	if(tag)
@@ -106,8 +105,7 @@
 	icon_state = "teapot"
 	fill_icon_thresholds = null
 	dropshrink = 1.0
-	volume = 99
-	sellprice = 0
+	volume = 120
 
 /obj/item/reagent_containers/glass/bucket/pot/carved/getonmobprop(tag)
 	if(tag)
@@ -121,7 +119,6 @@
 	icon_state = "teapot_jade"
 	fill_icon_thresholds = null
 	dropshrink = 1.0
-	sellprice = 60
 
 /obj/item/reagent_containers/glass/bucket/pot/carved/teapotamber
 	name = "amber teapot"
@@ -129,7 +126,6 @@
 	icon_state = "teapot_amber"
 	fill_icon_thresholds = null
 	dropshrink = 1.0
-	sellprice = 60
 
 /obj/item/reagent_containers/glass/bucket/pot/carved/teapotshell
 	name = "shell teapot"
@@ -137,7 +133,6 @@
 	icon_state = "teapot_shell"
 	fill_icon_thresholds = null
 	dropshrink = 1.0
-	sellprice = 20
 
 /obj/item/reagent_containers/glass/bucket/pot/carved/teapotrose
 	name = "rosestone teapot"
@@ -145,7 +140,6 @@
 	icon_state = "teapot_rose"
 	fill_icon_thresholds = null
 	dropshrink = 1.0
-	sellprice = 25
 
 /obj/item/reagent_containers/glass/bucket/pot/carved/teapotopal
 	name = "opal teapot"
@@ -153,7 +147,6 @@
 	icon_state = "teapot_opal"
 	fill_icon_thresholds = null
 	dropshrink = 1.0
-	sellprice = 90
 
 /obj/item/reagent_containers/glass/bucket/pot/carved/teapotonyxa
 	name = "onyxa teapot"
@@ -161,7 +154,6 @@
 	icon_state = "teapot_onyxa"
 	fill_icon_thresholds = null
 	dropshrink = 1.0
-	sellprice = 40
 
 /obj/item/reagent_containers/glass/bucket/pot/carved/teapotcoral
 	name = "heartstone teapot"
@@ -169,7 +161,6 @@
 	icon_state = "teapot_coral"
 	fill_icon_thresholds = null
 	dropshrink = 1.0
-	sellprice = 70
 
 /obj/item/reagent_containers/glass/bucket/pot/carved/teapotturq
 	name = "cerulite teapot"
@@ -177,7 +168,6 @@
 	icon_state = "teapot_turq"
 	fill_icon_thresholds = null
 	dropshrink = 1.0
-	sellprice = 85
 
 /obj/item/reagent_containers/glass/bucket/pot/teapot/examine()
 	. = ..()
@@ -197,7 +187,6 @@
 
 /obj/item/reagent_containers/glass/bucket/pot/teapot/fancy
 	icon_state = "teapot_fancy"
-	sellprice = 24
 
 /obj/item/reagent_containers/glass/bucket/pot/teapot/update_icon(dont_fill=FALSE)
 	return FALSE // There's no filling for teapot
@@ -209,7 +198,6 @@
 	icon = 'modular/Neu_Food/icons/cookware/unused.dmi'
 	icon_state = "stein"
 	volume = 60
-	sellprice = 10
 	force = 10
 	throwforce = 15
 
@@ -220,7 +208,6 @@
 	icon = 'modular/Neu_Food/icons/cookware/unused.dmi'
 	icon_state = "silverstein"
 	volume = 90
-	sellprice = 40
 	force = 15
 	throwforce = 20
 
@@ -232,7 +219,6 @@
 	icon = 'modular/Neu_Food/icons/cookware/unused.dmi'
 	icon_state = "blacksteelstein"
 	volume = 120
-	sellprice = 100
 	force = 20
 	throwforce = 25
 	smeltresult = /obj/item/ingot/blacksteel

@@ -1,13 +1,17 @@
 /datum/action/cooldown/spell/convert_heretic
-	name = "Convert The Downtrodden"
-	desc = "Convert an soul excommunicated, cursed, or forced onto apotasy to your cause. Requires a willing participant, and takes a long time to cast."
+	name = "Convert to Ecclesiarchy"
+	desc = "Initiate a lengthy ritual to convert a willing excommunicate, apostate, or cursed soul into your faith."
+	fluff_desc = "In the end, this was always a matter of faith. Not all Ecclesiarchs are thieves, madmen, cannibals, or tyrants; they are simply those who learned too early that humanity must shape the future of this dying world. Divinity was never meant to remain outside mortal hands."
 	button_icon = 'icons/mob/actions/roguespells.dmi'
 	button_icon_state = "convert_heretic"
-	invocations = list("Show this lost sheep the righteous path.")
+	invocations = list("Close your eyes and open your mind, this world is decaying but you shall be its last hope.")
 	invocation_type = INVOCATION_WHISPER
 	sound = 'sound/magic/bless.ogg'
+	charge_sound = 'sound/magic/chargingold.ogg'
 	primary_resource_type = SPELL_COST_DEVOTION
 	primary_resource_cost = 100
+	secondary_resource_type = SPELL_COST_DEVOTION
+	secondary_resource_cost = 100
 	cooldown_time = 20 MINUTES
 	charge_required = TRUE
 	charge_time = 10 SECONDS
@@ -15,10 +19,16 @@
 	associated_stat = null
 	self_cast_possible = FALSE
 
-/datum/action/cooldown/spell/convert_heretic/free
-	primary_resource_type = SPELL_COST_STAMINA
-	primary_resource_cost = 50
+/datum/action/cooldown/spell/convert_heretic/arcyne
+	primary_resource_type = SPELL_COST_ENERGY
+	primary_resource_cost = 125
+	invocations = list("Claude oculos, aperi mentem. Ex ruina spes surgi, mundus cadit, tu spes renova.")
 
+/datum/action/cooldown/spell/convert_heretic/free
+	primary_resource_type = SPELL_COST_ENERGY
+	primary_resource_cost = 125
+	invocations = list("Welcome to the righteous path. The future belongs to us.")
+	
 /datum/action/cooldown/spell/convert_heretic/is_valid_target(atom/cast_on)
 	return ishuman(cast_on)
 
@@ -40,6 +50,23 @@
 		to_chat(user, span_warning("[target] is already serving the greater good."))
 		reset_spell_cooldown()
 		return FALSE
+
+	if(istype(target.patron, /datum/patron/vheslyn)) //UNFORGIVABLE SIN, UNFORGIVABLE, DIE. DIE. DIE.
+		to_chat(user, span_userdanger("[target] is UNFORGIVABLE, my attempt to convert them to my patron, violently sunders my lux!"))
+		if(!HAS_TRAIT(user, TRAIT_NOPAIN))
+			user.emote("agony")
+		if(!HAS_TRAIT(user, TRAIT_NOMOOD))
+			user.freak_out()
+		playsound(user, 'sound/misc/lava_death.ogg', 100, TRUE)
+		user.adjust_fire_stacks(40, /datum/status_effect/fire_handler/fire_stacks/vheslyn) //YOU FUCKING DESERVE THIS
+		user.adjustFireLoss(120)//This will kill you, always.
+		user.Knockdown(30)
+		user.Jitter(30)
+		user.Stun(25)
+		user.ignite_mob()
+		explosion(get_turf(user), light_impact_range = 1, flame_range = 1, smoke = FALSE)
+		user.visible_message(span_danger("[user] is violently smited as profane flames engulf their entire body!"))
+		return TRUE
 
 	if(alert(target, "[user.real_name] is trying to convert you to their patron, [user.patron.name]. Do you accept?", "Conversion Request", "Yes", "No") != "Yes")
 		to_chat(user, span_warning("[target] refused your offer of conversion."))

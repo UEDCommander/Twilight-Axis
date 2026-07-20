@@ -19,6 +19,10 @@
 	altdetail_color = "#FFFFFF"
 	max_integrity = ARMOR_INT_HELMET_STEEL + 15
 
+/obj/item/clothing/head/roguetown/helmet/sallet/grenzelhoft/Initialize()
+	. = ..()
+	update_icon()
+
 /obj/item/clothing/head/roguetown/helmet/sallet/grenzelhoft/update_icon()
 	cut_overlays()
 	if(get_detail_tag())
@@ -51,6 +55,10 @@
 	altdetail_color = "#FFFFFF"
 	max_integrity = ARMOR_INT_HELMET_STEEL + 10
 
+/obj/item/clothing/head/roguetown/helmet/bascinet/etruscan/grenzelhoft/Initialize()
+	. = ..()
+	update_icon()
+
 /obj/item/clothing/head/roguetown/helmet/bascinet/etruscan/grenzelhoft/update_icon()
 	cut_overlays()
 	if(get_detail_tag())
@@ -81,6 +89,10 @@
 	color = "#FFFFFF"
 	detail_color = "#262927"
 	altdetail_color = "#FFFFFF"
+
+/obj/item/clothing/head/roguetown/helmet/blacksteel/modern/grenzelhoft/Initialize()
+	. = ..()
+	update_icon()
 
 /obj/item/clothing/head/roguetown/helmet/blacksteel/modern/grenzelhoft/update_icon()
 	cut_overlays()
@@ -115,6 +127,10 @@
 	altdetail_color = "#FFFFFF"
 	max_integrity = ARMOR_INT_HELMET_STEEL + 15
 
+/obj/item/clothing/head/roguetown/helmet/sallet/grenzelhoft/triumph/Initialize()
+	. = ..()
+	update_icon()
+
 /obj/item/clothing/head/roguetown/helmet/sallet/grenzelhoft/triumph/update_icon()
 	cut_overlays()
 	if(get_detail_tag())
@@ -146,6 +162,10 @@
 	altdetail_color = "#FFFFFF"
 	max_integrity = ARMOR_INT_HELMET_STEEL + 10
 
+/obj/item/clothing/head/roguetown/helmet/bascinet/etruscan/grenzelhoft/triumph/Initialize()
+	. = ..()
+	update_icon()
+
 /obj/item/clothing/head/roguetown/helmet/bascinet/etruscan/grenzelhoft/triumph/update_icon()
 	cut_overlays()
 	if(get_detail_tag())
@@ -176,6 +196,10 @@
 	detail_color = "#262927"
 	altdetail_color = "#FFFFFF"
 
+/obj/item/clothing/head/roguetown/helmet/blacksteel/modern/triumph/grenzelhoft/Initialize()
+	. = ..()
+	update_icon()
+
 /obj/item/clothing/head/roguetown/helmet/blacksteel/modern/triumph/grenzelhoft/update_icon()
 	cut_overlays()
 	if(get_detail_tag())
@@ -197,8 +221,9 @@
 	name = "grenzelhoftian hat with steel sallet"
 	result = list(/obj/item/clothing/head/roguetown/helmet/sallet/grenzelhoft)
 	reqs = list(/obj/item/clothing/head/roguetown/grenzelhofthat = 1,
-	            /obj/item/clothing/head/roguetown/helmet/sallet = 1)
+				/obj/item/clothing/head/roguetown/helmet/sallet = 1)
 	craftdiff = 0
+	skip_quality = TRUE
 
 /datum/crafting_recipe/roguetown/sewing/grenzelhelm/off
 	name = "take hat off steel sallet"
@@ -206,14 +231,16 @@
 	reqs = list(/obj/item/clothing/head/roguetown/helmet/sallet/grenzelhoft = 1)
 	bypass_dupe_test = TRUE
 	craftdiff = 0
+	skip_quality = TRUE
 
 /datum/crafting_recipe/roguetown/sewing/grenzelklapper
 	name = "grenzelhoftian hat with klappvisier"
 	result = list(/obj/item/clothing/head/roguetown/helmet/bascinet/etruscan/grenzelhoft)
 	reqs = list(/obj/item/clothing/head/roguetown/grenzelhofthat = 1,
-	            /obj/item/clothing/head/roguetown/helmet/bascinet/etruscan = 1)
+				/obj/item/clothing/head/roguetown/helmet/bascinet/etruscan = 1)
 	bypass_dupe_test = TRUE
 	craftdiff = 0
+	skip_quality = TRUE
 
 /datum/crafting_recipe/roguetown/sewing/grenzelklapper/off
 	name = "take hat off etruscan bascinet"
@@ -221,14 +248,16 @@
 	reqs = list(/obj/item/clothing/head/roguetown/helmet/bascinet/etruscan/grenzelhoft = 1)
 	bypass_dupe_test = TRUE
 	craftdiff = 0
+	skip_quality = TRUE
 
 /datum/crafting_recipe/roguetown/sewing/grenzelblack
 	name = "grenzelhoftian hat with blacksteel armet"
 	result = list(/obj/item/clothing/head/roguetown/helmet/blacksteel/modern/grenzelhoft)
 	reqs = list(/obj/item/clothing/head/roguetown/grenzelhofthat = 1,
-	            /obj/item/clothing/head/roguetown/helmet/blacksteel/modern = 1)
+				/obj/item/clothing/head/roguetown/helmet/blacksteel/modern = 1)
 	bypass_dupe_test = TRUE
 	craftdiff = 0
+	skip_quality = TRUE
 
 ///////// CRAFTING DATUMS FOR PLUME HATS, TRIUMPHED /////////
 
@@ -236,8 +265,9 @@
 	name = "grenzelhoftian beret with steel sallet"
 	result = list(/obj/item/clothing/head/roguetown/helmet/sallet/grenzelhoft/triumph)
 	reqs = list(/obj/item/clothing/head/roguetown/grenzelhofthat/triumph = 1,
-	            /obj/item/clothing/head/roguetown/helmet/sallet = 1)
+				/obj/item/clothing/head/roguetown/helmet/sallet = 1)
 	craftdiff = 0
+	skip_quality = TRUE
 
 /datum/crafting_recipe/roguetown/sewing/grenzelhelm/triumph/off
 	name = "take beret off steel sallet"
@@ -245,14 +275,16 @@
 	reqs = list(/obj/item/clothing/head/roguetown/helmet/sallet/grenzelhoft/triumph = 1)
 	bypass_dupe_test = TRUE
 	craftdiff = 0
+	skip_quality = TRUE
 
 /datum/crafting_recipe/roguetown/sewing/grenzelklapper/triumph
 	name = "grenzelhoftian beret with klappvisier"
 	result = list(/obj/item/clothing/head/roguetown/helmet/bascinet/etruscan/grenzelhoft/triumph)
 	reqs = list(/obj/item/clothing/head/roguetown/grenzelhofthat/triumph = 1,
-	            /obj/item/clothing/head/roguetown/helmet/bascinet/etruscan = 1)
+				/obj/item/clothing/head/roguetown/helmet/bascinet/etruscan = 1)
 	bypass_dupe_test = TRUE
 	craftdiff = 0
+	skip_quality = TRUE
 
 /datum/crafting_recipe/roguetown/sewing/grenzelklapper/triumph/off
 	name = "take beret off etruscan bascinet"
@@ -260,12 +292,14 @@
 	reqs = list(/obj/item/clothing/head/roguetown/helmet/bascinet/etruscan/grenzelhoft/triumph = 1)
 	bypass_dupe_test = TRUE
 	craftdiff = 0
+	skip_quality = TRUE
 
 /datum/crafting_recipe/roguetown/sewing/grenzelblack/triumph
 	name = "grenzelhoftian beret with blacksteel armet"
 	result = list(/obj/item/clothing/head/roguetown/helmet/blacksteel/modern/grenzelhoft/triumph)
 	reqs = list(/obj/item/clothing/head/roguetown/grenzelhofthat/triumph = 1,
-	            /obj/item/clothing/head/roguetown/helmet/blacksteel/modern = 1)
+				/obj/item/clothing/head/roguetown/helmet/blacksteel/modern = 1)
 	bypass_dupe_test = TRUE
 	craftdiff = 0
+	skip_quality = TRUE
 

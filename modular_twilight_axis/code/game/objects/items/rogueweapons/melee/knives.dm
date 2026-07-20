@@ -3,7 +3,7 @@
 	intent_intdamage_factor = 1.35 // I HAVE NO PICK BUT I MUST KILL
 	swingdelay = 10
 	clickcd = 10
-	penfactor = 30
+	penfactor = PEN_MEDIUM
 
 /datum/intent/dagger/cut/dendor // me like cut
 	damfactor = 1.1
@@ -130,11 +130,15 @@
 	var/last_cut = 0
 	var/last_drug = 0
 
+/obj/item/rogueweapon/huntingknife/idagger/steel/baotha/get_examine_highlight_status()
+	return list(EXAMINEHIGHLIGHT_HERESYSEVERITY_ALARMING, HERESYDESC_BAOTHA_WEAPON)
+
 /obj/item/rogueweapon/huntingknife/idagger/steel/baotha/Initialize()
 	. = ..()
 	icon_state = "baotha_knife1"
-	addtimer(CALLBACK(src, PROC_REF(icon_proc)), wait = (1 SECONDS))
+	addtimer(CALLBACK(src, "icon_proc"), wait = (1 SECONDS))
 	AddComponent(/datum/component/cursed_item, TRAIT_CRACKHEAD, "KNIFE")
+	RegisterSignal(src, COMSIG_ITEM_ATTACK_EFFECT_SELF, PROC_REF(on_hit_effects))
 
 /obj/item/rogueweapon/huntingknife/idagger/steel/baotha/proc/icon_proc()
 	icon_state = "baotha_knife2"
@@ -151,32 +155,88 @@
 		else
 			to_chat(user, "<span class='notice'>I losing concentration!</span>")
 
-/obj/item/rogueweapon/huntingknife/idagger/steel/baotha/pre_attack(mob/living/carbon/human/target, mob/living/user = usr, params)
-	if(!istype(target))
-		return FALSE
-	var/list/drugs = list(/datum/reagent/ozium,
-						/datum/reagent/moondust)
-	var/random_drug = pick(drugs)
-	if(HAS_TRAIT(target, TRAIT_PSYCHOSIS))
-		ADD_TRAIT(target, TRAIT_PSYCHOSIS, "baothaknife")
-		addtimer(CALLBACK(src, PROC_REF(baothapsychosis), target), wait = (1 MINUTES))
-	target.hallucination += rand(1,60)
-	to_chat(target, span_warning(pick("Is this TRVE??","IDDQD","DAFUQ?","I am NOT meant to see this.","What... WHAT is this?","This doesn't make SENSE.","I don't UNDERSTAND.","Why does it LOOK like that?","Something is WRONG here.","I can't make SENSE of this.","This isn't RIGHT.","What am I looking at?","None of THIS adds up.","I shouldn't be SEEING this.","This feels... INCORRECT.","Why is everything like this?","I CAN'T process this.","This ISN'T how it should be.","I don't get it.","What is happening?","This is all WRONG.","I CAN'T tell what's REAL.","Why does it feel off?","I don't recognize this.","This SHOULDN'T exist.","What is THIS supposed to be?","I can't FOLLOW this.","This isn't making sense anymore.","I think SOMETHING is broke.", "Why can't I understand THIS?", "This feels IMPOSSIBLE.", "I don't KNOW what I'm seeing.")))
-	target.Jitter(5)
-	if(prob(50))
-		target.emote(pick("giggle","laugh","chuckle"))
-	if(last_cut + 10 SECONDS >= world.time)
-		return FALSE
-	target.blur_eyes(5)
-	target.adjust_blurriness(10)
-	target.adjustToxLoss(10)
-	last_cut = world.time
-	if(last_drug + 1 MINUTES >= world.time)
-		return FALSE
-	target.reagents.add_reagent(random_drug, 2)
-	last_drug = world.time
-	return FALSE
+/obj/item/rogueweapon/huntingknife/idagger/steel/baotha/proc/on_hit_effects(obj/item/source, mob/living/user, obj/item/bodypart/affecting, intent, mob/living/victim, selzone)
+	SIGNAL_HANDLER
+	
+	if(!istype(victim, /mob/living/carbon))
+		return
 
-/proc/baothapsychosis(var/mob/living/carbon/human/target)
+	var/mob/living/carbon/human/target = victim
+	var/drug = /datum/reagent/neurotoxin 
+	var/selected_hallucination = pick(list(
+		"Is this TRVE??", "IDDQD", "DAFUQ?", "I am NOT meant to see this.",
+		"What... WHAT is this?", "This doesn't make SENSE.", "I don't UNDERSTAND.",
+		"Why does it LOOK like that?", "Something is WRONG here.", "This isn't RIGHT.",
+		"What am I looking at?", "None of THIS adds up.", "I shouldn't be SEEING this.",
+		"This feels... INCORRECT.", "Why is everything like this?", "I CAN'T process this.",
+		"This ISN'T how it should be.", "I don't get it.", "What is happening?",
+		"This is all WRONG.", "I CAN'T tell what's REAL.", "Why does it feel off?",
+		"I don't recognize this.", "This SHOULDN'T exist.", "What is THIS supposed to be?",
+		"I can't FOLLOW this.", "This isn't making sense anymore.", "I think SOMETHING is broke.",
+		"Why can't I understand THIS?", "This feels IMPOSSIBLE.", "I don't KNOW what I'm seeing."
+	))
+
+	if(!HAS_TRAIT(target, TRAIT_PSYCHOSIS))
+		ADD_TRAIT(target, TRAIT_PSYCHOSIS, "baothaknife")
+		addtimer(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(baothapsychosis), target), wait = 1 MINUTES)
+
+	target.hallucination = rand(1,60)
+	to_chat(target, span_warning(selected_hallucination))
+	target.Jitter(5)
+
+	if(prob(50))
+		addtimer(CALLBACK(target, "emote", pick("giggle","laugh","chuckle")), 0)
+
+	if(last_cut + 10 SECONDS >= world.time) return
+	//target.blur_eyes(5)
+	//target.adjust_blurriness(10)
+	target.adjustToxLoss(9)
+	last_cut = world.time
+	if(last_drug + 8 SECONDS >= world.time) return
+	target.reagents.add_reagent(drug, 1.6)
+	last_drug = world.time
+
+/proc/baothapsychosis(mob/living/carbon/target)
+	if(QDELETED(target))
+		return
+
 	REMOVE_TRAIT(target, TRAIT_PSYCHOSIS, "baothaknife")
 
+/datum/reagent/neurotoxin
+	name = "Neurotoxin"
+	description = "A strong neurotoxin that puts the subject into a death-like state."
+	color = "#2E2E61" // rgb: 46, 46, 97
+	metabolization_rate = 0.05
+	harmful = TRUE
+
+/datum/reagent/neurotoxin/on_mob_life(mob/living/carbon/M)
+	var/amt = volume 
+
+	if(amt >= 8)
+		if(prob(30))
+			to_chat(M, span_warning("WHAT THE-.. I CANT FEEL MY BODY!"))
+		M.Paralyze(600, 0)
+		M.emote("agony")
+
+	else if(amt >= 7)
+		if(prob(15))
+			to_chat(M, span_warning("I'M SO WEAK NOW! STOP IT!!.."))
+		M.apply_status_effect(/datum/status_effect/debuff/exposed)
+		M.Slowdown(5)
+
+	else if(amt >= 5)
+		M.energy_add(-20)
+		M.blur_eyes(4)
+		if(prob(15))
+			to_chat(M, span_warning("THIS ACID!! I.. Im really getting weaker a lot.. "))
+
+	else if(amt >= 2.1)
+		M.energy_add(-15)
+		if(prob(15))
+			to_chat(M, span_warning("I feel myself weaker.."))
+
+	else if(amt >= 1.1)
+		if(prob(12))
+			to_chat(M, span_warning("Agh.. I feel weak in my body.."))
+
+	return ..()

@@ -21,16 +21,17 @@
 
 /datum/intent/shoot/bow/get_chargetime() //this handles how long it takes for us to fully aim our bow. damage is handled below in /obj/item/gun/ballistic/revolver/grenadelauncher/bow/process_fire
 	if(mastermob && chargetime)
+		var/obj/item/gun/ballistic/revolver/grenadelauncher/bow/bow = masteritem
+		var/scaling_skill = istype(bow) ? bow.ranged_skill : /datum/skill/combat/bows
 		var/newtime = 0
-		newtime = ((newtime + 10) - (mastermob.get_skill_level(/datum/skill/combat/bows) * (2)))
+		newtime = ((newtime + 10) - (mastermob.get_skill_level(scaling_skill) * (2)))
 		if(strength_check == TRUE)
 			newtime = ((newtime + 10) - (mastermob.STASTR / 2))
 		else
 			newtime = newtime
 		newtime = ((newtime + 20) - (mastermob.STAPER))
-		var/obj/item/gun/ballistic/gun = masteritem
-		if(istype(gun) && gun.chambered)
-			newtime *= gun.chambered.charge_time_mult
+		if(istype(bow) && bow.chambered)
+			newtime *= bow.chambered.charge_time_mult
 		if(newtime > 1)
 			return newtime //this value is how fast we can accurately shoot a bow. most builds will turn up with about 6 - 12 on non heavy bows.
 		else
@@ -62,16 +63,17 @@
 
 /datum/intent/arc/bow/get_chargetime() //same calc as above, but with a higher absolute floor for how fast you can shoot
 	if(mastermob && chargetime)
+		var/obj/item/gun/ballistic/revolver/grenadelauncher/bow/bow = masteritem
+		var/scaling_skill = istype(bow) ? bow.ranged_skill : /datum/skill/combat/bows
 		var/newtime = 0
-		newtime = ((newtime + 10) - (mastermob.get_skill_level(/datum/skill/combat/bows) * (2)))
+		newtime = ((newtime + 10) - (mastermob.get_skill_level(scaling_skill) * (2)))
 		if(strength_check == TRUE)
 			newtime = ((newtime + 10) - (mastermob.STASTR / 2))
 		else
 			newtime = newtime
 		newtime = ((newtime + 20) - (mastermob.STAPER))
-		var/obj/item/gun/ballistic/gun = masteritem
-		if(istype(gun) && gun.chambered)
-			newtime *= gun.chambered.charge_time_mult
+		if(istype(bow) && bow.chambered)
+			newtime *= bow.chambered.charge_time_mult
 		if(newtime > 3)
 			return newtime
 		else
@@ -83,14 +85,15 @@
 	strength_check = TRUE
 
 /obj/item/gun/ballistic/revolver/grenadelauncher/bow/get_npc_chargetime(mob/living/user)
-	var/newtime = (10 - user.get_skill_level(/datum/skill/combat/bows) * 2) + (10 - user.STASTR / 2) + (20 - user.STAPER)
+	var/newtime = (10 - user.get_skill_level(ranged_skill) * 2) + (10 - user.STASTR / 2) + (20 - user.STAPER)
 	if(chambered)
 		newtime *= chambered.charge_time_mult
-	return max(1, newtime) * ARCHER_NPC_ROF_PENALTY
+	return max(ARCHER_NPC_MIN_BOW_CHARGETIME, newtime) * ARCHER_NPC_ROF_PENALTY
 
 //bow objs ฅ^•ﻌ•^ฅ
 
 /obj/item/gun/ballistic/revolver/grenadelauncher/bow
+	has_item_quality = TRUE
 	name = "crude selfbow"
 	desc = "This roughly hewn selfbow is just a bit too little of everything. Too little length, \
 	too little poundage, too slow a shot."
@@ -119,6 +122,35 @@
 	obj_flags = UNIQUE_RENAME
 	var/heavy_bow = FALSE //used for adding a STR check to the charge time of a bow
 	cartridge_articles = "an"
+	var/spill_ammo_on_drop = TRUE
+	var/ranged_skill = /datum/skill/combat/bows
+	var/datum/special_intent/special
+
+/obj/item/gun/ballistic/revolver/grenadelauncher/bow/equipped(mob/user, slot) //TA EDIT START
+	. = ..()
+	if(slot == ITEM_SLOT_HANDS)
+		if(HAS_TRAIT(user, TRAIT_BOW_DOUBLESHOT))
+			if(!istype(special, /datum/special_intent/range_special/bow_doubleshot))
+				special = new /datum/special_intent/range_special/bow_doubleshot()
+				
+		else if(HAS_TRAIT(user, TRAIT_BOW_LONGSHOT))
+			if(!istype(special, /datum/special_intent/range_special/bow_longshot))
+				special = new /datum/special_intent/range_special/bow_longshot()
+		
+		else if(HAS_TRAIT(user, TRAIT_BOW_BACKSTEP))
+			if(!istype(special, /datum/special_intent/range_special/bow_backstep))
+				special = new /datum/special_intent/range_special/bow_backstep()
+
+		else
+			special = null
+
+/obj/item/gun/ballistic/revolver/grenadelauncher/bow/Destroy()
+	if(special)
+		qdel(special)
+		special = null
+
+	return ..()//TA EDIT END
+
 
 /obj/item/gun/ballistic/revolver/grenadelauncher/bow/get_mechanics_examine(mob/user)
 	. += span_info("Bows increase in damage and accuracy the higher your <b>PERCEPTION</b>.")
@@ -217,16 +249,17 @@
 /obj/item/gun/ballistic/revolver/grenadelauncher/bow/shoot_with_empty_chamber()
 	return
 
-/obj/item/gun/ballistic/revolver/grenadelauncher/bow/dropped()
+/obj/item/gun/ballistic/revolver/grenadelauncher/bow/dropped(mob/user, silent)
 	. = ..()
-	if(chambered)
+	special = null
+	if(chambered && spill_ammo_on_drop)
 		chambered = null
 		var/num_unloaded = 0
 		for(var/obj/item/ammo_casing/CB in get_ammo_list(FALSE, TRUE))
 			CB.forceMove(drop_location())
 //			CB.bounce_away(FALSE, NONE)
 			num_unloaded++
-		if (num_unloaded)
+		if(num_unloaded)
 			update_icon()
 
 /obj/item/gun/ballistic/revolver/grenadelauncher/bow/process_fire(atom/target, mob/living/user, message = TRUE, params = null, zone_override = "", bonus_spread = 0)
@@ -244,7 +277,7 @@
 		var/obj/projectile/BB = CB.BB
 		BB.accuracy += accfactor * (user.STAPER - 9) * 4 // 9+ PER gives +4 per level. Exponential.
 		BB.bonus_accuracy += (user.STAPER - 8) * 3 // 8+ PER gives +3 per level. Does not decrease over range.
-		BB.bonus_accuracy += (user.get_skill_level(/datum/skill/combat/bows) * 5) // +5 per Bow level.
+		BB.bonus_accuracy += (user.get_skill_level(ranged_skill) * 5) // +5 per skill level.
 
 		if(user.client && user.client.chargedprog < 100)
 			BB.damage -= (BB.damage * (user.client.chargedprog / 100))

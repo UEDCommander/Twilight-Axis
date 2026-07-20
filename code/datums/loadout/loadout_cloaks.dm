@@ -19,6 +19,11 @@
 	path = /obj/item/clothing/cloak/tabard/stabard/surcoat/short
 	sort_category = "Cloaks"
 
+/datum/loadout_item/pouched_suspenders
+	name = "Pouched Suspenders"
+	path = /obj/item/clothing/cloak/suspenders
+	sort_category = "Cloaks"
+
 /datum/loadout_item/cape
 	name = "Cape"
 	path = /obj/item/clothing/cloak/cape
@@ -187,5 +192,10 @@
 /datum/loadout_item/maidapron
 	name = "Maid Apron"
 	path = /obj/item/clothing/cloak/apron/waist/fancymaid
+	sort_category = "Cloaks"
+
+/datum/loadout_item/wicker
+	name = "Wicker Cloak"
+	path = /obj/item/clothing/cloak/wickercloak
 	sort_category = "Cloaks"
 */

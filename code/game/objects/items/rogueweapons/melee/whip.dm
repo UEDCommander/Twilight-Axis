@@ -38,7 +38,7 @@
 //Lash = default, can't dismember, so more range and some pen.
 /datum/intent/whip/lash
 	name = "lash"
-	desc = "Lash the whip against a target from afar. </br>Uniquely deals lashing wounds, which inflicts tremendous blood loss and pain onto the target. </br>Critical hits leave permenant scars, unremovable under most circumstances."
+	desc = "Lash the whip against a target from afar. </br>Uniquely deals lashing wounds, which inflicts tremendous blood loss and pain onto the target."
 	blade_class = BCLASS_LASHING
 	attack_verb = list("lashes", "cracks")
 	hitsound = list('sound/combat/hits/blunt/flailhit.ogg')
@@ -48,6 +48,8 @@
 	reach = 3
 	icon_state = "inlash"
 	item_d_type = "slash"
+	effective_range = 1
+	effective_range_type = EFF_RANGE_ABOVE
 
 //Exclusive variant to whips with alloyed tips and high Strength requirements. On par with a traditional lash, but can dismember from afar.
 /datum/intent/whip/lash/master
@@ -70,6 +72,8 @@
 	reach = 2
 	icon_state = "incrack"
 	item_d_type = "slash"
+	effective_range = 1
+	effective_range_type = EFF_RANGE_ABOVE
 
 //Bludgeon = Sidegrade of the Crack that functions like a ranged mace. Unique to the Nagaika, or the Steppsman's whip.
 /datum/intent/whip/crack/blunt
@@ -85,7 +89,7 @@
 //Punish = Non-lethal sorta damage.
 /datum/intent/whip/punish
 	name = "punish"
-	desc = "Lash the whip against a target from afar. </br>Uniquely deals lashing wounds, which inflicts tremendous pain onto the target. </br>Critical hits leave permenant scars, unremovable under most circumstances."
+	desc = "Lash the whip against a target from afar. </br>Uniquely deals lashing wounds, which inflicts tremendous pain onto the target."
 	blade_class = BCLASS_PUNISH
 	attack_verb = list("lashes", "cracks")
 	hitsound = list('sound/combat/hits/blunt/flailhit.ogg')
@@ -139,6 +143,16 @@
 	minstr = 11
 	possible_item_intents = list(/datum/intent/whip/lash/master, /datum/intent/whip/crack, /datum/intent/whip/punish)
 	smeltresult = /obj/item/ingot/bronze
+
+/obj/item/rogueweapon/whip/blacksteel
+	name = "blacksteel whip"
+	desc = "An elegant whip, corded from besilked leather and tipped with blacksteel. Too refined for torture, too precious for combat; what is one to do with such an enigmatic tool?"
+	icon_state = "bs_whip"
+	force = 23
+	possible_item_intents = list(/datum/intent/whip/lash/master, /datum/intent/whip/crack, /datum/intent/whip/punish)
+	minstr = 9
+	wdefense = 1
+	smeltresult = /obj/item/ingot/blacksteel
 
 /obj/item/rogueweapon/whip/antique/psywhip
 	name = "Daybreak"
@@ -200,6 +214,17 @@
 	AddComponent(\
 		/datum/component/silverbless,\
 		pre_blessed = BLESSING_NONE,\
+		silver_type = SILVER_PSYDONIAN,\
+		added_force = 0,\
+		added_blade_int = 0,\
+		added_int = 50,\
+		added_def = 0,\
+	)
+
+/obj/item/rogueweapon/whip/psywhip_lesser/preblessed/ComponentInitialize()
+	AddComponent(\
+		/datum/component/silverbless,\
+		pre_blessed = BLESSING_PSYDONIAN,\
 		silver_type = SILVER_PSYDONIAN,\
 		added_force = 0,\
 		added_blade_int = 0,\

@@ -32,12 +32,12 @@
 
 /datum/supply_pack/rogue/merc_weapons/naledistaff
 	name = "Naledi Warstaff"
-	cost = 140
+	cost = 240
 	contains = list(/obj/item/rogueweapon/woodstaff/implement/grand/naledi)
 
 /datum/supply_pack/rogue/merc_weapons/grenzelstaff
 	name = "Grenzelhoftian Blacksteel Staff"
-	cost = 140
+	cost = 110
 	contains = list(/obj/item/rogueweapon/woodstaff/implement/greater/blacksteel)
 
 /datum/supply_pack/rogue/merc_weapons/glaive
@@ -66,7 +66,8 @@
 	contains = list(/obj/item/rogueweapon/sword/sabre/hook)
 
 /datum/supply_pack/rogue/merc_weapons/hwando
-	name = "Hwando and iron-lined scabbard"
+	name = "Hwando and Scabbard"
+	no_name_quantity = TRUE
 	cost = 250
 	contains = list(
 		/obj/item/rogueweapon/sword/sabre/mulyeog,
@@ -74,15 +75,21 @@
 	)
 
 /datum/supply_pack/rogue/merc_weapons/ssangsudo
-	name = "Ssangsudo and ceremonial scabbard"
+	name = "Ssangsudo and Scabbard"
+	no_name_quantity = TRUE
 	cost = 250
 	contains = list(
 		/obj/item/rogueweapon/sword/long/kriegmesser/ssangsudo,
 		/obj/item/rogueweapon/scabbard/sword/kazengun/noparry
 	)
+/datum/supply_pack/rogue/merc_weapons/kriegmesser/zybantine
+	name = "Zybantine Heavy Scimitar"
+	cost = 70
+	contains = list(/obj/item/rogueweapon/sword/long/kriegmesser/zybantine)
 
 /datum/supply_pack/rogue/merc_weapons/kodachi
-	name = "Kodachi and traditional scabbard"
+	name = "Kodachi and Scabbard"
+	no_name_quantity = TRUE
 	cost = 150
 	contains = list(
 		/obj/item/rogueweapon/sword/short/kazengun,
@@ -90,7 +97,8 @@
 	)
 
 /datum/supply_pack/rogue/merc_weapons/tanto
-	name = "Tanto and traditional sheathe"
+	name = "Tanto and Sheathe"
+	no_name_quantity = TRUE
 	cost = 120 // This is just a reskinned sail dagger, but this one comes with a sheathe.
 	contains = list(
 		/obj/item/rogueweapon/huntingknife/idagger/steel/kazengun,

@@ -52,6 +52,11 @@
 	boobed = TRUE
 	flags_inv= HIDEBOOB|HIDECROTCH
 	body_parts_covered = CHEST|GROIN|ARMS|VITALS
+	adjustable = CAN_CADJUST
+
+/obj/item/clothing/suit/roguetown/shirt/undershirt/priest/ComponentInitialize()
+	..()
+	AddComponent(/datum/component/adjustable_clothing, CHEST|GROIN|ARMS|VITALS, null, null, 'sound/foley/cloth_wipe (1).ogg', null, UPD_CHEST)
 
 /obj/item/clothing/suit/roguetown/armor/vestments_padded
 	name = "padded undervestments"
@@ -64,7 +69,7 @@
 	l_sleeve_status = SLEEVE_NORMAL
 	allowed_sex = list(MALE, FEMALE)
 	boobed = TRUE
-	flags_inv= HIDEBOOB|HIDECROTCH
+	flags_inv = HIDEBOOB|HIDECROTCH
 	body_parts_covered = CHEST|GROIN|ARMS|VITALS
 	max_integrity = ARMOR_INT_CHEST_LIGHT_BASE
 	armor = ARMOR_PADDED_BAD
@@ -73,6 +78,11 @@
 	break_sound = 'sound/foley/cloth_rip.ogg'
 	drop_sound = 'sound/foley/dropsound/cloth_drop.ogg'
 	sewrepair = TRUE
+	adjustable = CAN_CADJUST
+
+/obj/item/clothing/suit/roguetown/armor/vestments_padded/ComponentInitialize()
+	..()
+	AddComponent(/datum/component/adjustable_clothing, CHEST|GROIN|ARMS|VITALS, null, null, 'sound/foley/cloth_wipe (1).ogg', null, UPD_CHEST)
 
 /obj/item/clothing/suit/roguetown/shirt/undershirt/black
 	color = CLOTHING_BLACK
@@ -206,7 +216,7 @@
 	icon = 'icons/roguetown/clothing/shirts_royalty.dmi'
 	mob_overlay_icon = 'icons/roguetown/clothing/onmob/shirts_royalty.dmi'
 	name = "royal gown"
-	desc = "An elaborate ball gown, a favoured fashion of queens and elevated nobility in Enigma."
+	desc = "An elaborate ball gown, a favoured fashion of queens and elevated nobility throughout Psydonia." //Enigma references still exist in code, those are gonna need the chop.
 	body_parts_covered = CHEST|GROIN|ARMS|VITALS
 	icon_state = "royaldress"
 	sleeved = 'icons/roguetown/clothing/onmob/helpers/sleeves_shirts_royalty.dmi'
@@ -340,6 +350,10 @@
 	detail_color = "#45749d"
 	salvage_result = /obj/item/natural/silk
 	salvage_amount = 2
+
+/obj/item/clothing/suit/roguetown/shirt/dress/gown/wintergown/aristocratotava
+	detail_color = "#1f1818ff"
+	color = "#ffffffff"
 
 /obj/item/clothing/suit/roguetown/shirt/undershirt/sailor
 	icon_state = "sailorblues"
@@ -732,7 +746,7 @@
 /obj/item/clothing/suit/roguetown/shirt/dress/captainrobe
 	slot_flags = ITEM_SLOT_SHIRT|ITEM_SLOT_ARMOR
 	name = "foreign robes"
-	desc = "Flower-styled robes. The Merchant Guild says that this is from the southern Kazengite region."
+	desc = "Flower-styled robes. The Azurian Trading Company's factor swears they came up the harbor from the southern Kazeungese region."
 	icon = 'icons/roguetown/clothing/armor.dmi'
 	mob_overlay_icon = 'icons/roguetown/clothing/onmob/armor.dmi'
 	icon_state = "eastsuit4"
@@ -840,6 +854,7 @@
 	item_state = "maiddressfancy"
 	detail_tag = "_detail"
 	detail_color = CLOTHING_DARK_GREY
+	salvage_amount = 1
 
 /obj/item/clothing/suit/roguetown/shirt/dress/maidservant
 	name = "maid gown"
@@ -856,14 +871,14 @@
 	item_state = "butlershirt"
 	sleeved = 'icons/roguetown/clothing/special/onmob/sleeves_maids.dmi'
 
-/obj/item/clothing/suit/roguetown/shirt/velvetdress
+/obj/item/clothing/suit/roguetown/shirt/dress/velvetdress
 	name = "velvet dress"
 	desc = "A garment made with embroidered velvet, both elegant and warm. Poetry made manifest in swaying fabric."
 	icon_state = "velvetdress"
 	item_state = "velvetdress"
 	sleeved = 'icons/roguetown/clothing/onmob/helpers/sleeves_shirts.dmi'
 
-/obj/item/clothing/suit/roguetown/shirt/nobledress
+/obj/item/clothing/suit/roguetown/shirt/dress/nobledress
 	name = "noble's pinafore"
 	desc = "A comfortable dress adapted from simpler garments often worn by working-class women."
 	icon_state = "nobledress"
@@ -872,11 +887,11 @@
 	detail_tag = "_detail"
 	detail_color = CLOTHING_WHITE
 
-/obj/item/clothing/suit/roguetown/shirt/nobledress/Initialize()
+/obj/item/clothing/suit/roguetown/shirt/dress/nobledress/Initialize()
 	. = ..()
 	update_icon()
 
-/obj/item/clothing/suit/roguetown/shirt/nobledress/update_icon()
+/obj/item/clothing/suit/roguetown/shirt/dress/nobledress/update_icon()
 	cut_overlays()
 	if(get_detail_tag())
 		var/mutable_appearance/pic = mutable_appearance(icon(icon, "[icon_state][detail_tag]"))
@@ -884,3 +899,13 @@
 		if(get_detail_color())
 			pic.color = get_detail_color()
 		add_overlay(pic)
+
+/obj/item/clothing/suit/roguetown/shirt/dress/saree
+	name = "saree"
+	slot_flags = ITEM_SLOT_SHIRT|ITEM_SLOT_ARMOR|ITEM_SLOT_CLOAK
+	desc  = "A delicate, unstitched garment that can be draped across the body. It is commonly worn amongst Ranesheni women."
+	icon_state = "saree"
+	item_state = "saree"
+	sleeved = 'icons/roguetown/clothing/onmob/helpers/sleeves_shirts.dmi'
+	detail_tag = "_detail"
+	detail_color = CLOTHING_WHITE

@@ -95,13 +95,19 @@
 	skill_weights = list(50, 30, 20, 15, 15, 10, 10) // Low static chance
 	bonus_animal_amount = 10
 	animals = list(
-		/mob/living/simple_animal/hostile/retaliate/rogue/saiga/undead = 20,
+		/mob/living/simple_animal/hostile/retaliate/rogue/saiga/undead = 50,
 		/mob/living/simple_animal/hostile/retaliate/rogue/wolf_undead = 10,
-		/mob/living/simple_animal/hostile/retaliate/smallrat = 1
+		/mob/living/simple_animal/hostile/retaliate/smallrat = 1,
+		/mob/living/simple_animal/hostile/retaliate/rogue/fox/undead = 10,
+		// Keep these rare, for they are very dangerous.
+		/mob/living/simple_animal/hostile/retaliate/rogue/boar/undead = 2,
+		/mob/living/simple_animal/hostile/retaliate/rogue/troll/undead = 2,
 	)
 	preferred_tracks = list(
 		/mob/living/simple_animal/hostile/retaliate/rogue/saiga/undead = "cervine",
 		/mob/living/simple_animal/hostile/retaliate/rogue/wolf_undead = "canine",
+		/mob/living/simple_animal/hostile/retaliate/rogue/boar/undead = "suidae",
+		/mob/living/simple_animal/hostile/retaliate/rogue/fox/undead = "canine",
 	)
 	preferred_areas = list(
 		/area/rogue/outdoors/beach/forest = 1000,
@@ -181,3 +187,20 @@
 		/mob/living/simple_animal/hostile/retaliate/rogue/boar = "suidae"
 	)
 	preferred_areas = list()
+
+// TA EDIT START
+/datum/hunting_category/proc/can_spawn_in_area(area/A)
+	if(!A)
+		return FALSE
+	if(!preferred_areas || !preferred_areas.len)
+		return TRUE
+	return preferred_areas[A.type] > 0
+
+/datum/hunting_category/proc/get_area_bonus(area/A)
+	if(!A || !preferred_areas)
+		return 0
+	var/bonus = preferred_areas[A.type]
+	if(!bonus)
+		return 0
+	return bonus
+// TA EDIT END

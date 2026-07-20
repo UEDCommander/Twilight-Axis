@@ -296,7 +296,7 @@
 
 	if(tcompare)
 		var/atom/target_atom = object
-		if(istype(target_atom) && tcompare != mob && (mob.atkswinging == "middle" || (mob.atkswinging && object != tcompare)))
+		if(istype(target_atom) && tcompare != mob && (mob.atkswinging == "middle" || mob.used_intent?.tranged || (mob.atkswinging && object != tcompare)))
 			target_atom.Click(location, control, params)
 		tcompare = null
 
@@ -332,9 +332,12 @@
 		chargedprog = 0
 		START_PROCESSING(SSmousecharge, src)
 
-/* /client/Destroy() // TA EDIT START
+/client/Destroy()
 	STOP_PROCESSING(SSmousecharge, src)
-	return ..() */ //TA EDIT END
+	if(mob?.listed_turf)
+		LAZYREMOVE(mob.listed_turf.panel_listeners, src)
+	clear_listedturf_appearances()
+	return ..()
 
 /client/process()
 	if(!isliving(mob))

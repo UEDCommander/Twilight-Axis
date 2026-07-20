@@ -12,7 +12,7 @@
 	var/fuze = null
 	var/lit = FALSE
 	var/prob2fail = 5
-	var/PVE_damage = 160
+	var/PVE_damage = 75
 	var/spawn_shard = TRUE
 	grid_width = 32
 	grid_height = 64
@@ -77,10 +77,12 @@
 			var/mob/living/simple_animal/SA = target
 			if(SA.can_buckle) // rideable/saddleborn animals are excluded
 				continue
-			target.adjustFireLoss(PVE_damage)
+		var/armor_block = target.run_armor_check(BODY_ZONE_CHEST, "fire", blade_dulling = BCLASS_BURN, damage = PVE_damage, flat_integ = TRUE)
+		target.apply_damage(PVE_damage, BURN, BODY_ZONE_CHEST, armor_block)
+		apply_scorch_stack(target, 3)
 	if(spawn_shard)
 		new /obj/item/natural/glass_shard(T)
-	explosion(T, light_impact_range = 1, flame_range = 2, smoke = TRUE, soundin = pick('sound/misc/explode/bottlebomb (1).ogg','sound/misc/explode/bottlebomb (2).ogg'))
+	explosion(T, light_impact_range = 1, smoke = TRUE, soundin = pick('sound/misc/explode/bottlebomb (1).ogg','sound/misc/explode/bottlebomb (2).ogg'))
 	return TRUE
 
 /obj/item/bomb/throw_impact(atom/hit_atom, datum/thrownthing/throwingdatum)
@@ -441,8 +443,10 @@
 
 //admin only mega bomb, should never be made craftable
 /obj/item/satchel_bomb/mega
-	name = "MEGA blastpowder satchel"
-	desc = "An over filled satchel of Blastpowder originally made by Lubbin' Bleat, Octava's Famed sheep-kin bathhouse attendant and ruler of the slumber beat... this type of bomb has been banned by all nations and labeled as a threat by both the church of the ten and Pysdonia. IF YOU SEE A LIT WICK, YOU BEST RUN AWAY QUICK!"
+	name = "mega blastpowder satchel"
+	desc = "An overfilled satchel of blastpowder originally made by Lubbin Bleat, Otava's famed sheep-kin bathhouse attendant and ruler of the slumberbeat.. \
+	</br>This bomb has been outlawed by all of Psydonia's kingdoms, and labled as a threat by both the Churches of the Pantheon and Orthodoxy. \
+	</br> <font color='FF0000'>IF YOU SEE A LIT WICK, YOU BEST RUN AWAY QUICK!</font>"
 	icon_state = "satchel_bomb"
 	lit_state = "satchel_bomb-lit"
 	icon = 'icons/roguetown/items/misc.dmi'
@@ -653,7 +657,7 @@
 		for(var/mob/living/target in range(2, T))
 			if(!target.mind || istype(target, /mob/living/simple_animal))
 				target.adjustFireLoss(PVE_damage) //fireball damage + 40. That
-		explosion(T, heavy_impact_range = 1, light_impact_range = 2, flame_range = 2, smoke = TRUE, soundin = pick('sound/misc/explode/bottlebomb (1).ogg','sound/misc/explode/bottlebomb (2).ogg'))
+		explosion(T, heavy_impact_range = 1, light_impact_range = 3, flame_range = 2, smoke = TRUE, soundin = pick('sound/misc/explode/bottlebomb (1).ogg','sound/misc/explode/bottlebomb (2).ogg'))
 		qdel(src)
 
 /obj/item/smokeshell

@@ -130,6 +130,8 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["tgui_fancy"]			>> tgui_fancy
 	S["tgui_lock"]			>> tgui_lock
 	S["tgui_theme"]			>> tgui_theme
+	S["parchment_skin"]		>> parchment_skin
+	S["statbrowser_theme"]	>> statbrowser_theme
 	S["preferred_ui_language"] >> preferred_ui_language
 	S["buttons_locked"]		>> buttons_locked
 	S["windowflash"]		>> windowflashing
@@ -140,6 +142,9 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["lobbymusicvol"]		>> lobbymusicvol
 	S["ambiencevol"]		>> ambiencevol
 	S["anonymize"]			>> anonymize
+	S["donor_ooc_color"]	>> donor_ooc_color // TA EDIT
+	S["donor_ooc_icon"]	>> donor_ooc_icon // TA EDIT 
+	S["donor_examine_icon"]	>> donor_examine_icon // TA EDIT
 	S["stopdroning"]		>> stopdroning
 	S["masked_examine"]		>> masked_examine
 	S["nsfw_examine_always"]>> nsfw_examine_always // TA EDIT
@@ -152,12 +157,15 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["no_language_fonts"]	>> no_language_fonts
 	S["no_language_icon"]	>> no_language_icon
 	S["no_redflash"]		>> no_redflash
+	S["top_examine"]		>> top_examine
 	S["crt"]				>> crt
 	S["grain"]				>> grain
+	S["icon_scaling"]		>> icon_scaling
 	S["sexable"]			>> sexable
 	S["shake"]				>> shake
 	S["mastervol"]			>> mastervol
 	S["lastclass"]			>> lastclass
+	load_donor_job_boost_prefs(S) // TA EDIT
 	S["compliance_notifs"]  >> compliance_notifs
 
 
@@ -190,6 +198,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	// Custom hotkeys
 	S["key_bindings"]		>> key_bindings
 
+	S["no_runechat_animation"] >> no_runechat_animation //TA EDIT
 	S["defiant"]			>> defiant
 	// TA Addition start - new ERP SYSTEM
 	S["erp_custom_actions"] >> erp_custom_actions	
@@ -202,7 +211,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		update_preferences(needs_update, S)		//needs_update = savefile_version if we need an update (positive integer)
 
 	//Sanitize
-	asaycolor		= sanitize_ooccolor(sanitize_hexcolor(asaycolor, 6, 1, initial(asaycolor)))
+	asaycolor		= sanitize_hexcolor(asaycolor, 6, 1, initial(asaycolor)) // TA EDIT
 	ooccolor		= sanitize_ooccolor(sanitize_hexcolor(ooccolor, 6, 1, initial(ooccolor)))
 	lastchangelog	= sanitize_text(lastchangelog, initial(lastchangelog))
 	UI_style		= sanitize_inlist(UI_style, GLOB.available_ui_styles, GLOB.available_ui_styles[1])
@@ -215,9 +224,14 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	tgui_fancy		= sanitize_integer(tgui_fancy, 0, 1, initial(tgui_fancy))
 	tgui_lock		= sanitize_integer(tgui_lock, 0, 1, initial(tgui_lock))
 	tgui_theme		= sanitize_text(tgui_theme, initial(tgui_theme))
+	parchment_skin	= sanitize_parchment_skin(parchment_skin)
+	statbrowser_theme = sanitize_statbrowser_theme(statbrowser_theme)
 	preferred_ui_language = sanitize_preferred_ui_language(preferred_ui_language)
 	buttons_locked	= sanitize_integer(buttons_locked, 0, 1, initial(buttons_locked))
 	windowflashing	= sanitize_integer(windowflashing, 0, 1, initial(windowflashing))
+	crt			= sanitize_integer(crt, 0, 1, initial(crt))
+	grain			= sanitize_integer(grain, 0, 1, initial(grain))
+	icon_scaling	= sanitize_integer(icon_scaling, 0, 1, initial(icon_scaling))
 	default_slot	= sanitize_integer(default_slot, 1, max_save_slots, initial(default_slot))
 	toggles			= sanitize_integer(toggles, 0, INFINITY, initial(toggles))
 	combat_toggles = sanitize_integer(combat_toggles, 0, INFINITY, initial(combat_toggles))
@@ -238,6 +252,9 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	pda_style		= sanitize_inlist(pda_style, GLOB.pda_styles, initial(pda_style))
 	pda_color		= sanitize_hexcolor(pda_color, 6, 1, initial(pda_color))
 	key_bindings 	= sanitize_islist(key_bindings, list())
+	donor_ooc_color	= sanitize_integer(donor_ooc_color, FALSE, TRUE, TRUE) // TA EDIT
+	donor_ooc_icon	= sanitize_integer(donor_ooc_icon, FALSE, TRUE, TRUE) // TA EDIT
+	donor_examine_icon	= sanitize_integer(donor_examine_icon, FALSE, TRUE, TRUE) // TA EDIT
 	defiant	= sanitize_integer(defiant, FALSE, TRUE, TRUE)
 	//TA Addition start - new ERP SYSTEM
 	erp_custom_actions = sanitize_islist(erp_custom_actions, list())
@@ -247,7 +264,6 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	erp_organ_prefs = sanitize_islist(erp_organ_prefs, list())
 	sanitize_erp_organ_prefs()
 	//TA Addition end - new ERP SYSTEM
-	
 
 	verify_keybindings_valid()
 	return TRUE
@@ -264,6 +280,25 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		if(!length(binds))
 			key_bindings -= key
 	// End
+
+/client/verb/export_savefile()
+	set name = "Export Preferences"
+	set desc = "Export your preferences to a file."
+	set category = "OOC"
+	if(!prefs.path)
+		return
+
+	if(alert("Are you sure you want to export your preferences? This will create a file on your computer that contains your preferences.", "Export Preferences", "Yes", "No") == "No")
+		return
+
+	if(!fexists(prefs.path))
+		to_chat(src, span_warning("No savefile, what?!"))
+		return
+
+	var/file_name = "[ckey].sav"
+	var/exportable_file = file(prefs.path)
+
+	DIRECT_OUTPUT(src, ftp(exportable_file, file_name))
 
 /datum/preferences/proc/save_preferences()
 	if(!path)
@@ -282,6 +317,9 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["lobbymusicvol"], lobbymusicvol)
 	WRITE_FILE(S["ambiencevol"], ambiencevol)
 	WRITE_FILE(S["anonymize"], anonymize)
+	WRITE_FILE(S["donor_ooc_color"], donor_ooc_color) // TA EDIT
+	WRITE_FILE(S["donor_ooc_icon"], donor_ooc_icon) // TA EDIT 
+	WRITE_FILE(S["donor_examine_icon"], donor_examine_icon) // TA EDIT
 	WRITE_FILE(S["stopdroning"], stopdroning)
 	WRITE_FILE(S["masked_examine"], masked_examine)
 	WRITE_FILE(S["nsfw_examine_always"], nsfw_examine_always) // TA EDIT
@@ -294,10 +332,14 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["no_language_fonts"], no_language_fonts)
 	WRITE_FILE(S["no_language_icon"], no_language_icon)
 	WRITE_FILE(S["no_redflash"], no_redflash)
+	WRITE_FILE(S["top_examine"], top_examine)
 	WRITE_FILE(S["crt"], crt)
+	WRITE_FILE(S["grain"], grain)
+	WRITE_FILE(S["icon_scaling"], icon_scaling)
 	WRITE_FILE(S["sexable"], sexable)
 	WRITE_FILE(S["shake"], shake)
 	WRITE_FILE(S["lastclass"], lastclass)
+	save_donor_job_boost_prefs(S) // TA EDIT
 	WRITE_FILE(S["mastervol"], mastervol)
 	WRITE_FILE(S["ooccolor"], ooccolor)
 	WRITE_FILE(S["lastchangelog"], lastchangelog)
@@ -311,6 +353,8 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["tgui_fancy"], tgui_fancy)
 	WRITE_FILE(S["tgui_lock"], tgui_lock)
 	WRITE_FILE(S["tgui_theme"], tgui_theme)
+	WRITE_FILE(S["parchment_skin"], parchment_skin)
+	WRITE_FILE(S["statbrowser_theme"], statbrowser_theme)
 	WRITE_FILE(S["preferred_ui_language"], preferred_ui_language)
 	WRITE_FILE(S["buttons_locked"], buttons_locked)
 	WRITE_FILE(S["windowflash"], windowflashing)
@@ -344,6 +388,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["attack_blip_frequency"] , attack_blip_frequency)
 	WRITE_FILE(S["compliance_notifs"], compliance_notifs)
 	WRITE_FILE(S["defiant"], defiant)
+	WRITE_FILE(S["no_runechat_animation"], no_runechat_animation) //TA EDIT
 	// TA Addition start - new ERP SYSTEM
 	WRITE_FILE(S["erp_custom_actions"], erp_custom_actions)
 	WRITE_FILE(S["erp_kink_prefs"], erp_kink_prefs)
@@ -421,124 +466,90 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		statpack = GLOB.statpacks[statpack]
 		//statpack = new statpack
 
+
+/datum/preferences/proc/copy_virtue_choices(list/choices)
+	if(!islist(choices))
+		return list()
+	return choices.Copy()
+
+/datum/preferences/proc/get_saved_virtue_choices(savefile/S, choices_key)
+	var/list/choices
+	if(choices_key)
+		S[choices_key] >> choices
+	return copy_virtue_choices(choices)
+
+/datum/preferences/proc/normalize_saved_virtue(saved_value, savefile/S, choices_key)
+	var/virtue_type = /datum/virtue/none
+	var/list/choices = list()
+
+	if(ispath(saved_value, /datum/virtue))
+		virtue_type = saved_value
+		choices = get_saved_virtue_choices(S, choices_key)
+	else if(istype(saved_value, /datum/virtue))
+		var/datum/virtue/loaded_virtue = saved_value
+		if(ispath(loaded_virtue.type, /datum/virtue))
+			virtue_type = loaded_virtue.type
+		choices = copy_virtue_choices(loaded_virtue.picked_choices)
+		qdel(loaded_virtue)
+
+	return list(virtue_type, choices)
+
+/datum/preferences/proc/validate_virtue_choices(datum/virtue/clean_virtue, list/choices)
+	if(!clean_virtue || !islist(choices))
+		return list()
+	if(length(choices) > clean_virtue.max_choices)
+		return list()
+
+	var/list/clean_choices = list()
+	for(var/choice in choices)
+		if(choice in clean_choices)
+			return list()
+		if(!(choice in clean_virtue.extra_choices))
+			return list()
+		clean_choices += choice
+
+	return clean_choices
+
+/datum/preferences/proc/load_clean_virtue(virtue_type, list/choices)
+	if(!ispath(virtue_type, /datum/virtue))
+		virtue_type = /datum/virtue/none
+
+	var/datum/virtue/clean_virtue = new virtue_type
+	clean_virtue.picked_choices = validate_virtue_choices(clean_virtue, choices)
+	clean_virtue.on_load()
+	return clean_virtue
+
+/datum/preferences/proc/write_clean_virtue_paths(savefile/S, virtue_type = /datum/virtue/none, virtuetwo_type = /datum/virtue/none, origin_type = /datum/virtue/none, list/virtue_choices = null, list/virtuetwo_choices = null)
+	if(!ispath(virtue_type, /datum/virtue))
+		virtue_type = /datum/virtue/none
+	if(!ispath(virtuetwo_type, /datum/virtue))
+		virtuetwo_type = /datum/virtue/none
+	if(!ispath(origin_type, /datum/virtue))
+		origin_type = /datum/virtue/none
+
+	WRITE_FILE(S["virtue"], virtue_type)
+	WRITE_FILE(S["virtuetwo"], virtuetwo_type)
+	WRITE_FILE(S["virtue_origin"], origin_type)
+	WRITE_FILE(S["virtue_choices"], copy_virtue_choices(virtue_choices))
+	WRITE_FILE(S["virtuetwo_choices"], copy_virtue_choices(virtuetwo_choices))
+
 /datum/preferences/proc/_load_virtue(S)
-	var/virtue_type
-	var/virtuetwo_type
-	var/origin_type
-	S["virtue"] >> virtue_type
-	S["virtuetwo"] >> virtuetwo_type
-	S["virtue_origin"] >> origin_type
-	var/error_check = FALSE
-	var/error_found = FALSE
-	if (istype(virtue_type, /datum/virtue))
-		virtue = virtue_type
-		error_check = TRUE
-	else if(ispath(virtue_type, /datum/virtue))
-		virtue = new virtue_type
-	else
-		virtue = new /datum/virtue/none
+	var/saved_virtue_type
+	var/saved_virtuetwo_type
+	var/saved_origin_type
+	S["virtue"] >> saved_virtue_type
+	S["virtuetwo"] >> saved_virtuetwo_type
+	S["virtue_origin"] >> saved_origin_type
 
-	if(error_check)
-		//Future-proofing sanity checks in case virtues get adjusted later. We do a full reset if we find any discrepancies.
-		var/datum/virtue/sane_virtue = new virtue.type
-		if(virtue.name != sane_virtue.name)	//We should keep the names & descs updated across saves, too
-			virtue.name = sane_virtue.name
+	var/list/virtue_data = normalize_saved_virtue(saved_virtue_type, S, "virtue_choices")
+	var/list/virtuetwo_data = normalize_saved_virtue(saved_virtuetwo_type, S, "virtuetwo_choices")
+	var/list/origin_data = normalize_saved_virtue(saved_origin_type, S, "virtue_origin_choices")
 
-		if(virtue.desc != sane_virtue.desc)	//Not errors warranting a full reset, in theory, anyway.
-			virtue.desc = sane_virtue.desc
+	virtue = load_clean_virtue(virtue_data[1], virtue_data[2])
+	virtuetwo = load_clean_virtue(virtuetwo_data[1], virtuetwo_data[2])
+	virtue_origin = load_clean_virtue(origin_data[1], origin_data[2])
 
-		if(length(virtue.picked_choices) > sane_virtue.max_choices)
-			error_found = TRUE
-		
-		if(sane_virtue.max_choices != virtue.max_choices)
-			error_found = TRUE
-		
-		if(length(virtue.extra_choices) != length(sane_virtue.extra_choices))
-			error_found = TRUE
-		
-		if(!error_found)
-			for(var/choice in virtue.extra_choices)
-				if(!(choice in sane_virtue.extra_choices))
-					error_found = TRUE
-					break
-
-			var/total_ours = 0
-			var/total_sane = 0
-
-			for(var/cost in virtue.choice_costs)
-				total_ours += cost
-			for(var/cost in sane_virtue.choice_costs)
-				total_sane += cost
-
-			if(total_ours != total_sane)
-				error_found = TRUE
-
-		if(error_found)
-			qdel(virtue)
-			virtue = sane_virtue
-		else
-			qdel(sane_virtue)
-			virtue.on_load()
-
-	error_check = FALSE
-	if(istype(virtuetwo_type, /datum/virtue))
-		virtuetwo = virtuetwo_type
-		error_check = TRUE
-	else if(ispath(virtuetwo_type, /datum/virtue))
-		virtuetwo = new virtuetwo_type
-	else
-		virtuetwo = new /datum/virtue/none
-
-
-	if(error_check)
-		//Future-proofing sanity checks in case virtues get adjusted later. We do a full reset if we find any discrepancies.
-		var/datum/virtue/sane_virtuetwo = new virtuetwo.type
-		error_found = FALSE
-
-		if(virtuetwo.name != sane_virtuetwo.name)	//We should keep the names & descs updated across saves, too
-			virtue.name = sane_virtuetwo.name
-
-		if(virtuetwo.desc != sane_virtuetwo.desc)	//Not errors warranting a full reset, in theory, anyway.
-			virtuetwo.desc = sane_virtuetwo.desc
-
-
-		if(length(virtuetwo.picked_choices) > sane_virtuetwo.max_choices)
-			error_found = TRUE
-		
-		if(sane_virtuetwo.max_choices != virtuetwo.max_choices)
-			error_found = TRUE
-		
-		if(length(virtuetwo.extra_choices) != length(sane_virtuetwo.extra_choices))
-			error_found = TRUE
-		
-		if(!error_found)
-			for(var/choice in virtuetwo.extra_choices)
-				if(!(choice in sane_virtuetwo.extra_choices))
-					error_found = TRUE
-					break
-
-			var/total_ours = 0
-			var/total_sane = 0
-
-			for(var/cost in virtuetwo.choice_costs)
-				total_ours += cost
-			for(var/cost in sane_virtuetwo.choice_costs)
-				total_sane += cost
-				
-			if(total_ours != total_sane)
-				error_found = TRUE
-
-		if(error_found)
-			virtuetwo = sane_virtuetwo
-			qdel(virtue)
-		else
-			qdel(sane_virtuetwo)
-			virtuetwo.on_load()
-
-	if(origin_type)
-		virtue_origin = new origin_type
-	else
-		virtue_origin = new /datum/virtue/none
+	write_clean_virtue_paths(S, virtue.type, virtuetwo.type, virtue_origin.type, virtue.picked_choices, virtuetwo.picked_choices)
 
 /datum/preferences/proc/_load_loadout(S)
 	S["selected_loadout_items"] >> selected_loadout_items
@@ -549,6 +560,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["loadout_2_hex"] >> loadout_2_hex
 	S["loadout_3_hex"] >> loadout_3_hex
 
+
 /datum/preferences/proc/_load_height(S)
 	var/preview_height
 	S["body_height"] >> preview_height
@@ -558,7 +570,21 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 /datum/preferences/proc/_load_combat_music(S)
 	var/combat_music_type
 	S["combat_music"] >> combat_music_type
-	if (GLOB.cmode_tracks_by_type[combat_music_type])
+	S["custom_cmode_name"] >> custom_cmode_name // TA EDIT START
+	S["custom_cmode_file"] >> custom_cmode_file
+	S["custom_cmode_enabled"] >> custom_cmode_enabled
+
+	if(custom_cmode_file && !is_valid_custom_combat_music_path(custom_cmode_file))
+		custom_cmode_file = null
+		custom_cmode_name = null
+		custom_cmode_enabled = FALSE
+
+	if(custom_cmode_enabled)
+		if(build_custom_combat_music(parent?.ckey))
+			return
+		custom_cmode_enabled = FALSE
+
+	if(GLOB.cmode_tracks_by_type[combat_music_type]) // TA EDIT END
 		combat_music = GLOB.cmode_tracks_by_type[combat_music_type]
 	else
 		combat_music = GLOB.cmode_tracks_by_type[default_cmusic_type]
@@ -676,6 +702,10 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		if(!selected_patron) //failsafe
 			selected_patron = GLOB.patronlist[default_patron]
 
+	S["have_manor"] >> have_manor  //TA EDIT
+	S["manor_name"] >> manor_name  //TA EDIT
+	S["manor_type"] >> manor_type  //TA EDIT
+
 	//Custom names
 	for(var/custom_name_id in GLOB.preferences_custom_names)
 		var/savefile_slot_name = custom_name_id + "_name" //TODO remove this
@@ -741,6 +771,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["preset_bounty_poster_key"] >> preset_bounty_poster_key
 	S["preset_bounty_severity_key"] >> preset_bounty_severity_key
 	S["preset_bounty_severity_b_key"] >> preset_bounty_severity_b_key
+	S["preset_bounty_severity_v_key"] >> preset_bounty_severity_v_key
 	S["preset_bounty_crime"] >> preset_bounty_crime
 
 	S["img_gallery"]	>> img_gallery
@@ -844,9 +875,9 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["topjob"] >> topjob
 	var/topjob_found = FALSE
 	for(var/j in job_preferences)
-		if(job_preferences[j] != JP_LOW && job_preferences[j] != JP_MEDIUM && job_preferences[j] != JP_HIGH)
+		if(job_preferences[j] != JP_LOW && job_preferences[j] != JP_MEDIUM && job_preferences[j] != JP_HIGH && job_preferences[j] != JP_BOOST) // TA EDIT
 			job_preferences -= j
-		if(job_preferences[j] == JP_HIGH)
+		if(job_preferences[j] == JP_HIGH || job_preferences[j] == JP_BOOST) // TA EDIT
 			topjob_found = TRUE
 			var/datum/job/prefjob = SSjob.GetJob(j)
 			if(prefjob)
@@ -855,6 +886,9 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	if(!topjob_found && topjob)	// Fallback in case we load a slot that had HIGH set but then it got unset / job got altered.
 		topjob = null
 		WRITE_FILE(S["topjob"], topjob)
+
+	if(parent) // TA EDIT
+		sanitize_donor_job_boost(parent.mob) // TA EDIT
 
 	if(!islist(job_characters)) //TA EDIT START
 		job_characters = list()
@@ -904,16 +938,20 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		selected_patron = GLOB.patronlist[default_patron]
 
 	
-	var/virtue_type
-	var/virtuetwo_type
-	var/origin_type
-	S["virtue"] >> virtue_type
-	S["virtuetwo"] >> virtuetwo_type
-	S["virtue_origin"] >> origin_type
+	var/saved_virtue_type
+	var/saved_virtuetwo_type
+	var/saved_origin_type
+	S["virtue"] >> saved_virtue_type
+	S["virtuetwo"] >> saved_virtuetwo_type
+	S["virtue_origin"] >> saved_origin_type
 	
-	virtue = virtue_type ? new virtue_type : new /datum/virtue/none
-	virtuetwo = virtuetwo_type ? new virtuetwo_type : new /datum/virtue/none
-	virtue_origin = origin_type ? new origin_type : new /datum/virtue/none
+	var/list/virtue_data = normalize_saved_virtue(saved_virtue_type, S, "virtue_choices")
+	var/list/virtuetwo_data = normalize_saved_virtue(saved_virtuetwo_type, S, "virtuetwo_choices")
+	var/list/origin_data = normalize_saved_virtue(saved_origin_type, S, "virtue_origin_choices")
+
+	virtue = load_clean_virtue(virtue_data[1], virtue_data[2])
+	virtuetwo = load_clean_virtue(virtuetwo_data[1], virtuetwo_data[2])
+	virtue_origin = load_clean_virtue(origin_data[1], origin_data[2])
 
 	
 	charflaws.Cut()
@@ -968,6 +1006,9 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["feature_mcolor3"]		, features["mcolor3"])
 	WRITE_FILE(S["feature_ethcolor"]	, features["ethcolor"])
 	WRITE_FILE(S["nickname"]			, nickname)
+	WRITE_FILE(S["have_manor"]		, have_manor) //TA EDIT
+	WRITE_FILE(S["manor_name"]		, manor_name) //TA EDIT
+	WRITE_FILE(S["manor_type"]		, manor_type) //TA EDIT
 	WRITE_FILE(S["highlight_color"]		, highlight_color)
 	WRITE_FILE(S["taur_type"]			, taur_type)
 	WRITE_FILE(S["taur_color"]			, taur_color)
@@ -1023,6 +1064,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["preset_bounty_poster_key"] , preset_bounty_poster_key)
 	WRITE_FILE(S["preset_bounty_severity_key"] , preset_bounty_severity_key)
 	WRITE_FILE(S["preset_bounty_severity_b_key"] , preset_bounty_severity_b_key)
+	WRITE_FILE(S["preset_bounty_severity_v_key"] , preset_bounty_severity_v_key)
 	WRITE_FILE(S["preset_bounty_crime"] , preset_bounty_crime)
 	WRITE_FILE(S["flavortext"] , html_decode(flavortext))
 	WRITE_FILE(S["ooc_notes"] , html_decode(ooc_notes))
@@ -1042,11 +1084,17 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["titles_pref"] , titles_pref)
 	WRITE_FILE(S["clothes_pref"] , clothes_pref)
 	WRITE_FILE(S["statpack"] , statpack.type)
-	WRITE_FILE(S["virtue"] , virtue)
-	WRITE_FILE(S["virtuetwo"], virtuetwo)
-	WRITE_FILE(S["virtue_origin"], virtue_origin.type)
+
+	write_clean_virtue_paths(S, virtue ? virtue.type : /datum/virtue/none, virtuetwo ? virtuetwo.type : /datum/virtue/none, virtue_origin ? virtue_origin.type : /datum/virtue/none, virtue ? virtue.picked_choices : null, virtuetwo ? virtuetwo.picked_choices : null)
+
 	WRITE_FILE(S["race_bonus"], race_bonus)
-	WRITE_FILE(S["combat_music"], combat_music.type)
+	var/combat_music_save_type = default_cmusic_type // TA EDIT START
+	if(!custom_cmode_enabled && combat_music)
+		combat_music_save_type = combat_music.type
+	WRITE_FILE(S["combat_music"], combat_music_save_type)
+	WRITE_FILE(S["custom_cmode_name"], custom_cmode_name)
+	WRITE_FILE(S["custom_cmode_file"], custom_cmode_file)
+	WRITE_FILE(S["custom_cmode_enabled"], custom_cmode_enabled) // TA EDIT END
 	WRITE_FILE(S["body_size"] , features["body_size"])
 	WRITE_FILE(S["nsfwflavortext"] , html_decode(nsfwflavortext))
 	WRITE_FILE(S["nsfw_ooc_extra_img"] , nsfw_ooc_extra_img)

@@ -24,7 +24,7 @@
 		STATKEY_INT = 2,
 		STATKEY_PER = 2,
 		STATKEY_LCK = 1,
-		// 7 weighted statline, non-combat role but far-better than keep maids. Gets more traits to make up for lack of master crafting skills over the bat.
+		// 7 point statline, non-combat role but far-better than keep maids. Gets more traits to make up for lack of master crafting skills over the bat.
 	)
 	subclass_skills = list(
 		/datum/skill/combat/knives = SKILL_LEVEL_JOURNEYMAN, //So you don't immedately die in a fight if you somehow get into one
@@ -57,7 +57,7 @@
 	if(H.mind)
 		H.set_blindness(0)
 		var/choice_list = list("Butler", "Maid")
-		var/choice = input(H, "What is your occupation?", "WHAT MASQUERADE DO YOU BARE?") as anything in choice_list
+		var/choice = input(H, "What is your occupation?", "WHAT MASQUERADE DO YOU BEAR?") as anything in choice_list
 
 		switch(choice)
 			if("Maid")
@@ -98,7 +98,7 @@
 		STATKEY_CON = 2,
 		STATKEY_STR = 2,
 		STATKEY_LCK = 2,
-		// 8 weighted statline, non-combat role, a straight upgrade to towner smith.
+		// 8 point statline, non-combat role, a straight upgrade to towner smith.
 	)
 	subclass_skills = list(
 		/datum/skill/combat/swords = SKILL_LEVEL_APPRENTICE,
@@ -131,7 +131,7 @@
 	if(H.mind)
 		H.set_blindness(0)
 		var/choice_list = list("Smith", "Artificer") //Doesn't get arcayne, inherently. Sorry but I'm not having servants do enchantments.
-		var/choice = input(H, "What is your occupation?", "WHAT MASQUERADE DO YOU BARE?") as anything in choice_list
+		var/choice = input(H, "What is your occupation?", "WHAT MASQUERADE DO YOU BEAR?") as anything in choice_list
 
 		switch(choice)
 			if("Smith") //Similar to towner blacksmith in appearance
@@ -175,11 +175,11 @@
 	traits_applied = list(TRAIT_MEDICINE_EXPERT, TRAIT_ALCHEMY_EXPERT, TRAIT_NOSTINK, TRAIT_HOMESTEAD_EXPERT, TRAIT_EMPATH, TRAIT_STEELHEARTED) //Medical class, specialises in accidental killings or reviving fallen allies. !!!UNTIL LUX REVIVALS WORK ON VAMPS OR A MAP REWORK HAPPENS. YOU'LL NEED TO EITHER HAVE ZURCH ACCESS OR BREAK INTO THE CLINIC FOR A CHAIR TO REVIVE VAMPS!!!
 	category_tags = list(CTAG_VAMPSERVANT)
 	subclass_stats = list(
-		STATKEY_SPD = 1, //Corpse thievery duty
+		STATKEY_SPD = 2, //Corpse thievery duty
 		STATKEY_INT = 4,
 		STATKEY_PER = 1,
 		STATKEY_LCK = 1,
-		// 7 weighted statline, non-combat role equiv of barber doc kind of.
+		// 8 point statline, non-combat role equiv of barber doc kind of.
 	)
 	subclass_skills = list(
 		/datum/skill/combat/knives = SKILL_LEVEL_JOURNEYMAN,
