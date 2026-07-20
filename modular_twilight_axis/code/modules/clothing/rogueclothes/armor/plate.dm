@@ -134,8 +134,6 @@
 	smelt_bar_num = 2
 	body_parts_covered = COVERAGE_ALL_BUT_HANDLEGS
 
-	#define ARMOR_BAOTHA_LIGHT list("blunt" = DR_MEDIUM, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_HEAVY, "piercing" = DBLOCK_MEDIUM, "fire" = DR_MEDIUM, "acid" = DR_NONE, "bullet" = DR_HEAVY)  //TA EDIT
-
 /obj/item/clothing/head/roguetown/helmet/baotha_ta
 	name = "saccharine sallet"
 	desc = "Lo', the twins of beauty; Eora and Belladoth, they sought a prize which but one may have.."
