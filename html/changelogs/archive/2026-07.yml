@@ -1250,3 +1250,14 @@
   radarseas:
   - balance: trait_shatterkill has been re-tuned. Skeletons no longer die to rib fractures,
       instead it disables their legs. Aim for the head on shamblers, sire.
+2026-07-20:
+  BurpleBineapple:
+  - rscadd: donator items for DasFox
+  SomeDeviant:
+  - bugfix: fixed new 'blank' icon for the gatehatch structures on the bridge to the
+      keep/keep front door
+  WeNeedMorePhoron:
+  - rscdel: Mimic no longer do the jumpscare zoom
+  radarseas:
+  - bugfix: TRAIT_SHATTER_KILL aka, shatterable form, is more accurate to how the
+      trait works.
