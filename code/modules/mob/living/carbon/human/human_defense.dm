@@ -94,23 +94,25 @@
 
 			used.take_damage(intdamage, damage_flag = d_type, sound_effect = FALSE, armor_penetration = 100)
 	else
-		// DR types: blunt, fire, acid
+		// DR types: blunt, fire, bullet
 		var/list/layers = get_best_worn_armor_layered(def_zone, d_type)
 		if(length(layers))
 			dr_armor_present = TRUE
+			var/obj/item/clothing/best_layer
 			for(var/C in layers)
-				if(layers[C] > protection)
+				if(!best_layer || layers[C] > protection)
 					protection = layers[C]
+					best_layer = C
 			protection += get_trophy_armor_bonus_for_zone(def_zone, d_type)
 			// DR tier formula: damage * 1 / (1 + 0.2 * tier)
-			if(protection > 0) //TA EDIT START
+			if(protection > 0)
 				var/dr_mult = 1 / (1 + 0.2 * protection)
 				if(d_type in ARMOR_DR_PIERCE_TYPES)
 					// Bullet: armor takes the blocked portion (what doesn't reach HP)
 					intdamage *= (1 - dr_mult)
 				else
-					// Blunt/Fire/Acid: armor takes the DR-reduced amount
-					intdamage *= dr_mult //TA EDIT END
+					// Blunt/Fire: armor takes the DR-reduced amount
+					intdamage *= dr_mult
 			if(intdamfactor != 1)
 				intdamage *= intdamfactor
 
@@ -143,17 +145,23 @@
 				remove_status_effect(/datum/status_effect/debuff/vulnerable)
 				emote("groan", forced = TRUE)
 
-			var/layers_deep = 1
-			var/played_sound = FALSE
-			for(var/obj/item/clothing/C in layers)
-				var/actualdmg = intdamage
-				if(!full_dmg)
-					actualdmg /= layers_deep
-				C.take_damage(actualdmg, damage_flag = d_type, sound_effect = FALSE, armor_penetration = 100)
-				if(C.blocksound && !played_sound)
-					playsound(loc, get_armor_sound(C.blocksound, blade_dulling), 100)
-					played_sound = TRUE
-				layers_deep++
+			if(d_type in ARMOR_DR_SINGLE_LAYER_TYPES)
+				if(best_layer)
+					best_layer.take_damage(intdamage, damage_flag = d_type, sound_effect = FALSE, armor_penetration = 100)
+					if(best_layer.blocksound)
+						playsound(loc, get_armor_sound(best_layer.blocksound, blade_dulling), 100)
+			else
+				var/layers_deep = 1
+				var/played_sound = FALSE
+				for(var/obj/item/clothing/C in layers)
+					var/actualdmg = intdamage
+					if(!full_dmg)
+						actualdmg /= layers_deep
+					C.take_damage(actualdmg, damage_flag = d_type, sound_effect = FALSE, armor_penetration = 100)
+					if(C.blocksound && !played_sound)
+						playsound(loc, get_armor_sound(C.blocksound, blade_dulling), 100)
+						played_sound = TRUE
+					layers_deep++
 			layers.Cut()
 
 	if(physiology)
@@ -187,7 +195,7 @@
 
 /mob/living/carbon/human/bullet_act(obj/projectile/P, def_zone = BODY_ZONE_CHEST)
 
-	if(HAS_TRAIT(src, "ethereal")) //TA EDIT
+	if(HAS_TRAIT(src, "ethereal"))
 		return BULLET_ACT_FORCE_PIERCE
 	
 	if(dna && dna.species)
@@ -326,7 +334,7 @@
 	if(!I || !user)
 		return 0
 	
-	if(HAS_TRAIT(src, "ethereal"))//TA EDIT
+	if(HAS_TRAIT(src, "ethereal"))
 		user.visible_message(span_danger("[user] tries to strike [src], but the weapon passes right through the mist!"), \
 							 span_warning("My weapon passes right through [src]!"))
 		return FALSE
@@ -355,7 +363,7 @@
 
 /mob/living/carbon/human/attack_hand(mob/user)
 
-	if(HAS_TRAIT(src, "ethereal"))//TA EDIT
+	if(HAS_TRAIT(src, "ethereal"))
 		return FALSE
 
 	if(..())	//to allow surgery to return properly.
@@ -853,7 +861,7 @@
 					if(val > protection)
 						protection = val
 						used = C
-				// Fire/acid: fall back to a worn real-armor piece even at a 0 rating, so a fire/acid-0
+				// Fire: fall back to a worn real-armor piece even at a 0 rating, so fire-0
 				// plate still reads as "armored" (engages absorb, shows crumble messages). A rated piece wins.
 				// has_armor_value() (any blunt/slash/stab/piercing rating) is the real-armor gate so plain cloth keeps bypassing instead of burning off.
 				else if((d_type in ARMOR_DR_RESIST_TYPES) && C.max_integrity && C.has_armor_value() && !used)
@@ -882,7 +890,7 @@
 					if(C.obj_integrity <= 0 || C.obj_broken)
 						continue
 				var/val = C.armor.getRating(d_type)
-				// Fire/acid: any worn real-armor piece counts even at a 0 rating (blunt keeps its own rating gate), so it soaks
+				// Fire: any worn real-armor piece counts even at a 0 rating (blunt keeps its own rating gate), so it soaks
 				// HP damage and takes integrity damage instead of letting it bypass. Plain cloth (no blunt/slash/stab/piercing rating)
 				// and cosmetics (no max_integrity) stay excluded so they bypass instead of burning off. The stored rating is preserved as the value.
 				if(val > 0 || ((d_type in ARMOR_DR_RESIST_TYPES) && C.max_integrity && C.has_armor_value()))

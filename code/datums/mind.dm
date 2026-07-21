@@ -138,6 +138,9 @@ GLOBAL_LIST_EMPTY(personal_objective_minds)
 	var/has_bomb = FALSE
 	var/has_drug_delivery = FALSE
 
+	/// Triumph discount for donators
+	var/triumph_discount_remaining = 0
+
 /datum/mind/New(key)
 	key = key
 	soulOwner = src
@@ -466,6 +469,49 @@ GLOBAL_LIST_EMPTY(personal_objective_minds)
 	if(!can_reset_utility())
 		return FALSE
 	aspect_resets_used += ASPECT_RESET_COST_UTILITY
+	return TRUE
+
+/datum/mind/proc/can_reset_choice()
+	return get_aspect_reset_remaining() >= ASPECT_RESET_COST_CHOICE
+
+/datum/mind/proc/spend_choice_reset()
+	if(!can_reset_choice())
+		return FALSE
+	aspect_resets_used += ASPECT_RESET_COST_CHOICE
+	return TRUE
+
+/// Swap a live aspect's choice spell, reinserting the new pick at the old one's slot in the action bar.
+/datum/mind/proc/swap_choice_spell(datum/magic_aspect/aspect, new_choice)
+	if(!aspect || !new_choice || !(new_choice in aspect.choice_spells))
+		return FALSE
+	if(aspect.chosen_spell == new_choice)
+		return FALSE
+	var/old_path = aspect.resolve_variant_spell(aspect.chosen_spell)
+	var/new_path = aspect.resolve_variant_spell(new_choice)
+	var/insert_index
+	if(aspect.chosen_spell)
+		var/datum/existing = get_spell(old_path, specific = TRUE)
+		if(existing)
+			insert_index = spell_list.Find(existing)
+			RemoveSpell(existing)
+	aspect.chosen_spell = new_choice
+	if(has_spell(new_path, specific = TRUE))
+		return TRUE
+	var/datum/new_spell = new new_path
+	aspect.mark_aspect_spell(new_spell)
+	if(new_path != new_choice && istype(new_spell, /datum/action/cooldown/spell))
+		var/datum/action/cooldown/spell/tagged = new_spell
+		tagged.desc = "[tagged.desc]\n<b>Variant:</b> [capitalize(aspect.applied_variant)]"
+	if(insert_index && insert_index <= length(spell_list) + 1)
+		spell_list.Insert(insert_index, new_spell)
+		if(istype(new_spell, /datum/action/cooldown/spell))
+			var/datum/action/cooldown/spell/S = new_spell
+			S.Grant(current)
+		else if(istype(new_spell, /obj/effect/proc_holder/spell))
+			var/obj/effect/proc_holder/spell/S = new_spell
+			S.action.Grant(current)
+	else
+		AddSpell(new_spell)
 	return TRUE
 
 /datum/mind/proc/set_death_time()
@@ -1245,6 +1291,7 @@ GLOBAL_LIST_EMPTY(personal_objective_minds)
 		qdel(O)
 	personal_objectives.Cut()
 
+
 /* /proc/handle_special_items_retrieval(mob/user, atom/host_object)
 	// Attempts to retrieve an item from a player's stash, and applies any base colors, where preferable.
 	if(user.mind && isliving(user))
@@ -1253,20 +1300,25 @@ GLOBAL_LIST_EMPTY(personal_objective_minds)
 			if(item)
 				if(user.Adjacent(host_object))
 					if(user.mind.special_items[item])
+						var/datum/loadout_item/LI = GLOB.loadout_items_by_name[item]
+						if(LI?.triumph_cost)
+							var/discounted_cost = max(0, LI.triumph_cost - user.mind.triumph_discount_remaining)
+							if(discounted_cost > 0 && user.get_triumphs() < discounted_cost)
+								to_chat(user, span_warning("I can't afford [item] — I'd need [discounted_cost] more triumph."))
+								return
+							user.mind.triumph_discount_remaining = max(0, user.mind.triumph_discount_remaining - LI.triumph_cost)
+							if(discounted_cost > 0)
+								user.adjust_triumphs(-discounted_cost)
 						var/path2item = user.mind.special_items[item]
 						user.mind.special_items -= item
 						var/obj/item/I = new path2item(user.loc)
 						user.put_in_hands(I)
-						// Apply loadout-specific properties only if this is a loadout item
+						if(!LI?.triumph_cost)
+							I.special_item = TRUE
+							I.smeltresult = /obj/item/ash
+							I.salvage_result = /obj/item/ash
 						var/list/metadata = user.client?.prefs?.gear_list?[item]
 						if(islist(metadata))
-							// Free loadout items cannot be sold, smelted, or salvaged (triumph items are exempt)
-							var/datum/loadout_item/LI = GLOB.loadout_items_by_name[item]
-							if(!LI?.triumph_cost)
-								I.sellprice = 0
-								I.smeltresult = /obj/item/ash
-								I.salvage_result = /obj/item/ash
-							// Apply metadata (color, custom name, custom desc)
 							if(metadata["color"])
 								I.add_atom_colour(metadata["color"], FIXED_COLOUR_PRIORITY)
 							if(metadata["detail_color"] && I.detail_tag)
