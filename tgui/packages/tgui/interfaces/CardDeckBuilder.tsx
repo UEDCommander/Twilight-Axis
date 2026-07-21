@@ -35,6 +35,9 @@ type Card = {
   combo: string;
   art?: string;
   ownedCount?: number;
+  deckCount?: number;
+  deckLimit?: number;
+  poolLimit?: number;
   limited?: boolean;
   known: boolean;
   selected: boolean;
@@ -294,8 +297,9 @@ const cardTooltip = (card: Card) => {
   } else if (card.desc) {
     lines.push(card.desc);
   }
-  if (card.rarity !== 'base') {
-    lines.push(`Owned: ${card.ownedCount || 0}`);
+  if (card.known) {
+    lines.push(`Collection: ${card.ownedCount || 0}/${card.poolLimit || 0}`);
+    lines.push(`This deck: ${card.deckCount || 0}/${card.deckLimit || 0}`);
   }
   return lines;
 };
@@ -977,6 +981,7 @@ export const CardDeckBuilder = () => {
                   {filteredCards.map((card) => {
                     const selectedCount = selectedCounts[card.id] || 0;
                     const ownedCount = card.ownedCount || 0;
+                    const deckLimit = card.deckLimit || 0;
                     const factionLocked = !collectionMode && !card.factionAllowed;
                     const unavailable = !card.known || factionLocked;
                     return (
@@ -984,18 +989,14 @@ export const CardDeckBuilder = () => {
                         key={card.id}
                         card={card}
                         count={
-                          collectionMode
-                            ? ownedCount
-                            : ownedCount - selectedCount > 0
-                            ? ownedCount - selectedCount
-                            : 0
+                          ownedCount
                         }
                         unavailable={unavailable}
                         disabled={
                           !collectionMode &&
                             (unavailable ||
                               data.selectedCount >= data.deckSize ||
-                              selectedCount >= ownedCount)
+                              selectedCount >= deckLimit)
                         }
                         onClick={
                           collectionMode

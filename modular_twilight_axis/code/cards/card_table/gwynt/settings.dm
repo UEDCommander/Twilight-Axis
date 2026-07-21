@@ -62,6 +62,11 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 		return 3
 	return 5
 
+/proc/ccg_card_pool_limit(datum/ccg_card/card)
+	if(!card)
+		return 0
+	return ccg_card_deck_limit(card) + 2
+
 /datum/preferences/proc/ccg_card_pool_count(card_id)
 	var/datum/ccg_card/card = ccg_card(card_id)
 	if(!card)
@@ -230,7 +235,7 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 			var/count = ccg_known_rare_cards[card_id]
 			if(!isnum(count))
 				count = 1
-			count = max(0, round(count))
+			count = clamp(round(count), 0, ccg_card_pool_limit(card))
 			if(count > 0)
 				valid_rare[card_id] = count
 	ccg_known_rare_cards = valid_rare
@@ -662,6 +667,8 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 	var/count = ccg_known_rare_cards[card_id]
 	if(!count)
 		count = 0
+	if(count >= ccg_card_pool_limit(card))
+		return FALSE
 	ccg_known_rare_cards[card_id] = count + 1
 	if(!ccg_save_collection_sql())
 		if(count > 0)
@@ -982,7 +989,10 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 		if(!card)
 			continue
 		var/list/card_data = card.as_ui_data(card_id in known, card_id in selected)
-		card_data["ownedCount"] = P.ccg_available_for_deck(selected, card_id)
+		card_data["ownedCount"] = P.ccg_card_pool_count(card_id)
+		card_data["deckCount"] = ccg_card_count_in_list(selected, card_id)
+		card_data["deckLimit"] = ccg_card_deck_limit(card)
+		card_data["poolLimit"] = ccg_card_pool_limit(card)
 		card_data["factionAllowed"] = ccg_card_allowed_for_faction(card_id, current_faction_id)
 		var/faction_name = "Common"
 		var/datum/ccg_faction/card_faction

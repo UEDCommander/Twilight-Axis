@@ -182,16 +182,10 @@
 	if(get_active_match())
 		to_chat(user, span_warning("Finish the card match before changing this deck."))
 		return FALSE
-	if(card_ids.len >= CCG_DECK_SIZE)
-		to_chat(user, span_warning("This card battle deck already has [CCG_DECK_SIZE] cards."))
-		return FALSE
 	if(!ccg_card(single.card_id))
 		to_chat(user, span_warning("This card cannot be added to the deck."))
 		return FALSE
 	var/datum/ccg_card/card = ccg_card(single.card_id)
-	if(ccg_card_count_in_list(card_ids, single.card_id) >= ccg_card_deck_limit(card))
-		to_chat(user, span_warning("This card battle deck cannot hold more copies of this card."))
-		return FALSE
 	if(!ccg_card_allowed_for_faction(single.card_id, faction_id))
 		to_chat(user, span_warning("This card belongs to another deck faction."))
 		return FALSE
@@ -199,8 +193,19 @@
 	if(!P)
 		to_chat(user, span_warning("The card collection is unavailable. The card was not added."))
 		return FALSE
+	if(!single.pooled && P.ccg_card_pool_count(single.card_id) >= ccg_card_pool_limit(card))
+		to_chat(user, span_warning("The card was not added. Your collection already has the maximum of [ccg_card_pool_limit(card)] copies."))
+		return FALSE
 	if(!single.pooled && !P.ccg_add_known_card(single.card_id))
 		to_chat(user, span_warning("The card could not be added to your collection. Try again."))
+		return FALSE
+	if(card_ids.len >= CCG_DECK_SIZE || ccg_card_count_in_list(card_ids, single.card_id) >= ccg_card_deck_limit(card))
+		var/deck_reason = card_ids.len >= CCG_DECK_SIZE ? "the deck is full" : "this card has reached its deck limit"
+		to_chat(user, span_notice("Added [card.name] to your collection ([P.ccg_card_pool_count(single.card_id)]/[ccg_card_pool_limit(card)]), but not to this deck: [deck_reason]."))
+		if(!single.pooled && single.source_ckey && single.source_ckey != user.ckey)
+			ccg_award_trade_progress(single.source_ckey, user)
+		SStgui.update_user_uis(user)
+		qdel(single)
 		return FALSE
 	card_ids += single.card_id
 	if(!P.ccg_save_deck_snapshot(card_ids, faction_id, leader_id))
@@ -214,7 +219,7 @@
 		return FALSE
 	if(!single.pooled && single.source_ckey && single.source_ckey != user.ckey)
 		ccg_award_trade_progress(single.source_ckey, user)
-	to_chat(user, span_notice("You add [card.name] to the card battle deck."))
+	to_chat(user, span_notice("Added [card.name] to your collection ([P.ccg_card_pool_count(single.card_id)]/[ccg_card_pool_limit(card)]) and this deck ([ccg_card_count_in_list(card_ids, single.card_id)]/[ccg_card_deck_limit(card)])."))
 	SStgui.update_user_uis(user)
 	qdel(single)
 	return TRUE
@@ -396,8 +401,12 @@
 		qdel(src)
 		return
 	var/datum/preferences/P = user?.client?.prefs
+	var/datum/ccg_card/card = ccg_card(card_id)
+	if(P && card && P.ccg_card_pool_count(card_id) >= ccg_card_pool_limit(card))
+		to_chat(user, span_warning("The card was not added. Your collection already has the maximum of [ccg_card_pool_limit(card)] copies."))
+		return
 	if(P && P.ccg_add_known_card(card_id))
-		to_chat(user, span_notice("The card is added to your known collection."))
+		to_chat(user, span_notice("Added [card.name] to your collection ([P.ccg_card_pool_count(card_id)]/[ccg_card_pool_limit(card)])."))
 		if(source_ckey && source_ckey != user.ckey)
 			ccg_award_trade_progress(source_ckey, user)
 		SStgui.update_user_uis(user)
