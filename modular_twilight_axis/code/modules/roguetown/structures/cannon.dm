@@ -111,7 +111,8 @@
 	damage = 110
 	damage_type = BRUTE
 	flag = "bullet"
-	speed = 2.5 
+	speed = 2.5
+	var/pierces_left = 3
 
 /obj/projectile/bullet/cannonball_straight/on_hit(atom/target, blocked = 0)
 	. = ..()
@@ -143,63 +144,81 @@
 		else
 			L.adjustBruteLoss(400)
 
-	for(var/mob/living/M in range(4, T))
-		var/throw_dir = get_dir(T, M)
-		if(throw_dir == 0) 
-			throw_dir = pick(NORTH, SOUTH, EAST, WEST, NORTHEAST, NORTHWEST, SOUTHEAST, SOUTHWEST)
-		
-		var/turf/throw_turf = get_ranged_target_turf(M, throw_dir, rand(2, 4))
+		var/throw_dir = turn(dir, pick(-90, 90)) 
+		var/turf/throw_turf = get_ranged_target_turf(L, throw_dir, rand(2, 4))
 		if(throw_turf)
-			M.throw_at(throw_turf, 4, 2, null, FALSE, FALSE, null, MOVE_FORCE_STRONG)
+			L.throw_at(throw_turf, 4, 2, null, FALSE, FALSE, null, MOVE_FORCE_STRONG)
 		
-		M.Knockdown(60)
-		M.Paralyze(40)
-		M.adjustBruteLoss(rand(40, 80)) 
-		M.visible_message(span_warning("[M] сбивает с ног мощной ударной волной!"))
+		L.Knockdown(60)
+		L.Paralyze(40)
 
-		if(M != target && get_dist(T, M) <= 1)
-			if(ishuman(M))
-				var/mob/living/carbon/human/HM = M
-				var/list/close_limbs = list()
-				for(var/obj/item/bodypart/BP in HM.bodyparts)
-					if(BP.body_zone != BODY_ZONE_CHEST && BP.body_zone != BODY_ZONE_HEAD)
-						close_limbs += BP
+	else if(istype(target, /turf/closed) || istype(target, /obj/structure) || istype(target, /obj/machinery))
+		target.ex_act(EXPLODE_DEVASTATE)
+		new /obj/effect/particle_effect/smoke/arquebus(T)
+
+	pierces_left--
+
+	if(pierces_left > 0)
+		temporary_unstoppable_movement = TRUE
+		movement_type |= UNSTOPPABLE
+		return BULLET_ACT_FORCE_PIERCE
+		
+	else
+		T.visible_message(span_danger("Пушечное ядро с грохотом разрывается!"))
+		
+		for(var/mob/living/M in range(4, T))
+			if(!M.mind || istype(M, /mob/living/simple_animal))
+				if(get_dist(T, M) <= 3)
+					M.adjustBruteLoss(300)
+				else
+					M.adjustBruteLoss(200)
+
+			if(M != target)
+				var/blast_dir = get_dir(T, M)
+				if(blast_dir == 0) 
+					blast_dir = pick(NORTH, SOUTH, EAST, WEST, NORTHEAST, NORTHWEST, SOUTHEAST, SOUTHWEST)
 				
-				if(length(close_limbs))
-					var/obj/item/bodypart/lost_limb = pick(close_limbs)
-					lost_limb.dismember(BRUTE, BCLASS_CHOP, null, lost_limb.body_zone, 110, TRUE, TRUE)
-					HM.visible_message(span_danger("Близкий взрыв пушечного ядра отрывает [HM] конечность!"))
-			else
-				M.adjustBruteLoss(150)
+				var/turf/blast_turf = get_ranged_target_turf(M, blast_dir, rand(2, 4))
+				if(blast_turf)
+					M.throw_at(blast_turf, 4, 2, null, FALSE, FALSE, null, MOVE_FORCE_STRONG)
+				
+				M.Knockdown(60)
+				M.Paralyze(40)
+				M.adjustBruteLoss(rand(40, 80)) 
+				M.visible_message(span_warning("[M] сбивает с ног мощной ударной волной!"))
 
+		var/shrapnel_count = rand(6, 12)
+		var/list/all_dirs = list(NORTH, SOUTH, EAST, WEST, NORTHEAST, NORTHWEST, SOUTHEAST, SOUTHWEST)
+		for(var/i in 1 to shrapnel_count)
+			var/obj/projectile/bullet/grapeshot_pellet/S = new(T)
+			var/shoot_dir = pick(all_dirs)
+			var/turf/shrapnel_target = get_ranged_target_turf(T, shoot_dir, rand(4, 7))
+			
+			if(shrapnel_target)
+				shrapnel_target = locate(shrapnel_target.x + rand(-2, 2), shrapnel_target.y + rand(-2, 2), shrapnel_target.z)
+			
+			S.preparePixelProjectile(shrapnel_target, src, null, rand(-30, 30))
+			S.p_x = 16
+			S.p_y = 16
+			S.fire()
 
-	var/shrapnel_count = rand(6, 12)
-	var/list/all_dirs = list(NORTH, SOUTH, EAST, WEST, NORTHEAST, NORTHWEST, SOUTHEAST, SOUTHWEST)
-	for(var/i in 1 to shrapnel_count)
-		var/obj/projectile/bullet/grapeshot_pellet/S = new(T)
-		var/shoot_dir = pick(all_dirs)
-		var/turf/shrapnel_target = get_ranged_target_turf(T, shoot_dir, rand(4, 7))
-		
-		if(shrapnel_target)
-			shrapnel_target = locate(shrapnel_target.x + rand(-2, 2), shrapnel_target.y + rand(-2, 2), shrapnel_target.z)
-		
-		S.preparePixelProjectile(shrapnel_target, src, null, rand(-30, 30))
-		S.fire()
+		for(var/i in 1 to 16) 
+			var/obj/projectile/bullet/cannon_debris/D = new(T)
+			var/shoot_dir = pick(all_dirs)
+			var/turf/debris_target = get_ranged_target_turf(T, shoot_dir, rand(5, 9))
+			
+			if(debris_target)
+				debris_target = locate(debris_target.x + rand(-3, 3), debris_target.y + rand(-3, 3), debris_target.z)
+			
+			D.preparePixelProjectile(debris_target, src, null, rand(-45, 45))
+			D.p_x = 16
+			D.p_y = 16
+			D.fire()
 
-	for(var/i in 1 to 10) 
-		var/obj/projectile/bullet/cannon_debris/D = new(T)
-		var/shoot_dir = pick(all_dirs)
-		var/turf/debris_target = get_ranged_target_turf(T, shoot_dir, rand(5, 9))
-		
-		if(debris_target)
-			debris_target = locate(debris_target.x + rand(-3, 3), debris_target.y + rand(-3, 3), debris_target.z)
-		
-		D.preparePixelProjectile(debris_target, src, null, rand(-45, 45))
-		D.fire()
+		explosion(T, devastation_range = 0, heavy_impact_range = 3, light_impact_range = 6, flame_range = 0, smoke = TRUE, soundin = pick('sound/misc/explode/bottlebomb (1).ogg','sound/misc/explode/bottlebomb (2).ogg'))
 
-	explosion(T, devastation_range = 0, heavy_impact_range = 3, light_impact_range = 6, flame_range = 0, smoke = TRUE, soundin = pick('sound/misc/explode/bottlebomb (1).ogg','sound/misc/explode/bottlebomb (2).ogg'))
-
-	qdel(src)
+		qdel(src)
+		return BULLET_ACT_HIT
 
 /obj/projectile/bullet/grapeshot_pellet
 	name = "shrapnel"
@@ -449,30 +468,26 @@
 	var/turf/target_turf = get_ranged_target_turf(src, dir, 16) 
 
 	if(istype(bullet_loaded, /obj/item/cannon_shell/grapeshot))
-		var/pellet_count = 25 
-		var/list/dirs_to_fire = list(dir)
-		switch(dir)
-			if(NORTH)
-				dirs_to_fire += list(NORTHEAST, NORTHWEST)
-			if(SOUTH)
-				dirs_to_fire += list(SOUTHEAST, SOUTHWEST)
-			if(EAST)
-				dirs_to_fire += list(NORTHEAST, SOUTHEAST)
-			if(WEST)
-				dirs_to_fire += list(NORTHWEST, SOUTHWEST)
-
+		var/pellet_count = 30
+		var/shoot_dir = dir 
 		for(var/i in 1 to pellet_count)
 			var/obj/projectile/bullet/grapeshot_pellet/S = new(start_turf)
 			S.def_zone = pick(BODY_ZONE_HEAD, BODY_ZONE_CHEST, BODY_ZONE_R_ARM, BODY_ZONE_L_ARM, BODY_ZONE_R_LEG, BODY_ZONE_L_LEG)
-			var/shoot_dir = pick(dirs_to_fire)
 			var/turf/pellet_target = get_ranged_target_turf(start_turf, shoot_dir, 8)
+
 			if(pellet_target)
-				pellet_target = locate(pellet_target.x + rand(-1, 1), pellet_target.y + rand(-1, 1), pellet_target.z)
-			S.preparePixelProjectile(pellet_target, src, null, rand(-35, 35))
+				S.preparePixelProjectile(pellet_target, src, null, rand(-20, 20))
+
+			S.p_x = 16
+			S.p_y = 16
 			S.fire()
 	else
 		var/obj/projectile/bullet/cannonball_straight/P = new(start_turf)
-		P.preparePixelProjectile(target_turf, src)
+		if(target_turf)
+			P.preparePixelProjectile(target_turf, src)
+			
+		P.p_x = 16 
+		P.p_y = 16
 		P.fire()
 
 	var/user_name = user ? "[user]" : "Unknown (Auto-ignite)"
