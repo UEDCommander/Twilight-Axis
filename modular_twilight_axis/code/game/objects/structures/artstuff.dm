@@ -219,7 +219,7 @@ var/global/const/art_gallery_log_path = "data/paintings/deletion_logs.json"
 /datum/art_gallery/ui_status(mob/user)
 	return UI_INTERACTIVE
 
-// Загрузка логов с диска
+
 /datum/art_gallery/proc/load_logs()
 	if(!art_gallery_deletion_logs)
 		art_gallery_deletion_logs = list()
@@ -311,11 +311,10 @@ var/global/const/art_gallery_log_path = "data/paintings/deletion_logs.json"
 					var/log_entry = "\[[time_str]\] Admin [user.key] deleted '[meta["title"]]' (Author: [meta["author"]] / [meta["author_ckey"]])"
 
 					art_gallery_deletion_logs += log_entry
-					save_logs() // Запись на диск
+					save_logs()
 
 			if(fexists("[persistence_path][id].png")) fdel("[persistence_path][id].png")
 			if(fexists("[persistence_path][id].json")) fdel("[persistence_path][id].json")
 
-			// Закрываем окно TGUI. При повторном открытии список обновится сам!
 			SStgui.close_uis(src)
 			return TRUE
