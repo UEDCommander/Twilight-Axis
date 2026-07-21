@@ -3687,6 +3687,13 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	donatitem = TRUE
 	donat_tier = 2
 
+/datum/loadout_item/donator/cobb_conviction
+	name = "Donator Kit - Conviction - Required: Long Sword"
+	category = list("Оружие", "Донат")
+	path = /obj/item/enchantingkit/weapon/cobb_conviction
+	donatitem = TRUE
+	donat_tier = 2
+
 /datum/loadout_item/donator/racobio_staff
 	name = "Donator Kit - Obsidian Tower - Required: Grand Staff"
 	category = list("Оружие", "Донат")
