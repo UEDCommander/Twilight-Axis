@@ -12,6 +12,7 @@
 			STATKEY_INT = 3,
 			STATKEY_CON = 2,
 			STATKEY_WIL = 2,
+			STATKEY_PER = 2 // TA EDIT
 	)
 	age_mod = /datum/class_age_mod/mystic
 	subclass_mage_aspects = list("mastery" = FALSE, "major" = 0, "minor" = 2, "utilities" = 4)
@@ -229,7 +230,7 @@
 					H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/fortifyingvapors)
 
 	if(H.mind)
-		var/weapons = list("Lesser Staff", "Lesser Tome")
+		var/weapons = list("lesser staff", "Goedendag", "Quarterstaff") //TA EDIT
 		var/weapon_choice = input(H, "Choose your weapon.", "TAKE UP ARMS") as anything in weapons
 		switch(weapon_choice)
 			if("Lesser Staff")
@@ -240,6 +241,13 @@
 				r_hand = /obj/item/rogueweapon/spellbook
 				H.adjust_skillrank_up_to(/datum/skill/combat/staves, SKILL_LEVEL_JOURNEYMAN, TRUE)
 				H.adjust_skillrank_up_to(/datum/skill/combat/arcyne, SKILL_LEVEL_JOURNEYMAN, TRUE)
+				H.adjust_skillrank_up_to(/datum/skill/combat/staves, 3, TRUE)
+			if("Goedendag") //TA EDIT START
+				beltr = /obj/item/rogueweapon/mace/goden
+				H.adjust_skillrank_up_to(/datum/skill/combat/maces, 3, TRUE)
+			if("Quarterstaff")
+				r_hand = /obj/item/rogueweapon/woodstaff/quarterstaff/iron
+				H.adjust_skillrank_up_to(/datum/skill/combat/staves, 3, TRUE) //TA EDIT END
 
 	switch(H.patron?.type)
 		if(/datum/patron/old_god)
