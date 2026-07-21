@@ -49,7 +49,7 @@ export const ArtGallery = (props) => {
   };
 
   return (
-    <Window width={600} height={520} title="Server Art Gallery">
+    <Window width={700} height={600} title="Server Art Gallery">
       <Window.Content scrollable>
         <Stack vertical fill>
           {data.is_admin && (
@@ -118,13 +118,13 @@ export const ArtGallery = (props) => {
 
                       {data.is_admin && (
                         <>
-                          <Box color="label" fontSize="11px" mt={0.5}>
+                          <Box color="label" fontSize="15px" mt={0.5}>
                             Ckey автора: {data.paintings.find(p => p.id === selectedId)?.author_ckey || 'неизвестно'}
                           </Box>
-                          <Box color="label" fontSize="11px" mt={0.5}>
+                          <Box color="label" fontSize="15px" mt={0.5}>
                             Создано: {data.paintings.find(p => p.id === selectedId)?.real_date || 'неизвестно'}
                           </Box>
-                          <Box color="label" fontSize="11px" mt={0.5}>
+                          <Box color="label" fontSize="15px" mt={0.5}>
                             Раунд создания: {data.paintings.find(p => p.id === selectedId)?.round_id || 'неизвестно'}
                           </Box>
                         </>
