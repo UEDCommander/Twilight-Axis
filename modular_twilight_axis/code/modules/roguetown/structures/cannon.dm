@@ -32,8 +32,8 @@
 		)
 	craftdiff = 1
 
-/datum/crafting_recipe/roguetown/survival/repairkitclothbad
-	name = "fabric patch"
+/datum/crafting_recipe/roguetown/survival/parchmentfuse
+	name = "parchment fuse"
 	display_category = ITEM_CAT_TOOLS_WORKSHOP
 	result = /obj/item/cannon_fuse/parchment
 	reqs = list(
@@ -93,8 +93,8 @@
 	damage = 0
 	nodamage = TRUE
 	flag = "blunt"
-	speed = 1.0 
-	pass_flags = PASSTABLE | PASSMOB 
+	speed = 1.0
+	pass_flags = PASSTABLE | PASSMOB
 
 /obj/projectile/bullet/cannon_debris/on_hit(atom/target, blocked = 0)
 	var/turf/T = get_turf(target)
@@ -123,7 +123,7 @@
 
 	if(isliving(target))
 		var/mob/living/L = target
-		
+
 		if(ishuman(L))
 			var/mob/living/carbon/human/H = L
 			var/list/valid_limbs = list()
@@ -137,18 +137,18 @@
 					break
 				var/obj/item/bodypart/lost_limb = pick(valid_limbs)
 				valid_limbs -= lost_limb
-				lost_limb.dismember(BRUTE, BCLASS_CHOP, null, lost_limb.body_zone, 110, TRUE, TRUE) 
-			
+				lost_limb.dismember(BRUTE, BCLASS_CHOP, null, lost_limb.body_zone, 110, TRUE, TRUE)
+
 			for(var/obj/item/bodypart/remaining_limb in H.bodyparts)
 				H.apply_damage(100, BRUTE, remaining_limb.body_zone)
 		else
 			L.adjustBruteLoss(400)
 
-		var/throw_dir = turn(dir, pick(-90, 90)) 
+		var/throw_dir = turn(dir, pick(-90, 90))
 		var/turf/throw_turf = get_ranged_target_turf(L, throw_dir, rand(2, 4))
 		if(throw_turf)
 			L.throw_at(throw_turf, 4, 2, null, FALSE, FALSE, null, MOVE_FORCE_STRONG)
-		
+
 		L.Knockdown(60)
 		L.Paralyze(40)
 
@@ -162,10 +162,10 @@
 		temporary_unstoppable_movement = TRUE
 		movement_type |= UNSTOPPABLE
 		return BULLET_ACT_FORCE_PIERCE
-		
+
 	else
 		T.visible_message(span_danger("Пушечное ядро с грохотом разрывается!"))
-		
+
 		for(var/mob/living/M in range(4, T))
 			if(!M.mind || istype(M, /mob/living/simple_animal))
 				if(get_dist(T, M) <= 3)
@@ -175,16 +175,16 @@
 
 			if(M != target)
 				var/blast_dir = get_dir(T, M)
-				if(blast_dir == 0) 
+				if(blast_dir == 0)
 					blast_dir = pick(NORTH, SOUTH, EAST, WEST, NORTHEAST, NORTHWEST, SOUTHEAST, SOUTHWEST)
-				
+
 				var/turf/blast_turf = get_ranged_target_turf(M, blast_dir, rand(2, 4))
 				if(blast_turf)
 					M.throw_at(blast_turf, 4, 2, null, FALSE, FALSE, null, MOVE_FORCE_STRONG)
-				
+
 				M.Knockdown(60)
 				M.Paralyze(40)
-				M.adjustBruteLoss(rand(40, 80)) 
+				M.adjustBruteLoss(rand(40, 80))
 				M.visible_message(span_warning("[M] сбивает с ног мощной ударной волной!"))
 
 		var/shrapnel_count = rand(6, 12)
@@ -193,23 +193,23 @@
 			var/obj/projectile/bullet/grapeshot_pellet/S = new(T)
 			var/shoot_dir = pick(all_dirs)
 			var/turf/shrapnel_target = get_ranged_target_turf(T, shoot_dir, rand(4, 7))
-			
+
 			if(shrapnel_target)
 				shrapnel_target = locate(shrapnel_target.x + rand(-2, 2), shrapnel_target.y + rand(-2, 2), shrapnel_target.z)
-			
+
 			S.preparePixelProjectile(shrapnel_target, src, null, rand(-30, 30))
 			S.p_x = 16
 			S.p_y = 16
 			S.fire()
 
-		for(var/i in 1 to 16) 
+		for(var/i in 1 to 16)
 			var/obj/projectile/bullet/cannon_debris/D = new(T)
 			var/shoot_dir = pick(all_dirs)
 			var/turf/debris_target = get_ranged_target_turf(T, shoot_dir, rand(5, 9))
-			
+
 			if(debris_target)
 				debris_target = locate(debris_target.x + rand(-3, 3), debris_target.y + rand(-3, 3), debris_target.z)
-			
+
 			D.preparePixelProjectile(debris_target, src, null, rand(-45, 45))
 			D.p_x = 16
 			D.p_y = 16
@@ -224,11 +224,11 @@
 	name = "shrapnel"
 	icon = 'modular_twilight_axis/firearms/icons/ammo.dmi'
 	icon_state = "musketball"
-	damage = 90 
+	damage = 90
 	damage_type = BRUTE
 	flag = "piercing"
 	armor_penetration = PEN_BSTEEL
-	speed = 2.0 
+	speed = 2.0
 	woundclass = BCLASS_PIERCE
 	embedchance = 100
 	intdamfactor = 2
@@ -247,12 +247,12 @@
 	icon_state = "cannon"
 	density = TRUE
 	anchored = FALSE
-	
+
 	pixel_x = -16
 	pixel_y = -16
 
 	var/powder_loaded = FALSE
-	var/obj/item/cannon_shell/bullet_loaded = null 
+	var/obj/item/cannon_shell/bullet_loaded = null
 	var/rammed = FALSE
 	var/obj/item/cannon_fuse/inserted_fuse = null
 	var/fuse_burning = FALSE
@@ -290,7 +290,7 @@
 	. = ..()
 	if((world.time - last_fired) < cooldown)
 		. += span_warning("Ствол пушки горячий от недавнего выстрела!")
-	else 
+	else
 		. += span_info("Ствол холодный, пушка готова к перезарядке.")
 
 	if(fuse_burning)
@@ -430,7 +430,7 @@
 		user.visible_message(span_danger("[user] поджигает фитиль у [src.name]! Она сейчас выстрелит!"))
 	else
 		visible_message(span_danger("Фитиль у [src.name] начинает угрожающе искрить! Она сейчас выстрелит!"))
-		
+
 	playsound(src, 'modular_twilight_axis/firearms/sound/fuse.ogg', 100, FALSE)
 
 	addtimer(CALLBACK(src, PROC_REF(detonate_fuse), user), inserted_fuse.burn_time)
@@ -458,18 +458,18 @@
 			shake_camera(M, 4, 2)
 
 	playsound(src, 'modular_twilight_axis/awful_artillery/sound/launch.ogg', 100, 0, 20, 1, null, null, FALSE, TRUE)
-	
+
 	for(var/turf/AT in get_adjacent_turfs(src.loc))
 		new /obj/effect/particle_effect/smoke/arquebus(AT)
 		if(prob(40))
 			for(var/turf/BT in get_adjacent_turfs(AT))
 				new /obj/effect/particle_effect/smoke/arquebus(BT)
 
-	var/turf/target_turf = get_ranged_target_turf(src, dir, 16) 
+	var/turf/target_turf = get_ranged_target_turf(src, dir, 16)
 
 	if(istype(bullet_loaded, /obj/item/cannon_shell/grapeshot))
 		var/pellet_count = 30
-		var/shoot_dir = dir 
+		var/shoot_dir = dir
 		for(var/i in 1 to pellet_count)
 			var/obj/projectile/bullet/grapeshot_pellet/S = new(start_turf)
 			S.def_zone = pick(BODY_ZONE_HEAD, BODY_ZONE_CHEST, BODY_ZONE_R_ARM, BODY_ZONE_L_ARM, BODY_ZONE_R_LEG, BODY_ZONE_L_LEG)
@@ -485,8 +485,8 @@
 		var/obj/projectile/bullet/cannonball_straight/P = new(start_turf)
 		if(target_turf)
 			P.preparePixelProjectile(target_turf, src)
-			
-		P.p_x = 16 
+
+		P.p_x = 16
 		P.p_y = 16
 		P.fire()
 
@@ -502,9 +502,9 @@
 	if(user && isliving(user))
 		var/mob/living/L = user
 		skill = L.get_skill_level(/datum/skill/combat/twilight_firearms)
-	
+
 	var/misfire_chance = max(0, 25 - (skill * 5))
-	
+
 	if(prob(misfire_chance))
 		src.visible_message(span_danger("[src] разрывается на части!"))
 		explosion(get_turf(src), 1, 2, 4, 0, TRUE, FALSE, 2)
