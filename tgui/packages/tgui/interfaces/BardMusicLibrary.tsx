@@ -153,9 +153,9 @@ const BardEditorTabs = (props: {
             <Stack.Item>
               <NumberInput
                 value={spacingDraft}
-                minValue={0.1}
+                minValue={1}
                 maxValue={120}
-                step={0.5}
+                step={1}
                 stepPixelSize={4}
                 width="64px"
                 onChange={(value: number) => setSpacingDraft(value)}
@@ -272,7 +272,7 @@ const BardTimingRow = (props: { phrase: Phrase; index: number; act: BardAct }) =
             value={phrase.time}
             minValue={0}
             maxValue={9999}
-            step={0.5}
+            step={1}
             stepPixelSize={4}
             width="78px"
             onChange={(value: number) =>
@@ -338,7 +338,11 @@ export const BardMusicLibrary = () => {
   const allTracks = tracks;
   const canEditSelected = !!selected?.custom;
   const showBandInvite = !!band_invite_active;
-  const canSingSelected = !!selected?.custom && !!selected?.phrases?.length;
+  const canSingSelected =
+    !!selected?.custom &&
+    !!selected?.phrases?.length &&
+    playing &&
+    playing_track_title === selected.title;
   const isSingingSelected = auto_singing_title === selected?.title;
   const selectedDuration =
     playing && playing_track_title === selected?.title

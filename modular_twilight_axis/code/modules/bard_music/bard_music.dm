@@ -58,7 +58,7 @@
 	phrases = bard_track_build_phrases(lyrics, phrase_spacing_seconds)
 
 /datum/bard_timed_track/proc/set_spacing(new_spacing)
-	phrase_spacing_seconds = clamp(round(bard_track_num(new_spacing), 0.1), 0.1, 120)
+	phrase_spacing_seconds = clamp(round(bard_track_num(new_spacing)), 1, 120)
 	rebuild_from_lyrics(lyrics)
 
 /datum/bard_timed_track/proc/set_phrase_time(index, new_time)
@@ -67,7 +67,7 @@
 		return FALSE
 	var/datum/bard_timed_phrase/base_phrase = phrases[index]
 	var/old_time = base_phrase.time
-	var/target_time = max(round(bard_track_num(new_time), 0.1), 0)
+	var/target_time = max(round(bard_track_num(new_time)), 0)
 	var/delta = target_time - old_time
 	for(var/i in index to phrases.len)
 		var/datum/bard_timed_phrase/phrase = phrases[i]
@@ -190,7 +190,7 @@
 	var/step = max(spacing_seconds, 0.1)
 	for(var/i in 1 to final_lines.len)
 		var/datum/bard_timed_phrase/phrase = new
-		phrase.time = round((i - 1) * step, 0.1)
+		phrase.time = round((i - 1) * step)
 		phrase.text = final_lines[i]
 		out += phrase
 	return out
@@ -315,11 +315,9 @@
 /obj/item/rogue/instrument/proc/start_auto_song(mob/living/user, datum/bard_timed_track/track)
 	if(!track || !track.custom)
 		return
-	if(!playing)
-		play_track(user, track)
-	else if(current_track && current_track != track)
+	if(!playing || current_player != user || current_track != track)
 		return
-	if(!playing || !track.phrases.len)
+	if(!track.phrases.len)
 		return
 	user.bard_auto_singing = TRUE
 	user.bard_auto_song_token++
@@ -393,10 +391,9 @@
 	var/datum/bard_timed_track/leader_track = get_selected_track()
 	var/leader_sings = user.bard_auto_singing && auto_singing_title == leader_track?.title
 	stop_music(user)
+	play_track(user, leader_track)
 	if(leader_sings)
 		start_auto_song(user, leader_track)
-	else
-		play_track(user, leader_track)
 	for(var/datum/bard_band_member/member as anything in band_members)
 		if(!member.player || !member.instrument || QDELETED(member.instrument))
 			continue
@@ -406,10 +403,9 @@
 			continue
 		member.instrument.stop_music(member.player)
 		member.instrument.music_panel_selected = member.track_title
+		member.instrument.play_track(member.player, member_track)
 		if(member.sing)
 			member.instrument.start_auto_song(member.player, member_track)
-		else
-			member.instrument.play_track(member.player, member_track)
 	cancel_band_invite()
 
 /obj/item/rogue/instrument/proc/auto_song_loop(mob/living/user, datum/bard_timed_track/track, token)
@@ -421,24 +417,24 @@
 		else if(track.duration_seconds > 0 && elapsed_seconds >= track.duration_seconds)
 			stop_auto_song(user)
 			return
-		var/last_time = elapsed_seconds
 		for(var/datum/bard_timed_phrase/phrase as anything in track.phrases)
 			if(phrase.time < elapsed_seconds)
 				continue
 			if(!playing || current_player != user || !user.bard_auto_singing || user.bard_auto_song_token != token)
 				return
-			var/delay = max(round((phrase.time - last_time) * 10), 0)
+			var/target_time = music_started_at + round(phrase.time * 10)
+			var/delay = max(target_time - world.time, 0)
 			if(delay)
 				sleep(delay)
 			if(QDELETED(src) || QDELETED(user) || QDELETED(track) || !playing || current_player != user || !user.bard_auto_singing || user.bard_auto_song_token != token)
 				return
 			if(phrase.text)
 				user.say(phrase.text, forced = "bard auto song")
-			last_time = phrase.time
 		if(!repeat_enabled)
 			stop_auto_song(user)
 			return
-		var/remainder = max(round((track.duration_seconds - last_time) * 10), 0)
+		var/loop_end = music_started_at + round(track.duration_seconds * 10)
+		var/remainder = max(loop_end - world.time, 0)
 		if(remainder)
 			sleep(remainder)
 		if(QDELETED(src) || QDELETED(user) || QDELETED(track) || !playing || current_player != user || !user.bard_auto_singing || user.bard_auto_song_token != token)
