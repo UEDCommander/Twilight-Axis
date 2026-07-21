@@ -106,7 +106,8 @@
 	return TRUE
 
 /obj/item/ccg_deck/attack_hand(mob/user, params)
-	if(get_active_match())
+	var/datum/ccg_match/active_match = get_active_match()
+	if(active_match && !active_match.is_participant(user))
 		ui_interact(user)
 		return TRUE
 	return ..()
