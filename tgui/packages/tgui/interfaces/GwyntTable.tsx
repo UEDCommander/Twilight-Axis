@@ -48,6 +48,8 @@ type Data = {
   waiting?: boolean;
   offeredName?: string;
   mySide?: Side;
+  isSpectator?: boolean;
+  spectatorCount?: number;
   turn?: Side;
   players?: Record<Side, string>;
   wins?: Record<Side, number>;
@@ -1508,6 +1510,7 @@ export const GwyntTable = () => {
   }
 
   const hand = data.hand || [];
+  const isSpectator = !!data.isSpectator;
   const weatherCards = data.weatherCards || [];
   const myTurn =
     data.mySide &&
@@ -1517,7 +1520,9 @@ export const GwyntTable = () => {
   const canUseLeader = !!data.leader && !data.leader.used && !!myTurn;
   const weather = data.weather?.length ? data.weather.join(', ') : 'Clear';
   let phase = 'Waiting';
-  if (data.result) {
+  if (isSpectator) {
+    phase = 'Watching';
+  } else if (data.result) {
     phase = 'Game Over';
   } else if (data.inMulligan) {
     phase = `Mulligan | ${data.mulligansLeft ?? 0} redraws left`;
@@ -1587,32 +1592,36 @@ export const GwyntTable = () => {
           }}
         >
           <div>
-            <LeaderPanel
-              data={data}
-              canUseLeader={canUseLeader}
-              onUse={() => act('leader')}
-            />
-            <Section title={`Hand | ${hand.length} cards`}>
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(3, 86px)',
-                  gap: '8px',
-                }}
-              >
-                {hand.map((card, index) => (
-                  <CardView
-                    key={`${card.id}-${index}`}
-                    card={card}
-                    onClick={
-                      (data.inMulligan && !data.mulliganReady) || myTurn
-                        ? () => playCard(card)
-                        : undefined
-                    }
-                  />
-                ))}
-              </div>
-            </Section>
+            {!isSpectator && (
+              <>
+                <LeaderPanel
+                  data={data}
+                  canUseLeader={canUseLeader}
+                  onUse={() => act('leader')}
+                />
+                <Section title={`Hand | ${hand.length} cards`}>
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(3, 86px)',
+                      gap: '8px',
+                    }}
+                  >
+                    {hand.map((card, index) => (
+                      <CardView
+                        key={`${card.id}-${index}`}
+                        card={card}
+                        onClick={
+                          (data.inMulligan && !data.mulliganReady) || myTurn
+                            ? () => playCard(card)
+                            : undefined
+                        }
+                      />
+                    ))}
+                  </div>
+                </Section>
+              </>
+            )}
           </div>
 
           <div>
@@ -1634,6 +1643,17 @@ export const GwyntTable = () => {
                   : 'Off'}
               </Button>
               <MatchInfoPanel data={data} phase={phase} weather={weather} />
+              {isSpectator && (
+                <div
+                  style={{
+                    marginBottom: '8px',
+                    color: '#cbd5e1',
+                    fontSize: '12px',
+                  }}
+                >
+                  Spectators: {data.spectatorCount || 0}
+                </div>
+              )}
               {selectedCard && (
                 <div
                   style={{
@@ -1700,21 +1720,30 @@ export const GwyntTable = () => {
               )}
               {!!data.inMulligan && (
                 <Button
-                  disabled={!!data.mulliganReady}
+                  disabled={isSpectator || !!data.mulliganReady}
                   onClick={() => act('ready_mulligan')}
                 >
                   Ready
                 </Button>
               )}
-              <Button disabled={!myTurn} onClick={() => act('pass')}>
+              <Button disabled={isSpectator || !myTurn} onClick={() => act('pass')}>
                 Pass
               </Button>
-              <Button disabled={!data.result} onClick={() => act('collect')}>
+              <Button
+                disabled={isSpectator || !data.result}
+                onClick={() => act('collect')}
+              >
                 Collect Decks
               </Button>
-              <Button color="bad" onClick={() => act('leave')}>
-                Leave
-              </Button>
+              {isSpectator ? (
+                <Button color="bad" onClick={() => act('leave_spectator')}>
+                  Stop Watching
+                </Button>
+              ) : (
+                <Button color="bad" onClick={() => act('leave')}>
+                  Leave
+                </Button>
+              )}
             </Section>
           </div>
         </div>

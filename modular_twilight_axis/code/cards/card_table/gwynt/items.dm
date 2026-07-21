@@ -105,6 +105,12 @@
 		user.client?.ccg_open_deckbuilder(src, user)
 	return TRUE
 
+/obj/item/ccg_deck/attack_hand(mob/user, params)
+	if(get_active_match())
+		ui_interact(user)
+		return TRUE
+	return ..()
+
 /obj/item/ccg_deck/attackby(obj/item/I, mob/living/user, params)
 	if(istype(I, /obj/item/ccg_deck))
 		var/obj/item/ccg_deck/other = I
@@ -160,6 +166,12 @@
 		guest.match = null
 		guest.match_host = null
 		guest.clear_invitation()
+	var/list/spectator_ckeys = active_match.spectator_ckeys.Copy()
+	for(var/spectator_ckey in spectator_ckeys)
+		var/mob/spectator = ccg_find_mob_by_ckey(spectator_ckey)
+		if(spectator)
+			SStgui.close_user_uis(spectator, host)
+			SStgui.close_user_uis(spectator, guest)
 	qdel(active_match)
 	return TRUE
 
@@ -244,6 +256,7 @@
 	var/datum/ccg_match/active_match = get_active_match()
 	if(!active_match)
 		return
+	active_match.add_spectator(user)
 	active_match.sync_soundtrack_for(user)
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
@@ -252,6 +265,7 @@
 
 /obj/item/ccg_deck/ui_close(mob/user)
 	var/datum/ccg_match/active_match = get_active_match()
+	active_match?.remove_spectator(user)
 	active_match?.stop_soundtrack_for(user)
 
 /obj/item/ccg_deck/ui_data(mob/user)
@@ -269,6 +283,22 @@
 		return FALSE
 	var/mob/user = ui.user
 	switch(action)
+		if("leave_spectator")
+			if(active_match.remove_spectator(user))
+				active_match.stop_soundtrack_for(user)
+				SStgui.close_user_uis(user, src)
+				return TRUE
+			return FALSE
+		if("toggle_soundtrack")
+			if(user?.client?.prefs)
+				user.client.prefs.ccg_soundtrack_enabled = !user.client.prefs.ccg_soundtrack_enabled
+				user.client.prefs.ccg_save_settings_sql()
+				active_match.sync_soundtrack_for(user)
+				active_match.update_deck_uis()
+				return TRUE
+		if("collect", "leave")
+			if(!active_match.side_for_user(user, src))
+				return FALSE
 		if("play")
 			if(active_match.play_card(user, params["card"], src, params))
 				active_match.update_deck_uis()
@@ -293,14 +323,7 @@
 			if(collect_finished_match())
 				return TRUE
 		if("leave")
-			if(clear_match(active_match))
-				return TRUE
-		if("toggle_soundtrack")
-			if(user?.client?.prefs)
-				user.client.prefs.ccg_soundtrack_enabled = !user.client.prefs.ccg_soundtrack_enabled
-				user.client.prefs.ccg_save_settings_sql()
-				active_match.sync_soundtrack_for(user)
-				active_match.update_deck_uis()
+			if(active_match.result_text ? collect_finished_match() : clear_match(active_match))
 				return TRUE
 	return FALSE
 

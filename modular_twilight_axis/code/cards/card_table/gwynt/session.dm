@@ -38,6 +38,7 @@
 	var/obj/item/ccg_deck/challenger
 	var/list/player_ckeys = list()
 	var/list/player_names = list()
+	var/list/spectator_ckeys = list()
 	var/list/decks = list()
 	var/list/hands = list()
 	var/list/discarded = list()
@@ -117,6 +118,7 @@
 	challenger = null
 	player_ckeys = null
 	player_names = null
+	spectator_ckeys = null
 	decks = null
 	hands = null
 	discarded = null
@@ -185,6 +187,27 @@
 		SStgui.update_uis(owner)
 	if(challenger)
 		SStgui.update_uis(challenger)
+	for(var/spectator_ckey in spectator_ckeys)
+		var/mob/spectator = ccg_find_mob_by_ckey(spectator_ckey)
+		if(spectator)
+			SStgui.update_user_uis(spectator)
+
+/datum/ccg_match/proc/is_participant(mob/user)
+	if(!user?.ckey)
+		return FALSE
+	return user.ckey == player_ckeys[CCG_SIDE_ONE] || user.ckey == player_ckeys[CCG_SIDE_TWO]
+
+/datum/ccg_match/proc/add_spectator(mob/user)
+	if(!user?.ckey || is_participant(user))
+		return FALSE
+	spectator_ckeys |= user.ckey
+	return TRUE
+
+/datum/ccg_match/proc/remove_spectator(mob/user)
+	if(!user?.ckey || !(user.ckey in spectator_ckeys))
+		return FALSE
+	spectator_ckeys -= user.ckey
+	return TRUE
 
 /datum/ccg_match/proc/play_cue(sound_file)
 	if(!sound_file)
@@ -209,6 +232,8 @@
 /datum/ccg_match/proc/stop_soundtracks()
 	stop_soundtrack_for_ckey(player_ckeys[CCG_SIDE_ONE])
 	stop_soundtrack_for_ckey(player_ckeys[CCG_SIDE_TWO])
+	for(var/spectator_ckey in spectator_ckeys)
+		stop_soundtrack_for_ckey(spectator_ckey)
 
 /datum/ccg_match/proc/sync_soundtrack_for(mob/user)
 	if(!user?.client?.prefs)
@@ -899,6 +924,8 @@
 	var/list/data = list()
 	var/my_side = side_for_user(user, deck_context)
 	data["mySide"] = my_side
+	data["isSpectator"] = !my_side && user?.ckey && (user.ckey in spectator_ckeys)
+	data["spectatorCount"] = length(spectator_ckeys)
 	data["inMulligan"] = in_mulligan
 	data["mulligansLeft"] = my_side ? mulligans_left[my_side] : 0
 	data["mulliganReady"] = my_side ? mulligan_ready[my_side] : FALSE
