@@ -13,7 +13,7 @@ TA note:
 add_bite_animation(), remove_bite()
 	Visual feedback for blood drinking.
 
-can_use_drinksomeblood(), check_silver_block()
+can_use_drinksomeblood(), check_silver_block(), check_conjured_summon_block()
 	Pre-flight validation before blood interaction.
 
 get_vampire_drinker(), get_vampire_victim()
@@ -104,6 +104,13 @@ drinksomeblood()
 		qdel(sunder)
 
 	addtimer(CALLBACK(src, TYPE_PROC_REF(/mob/living/carbon, vomit), 0, TRUE), rand(1 SECONDS, 2 SECONDS))
+	return FALSE
+
+/mob/living/carbon/human/proc/check_conjured_summon_block(mob/living/carbon/victim)
+	if(!HAS_TRAIT(victim, TRAIT_CONJURED_SUMMON))
+		return TRUE
+
+	to_chat(src, span_warning("Это лишь иллюзия - в её жилах нет ни капли настоящей крови."))
 	return FALSE
 
 /// CONTEXT
@@ -886,6 +893,9 @@ drinksomeblood()
 
 	if(victim.dna?.species && (NOBLOOD in victim.dna.species.species_traits))
 		to_chat(src, span_warning("Увы. Нет крови."))
+		return
+
+	if(!check_conjured_summon_block(victim))
 		return
 
 	var/datum/antagonist/vampire/VDrinker = get_vampire_drinker()
