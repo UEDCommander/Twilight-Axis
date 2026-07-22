@@ -247,6 +247,7 @@
 	icon_state = "cannon"
 	density = TRUE
 	anchored = FALSE
+	max_integrity = 2000
 
 	pixel_x = -16
 	pixel_y = -16
