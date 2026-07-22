@@ -50,6 +50,7 @@ type Data = {
   elapsed_seconds: number;
   progress_ratio: number;
   playback_id: number;
+  auto_song_enabled: boolean;
   auto_singing_title?: string | null;
   playing_track_title?: string | null;
   playing_duration_seconds: number;
@@ -317,7 +318,7 @@ export const BardMusicLibrary = () => {
     repeat_mode,
     elapsed_seconds,
     playback_id,
-    auto_singing_title,
+    auto_song_enabled,
     playing_track_title,
     playing_duration_seconds,
     playing_duration_label,
@@ -333,17 +334,17 @@ export const BardMusicLibrary = () => {
   const [activeTab, setActiveTab] = useState<'text' | 'timing'>('timing');
   const [spacingDraft, setSpacingDraft] = useState(2);
   const [localElapsed, setLocalElapsed] = useState(0);
+  const [elapsedAnchor, setElapsedAnchor] = useState({
+    elapsed: 0,
+    receivedAt: Date.now(),
+  });
   const preparedTracks = tracks.filter((track) => !track.custom);
   const customTracks = tracks.filter((track) => track.custom);
   const allTracks = tracks;
   const canEditSelected = !!selected?.custom;
   const showBandInvite = !!band_invite_active;
-  const canSingSelected =
-    !!selected?.custom &&
-    !!selected?.phrases?.length &&
-    playing &&
-    playing_track_title === selected.title;
-  const isSingingSelected = auto_singing_title === selected?.title;
+  const canSingSelected = !!selected?.custom && !!selected?.phrases?.length;
+  const isSingingSelected = !!auto_song_enabled;
   const selectedDuration =
     playing && playing_track_title === selected?.title
       ? playing_duration_seconds
@@ -372,7 +373,12 @@ export const BardMusicLibrary = () => {
   }, [selected?.title, selected?.lyrics, selected?.json, selected?.spacing_seconds]);
 
   useEffect(() => {
-    setLocalElapsed(elapsed_seconds || 0);
+    const elapsed = elapsed_seconds || 0;
+    setElapsedAnchor({
+      elapsed,
+      receivedAt: Date.now(),
+    });
+    setLocalElapsed(elapsed);
   }, [playing, playback_id, playing_track_title]);
 
   useEffect(() => {
@@ -380,10 +386,10 @@ export const BardMusicLibrary = () => {
       return;
     }
     const timer = setInterval(() => {
-      setLocalElapsed((value) => value + 1);
-    }, 1000);
+      setLocalElapsed(elapsedAnchor.elapsed + (Date.now() - elapsedAnchor.receivedAt) / 1000);
+    }, 250);
     return () => clearInterval(timer);
-  }, [playing, selected?.title]);
+  }, [elapsedAnchor, playing]);
 
   if (compactMode) {
     return (
