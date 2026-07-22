@@ -1730,7 +1730,7 @@ export const GwyntTable = () => {
                 Pass
               </Button>
               <Button
-                disabled={isSpectator || !data.result}
+                disabled={isSpectator}
                 onClick={() => act('collect')}
               >
                 Collect Decks
@@ -1739,11 +1739,7 @@ export const GwyntTable = () => {
                 <Button color="bad" onClick={() => act('leave_spectator')}>
                   Stop Watching
                 </Button>
-              ) : (
-                <Button color="bad" onClick={() => act('leave')}>
-                  Leave
-                </Button>
-              )}
+              ) : null}
             </Section>
           </div>
         </div>

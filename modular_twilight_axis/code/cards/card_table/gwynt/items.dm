@@ -160,6 +160,10 @@
 	var/obj/item/ccg_deck/host = active_match.owner
 	var/obj/item/ccg_deck/guest = active_match.challenger
 	if(host)
+		SStgui.close_uis(host)
+	if(guest)
+		SStgui.close_uis(guest)
+	if(host)
 		host.match = null
 		host.match_host = null
 		host.clear_invitation()
@@ -302,7 +306,7 @@
 				active_match.sync_soundtrack_for(user)
 				active_match.update_deck_uis()
 				return TRUE
-		if("collect", "leave")
+		if("collect")
 			if(!active_match.side_for_user(user, src))
 				return FALSE
 		if("play")
@@ -326,10 +330,7 @@
 				active_match.update_deck_uis()
 				return TRUE
 		if("collect")
-			if(collect_finished_match())
-				return TRUE
-		if("leave")
-			if(active_match.result_text ? collect_finished_match() : clear_match(active_match))
+			if(clear_match(active_match))
 				return TRUE
 	return FALSE
 
