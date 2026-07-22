@@ -1749,11 +1749,11 @@ export const GwyntTable = () => {
                 disabled={isSpectator}
                 onClick={() => act('collect')}
               >
-                Collect Decks
+                End Session
               </Button>
               {isSpectator ? (
                 <Button color="bad" onClick={() => act('leave_spectator')}>
-                  Stop Watching
+                  Leave
                 </Button>
               ) : null}
             </Section>

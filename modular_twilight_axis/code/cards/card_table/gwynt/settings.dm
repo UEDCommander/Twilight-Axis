@@ -947,6 +947,7 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 
 /datum/ccg_deckbuilder_panel
 	var/obj/item/ccg_deck/deck
+	var/read_only = FALSE
 
 /datum/ccg_deckbuilder_panel/ui_state(mob/user)
 	return GLOB.always_state
@@ -1005,7 +1006,8 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 		cards += list(card_data)
 
 	data["mode"] = deck ? "build" : "pool"
-	data["displayMode"] = P.ccg_deckbuilder_view_mode
+	data["displayMode"] = read_only ? "deck" : P.ccg_deckbuilder_view_mode
+	data["readOnly"] = read_only
 	data["cards"] = cards
 	data["selected"] = selected
 	data["selectedCount"] = selected.len
@@ -1052,6 +1054,8 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 	var/mob/user = ui.user
 	var/datum/preferences/P = user?.client?.prefs
 	if(!P)
+		return FALSE
+	if(read_only || (deck && deck.owner_ckey != user?.ckey))
 		return FALSE
 	P.ccg_clean_cards()
 
@@ -1601,7 +1605,7 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 		return
 	client.prefs?.ccg_give_deck_item(src)
 
-/client/proc/ccg_open_deckbuilder(obj/item/ccg_deck/deck, mob/user = mob)
+/client/proc/ccg_open_deckbuilder(obj/item/ccg_deck/deck, mob/user = mob, read_only = FALSE)
 	if(!user || !deck)
 		return
 	var/datum/preferences/P = prefs
@@ -1609,6 +1613,7 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 		return
 	var/datum/ccg_deckbuilder_panel/panel = new()
 	panel.deck = deck
+	panel.read_only = read_only || deck.owner_ckey != user.ckey
 	panel.ui_interact(user)
 
 #undef CCG_STASH_DECK_KEY

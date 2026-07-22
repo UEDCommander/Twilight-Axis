@@ -81,6 +81,7 @@ type Data = {
   decks?: SavedDeck[];
   activeDeckIndex?: number;
   maxDecks?: number;
+  readOnly?: boolean;
 };
 
 type SavedDeck = {
@@ -787,6 +788,7 @@ export const CardDeckBuilder = () => {
 
   const deckRatio = data.deckSize > 0 ? data.selectedCount / data.deckSize : 0;
   const isPhysicalDeck = data.mode === 'build';
+  const readOnly = !!data.readOnly;
   const showPool = displayMode !== 'deck';
   const showDeck = displayMode !== 'pool';
   const currentFaction = data.factions?.find(
@@ -814,7 +816,13 @@ export const CardDeckBuilder = () => {
       ?.displayText || 'Select deck';
   return (
     <Window
-      title={isPhysicalDeck ? 'Arlette Deck Builder' : 'Arlette Decks'}
+      title={
+        readOnly
+          ? 'Arlette Deck Preview'
+          : isPhysicalDeck
+            ? 'Arlette Deck Builder'
+            : 'Arlette Decks'
+      }
       width={1100}
       height={760}
     >
@@ -827,7 +835,8 @@ export const CardDeckBuilder = () => {
             height: '100%',
           }}
         >
-          <Panel>
+          {!readOnly && (
+            <Panel>
             <div
               style={{
                 display: 'grid',
@@ -900,7 +909,8 @@ export const CardDeckBuilder = () => {
                 </Button>
               ))}
             </div>
-          </Panel>
+            </Panel>
+          )}
 
           <div
             style={{
@@ -1052,8 +1062,11 @@ export const CardDeckBuilder = () => {
                       <Button
                         key={faction.id}
                         selected={faction.id === data.faction}
-                        onClick={() =>
-                          act('set_faction', { faction: faction.id })
+                        disabled={readOnly}
+                        onClick={
+                          readOnly
+                            ? undefined
+                            : () => act('set_faction', { faction: faction.id })
                         }
                       >
                         {faction.name}
@@ -1085,7 +1098,12 @@ export const CardDeckBuilder = () => {
                       <Button
                         key={leader.id}
                         selected={leader.id === data.leader}
-                        onClick={() => act('set_leader', { leader: leader.id })}
+                        disabled={readOnly}
+                        onClick={
+                          readOnly
+                            ? undefined
+                            : () => act('set_leader', { leader: leader.id })
+                        }
                       >
                         {leader.name}
                       </Button>
@@ -1118,7 +1136,11 @@ export const CardDeckBuilder = () => {
                 <div
                   style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}
                 >
-                  <Button color="bad" onClick={() => act('clear')}>
+                  <Button
+                    color="bad"
+                    disabled={readOnly}
+                    onClick={() => act('clear')}
+                  >
                     Clear
                   </Button>
                 </div>
@@ -1145,9 +1167,14 @@ export const CardDeckBuilder = () => {
                       key={`${card.id}-${index}`}
                       card={card}
                       compact={showPool}
-                      onClick={() => act('remove_one', { card: card.id })}
+                      disabled={readOnly}
+                      onClick={
+                        readOnly
+                          ? undefined
+                          : () => act('remove_one', { card: card.id })
+                      }
                       onRightClick={
-                        isPhysicalDeck
+                        isPhysicalDeck && !readOnly
                           ? () => act('take_card', { card: card.id })
                           : undefined
                       }

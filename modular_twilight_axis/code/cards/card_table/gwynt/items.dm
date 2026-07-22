@@ -91,30 +91,48 @@
 	card_ids = kept
 	return removed
 
+/obj/item/ccg_deck/proc/is_owner(mob/user)
+	return user?.ckey && owner_ckey == user.ckey
+
+/obj/item/ccg_deck/proc/is_on_table()
+	var/turf/T = get_turf(src)
+	return T && locate(/obj/structure/table) in T
+
+/obj/item/ccg_deck/proc/open_deck_view(mob/user)
+	if(!user?.client)
+		return FALSE
+	user.client.ccg_open_deckbuilder(src, user, !is_owner(user))
+	return TRUE
+
 /obj/item/ccg_deck/attack_self(mob/user)
 	if(!user)
 		return
 	if(get_active_match())
 		ui_interact(user)
 		return TRUE
-	if(user.is_holding(src))
-		user.client?.ccg_open_deckbuilder(src, user)
+	if(!is_owner(user))
+		open_deck_view(user)
 	else if(inviter_ckey && inviter_ckey != user.ckey)
 		to_chat(user, span_notice("Strike this deck with your own Arlette deck to begin."))
 	else
-		user.client?.ccg_open_deckbuilder(src, user)
+		open_deck_view(user)
 	return TRUE
 
 /obj/item/ccg_deck/attack_hand(mob/user, params)
 	var/datum/ccg_match/active_match = get_active_match()
-	if(active_match && !active_match.is_participant(user))
+	if(active_match)
 		ui_interact(user)
 		return TRUE
-	return ..()
+	if(is_on_table() && is_owner(user))
+		return ..()
+	open_deck_view(user)
+	return TRUE
 
 /obj/item/ccg_deck/attackby(obj/item/I, mob/living/user, params)
 	if(istype(I, /obj/item/ccg_deck))
 		var/obj/item/ccg_deck/other = I
+		if(get_active_match() || other.get_active_match())
+			return TRUE
 		try_start_match(user, other)
 		return TRUE
 	if(istype(I, /obj/item/ccg_card_single))
@@ -341,6 +359,9 @@
 		return FALSE
 	if(get_active_match())
 		ui_interact(user)
+		return TRUE
+	if(!is_owner(user))
+		open_deck_view(user)
 		return TRUE
 	return_to_stash(user)
 	return TRUE
