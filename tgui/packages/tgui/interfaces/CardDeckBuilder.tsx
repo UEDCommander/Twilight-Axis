@@ -814,7 +814,7 @@ export const CardDeckBuilder = () => {
       ?.displayText || 'Select deck';
   return (
     <Window
-      title={isPhysicalDeck ? 'Card Deck Builder' : 'Gwynt Decks'}
+      title={isPhysicalDeck ? 'Arlette Deck Builder' : 'Arlette Decks'}
       width={1100}
       height={760}
     >

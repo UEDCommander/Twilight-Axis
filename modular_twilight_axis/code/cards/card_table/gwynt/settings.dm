@@ -884,7 +884,7 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 
 /datum/preferences/proc/ccg_give_deck_item(mob/user)
 	if(user?.stat == DEAD)
-		to_chat(user, span_warning("The dead cannot take a card battle deck."))
+		to_chat(user, span_warning("The dead cannot take an Arlette deck."))
 		return FALSE
 	if(!ccg_require_sql(user))
 		return FALSE
@@ -892,13 +892,13 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 	if(!user?.mind)
 		return FALSE
 	if(user.mind.ccg_deck_requested)
-		to_chat(user, span_warning("You have already taken a card battle deck this round."))
+		to_chat(user, span_warning("You have already taken an Arlette deck this round."))
 		return FALSE
 	var/list/deck_cards = length(ccg_saved_deck_cards) ? ccg_saved_deck_cards.Copy() : ccg_first_deck_cards(ccg_saved_deck_faction)
 	while(deck_cards.len > CCG_DECK_SIZE)
 		deck_cards.Cut(deck_cards.len, deck_cards.len + 1)
 	if(!ccg_save_deck_snapshot(deck_cards, ccg_saved_deck_faction, ccg_saved_deck_leader))
-		to_chat(user, span_warning("The card battle deck failed to save. Try again."))
+		to_chat(user, span_warning("The Arlette deck failed to save. Try again."))
 		return FALSE
 	var/obj/item/ccg_deck/new_deck = new(get_turf(user))
 	new_deck.set_faction(ccg_saved_deck_faction, ccg_saved_deck_leader)
@@ -910,7 +910,7 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 	new_deck.loaded_from_preferences = TRUE
 	user.put_in_hands(new_deck)
 	user.mind.ccg_deck_requested = TRUE
-	to_chat(user, span_notice("You take a card battle deck."))
+	to_chat(user, span_notice("You take an Arlette deck."))
 	return TRUE
 
 /datum/preferences/proc/ccg_open_preferences_deckbuilder(mob/user)
@@ -924,18 +924,18 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 	ccg_clean_cards()
 	var/list/spec = ccg_active_deck_spec()
 	var/export_json = json_encode(spec)
-	var/export_text = input(user, "Copy this deck export.", "Gwynt Deck Export", export_json) as null|message
+	var/export_text = input(user, "Copy this deck export.", "Arlette Deck Export", export_json) as null|message
 	return !!export_text
 
 /datum/preferences/proc/ccg_import_active_deck(mob/user)
 	if(!user)
 		return FALSE
-	var/import_text = input(user, "Paste a Gwynt deck export.", "Gwynt Deck Import") as null|message
+	var/import_text = input(user, "Paste an Arlette deck export.", "Arlette Deck Import") as null|message
 	if(!istext(import_text) || !length(import_text))
 		return FALSE
 	var/list/spec = safe_json_decode(import_text)
 	if(!islist(spec))
-		to_chat(user, span_warning("This is not a valid Gwynt deck export."))
+		to_chat(user, span_warning("This is not a valid Arlette deck export."))
 		return FALSE
 	ccg_clean_cards()
 	var/list/normalized = ccg_normalize_deck_spec(spec, ccg_active_deck_index)
@@ -963,7 +963,7 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 		return
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
-		ui = new(user, src, "CardDeckBuilder", deck ? "Card Deck Builder" : "CCG Deck")
+		ui = new(user, src, "CardDeckBuilder", deck ? "Arlette Deck Builder" : "Arlette Decks")
 		ui.open()
 
 /datum/ccg_deckbuilder_panel/ui_data(mob/user)
@@ -1179,7 +1179,7 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 			if(!istype(held_item, /obj/item/ccg_deck))
 				held_item = user.get_inactive_held_item()
 			if(!istype(held_item, /obj/item/ccg_deck))
-				to_chat(user, span_warning("Hold a card battle deck to import it."))
+				to_chat(user, span_warning("Hold an Arlette deck to import it."))
 				return TRUE
 			var/obj/item/ccg_deck/held_deck = held_item
 			if(P.ccg_replace_active_deck_from_pool(held_deck.card_ids, held_deck.faction_id, held_deck.leader_id))
@@ -1592,12 +1592,12 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 	message_admins("[key_name_admin(usr)] cleared saved Gwynt decks for [target_ckey].")
 
 /mob/living/verb/open_ccg_deck()
-	set name = "CCG Deck"
+	set name = "Arlette Deck"
 	set category = "IC"
 	if(!client)
 		return
 	if(stat == DEAD)
-		to_chat(src, span_warning("The dead cannot take a card battle deck."))
+		to_chat(src, span_warning("The dead cannot take an Arlette deck."))
 		return
 	client.prefs?.ccg_give_deck_item(src)
 

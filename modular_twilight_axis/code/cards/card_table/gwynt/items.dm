@@ -1,6 +1,6 @@
 /obj/item/ccg_deck
-	name = "card battle deck"
-	desc = "A prepared deck for a round-based card battle."
+	name = "Arlette deck"
+	desc = "A prepared deck for a round-based game of Arlette."
 	icon = 'modular_twilight_axis/icons/obj/gwynt_objs.dmi'
 	icon_state = "gwint_deck"
 	w_class = WEIGHT_CLASS_SMALL
@@ -71,7 +71,7 @@
 	owner_ckey = user.ckey
 	var/owner_name = user.real_name || user.name
 	if(owner_name)
-		name = "Card Deck of [owner_name]"
+		name = "Arlette Deck of [owner_name]"
 	loaded_from_preferences = TRUE
 	return TRUE
 
@@ -100,7 +100,7 @@
 	if(user.is_holding(src))
 		user.client?.ccg_open_deckbuilder(src, user)
 	else if(inviter_ckey && inviter_ckey != user.ckey)
-		to_chat(user, span_notice("Strike this deck with your own card battle deck to begin."))
+		to_chat(user, span_notice("Strike this deck with your own Arlette deck to begin."))
 	else
 		user.client?.ccg_open_deckbuilder(src, user)
 	return TRUE
@@ -132,7 +132,7 @@
 		inviter_ckey = user?.ckey
 		inviter_name = user?.real_name ? user.real_name : user?.name
 		if(user)
-			to_chat(user, span_notice("You place the deck as a card battle invitation."))
+			to_chat(user, span_notice("You place the deck as an Arlette invitation."))
 	else
 		clear_invitation()
 
@@ -219,7 +219,7 @@
 			SStgui.update_user_uis(user)
 			qdel(single)
 		else
-			to_chat(user, span_warning("The card battle deck failed to save. The card was not added."))
+			to_chat(user, span_warning("The Arlette deck failed to save. The card was not added."))
 		return FALSE
 	if(!single.pooled && single.source_ckey && single.source_ckey != user.ckey)
 		ccg_award_trade_progress(single.source_ckey, user)
@@ -351,13 +351,13 @@
 	if(!user.is_holding(src))
 		return FALSE
 	if(!owner_ckey || owner_ckey != user.ckey)
-		to_chat(user, span_warning("This card battle deck is not bound to your stash."))
+		to_chat(user, span_warning("This Arlette deck is not bound to your stash."))
 		return TRUE
 	if(!length(card_ids))
-		to_chat(user, span_warning("This card battle deck has no cards to stash."))
+		to_chat(user, span_warning("This Arlette deck has no cards to stash."))
 		return TRUE
 	if(ccg_mind_has_stashed_deck(user.mind))
-		to_chat(user, span_warning("You already have a card battle deck in your stash."))
+		to_chat(user, span_warning("You already have an Arlette deck in your stash."))
 		return TRUE
 	if(istype(user, /mob/living/carbon/human))
 		var/mob/living/carbon/human/H = user
@@ -365,8 +365,8 @@
 	if(!user.mind.special_items)
 		user.mind.special_items = list()
 	var/owner_name = user.real_name || user.name
-	user.mind.special_items["Card Deck of [owner_name]"] = /obj/item/ccg_deck/stashed
-	to_chat(user, span_notice("You return the card battle deck to your stash."))
+	user.mind.special_items["Arlette Deck of [owner_name]"] = /obj/item/ccg_deck/stashed
+	to_chat(user, span_notice("You return the Arlette deck to your stash."))
 	qdel(src)
 	return TRUE
 
