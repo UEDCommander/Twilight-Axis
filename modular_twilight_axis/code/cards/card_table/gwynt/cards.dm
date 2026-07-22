@@ -158,6 +158,7 @@ GLOBAL_LIST_EMPTY(ccg_leaders_by_id)
 		"comboWith" = combo_with,
 		"targetRow" = target_row,
 		"art" = art,
+		"artAtlas" = ccg_card_art_atlas_position(art),
 		"hero" = hero,
 		"limited" = limited,
 		"known" = known,

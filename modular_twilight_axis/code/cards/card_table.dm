@@ -14,6 +14,7 @@
 #include "card_table\card_games\_undefs.dm"
 
 #include "card_table\gwynt\assets.dm"
+#include "card_table\gwynt\atlas.dm"
 #include "card_table\gwynt\cards.dm"
 #include "card_table\gwynt\cards_common.dm"
 #include "card_table\gwynt\cards_azuria.dm"

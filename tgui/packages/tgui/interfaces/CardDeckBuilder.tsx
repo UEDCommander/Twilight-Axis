@@ -34,6 +34,7 @@ type Card = {
   effect: string;
   combo: string;
   art?: string;
+  artAtlas?: CardAtlasPosition;
   ownedCount?: number;
   deckCount?: number;
   deckLimit?: number;
@@ -41,6 +42,11 @@ type Card = {
   limited?: boolean;
   known: boolean;
   selected: boolean;
+};
+
+type CardAtlasPosition = {
+  column: number;
+  row: number;
 };
 
 type CcgFaction = {
@@ -97,6 +103,32 @@ const rarityColor: Record<CardRarity, string> = {
   base: '#f8fafc',
   rare: '#60a5fa',
   unique: '#fbbf24',
+};
+
+const cardAtlasAsset = 'ccg_cards/gwynt_cards_atlas.jpg';
+const cardAtlasColumns = 16;
+const cardAtlasRows = 10;
+
+const atlasPercent = (index: number, size: number) =>
+  `${(index / (size - 1)) * 100}%`;
+
+const cardAtlasStyle = (
+  atlas: CardAtlasPosition | undefined,
+  filter?: string,
+): CSSProperties | undefined => {
+  if (!atlas) {
+    return undefined;
+  }
+  return {
+    position: 'absolute',
+    inset: 0,
+    backgroundImage: `url(${resolveAsset(cardAtlasAsset)})`,
+    backgroundPosition: `${atlasPercent(atlas.column, cardAtlasColumns)} ${atlasPercent(atlas.row, cardAtlasRows)}`,
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: `${cardAtlasColumns * 100}% ${cardAtlasRows * 100}%`,
+    filter,
+    zIndex: 0,
+  };
 };
 
 const panelStyle = {
@@ -484,20 +516,14 @@ const CardFace = ({
           zIndex: 0,
         }}
       >
-        {!!card.art && (
-          <img
-            src={resolveAsset(card.art)}
-            style={{
-              position: 'absolute',
-              inset: 0,
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              filter: unavailable
+        {!!card.artAtlas && (
+          <div
+            style={cardAtlasStyle(
+              card.artAtlas,
+              unavailable
                 ? 'grayscale(1) brightness(0.16) contrast(0.85)'
                 : undefined,
-              zIndex: 0,
-            }}
+            )}
           />
         )}
         <div

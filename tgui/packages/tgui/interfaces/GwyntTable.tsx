@@ -23,8 +23,14 @@ type Card = {
   combo: string;
   targetRow?: CardRow;
   art?: string;
+  artAtlas?: CardAtlasPosition;
   hero?: boolean;
   known?: boolean;
+};
+
+type CardAtlasPosition = {
+  column: number;
+  row: number;
 };
 
 type Leader = {
@@ -96,6 +102,28 @@ const rarityColor: Record<CardRarity, string> = {
   base: '#f8fafc',
   rare: '#60a5fa',
   unique: '#fbbf24',
+};
+
+const cardAtlasAsset = 'ccg_cards/gwynt_cards_atlas.jpg';
+const cardAtlasColumns = 16;
+const cardAtlasRows = 10;
+
+const atlasPercent = (index: number, size: number) =>
+  `${(index / (size - 1)) * 100}%`;
+
+const cardAtlasStyle = (atlas: CardAtlasPosition | undefined) => {
+  if (!atlas) {
+    return undefined;
+  }
+  return {
+    position: 'absolute' as const,
+    inset: 0,
+    backgroundImage: `url(${resolveAsset(cardAtlasAsset)})`,
+    backgroundPosition: `${atlasPercent(atlas.column, cardAtlasColumns)} ${atlasPercent(atlas.row, cardAtlasRows)}`,
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: `${cardAtlasColumns * 100}% ${cardAtlasRows * 100}%`,
+    zIndex: 0,
+  };
 };
 
 const rowWeatherFrameAssets: Record<CardRow, string> = {
@@ -655,19 +683,7 @@ const CardView = ({
       {!!card.playId && card.rarity !== 'base' && (
         <div className={`ccg-rarity-flash ccg-rarity-flash--${card.rarity}`} />
       )}
-      {!!card.art && (
-        <img
-          src={resolveAsset(card.art)}
-          style={{
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            zIndex: 0,
-          }}
-        />
-      )}
+      {!!card.artAtlas && <div style={cardAtlasStyle(card.artAtlas)} />}
       <div
         style={{
           position: 'absolute',
