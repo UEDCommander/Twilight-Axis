@@ -123,10 +123,23 @@
 	if(active_match)
 		ui_interact(user)
 		return TRUE
-	if(is_on_table() && is_owner(user))
-		return ..()
-	open_deck_view(user)
-	return TRUE
+	if(is_on_table())
+		open_deck_view(user)
+		return TRUE
+	return ..()
+
+/obj/item/ccg_deck/MouseDrop(atom/over_object)
+	if(get_active_match())
+		return
+	. = ..()
+	var/mob/living/user = usr
+	if(!istype(user) || !(user.mobility_flags & MOBILITY_PICKUP) || !Adjacent(user))
+		return
+	if(over_object == user && loc != user)
+		user.put_in_hands(src)
+	else if(istype(over_object, /atom/movable/screen/inventory/hand))
+		var/atom/movable/screen/inventory/hand/hand = over_object
+		user.putItemFromInventoryInHandIfPossible(src, hand.held_index)
 
 /obj/item/ccg_deck/attackby(obj/item/I, mob/living/user, params)
 	if(istype(I, /obj/item/ccg_deck))
