@@ -2,11 +2,19 @@
 
 /datum/anvil_recipe/weapons/steel/cannon
 	name = "Cannon"
-	additional_items = list(/obj/item/ingot/steel, /obj/item/ingot/steel, /obj/item/ingot/steel, /obj/item/ingot/steel, /obj/item/grown/log/tree/small, /obj/item/grown/log/tree/small,)
+	additional_items = list(/obj/item/ingot/steel, /obj/item/ingot/steel, /obj/item/ingot/blacksteel, /obj/item/ingot/steel, /obj/item/grown/log/tree/small, /obj/item/grown/log/tree/small,)
 	req_bar = /obj/item/ingot/steel
 	created_item = /obj/structure/cannon
 	display_category = ITEM_CAT_WEAPONS_SWORDS
-	craftdiff = 4
+	craftdiff = 5
+
+/datum/anvil_recipe/weapons/steel/cannon_zizo
+	name = "Cannon"
+	additional_items = list(/obj/item/ingot/steel, /obj/item/ingot/steel, /obj/item/grown/log/tree/small, /obj/item/grown/log/tree/small,)
+	req_bar = 	/obj/item/ingot/steel/zizo
+	created_item = /obj/structure/cannon
+	display_category = ITEM_CAT_WEAPONS_SWORDS
+	craftdiff = 3
 
 /datum/anvil_recipe/weapons/steel/cannonball
 	name = "Cannon Ball"
