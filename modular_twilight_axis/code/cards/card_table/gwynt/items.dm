@@ -211,6 +211,30 @@
 	qdel(active_match)
 	return TRUE
 
+/obj/item/ccg_deck/proc/return_to_match_player(obj/item/ccg_deck/deck, ckey)
+	if(!deck || !ckey)
+		return FALSE
+	var/mob/living/player = ccg_find_mob_by_ckey(ckey)
+	if(!player)
+		return FALSE
+	if(player.put_in_hands(deck))
+		return TRUE
+	deck.forceMove(get_turf(player))
+	return TRUE
+
+/obj/item/ccg_deck/proc/end_match_session(datum/ccg_match/active_match)
+	if(!active_match)
+		return FALSE
+	var/obj/item/ccg_deck/host_deck = active_match.owner
+	var/obj/item/ccg_deck/guest_deck = active_match.challenger
+	var/host_ckey = active_match.player_ckeys["one"]
+	var/guest_ckey = active_match.player_ckeys["two"]
+	if(!clear_match(active_match))
+		return FALSE
+	return_to_match_player(host_deck, host_ckey)
+	return_to_match_player(guest_deck, guest_ckey)
+	return TRUE
+
 /obj/item/ccg_deck/proc/add_single_card(mob/user, obj/item/ccg_card_single/single)
 	if(!user || !single)
 		return FALSE
@@ -361,7 +385,7 @@
 				active_match.update_deck_uis()
 				return TRUE
 		if("collect")
-			if(clear_match(active_match))
+			if(end_match_session(active_match))
 				return TRUE
 	return FALSE
 
