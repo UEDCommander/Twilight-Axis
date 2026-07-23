@@ -46,6 +46,18 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 				cards |= card_id
 	return cards
 
+/datum/preferences/proc/ccg_booster_progress_required()
+	var/unique_card_count = length(ccg_known_cards())
+	if(unique_card_count < 10)
+		return 1
+	if(unique_card_count < 20)
+		return 2
+	if(unique_card_count < 30)
+		return 3
+	if(unique_card_count < 40)
+		return 4
+	return CCG_BOOSTER_PROGRESS_REQUIRED
+
 /proc/ccg_card_is_limited(datum/ccg_card/card)
 	return card ? TRUE : FALSE
 
@@ -575,7 +587,7 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 		return FALSE
 	var/old_progress = premium ? ccg_win_progress : ccg_loss_progress
 	var/new_progress = old_progress + 1
-	var/grant_booster = new_progress >= CCG_BOOSTER_PROGRESS_REQUIRED
+	var/grant_booster = new_progress >= ccg_booster_progress_required()
 	if(grant_booster)
 		new_progress = 0
 	if(premium)
