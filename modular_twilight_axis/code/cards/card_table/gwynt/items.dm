@@ -120,7 +120,7 @@
 
 /obj/item/ccg_deck/attack_hand(mob/user, params)
 	var/datum/ccg_match/active_match = get_active_match()
-	if(active_match)
+	if(active_match && !active_match.result_text)
 		ui_interact(user)
 		return TRUE
 	if(is_on_table())
@@ -129,7 +129,8 @@
 	return ..()
 
 /obj/item/ccg_deck/MouseDrop(atom/over_object)
-	if(get_active_match())
+	var/datum/ccg_match/active_match = get_active_match()
+	if(active_match && !active_match.result_text)
 		return
 	. = ..()
 	var/mob/living/user = usr
