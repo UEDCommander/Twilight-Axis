@@ -80,6 +80,11 @@
 			if(dullahan.headless)
 				turf_check = get_turf(dullahan.my_head)
 
+		if(!turf_check)
+			continue
+		if(blocked_z_levels && turf_check.z in blocked_z_levels)
+			continue
+
 		if(quiet)
 			if(turf_check.z != turf_source.z)
 				continue
