@@ -43,6 +43,26 @@
 	audience |= H // Bard is always in their own audience
 	add_verb(H, list(/mob/living/carbon/human/proc/setaudience, /mob/living/carbon/human/proc/clearaudience, /mob/living/carbon/human/proc/checkaudience, /mob/living/carbon/human/proc/open_songbook, /mob/living/carbon/human/proc/explain_bard))
 
+//TA edit - Bard chages start
+/datum/inspiration/proc/prune_audience()
+	for(var/audience_entry in audience)
+		var/mob/living/carbon/human/audience_member = audience_entry
+		if(!istype(audience_member) || QDELETED(audience_member) || audience_member.stat == DEAD)
+			audience -= audience_entry
+	if(holder)
+		audience |= holder
+
+/datum/inspiration/proc/clear_audience()
+	audience_selecting = FALSE
+	for(var/audience_entry in audience)
+		var/mob/living/carbon/human/audience_member = audience_entry
+		if(!istype(audience_member) || QDELETED(audience_member))
+			continue
+		for(var/datum/status_effect/buff/song/song_buff in audience_member.status_effects)
+			audience_member.remove_status_effect(song_buff)
+	audience = holder ? list(holder) : list()
+//TA edit - Bard chages end
+
 /mob/living/carbon/human/proc/in_audience(mob/living/carbon/human/audiencee)
 	if(!src.mind)
 		return FALSE
@@ -88,6 +108,7 @@
 	if(!istype(target) || target == src)
 		balloon_alert(src, "middle-click a person")
 		return TRUE
+	inspiration.prune_audience()
 	if(!(target in view(7, src)))
 		balloon_alert(src, "too far")
 		return TRUE
@@ -112,12 +133,10 @@
 	set category = "RoleUnique.Inspiration"
 	if(!inspiration)
 		return FALSE
-	if(src.has_status_effect(/datum/status_effect/buff/playing_melody))
-		return
 	//TA edit - Bard chages start
-	inspiration.audience_selecting = FALSE
+	inspiration.clear_audience()
+	balloon_alert(src, "audience cleared")
 	//TA edit - Bard chages end
-	inspiration.audience = list(src)
 
 	return TRUE
 
