@@ -238,6 +238,11 @@
 	max_integrity = ARMOR_INT_CHEST_LIGHT_MASTER
 	slot_flags = ITEM_SLOT_ARMOR|ITEM_SLOT_SHIRT
 	storage = FALSE
+	adjustable = CAN_CADJUST
+
+/obj/item/clothing/suit/roguetown/shirt/robe/monk/ComponentInitialize()
+	..()
+	AddComponent(/datum/component/adjustable_clothing, CHEST|GROIN|ARMS|VITALS, null, null, 'sound/foley/cloth_wipe (1).ogg', null, UPD_CHEST)
 
 //This is for templars/psydonites. Gives a boon for wearing it to counter-act giving up plate and such.
 /obj/item/clothing/suit/roguetown/shirt/robe/monk/holy
@@ -288,7 +293,6 @@
 /obj/item/clothing/suit/roguetown/shirt/robe/merchant
 	name = "guilder jacket"
 	icon_state = "merrobe"
-	sellprice = 30
 	color = null
 
 /obj/item/clothing/suit/roguetown/shirt/robe/nun
@@ -393,8 +397,14 @@
 	color = null
 	storage = FALSE
 
+/obj/item/clothing/suit/roguetown/shirt/robe/hierophant/loadout
+	name = "aesthetic hierophant's kandys"
+	armor = ARMOR_CLOTHING
+	max_integrity = ARMOR_INT_CHEST_CIVILIAN
+	armor_class = ARMOR_CLASS_NONE
+
 /obj/item/clothing/suit/roguetown/shirt/robe/pointfex
-	name = "pointfex's qaba"
+	name = "pontifex's qaba"
 	desc = "A slimmed down, tighter fitting robe made of fine silks and fabrics. Somehow you feel more mobile in it than in the nude. Despite the light fabric, it offers decent protection."
 	armor = ARMOR_PADDED
 	icon_state = "monkcloth"
@@ -403,6 +413,12 @@
 	r_sleeve_status = SLEEVE_NOMOD
 	l_sleeve_status = SLEEVE_NOMOD
 	storage = FALSE
+
+/obj/item/clothing/suit/roguetown/shirt/robe/pointfex/loadout
+	name = "aesthetic pontifex's qaba"
+	armor = ARMOR_CLOTHING
+	max_integrity = ARMOR_INT_CHEST_CIVILIAN
+	armor_class = ARMOR_CLASS_NONE
 
 /obj/item/clothing/suit/roguetown/shirt/robe/feld
 	name = "feldsher's robe"
@@ -451,5 +467,5 @@
 	mob_overlay_icon = 'icons/roguetown/clothing/onmob/armor.dmi'
 	color = CLOTHING_WHITE
 
-	
-	
+
+

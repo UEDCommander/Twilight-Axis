@@ -105,6 +105,16 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	category = "Разное"
 	path = /obj/item/toy/cards/deck/tarot
 
+/datum/loadout_item/bibble
+	name = "The Verses and Acts of the Ten"
+	category = "Разное"
+	path = /obj/item/book/rogue/bibble
+
+/datum/loadout_item/bibble_psy
+	name = "Psy Bible"
+	category = "Разное"
+	path = /obj/item/book/rogue/bibble/psy
+
 /datum/loadout_item/custom_book
 	name = "Custom Book"
 	category = "Разное"
@@ -152,31 +162,31 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/rogueweapon/hammer/wood
 	triumph_cost = 4
 
-/datum/loadout_item/axe 
+/datum/loadout_item/axe
 	name = "Stone Axe"
 	category = list("Разное", "Триумфы")
 	path = /obj/item/rogueweapon/stoneaxe
 	triumph_cost = 4
 
-/datum/loadout_item/knife 
+/datum/loadout_item/knife
 	name = "Stone Knife"
 	category = list("Разное", "Триумфы")
 	path = /obj/item/rogueweapon/huntingknife/stoneknife
 	triumph_cost = 3
 
-/datum/loadout_item/hoe 
+/datum/loadout_item/hoe
 	name = "Stone Hoe"
 	category = list("Разное", "Триумфы")
 	path = /obj/item/rogueweapon/hoe/stone
 	triumph_cost = 4
 
-/datum/loadout_item/spade 
+/datum/loadout_item/spade
 	name = "Wood Spade"
 	category = list("Разное", "Триумфы")
 	path = /obj/item/rogueweapon/shovel/small
 	triumph_cost = 4
 
-/datum/loadout_item/mirror 
+/datum/loadout_item/mirror
 	name = "Hand Mirror"
 	category = list("Разное", "Триумфы")
 	path = /obj/item/handmirror
@@ -428,6 +438,12 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	name = "Briar Thorns"
 	category = "Головные уборы"
 	path = /obj/item/clothing/head/roguetown/briarthorns
+
+/datum/loadout_item/loudmouth_headgear
+	name = "Loudmouth's Headcover"
+	category = "Головные уборы"
+	path = /obj/item/clothing/head/roguetown/veiled/loudmouth
+	donat_tier = 2
 
 //CLOAKS
 /datum/loadout_item/tabard
@@ -1784,7 +1800,7 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	donat_tier = 2
 
 /datum/loadout_item/donator_strudel3
-	name = "Donator Kit - Etruscan Design Cloak - Required: Poncho (Only Woman, No Small Races)"
+	name = "Donator Kit - Etruscan Design Cloak - Required: Poncho (No Small Races)"
 	category = list("Плащи", "Донат")
 	path = /obj/item/enchantingkit/strudel3
 	donatitem = TRUE
@@ -1793,6 +1809,13 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	name = "Donator Kit - Azurosa-Wrapped Sword - Required: Simple Sword, Sabre, Short Sword or Messer "
 	category = list("Оружие", "Донат")
 	path = /obj/item/enchantingkit/weapon/ollanius
+	donatitem = TRUE
+	donat_tier = 2
+
+/datum/loadout_item/donator/spaz_helm
+	name = "Donator Kit - Hound-Nosed Bascinet - Required: Armet, Hounskull Or Barbute"
+	category = list("Броня", "Донат")
+	path = /obj/item/enchantingkit/spaz_helm
 	donatitem = TRUE
 	donat_tier = 2
 
@@ -2156,7 +2179,7 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/enchantingkit/weapon/nero_dagger
 	donatitem = TRUE
 	donat_tier = 2
-	
+
 /datum/loadout_item/donator/nero_sabre
 	name = "Donator Kit - Sylvan Sabre - Required: Sabre"
 	category = list("Оружие", "Донат")
@@ -2293,6 +2316,12 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/enchantingkit/kumie_shirt
 	donatitem = TRUE
 
+/datum/loadout_item/donator/universal/armor_gothic_psydonic
+	name = "Donator Kit - Gothic Psydonic Cuirass - Required: Psydonic Cuirass"
+	category = list("Броня", "Донат")
+	path = /obj/item/enchantingkit/gothicpsydoniccuirass
+	donatitem = TRUE
+
 /datum/loadout_item/donator_kumie4
 	name = "Donator Kit - Aristocratic Coat - Required: Hardened Leather Coat or Lightweight Brigandine(No Small Races)"
 	category = list("Броня", "Донат")
@@ -2360,6 +2389,13 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/enchantingkit/weapon/triumph_weaponkit_wodao
 	category = list("Оружие", "Донат")
 	donatitem = TRUE
+
+/datum/loadout_item/donator_athena_solace
+	name = "Donator Kit - Solace - Required: Rapier"
+	path = /obj/item/enchantingkit/weapon/athena_solace
+	category = list("Оружие", "Донат")
+	donatitem = TRUE
+	donat_tier = 2
 
 /datum/loadout_item/donator_weaponkitdadao
 	name = "Donator Kit - Dadao - Required: Iron Hunting Sword, Iron Dueling Messer, Steel Messer, Steel Hunting Sword Or Falx"
@@ -2661,7 +2697,7 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	category = list("Плащи", "Донат")
 	path = /obj/item/clothing/cloak/tabard/devotee/astrata
 	donatitem = TRUE
-	
+
 /datum/loadout_item/donat/tabard/templar/astrata
 	name = "Табард-плащ Астраты"
 	category = list("Плащи", "Донат")
@@ -3093,7 +3129,7 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/clothing/head/roguetown/octopus
 	category = list("Головные уборы", "Донат")
 	donatitem = TRUE
-	donat_tier = 2	
+	donat_tier = 2
 
 /datum/loadout_item/shawl
 	name = "Shawl"
@@ -3145,7 +3181,7 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	category = list("Аксессуары", "Донат")
 	path = /obj/item/storage/belt/rogue/leather/suspenders
 	donatitem = TRUE
- 
+
 /datum/loadout_item/woolencollar
 	name = "Woolen Collar"
 	category = list("Аксессуары", "Донат")
@@ -3285,7 +3321,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/clothing/shoes/courtphysician/female
 	donatitem = TRUE
 	donat_tier = 2
-	donat_ignore = list("namenlos66")
 
 /datum/loadout_item/sanguine_vest
 	name = "Sanguine Vest"
@@ -3293,7 +3328,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/clothing/suit/roguetown/shirt/courtphysician
 	donatitem = TRUE
 	donat_tier = 2
-	donat_ignore = list("namenlos66")
 
 /datum/loadout_item/sanguine_blouse
 	name = "Sanguine Blouse"
@@ -3301,7 +3335,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/clothing/suit/roguetown/shirt/courtphysician/female
 	donatitem = TRUE
 	donat_tier = 2
-	donat_ignore = list("namenlos66")
 
 /datum/loadout_item/sanguine_hat
 	name = "Sanguine Hat"
@@ -3309,7 +3342,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/clothing/head/roguetown/courtphysician
 	donatitem = TRUE
 	donat_tier = 2
-	donat_ignore = list("namenlos66")
 
 /datum/loadout_item/sanguine_cap
 	name = "Sanguine Cap"
@@ -3317,7 +3349,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/clothing/head/roguetown/courtphysician/female
 	donatitem = TRUE
 	donat_tier = 2
-	donat_ignore = list("namenlos66")
 
 /datum/loadout_item/sanguine_gloves
 	name = "Sanguine Gloves"
@@ -3325,7 +3356,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/clothing/gloves/roguetown/courtphysician
 	donatitem = TRUE
 	donat_tier = 2
-	donat_ignore = list("namenlos66")
 
 /datum/loadout_item/sanguine_sleeves
 	name = "Sanguine Sleeves"
@@ -3333,7 +3363,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/clothing/gloves/roguetown/courtphysician/female
 	donatitem = TRUE
 	donat_tier = 2
-	donat_ignore = list("namenlos66")
 
 /datum/loadout_item/sanguine_trousers
 	name = "Sanguine Trousers"
@@ -3341,7 +3370,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/clothing/under/roguetown/trou/leather/courtphysician
 	donatitem = TRUE
 	donat_tier = 2
-	donat_ignore = list("namenlos66")
 
 /datum/loadout_item/sanguine_skirt
 	name = "Sanguine Skirt"
@@ -3349,7 +3377,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/clothing/under/roguetown/skirt/courtphysician
 	donatitem = TRUE
 	donat_tier = 2
-	donat_ignore = list("namenlos66")
 
 /datum/loadout_item/sanguine_shoes
 	name = "Sanguine Shoes"
@@ -3357,7 +3384,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/clothing/shoes/courtphysician
 	donatitem = TRUE
 	donat_tier = 2
-	donat_ignore = list("namenlos66")
 
 // Sanguine Kits
 
@@ -3367,7 +3393,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/enchantingkit/sanguine_vest
 	donatitem = TRUE
 	donat_tier = 2
-	donat_ignore = list("namenlos66")
 
 /datum/loadout_item/donator_sanguine_heels
 	name = "Donator Kit - Sanguine Heels - Required: Heavy Leather Boots"
@@ -3375,7 +3400,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/enchantingkit/sanguine_heels
 	donatitem = TRUE
 	donat_tier = 2
-	donat_ignore = list("namenlos66")
 
 /datum/loadout_item/donator_sanguine_trousers
 	name = "Donator Kit - Sanguine Trousers - Required: Hardened Leather Trousers or Fencing Breeches"
@@ -3383,7 +3407,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/enchantingkit/sanguine_trousers
 	donatitem = TRUE
 	donat_tier = 2
-	donat_ignore = list("namenlos66")
 
 /datum/loadout_item/donator_sanguine_jacket
 	name = "Donator Kit - Sanguine Jacket - Required: Hardened Leather Jacket or Fencing Jacket"
@@ -3391,7 +3414,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/enchantingkit/sanguine_jacket
 	donatitem = TRUE
 	donat_tier = 2
-	donat_ignore = list("namenlos66")
 
 /datum/loadout_item/donator_sanguine_coat
 	name = "Donator Kit - Sanguine Coat - Required: Hardened Leather Coat"
@@ -3399,7 +3421,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/enchantingkit/sanguine_coat
 	donatitem = TRUE
 	donat_tier = 2
-	donat_ignore = list("namenlos66")
 
 // Sanguine Kits End
 
@@ -3669,6 +3690,27 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	name = "Donator Kit - Imbued Longsword - Required: Longsword"
 	category = list("Оружие", "Донат")
 	path = /obj/item/enchantingkit/weapon/donator_imbuedlongsword
+	donatitem = TRUE
+	donat_tier = 2
+
+/datum/loadout_item/donator/morto_staff
+	name = "Donator Kit - Frozen Vow - Required: Staff"
+	category = list("Оружие", "Донат")
+	path = /obj/item/enchantingkit/morto_staff
+	donatitem = TRUE
+	donat_tier = 2
+
+/datum/loadout_item/donator/cobb_conviction
+	name = "Donator Kit - Conviction - Required: Long Sword"
+	category = list("Оружие", "Донат")
+	path = /obj/item/enchantingkit/weapon/cobb_conviction
+	donatitem = TRUE
+	donat_tier = 2
+
+/datum/loadout_item/donator/racobio_staff
+	name = "Donator Kit - Obsidian Tower - Required: Grand Staff"
+	category = list("Оружие", "Донат")
+	path = /obj/item/enchantingkit/racobio_staff
 	donatitem = TRUE
 	donat_tier = 2
 

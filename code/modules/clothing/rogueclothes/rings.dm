@@ -36,7 +36,6 @@
 	name = "decrepit ring"
 	desc = "A coil of frayed bronze."
 	icon_state = "ring_a"
-	sellprice = 11
 
 /obj/item/clothing/ring/bronze
 	name = "bronze ring"
@@ -65,7 +64,6 @@
 	name = "blacksteel ring"
 	desc = "A ring of mythical blacksteel."
 	icon_state = "ring_bs"
-	sellprice = 70
 
 /obj/item/clothing/ring/jade
 	name = "jade ring"
@@ -115,7 +113,7 @@
 
 /obj/item/clothing/ring/active
 	var/active = FALSE
-	desc = "A golden ring that bares a runic enigma, capable of nullifying all incoming magicka. The runic enigma pulsates with crimson light, rendering me invulnerable to arcynic violence!"
+	desc = "A golden ring that bears a runic enigma, capable of nullifying all incoming magicka. The runic enigma pulsates with crimson light, rendering me invulnerable to arcynic violence!"
 	var/cooldowny
 	var/cdtime
 	var/activetime
@@ -152,7 +150,7 @@
 /obj/item/clothing/ring/active/nomag
 	name = "ring of null magic"
 	icon_state = "ruby"
-	desc = "A golden ring that bares a runic enigma, capable of nullifying all incoming magicka. Unfortuantely, like with most magic rings, its powers can only be used sparingly."
+	desc = "A golden ring that bears a runic enigma, capable of nullifying all incoming magicka. Unfortuantely, like with most magic rings, its powers can only be used sparingly."
 	activate_sound = 'sound/magic/antimagic.ogg'
 	cdtime = 10 MINUTES
 	activetime = 30 SECONDS
@@ -224,7 +222,6 @@
 	name = "gold signet ring"
 	icon_state = "signet"
 	desc = "A ring of opulent gold, bearing the Lord's symbol. Its face is cut to seal writs of ducal importance, and a fresh bead of tallow rests in the underside."
-	sellprice = 135
 	var/tallowed = FALSE
 	var/tallow_color = "red"
 
@@ -251,7 +248,6 @@
 	name = "silver signet ring"
 	icon_state = "signet_silver"
 	desc = "A ring of glistening silver, bearing the Lord's symbol. Its face is cut to seal writs of ducal importance, a bead of tallow nested in the underside."
-	sellprice = 80
 	is_silver = TRUE
 	is_lesser_silver = TRUE
 
@@ -259,7 +255,6 @@
 	name = "psydonian signet ring"
 	icon_state = "psysignet"
 	desc = "A ring of blessed silver, bearing the Archbishop's symbol. Its face is cut to seal writs of religious importance, a bead of tallow nested in the underside."
-	sellprice = 90
 	is_silver = TRUE
 
 /obj/item/clothing/ring/signet/psy/get_mechanics_examine(mob/user)
@@ -338,7 +333,6 @@
 	name = "silver weddingband"
 	desc = "A glimmering weddingband of silver, ornately decorated with the engravings of a lover's name."
 	icon_state = "s_ring_wedding"
-	sellprice = 3
 	var/choicename = FALSE
 	var/choicedesc = FALSE
 	is_silver = FALSE //Love wins.

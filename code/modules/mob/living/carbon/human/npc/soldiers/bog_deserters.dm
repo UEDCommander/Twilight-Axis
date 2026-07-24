@@ -460,6 +460,8 @@
 	beltr = /obj/item/quiver/arrows
 	H.STASTR = rand(10, 12)
 	H.STAPER = 14
+	H.STACON -= 1
+	H.STAWIL -= 1
 	H.adjust_skillrank(/datum/skill/combat/bows, 4, TRUE)
 
 /mob/living/carbon/human/species/human/northern/bog_deserters/crossbowman
@@ -479,6 +481,8 @@
 	backr = /obj/item/gun/ballistic/revolver/grenadelauncher/crossbow
 	backl = /obj/item/quiver/bolt/standard
 	H.STAPER = 13
+	H.STACON -= 1
+	H.STAWIL -= 1
 	H.adjust_skillrank(/datum/skill/combat/crossbows, 4, TRUE)
 
 /mob/living/carbon/human/species/human/northern/bog_deserters/marshal
@@ -494,9 +498,6 @@
 	job = "Bog Marshal"
 	ADD_TRAIT(src, TRAIT_HEAVYARMOR, TRAIT_GENERIC)
 	ADD_TRAIT(src, TRAIT_BADTRAINER, TRAIT_GENERIC)
-	add_downgrade_to_slot(SLOT_ARMOR, /obj/item/clothing/suit/roguetown/armor/plate/full/iron)
-	add_downgrade_to_slot(SLOT_HEAD, /obj/item/clothing/head/roguetown/helmet/heavy/knight/iron)
-	add_downgrade_to_slot(SLOT_GLOVES, /obj/item/clothing/gloves/roguetown/plate/iron)
 	var/obj/item/bodypart/head/marshal_head = get_bodypart(BODY_ZONE_HEAD)
 	if(marshal_head)
 		marshal_head.sellprice = HEAD_BOUNTY_BIG_GUY
@@ -510,9 +511,9 @@
 
 /datum/outfit/job/roguetown/human/northern/bog_deserters/better_gear/marshal/pre_equip(mob/living/carbon/human/H)
 	..()
-	armor = /obj/item/clothing/suit/roguetown/armor/plate/full
-	head = /obj/item/clothing/head/roguetown/helmet/heavy/knight
-	gloves = /obj/item/clothing/gloves/roguetown/plate
+	armor = /obj/item/clothing/suit/roguetown/armor/plate/full/iron
+	head = /obj/item/clothing/head/roguetown/helmet/heavy/knight/iron
+	gloves = /obj/item/clothing/gloves/roguetown/plate/iron
 	H.STASTR = 15
 	H.STACON = 12
 	H.STAWIL = 12

@@ -109,7 +109,6 @@
 
 		//trader (probably fine to keep as it is)
 
-		/datum/job/roguetown/crier, //would be fun to integrate in with the arena? Reimplement when building is added
 		// /datum/job/roguetown/archivist,
 		// /datum/job/roguetown/barkeep,
 		// /datum/job/roguetown/guildmaster,

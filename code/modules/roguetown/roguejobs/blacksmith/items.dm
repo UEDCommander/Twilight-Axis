@@ -15,7 +15,6 @@
 	desc = "A statue made of heavy, gleaming gold!"
 	icon_state = "gstatue1"
 	smeltresult = /obj/item/ingot/gold
-	sellprice = 120
 
 /obj/item/roguestatue/gold/Initialize()
 	. = ..()
@@ -57,7 +56,6 @@
 	desc = "A statue of wrought bronze, forged to venerate an ancient champion."
 	icon_state = "astatue1"
 	smeltresult = /obj/item/ingot/aalloy
-	sellprice = 77
 	color = "#bb9696"
 
 /obj/item/roguestatue/aalloy/Initialize()
@@ -79,7 +77,6 @@
 	desc = "A forged statue of cast iron!"
 	icon_state = "istatue1"
 	smeltresult = /obj/item/ingot/iron
-	sellprice = 20
 
 /obj/item/roguestatue/iron/Initialize()
 	. = ..()
@@ -90,7 +87,6 @@
 	desc = "A dark statue of glimmering, resilient blacksteel."
 	icon_state = "bsstatue1"
 	smeltresult = /obj/item/ingot/blacksteel
-	sellprice = 160
 
 /obj/item/roguestatue/blacksteel/Initialize()
 	. = ..()
@@ -101,6 +97,8 @@
 /obj/item/var/polish_bonus = 0
 /obj/item/var/glazed = FALSE
 /obj/item/var/glaze_bonus_pct = 0
+/// Randomised bonus price for glazing.
+/obj/item/var/glaze_bonus_flat = 0
 
 /obj/item/get_mechanics_examine(mob/user)
 	. = ..()
@@ -109,11 +107,17 @@
 			. += span_info("Glazed in a dyebin - its value is increased by [glaze_bonus_pct]%.")
 		else
 			. += span_info("Can be glazed in a dyebin to increase its value by [glaze_bonus_pct]%.")
+	if(glazed && glaze_bonus_flat > 0)
+		. += span_info("Glazed - its value is increased by [glaze_bonus_flat] mammon.")
+	else if(!glazed && icon && icon_exists(icon, "[icon_state]_glazed"))
+		. += span_info("Can be glazed with a dye brush to increase its value.")
 
 /obj/item/get_real_price()
 	. = ..()
 	if(glazed && glaze_bonus_pct > 0)
 		. = max(1, round(. * (1 + glaze_bonus_pct / 100)))
+	if(glazed && glaze_bonus_flat > 0)
+		. += glaze_bonus_flat
 
 /obj/item/examine(mob/user)
 	. = ..()
