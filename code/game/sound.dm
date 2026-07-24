@@ -82,7 +82,7 @@
 
 		if(!turf_check)
 			continue
-		if(blocked_z_levels && turf_check.z in blocked_z_levels)
+		if(blocked_z_levels && (turf_check.z in blocked_z_levels))
 			continue
 
 		if(quiet)
