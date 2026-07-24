@@ -28,7 +28,7 @@
 	name = "otavan chest"
 	desc = "A foreboding red chest with black dye-washed silver embellishments."
 	icon_state = "chestweird2"
-	base_icon_state = "chestweird2"	
+	base_icon_state = "chestweird2"
 
 //obj/structure/closet/crate/chest/Initialize(mapload)
 //	. = ..()
@@ -125,8 +125,7 @@
 		/obj/item/clothing/suit/roguetown/armor/plate/cuirass = 30,
 		/obj/item/clothing/suit/roguetown/armor/plate/cuirass/fluted = 4,
 		/obj/item/rogueweapon/greatsword/grenz/flamberge/blacksteel = 1,
-		/obj/item/rogueweapon/halberd/glaive = 4,
-		/obj/item/heelkit = 11
+		/obj/item/rogueweapon/halberd/glaive = 4
 	)
 
 /obj/structure/closet/crate/roguecloset/dark/squire/can_open(mob/living/user)
@@ -261,14 +260,14 @@
 		return
 
 	new /obj/item/rogueweapon/sword/long/judgement(get_turf(src))
-	new /obj/item/clothing/head/roguetown/helmet/heavy/frogmouth(get_turf(src))
-	new /obj/item/clothing/neck/roguetown/gorget/steel(get_turf(src))
-	new /obj/item/clothing/suit/roguetown/armor/plate/full(get_turf(src))
 	new /obj/item/clothing/wrists/roguetown/bracers(get_turf(src))
-	new /obj/item/clothing/gloves/roguetown/plate(get_turf(src))
+	new /obj/item/clothing/neck/roguetown/gorget/steel(get_turf(src))
 	new /obj/item/storage/belt/rogue/leather/steel/tasset(get_turf(src))
-	new /obj/item/clothing/under/roguetown/platelegs(get_turf(src))
-	new /obj/item/clothing/shoes/roguetown/boots/armor(get_turf(src))
+	new /obj/item/clothing/gloves/roguetown/plate/blacksteel/modern(get_turf(src))
+	new /obj/item/clothing/head/roguetown/helmet/blacksteel/modern(get_turf(src))
+	new /obj/item/clothing/shoes/roguetown/boots/armor/blacksteel/modern(get_turf(src))
+	new /obj/item/clothing/suit/roguetown/armor/plate/full/blacksteel/modern(get_turf(src))
+	new /obj/item/clothing/under/roguetown/platelegs/blacksteel/modern(get_turf(src))
 	has_spawned_gear = TRUE
 	close()
 
@@ -323,7 +322,7 @@
 	name = "coffin"
 	desc = "A coffin of some burgher."
 	icon_state = "vcasket" //Fancy casket
-	base_icon_state = "vcasket" 
+	base_icon_state = "vcasket"
 	locked = TRUE
 
 /obj/structure/closet/crate/chest/coffinlootbox_middle/PopulateContents()

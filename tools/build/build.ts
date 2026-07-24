@@ -13,6 +13,8 @@ import Juke from './juke/index.js';
 import { bun, bunRoot } from './lib/bun';
 import { DreamDaemon, DreamMaker, NamedVersionFile } from './lib/byond';
 import { formatDeps } from './lib/helpers';
+// TA EDIT
+import { StatBrowserTarget } from './lib/ta-statpanel';
 import { prependDefines } from './lib/tgs';
 
 export const TGS_MODE = process.env.CBT_BUILD_MODE === 'TGS';
@@ -109,6 +111,8 @@ export const DmTarget = new Juke.Target({
     'sound/**',
     'tgui/public/tgui.html',
     'modular/**',
+    // TA EDIT
+    'modular_twilight_axis/**',
     `${DME_NAME}.dme`,
     NamedVersionFile,
   ],
@@ -270,7 +274,8 @@ export const LintTarget = new Juke.Target({
 });
 
 export const BuildTarget = new Juke.Target({
-  dependsOn: [TguiTarget, DmTarget],
+  // TA EDIT
+  dependsOn: [TguiTarget, DmTarget, StatBrowserTarget],
 });
 
 export const ServerTarget = new Juke.Target({
@@ -321,7 +326,8 @@ export const CleanAllTarget = new Juke.Target({
 });
 
 export const TgsTarget = new Juke.Target({
-  dependsOn: [TguiTarget],
+  // TA EDIT
+  dependsOn: [TguiTarget, StatBrowserTarget],
   executes: async () => {
     Juke.logger.info('Prepending TGS define');
     prependDefines('TGS');

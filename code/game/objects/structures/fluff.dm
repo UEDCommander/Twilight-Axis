@@ -139,6 +139,17 @@
 		dest = src.loc
 	if(!dest)
 		return
+	var/climb_dir = get_dir(climber_turf, dest) // TA EDIT START
+	for(var/obj/structure/fluff/railing/fence/F in climber_turf)
+		if(F.dir == climb_dir)
+			if(ismob(A))
+				to_chat(A, span_warning("Something is blocking the way."))
+			return
+	for(var/obj/structure/fluff/railing/fence/blocking_fence in dest)
+		if(blocking_fence.dir == get_dir(dest, climber_turf))
+			if(ismob(A))
+				to_chat(A, span_warning("Something is blocking the way."))
+			return // TA EDIT END
 	if(dest.is_blocked_turf(source_atom = A))
 		if(ismob(A))
 			to_chat(A, span_warning("Something is blocking the way."))
@@ -596,8 +607,17 @@
 	..()
 
 /obj/structure/fluff/clock/attack_right(mob/user)
-	handle_special_items_retrieval(user, src)
-	return
+	if(user.mind && isliving(user))
+		if(user.mind.special_items && user.mind.special_items.len)
+			var/item = input(user, "What will I take?", "STASH") as null|anything in user.mind.special_items
+			if(item)
+				if(user.Adjacent(src))
+					if(user.mind.special_items[item])
+						var/path2item = user.mind.special_items[item]
+						user.mind.special_items -= item
+						var/obj/item/I = new path2item(user.loc)
+						user.put_in_hands(I)
+			return
 
 /obj/structure/fluff/clock/examine(mob/user)
 	. = ..()
@@ -643,8 +663,17 @@
 	pixel_y = 32
 
 /obj/structure/fluff/wallclock/attack_right(mob/user)
-	handle_special_items_retrieval(user, src)
-	return
+	if(user.mind && isliving(user))
+		if(user.mind.special_items && user.mind.special_items.len)
+			var/item = input(user, "What will I take?", "STASH") as null|anything in user.mind.special_items
+			if(item)
+				if(user.Adjacent(src))
+					if(user.mind.special_items[item])
+						var/path2item = user.mind.special_items[item]
+						user.mind.special_items -= item
+						var/obj/item/I = new path2item(user.loc)
+						user.put_in_hands(I)
+			return
 
 /obj/structure/fluff/wallclock/Destroy()
 	if(soundloop)
@@ -711,7 +740,34 @@
 	destroy_sound = 'sound/combat/hits/onwood/destroyfurniture.ogg'
 	attacked_sound = list('sound/combat/hits/onwood/woodimpact (1).ogg','sound/combat/hits/onwood/woodimpact (2).ogg')
 
+/obj/structure/fluff/signage/examine(mob/user)
+	. = ..()
+	var/realm_name = SSmapping.map_adjustment.realm_name //TA EDIT таблички теперь корректно работают на всех картах
+	if(!user.is_literate())
+		. += "I have no idea what it says."
+	else
+		. += "It says \"[realm_name]\""
+
 /obj/structure/fluff/sign
+	icon_state = "signwrote"
+	name = "sign"
+	desc = "It's a sign! These usually have words carved into them."
+	icon = 'icons/roguetown/misc/structure.dmi'
+
+/obj/structure/fluff/buysign
+	icon_state = "signwrote"
+	name = "sign"
+	desc = ""
+	icon = 'icons/roguetown/misc/structure.dmi'
+
+/obj/structure/fluff/buysign/examine(mob/user)
+	. = ..()
+	if(!user.is_literate())
+		. += "I have no idea what it says."
+	else
+		. += "It says \"IMPORTS\""
+
+/obj/structure/fluff/sellsign
 	icon_state = "signwrote"
 	name = "sign"
 	desc = "It's a sign! These usually have words carved into them."
@@ -820,7 +876,17 @@
 	. = ..()
 
 /obj/structure/fluff/statue/attack_right(mob/user)
-	handle_special_items_retrieval(user, src)
+	if(user.mind && isliving(user))
+		if(user.mind.special_items && user.mind.special_items.len)
+			var/item = input(user, "What will I take?", "STASH") as null|anything in user.mind.special_items
+			if(item)
+				if(user.Adjacent(src))
+					if(user.mind.special_items[item])
+						var/path2item = user.mind.special_items[item]
+						user.mind.special_items -= item
+						var/obj/item/I = new path2item(user.loc)
+						user.put_in_hands(I)
+			return
 
 /obj/structure/fluff/statue/CanPass(atom/movable/mover, turf/target)
 	if(get_dir(loc, mover) == dir)
@@ -1330,54 +1396,54 @@
 					var/mob/living/carbon/human/thebride
 					for(var/mob/M in viewers(src, 7))
 						// You cannot marry an animal, a corpse, a brainless mob, or someone who is already married.
-						if(!ishuman(M)) 
+						if(!ishuman(M))
 							continue
 						var/mob/living/carbon/human/C = M
 
 						if(C.stat == DEAD || !C.client || C.marriedto)
 							continue
-						
+
 						if(C.real_name == A.bitten_names[1])
 							thegroom = C
 						if(C.real_name == A.bitten_names[2])
 							thebride = C
-					
+
 					if(!thegroom || !thebride)
 						to_chat(user, span_warn("nonexistent"))
 						return
-					
+
 					// Astounding update: marriage now requires consent (it didn't before)
 					var/groom_confirm = input(thegroom, "Do you want to marry [thebride]?") as null|anything in list("Yes", "No")
 					if(groom_confirm != "Yes")
 						to_chat(user, span_warning("The groom has declined the marriage!"))
 						return ..()
-					
+
 					var/bride_confirm = input(thebride, "Do you want to marry [thegroom]?") as null|anything in list("Yes", "No")
 					if(bride_confirm != "Yes")
 						to_chat(user, span_warning("The bride has declined the marriage!"))
 						return ..()
-					
+
 					// Horrible terrible last name necromancy (sometimes works)
 					var/groom_index = findtext(thegroom.real_name, " ")
 					var/bride_index = findtext(thebride.real_name, " ")
 					var/bride_firstname = bride_index ? copytext(thebride.real_name, 1, bride_index) : thebride.real_name
-					
+
 					// Get groom's surname
 					var/groom_surname = copytext(thegroom.real_name, groom_index + 1)
 					if(!groom_index)
 						groom_surname = null
 					else if(findtext(thegroom.real_name, " of ") || findtext(thegroom.real_name, " the "))
 						groom_surname = null
-					
+
 					var/final_bride_name
 					// Ask bride if she wants to take the groom's surname
 					if(groom_surname != null)
 						var/bride_surname_choice = input(thebride, "Do you want to take [thegroom]'s surname? (Your new name will be [bride_firstname] [groom_surname])") as null|anything in list("Yes", "No")
 						final_bride_name = (bride_surname_choice == "Yes") ? (bride_firstname + " " + groom_surname) : thebride.real_name
-					
+
 					// Apply the changes
 					thebride.change_name(final_bride_name)
-			
+
 					thegroom.marriedto = thebride.real_name
 					thebride.marriedto = thegroom.real_name
 
@@ -1418,56 +1484,6 @@
 	if(M.flash_act())
 		var/diff = power - M.confused
 		M.confused += min(power, diff)
-
-/obj/structure/fluff/psycross/proc/summon_martyr_weapon_tgui(mob/user)
-	if(!user.mind)
-		return
-
-	var/list/weapon_choices = list(
-		"Sword" = CALLBACK(src, PROC_REF(summon_and_equip), user, /obj/item/rogueweapon/sword/long/martyr),
-		"Axe" = CALLBACK(src, PROC_REF(summon_and_equip), user, /obj/item/rogueweapon/greataxe/steel/doublehead/martyr),
-		"Mace" = CALLBACK(src, PROC_REF(summon_and_equip), user, /obj/item/rogueweapon/mace/goden/martyr),
-		"Trident" = CALLBACK(src, PROC_REF(summon_and_equip), user, /obj/item/rogueweapon/spear/partizan/martyr)
-	)
-
-	var/result = tgui_input_list(user, "Choose a martyr weapon to summon:", "Martyr Weapon", weapon_choices)
-
-	if(result && weapon_choices[result])
-		var/datum/callback/selected_callback = weapon_choices[result]
-		selected_callback.Invoke()
-	else
-		to_chat(user, span_warning("No weapon was chosen."))
-
-/obj/structure/fluff/psycross/proc/summon_and_equip(mob/user, var/obj/item/rogueweapon/weapontype)
-	var/obj/item/rogueweapon/old_weapon = SSroguemachine.martyrweapon
-	var/integrity
-
-	if(old_weapon)
-		integrity = old_weapon.obj_integrity
-		old_weapon.visible_message(span_danger("[old_weapon] dissolves into mere dust, and flitters away - unbound."))
-		SSroguemachine.martyrweapon = null
-		qdel(old_weapon)
-
-	var/obj/item/rogueweapon/new_weapon = new weapontype(src.loc)
-	new_weapon.obj_integrity = integrity
-	SSroguemachine.martyrweapon = new_weapon
-
-	if(user.put_in_hands(new_weapon))
-		to_chat(user, span_notice("[new_weapon] appears in your hand."))
-	else
-		to_chat(user, span_warning("Your hands are full! [new_weapon] falls to your feet."))
-
-	return new_weapon
-
-/obj/structure/fluff/psycross/attack_hand(mob/user)
-	. = ..()
-	if(.)
-		return
-	if(user.job != "Martyr")
-		return
-	if((HAS_TRAIT(user, TRAIT_NOPAIN) && HAS_TRAIT(user, TRAIT_STRENGTH_UNCAPPED) && HAS_TRAIT(user, TRAIT_BLOODLOSS_IMMUNE))) // So that the martyr could not change weapons during his special ability... I do not know how to make it smarter.
-		return
-	summon_martyr_weapon_tgui(user)
 
 /obj/structure/fluff/beach_umbrella/security
 	icon_state = "hos_brella"
@@ -1578,6 +1594,7 @@
 /obj/structure/bars/passage/shutter/bookcase/redstone_triggered()
 	if(obj_broken)
 		return
+
 	if(density)
 		icon_state = "decoybookcase1"
 		density = FALSE
@@ -1588,7 +1605,7 @@
 		set_opacity(TRUE)
 
 // This is from the Druid Grove remap ages back. Turning it into a proper subtype for faster init. or whatever reason ur supposed
-// to do it. 
+// to do it.
 /obj/effect/wisp/prestidigitation/willowwisp
 	name = "Will-o'-the-wisp"
 	desc = "A small, fiery ball of light made up of mystical energy."
