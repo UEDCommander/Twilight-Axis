@@ -1212,6 +1212,14 @@
 	)
 	result_item = /obj/item/rogueweapon/sword/long/cobb
 
+//Athena14 - Solace
+/obj/item/enchantingkit/weapon/athena_solace
+	name = "'Solace' morphing elixir"
+	target_items = list(
+		/obj/item/rogueweapon/sword/rapier
+	)
+	result_item = /obj/item/rogueweapon/sword/rapier/athena
+
 /////////////////////////////
 // ! Triumph-Exc. Kits !   //
 /////////////////////////////
