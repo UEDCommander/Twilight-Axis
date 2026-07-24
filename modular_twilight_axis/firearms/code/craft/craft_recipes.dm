@@ -28,7 +28,6 @@
 	result = /obj/item/quiver/twilight_bullet
 	reqs = list(/obj/item/natural/hide/cured = 1,
 				/obj/item/natural/fibers = 1)
-	sellprice = 6
 	craftdiff = 1
 
 /datum/crafting_recipe/roguetown/leather/container/twilight_ammoholder_cannonball
@@ -36,7 +35,6 @@
 	result = /obj/item/quiver/twilight_bullet/cannonball
 	reqs = list(/obj/item/natural/hide/cured = 2,
 				/obj/item/natural/fibers = 3)
-	sellprice = 6
 	craftdiff = 1
 
 //Silverdust blessing related stuff, for Inq funny gunpowder
@@ -76,7 +74,6 @@
 	result = /obj/item/twilight_powderflask_empty
 	reqs = list(/obj/item/natural/hide/cured = 1,
 				/obj/item/natural/fibers = 2)
-	sellprice = 15
 	craftdiff = 1
 
 /datum/crafting_recipe/roguetown/engineering/twilight_powderflask/basic
