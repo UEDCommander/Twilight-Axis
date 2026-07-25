@@ -1042,6 +1042,16 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	category = "Аксессуары"
 	path = /obj/item/clothing/head/roguetown/dendormask
 
+/datum/loadout_item/tutorialbook
+	name = "A Tutorialeer's Handbook"
+	category = "Аксессуары"
+	path = /obj/item/recipe_book/survival
+
+/datum/loadout_item/ball
+	name = "Ball"
+	category = "Аксессуары"
+	path = /obj/item/ball
+
 /datum/loadout_item/eorahood
 	name = "Opera Mask - Eoran Hood"
 	category = list("Аксессуары", "Донат")
