@@ -19,7 +19,6 @@
 #include "./overrides/portal.dm"
 #include "./overrides/vampire_forms.dm"
 #include "./overrides/discipline_balance.dm"
-#include "./overrides/quietus.dm"
 #include "./overrides/bloodacid_balance.dm"
 #include "./ascended_covens.dm"
 #include "./coven_level_purchases.dm"
