@@ -6,7 +6,7 @@
 /datum/coven_power/potence/deactivate(atom/target, direct)
 	. = ..()
 	if(level >= 4)
-		REMOVE_TRAIT(owner, TRAIT_ARMOR_NOSPDCAP, TRAIT_VAMPIRE))
+		REMOVE_TRAIT(owner, TRAIT_ARMOR_NOSPDCAP, TRAIT_VAMPIRE)
 
 	do_deactivation_notification()
 
