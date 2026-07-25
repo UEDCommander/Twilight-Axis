@@ -63,7 +63,19 @@
 			ADD_TRAIT(H, TRAIT_MEDIUMARMOR, TRAIT_GENERIC)        
 			mask = /obj/item/clothing/mask/rogue/ragmask/red
 			cloak = /obj/item/clothing/cloak/dunestalker
-			backr = /obj/item/gun/ballistic/twilight_firearm/flintgonne
+			var/list/firearm_choices = list("Arquebus", "Handgonne")
+			var/firearm_choice = input(H, "Choose your firearm", "Available firearms") as anything in firearm_choices
+			if(firearm_choice == "Handgonne")
+				backr = /obj/item/gun/ballistic/twilight_firearm/handgonne
+				var/list/ammo_choices = list("Lead Cannonballs", "Grapeshot")
+				var/ammo_choice = input(H, "Choose your ammunition", "Available ammunition") as anything in ammo_choices
+				if(ammo_choice == "Grapeshot")
+					beltl = /obj/item/quiver/twilight_bullet/cannonball/grapeshot
+				else
+					beltl = /obj/item/quiver/twilight_bullet/cannonball/lead
+			else
+				backr = /obj/item/gun/ballistic/twilight_firearm/arquebus
+				beltl = /obj/item/quiver/twilight_bullet/lead
 			pants = /obj/item/clothing/under/roguetown/sirwal/brown
 			armor = /obj/item/clothing/suit/roguetown/armor/chainmail/hauberk/janissary
 			beltr = /obj/item/rogueweapon/sword/long/kriegmesser/zybantine

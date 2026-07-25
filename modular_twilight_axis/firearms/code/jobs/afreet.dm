@@ -57,7 +57,19 @@
 		if("Jäger Deserter")
 			mask = /obj/item/clothing/mask/rogue/facemask/steel
 			cloak = /obj/item/clothing/cloak/half/brown
-			backr = /obj/item/gun/ballistic/twilight_firearm/flintgonne
+			var/list/firearm_choices = list("Arquebus", "Handgonne")
+			var/firearm_choice = input(H, "Choose your firearm", "Available firearms") as anything in firearm_choices
+			if(firearm_choice == "Handgonne")
+				backr = /obj/item/gun/ballistic/twilight_firearm/handgonne
+				var/list/ammo_choices = list("Lead Cannonballs", "Grapeshot")
+				var/ammo_choice = input(H, "Choose your ammunition", "Available ammunition") as anything in ammo_choices
+				if(ammo_choice == "Grapeshot")
+					beltl = /obj/item/quiver/twilight_bullet/cannonball/grapeshot
+				else
+					beltl = /obj/item/quiver/twilight_bullet/cannonball/lead
+			else
+				backr = /obj/item/gun/ballistic/twilight_firearm/arquebus
+				beltl = /obj/item/quiver/twilight_bullet/lead
 			pants = /obj/item/clothing/under/roguetown/heavy_leather_pants/grenzelpants
 			armor = /obj/item/clothing/suit/roguetown/armor/leather
 			pants = /obj/item/clothing/under/roguetown/heavy_leather_pants/grenzelpants
