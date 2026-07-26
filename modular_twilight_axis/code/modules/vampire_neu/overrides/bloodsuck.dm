@@ -57,7 +57,7 @@ drinksomeblood()
 */
 
 #define TA_VAMP_BLOODDRINK_INITIAL_BLOOD_LOSS 3
-#define TA_VAMP_BLOODDRINK_VITAE_DRAIN 250
+#define TA_VAMP_BLOODDRINK_VITAE_DRAIN 167
 #define TA_VAMP_BLOODDRINK_TARGET_FINAL_BLOOD 200
 // Temporarily disabled. Uncomment to restore Vampire Lord forced conversion.
 //#define TA_VAMP_LORD_FORCE_CONVERT
