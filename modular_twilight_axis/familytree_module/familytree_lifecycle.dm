@@ -183,6 +183,8 @@
 	if(result == "Да, сбросить")
 		ftlog("SETSPOUSE RESET: [H.real_name] cleared setspouse '[offered_target]'")
 		H.setspouse = ""
+		var/datum/familytree_prefs/round_prefs = familytree_get_round_prefs(H, FALSE)
+		round_prefs?.clear_setspouse()
 		var/datum/preferences/P = H.client?.prefs
 		if(P)
 			P.familytree_module_load_character()

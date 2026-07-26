@@ -36,6 +36,7 @@
 	var/tmp/familytree_assignment_scheduled = FALSE
 	var/tmp/familytree_wake_timerid
 	var/tmp/familytree_next_wake_time = 0
+	var/tmp/datum/familytree_prefs/familytree_round_prefs
 	var/tmp/familytree_confirmation_pending = FALSE
 	var/tmp/familytree_opted_out = FALSE
 	var/tmp/familytree_setspouse_timeout_offered = FALSE

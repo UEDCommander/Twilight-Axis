@@ -104,6 +104,9 @@
 	ftlog("AddLocal: [H?.real_name] ([H?.ckey]) status=[status]")
 	if(!H || istype(H, /mob/living/carbon/human/dummy))
 		return
+	if(!familytree_has_round_prefs(H))
+		ftlog("AddLocal STOP: [H.real_name] has no round preference datum")
+		return
 	var/family_mode = familytree_pref_mask(status)
 	if(!family_mode)
 		return
@@ -176,8 +179,10 @@
 		if(find_and_confirm_newlywed(H))
 			return
 		if(H.desired_relative_role != RELATIVE_ANY)
-			wait_for_new_family_match(H, "target house count not met for selected relative role")
-			return
+			var/forced_role_for_seed = familytree_forced_role_from_relative_role(H.desired_relative_role)
+			if(!HasSuitableHouseForRelative(H, forced_role_for_seed))
+				wait_for_new_family_match(H, "target house count not met for selected relative role")
+				return
 		if(!relative_join_phase_open)
 			wait_for_new_family_match(H, "holding solo house seed until relative join phase")
 			return

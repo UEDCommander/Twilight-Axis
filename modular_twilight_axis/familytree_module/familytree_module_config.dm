@@ -13,6 +13,7 @@
 // familytree_holy_verbs.dm          - holy skill verbs: establish_bond, dissolve_marriage (manual marriage/adoption/sibling)
 // familytree_lifecycle.dm           - royal job hooks, enigma, noble dynasty, notifications, confirmation sessions, setspouse reset
 // familytree_round_ledger.dm        - per-ckey round ledger: opt-out/blocked pairs persist across relogs and new bodies
+// familytree_round_prefs.dm         - /datum/familytree_prefs: per-ckey round-locked snapshot of character prefs; no datum = no matching
 // familytree_subsystem_core.dm      - SUBSYSTEM_DEF(familytree): init, signals, queue, local/royal runners
 // familytree_subsystem_helpers.dm   - species/anatomy/gender compat, job helpers, age checks, DetermineAppropriateRole
 // familytree_subsystem_matching.dm  - AddLocal, AssignToHouse/Family, NewlyWed/Family matching, favorite, wedding ring
@@ -140,6 +141,7 @@
 #include "familytree_lifecycle.dm"
 #include "familytree_round_ledger.dm"
 #include "familytree_subsystem_core.dm"
+#include "familytree_round_prefs.dm"
 #include "familytree_royal_harem.dm"
 #include "familytree_subsystem_helpers.dm"
 #include "familytree_subsystem_matching.dm"
