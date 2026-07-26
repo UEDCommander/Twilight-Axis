@@ -47,7 +47,7 @@ SUBSYSTEM_DEF(familytree)
 #define FTLOG_ERROR "ERROR"
 #define FTLOG_CRIT  "CRIT"
 
-/datum/controller/subsystem/familytree/proc/ftlog(msg, level = FTLOG_INFO)
+/datum/controller/subsystem/familytree/proc/ftlog(msg, level = FTLOG_DEBUG)
 	if(level == FTLOG_DEBUG && !verbose_logging)
 		return
 	if(!familytree_log_file)
@@ -221,8 +221,11 @@ SUBSYSTEM_DEF(familytree)
 		ftlog("on_mob_created SKIP: dummy")
 		return
 	var/mob/living/carbon/human/H = new_mob
-	if(H.ai_controller)
-		ftlog("on_mob_created SKIP: AI-controlled NPC ([H.ai_controller]), not a real player character")
+	if(H.ai_controller || initial(H.ai_controller))
+		ftlog("on_mob_created SKIP: AI-controlled NPC ([H.ai_controller || initial(H.ai_controller)]), not a real player character")
+		return
+	if(!H.ckey && !H.client && !H.mind && !H.job)
+		ftlog("on_mob_created SKIP: [H.real_name] has no player behind it")
 		return
 	ftlog("on_mob_created PASS: registering [H.real_name] (ckey=[H.ckey] - may be empty, login will handle)")
 	register_human(H)

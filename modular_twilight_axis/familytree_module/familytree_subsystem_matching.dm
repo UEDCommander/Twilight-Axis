@@ -95,7 +95,7 @@
 	GenerateRandomChildren(new_house, new_house.founder, H.familytree_random_children)
 	on_family_formed(new_house)
 	wake_waiting_relative_seekers(new_house)
-	ftlog("AddLocal: [H.real_name] founded new house '[new_house.housename]' ([audit_reason])")
+	ftlog("AddLocal: [H.real_name] founded new house '[new_house.housename]' ([audit_reason])", FTLOG_INFO)
 	familytree_admin_log_house_assignment(H, new_house, audit_reason)
 	stop_tracking_human(H, audit_reason)
 	return new_house
@@ -2071,7 +2071,18 @@
 			continue
 		if(!H.familytree_module_signal_bound || !H.familytree_assignment_scheduled)
 			continue
-		addtimer(CALLBACK(src, PROC_REF(run_local_assignment), H, H.familytree_pref), 1 SECONDS)
+		if(H.familytree_wake_timerid || world.time < H.familytree_next_wake_time)
+			continue
+		H.familytree_next_wake_time = world.time + 20 SECONDS
+		H.familytree_wake_timerid = addtimer(CALLBACK(src, PROC_REF(familytree_run_wake_assignment), H), 1 SECONDS, TIMER_STOPPABLE)
+
+/datum/controller/subsystem/familytree/proc/familytree_run_wake_assignment(mob/living/carbon/human/H)
+	if(!H || QDELETED(H))
+		return
+	H.familytree_wake_timerid = null
+	if(H.family_datum || H.familytree_opted_out)
+		return
+	run_local_assignment(H, H.familytree_pref)
 
 /datum/controller/subsystem/familytree/proc/retry_local_assignment(mob/living/carbon/human/H, reason)
 	if(!H || QDELETED(H) || H.family_datum || H.familytree_opted_out)
