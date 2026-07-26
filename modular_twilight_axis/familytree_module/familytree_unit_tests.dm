@@ -1,9 +1,10 @@
 #if defined(UNIT_TESTS) || defined(SPACEMAN_DMM)
 
-#define FT_ASSERT(assertion, reason) if(!(assertion)) { return Fail("Assertion failed: [reason || "no reason"]", __FILE__, __LINE__) }
-#define FT_ASSERT_EQUAL(a, b, reason) do { var/_lhs = ##a; var/_rhs = ##b; if(_lhs != _rhs) { return Fail("Expected [isnull(_lhs) ? "null" : _lhs] == [isnull(_rhs) ? "null" : _rhs]: [reason || "no reason"]", __FILE__, __LINE__) } } while(FALSE)
-#define FT_ASSERT_NOTNULL(a, reason) if(isnull(a)) { return Fail("Expected non-null: [reason || "no reason"]", __FILE__, __LINE__) }
-#define FT_ASSERT_NULL(a, reason) if(!isnull(a)) { return Fail("Expected null: [reason || "no reason"]", __FILE__, __LINE__) }
+#define FT_SOURCE replacetext(__FILE__, "\\", "/")
+#define FT_ASSERT(assertion, reason) if(!(assertion)) { return Fail("Assertion failed: [reason || "no reason"]", FT_SOURCE, __LINE__) }
+#define FT_ASSERT_EQUAL(a, b, reason) do { var/_lhs = ##a; var/_rhs = ##b; if(_lhs != _rhs) { return Fail("Expected [isnull(_lhs) ? "null" : _lhs] == [isnull(_rhs) ? "null" : _rhs]: [reason || "no reason"]", FT_SOURCE, __LINE__) } } while(FALSE)
+#define FT_ASSERT_NOTNULL(a, reason) if(isnull(a)) { return Fail("Expected non-null: [reason || "no reason"]", FT_SOURCE, __LINE__) }
+#define FT_ASSERT_NULL(a, reason) if(!isnull(a)) { return Fail("Expected null: [reason || "no reason"]", FT_SOURCE, __LINE__) }
 
 /datum/unit_test/familytree
 	abstract_type = /datum/unit_test/familytree
@@ -192,7 +193,7 @@
 	FT_ASSERT(house.member_nodes.len > starting_members, "adding a relative must grow the house graph")
 	FT_ASSERT_NOTNULL(relative.family_member_datum, "a joined person must own a family member datum")
 
-/datum/unit_test/familytree/wake_does_not_stack_timers/Run()
+/datum/unit_test/familytree/wake_ignores_clientless_seekers/Run()
 	var/mob/living/carbon/human/founder = ft_spawn_player(FAMILY_PARTIAL, RELATIVE_ANY)
 	FT_ASSERT_NOTNULL(founder, "could not allocate the founder")
 	FT_ASSERT_NOTNULL(SSfamilytree.familytree_get_round_prefs(founder, TRUE), "founder needs round prefs")
@@ -210,17 +211,33 @@
 	waiter.familytree_next_wake_time = 0
 
 	SSfamilytree.wake_waiting_relative_seekers(house)
-	var/first_timer = waiter.familytree_wake_timerid
-
 	SSfamilytree.wake_waiting_relative_seekers(house)
-	var/second_timer = waiter.familytree_wake_timerid
 
-	FT_ASSERT_EQUAL(first_timer, second_timer, "a repeated wake must not stack a second timer on the same seeker")
-	FT_ASSERT(waiter.familytree_next_wake_time > world.time, "waking a seeker must arm a cooldown so wakes cannot fire every tick")
+	FT_ASSERT_NULL(waiter.familytree_wake_timerid, "a seeker with no live client must never be woken; the wake loop only serves real players")
+	FT_ASSERT_EQUAL(waiter.familytree_next_wake_time, 0, "a skipped seeker must not have a cooldown armed either")
 
-	if(first_timer)
-		deltimer(first_timer)
-		waiter.familytree_wake_timerid = null
+/datum/unit_test/familytree/wake_runner_clears_its_timer/Run()
+	var/mob/living/carbon/human/seeker = ft_spawn_player(FAMILY_PARTIAL, RELATIVE_ANY)
+	FT_ASSERT_NOTNULL(seeker, "could not allocate the seeker")
+	FT_ASSERT_NOTNULL(SSfamilytree.familytree_get_round_prefs(seeker, TRUE), "seeker needs round prefs")
+
+	seeker.familytree_wake_timerid = "fake_timer_id"
+	SSfamilytree.familytree_run_wake_assignment(seeker)
+	FT_ASSERT_NULL(seeker.familytree_wake_timerid, "the wake runner must release its timer id so the next wake is allowed to arm one")
+
+	var/mob/living/carbon/human/settled = ft_spawn_player(FAMILY_PARTIAL, RELATIVE_ANY)
+	FT_ASSERT_NOTNULL(settled, "could not allocate the settled player")
+	FT_ASSERT_NOTNULL(SSfamilytree.familytree_get_round_prefs(settled, TRUE), "settled player needs round prefs")
+
+	var/datum/heritage/house = SSfamilytree.familytree_found_new_house(settled, "unit test house")
+	ft_track_house(house)
+	FT_ASSERT_NOTNULL(house, "could not found the house for the settled player")
+
+	settled.familytree_wake_timerid = "fake_timer_id"
+	settled.familytree_assignment_scheduled = TRUE
+	SSfamilytree.familytree_run_wake_assignment(settled)
+	FT_ASSERT_NULL(settled.familytree_wake_timerid, "the wake runner must always release its timer id")
+	FT_ASSERT_EQUAL(settled.family_datum, house, "a player who already has a family must not be re-matched by a stale wake")
 
 /datum/unit_test/familytree/npc_is_never_tracked/Run()
 	var/turf/spot = run_loc_floor_bottom_left
@@ -237,6 +254,7 @@
 	FT_ASSERT(!SSfamilytree.familytree_has_round_prefs(npc), "a player-less mob must never own round prefs")
 	FT_ASSERT_NULL(npc.family_datum, "a player-less mob must never be given a family")
 
+#undef FT_SOURCE
 #undef FT_ASSERT
 #undef FT_ASSERT_EQUAL
 #undef FT_ASSERT_NOTNULL
