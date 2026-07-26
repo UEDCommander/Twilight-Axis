@@ -11,9 +11,3 @@
 	AIStatus = AI_OFF
 	can_have_ai = FALSE
 	wander = FALSE
-
-/datum/clan/abyss
-	leader = /datum/clan_leader/abyss
-
-/datum/clan/crimson_fang
-	leader = /datum/clan_leader/crimson_fang
