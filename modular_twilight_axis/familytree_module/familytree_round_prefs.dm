@@ -68,6 +68,15 @@
 	H.familytree_random_children = random_children
 	return TRUE
 
+/proc/familytree_synthetic_prefs_allowed(ckey_owner)
+	if(!ckey_owner)
+		return FALSE
+#if defined(UNIT_TESTS) || defined(SPACEMAN_DMM)
+	if(findtext(ckey_owner, "FTTEST") == 1)
+		return TRUE
+#endif
+	return findtext(ckey_owner, "FTDEBUG") == 1
+
 /datum/familytree_prefs/proc/capture_from_mob(mob/living/carbon/human/H)
 	if(!H || QDELETED(H))
 		return FALSE
@@ -99,7 +108,7 @@
 	if(!stored && create)
 		var/datum/preferences/P = H.client?.prefs
 		if(!P)
-			if(findtext(H.ckey, "FTDEBUG") != 1)
+			if(!familytree_synthetic_prefs_allowed(H.ckey))
 				return null
 			stored = new /datum/familytree_prefs
 			stored.capture_from_mob(H)

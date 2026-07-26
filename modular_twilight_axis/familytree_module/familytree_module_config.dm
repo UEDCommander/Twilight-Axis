@@ -22,6 +22,7 @@
 // familytree_graph_api.dm           - SSfamilytree graph facade + hooks + relation/display cache (source of truth for parent/spouse)
 // familytree_debug.dm               - admin/debug scenarios (stress/royal/favorite/roles/isolated/edge/lifecycle)
 // familytree_debug_populate.dm      - admin "populate my house" panel (ftpop_*). Admin/debug only
+// familytree_unit_tests.dm          - CI unit tests for the subsystem chains; runs under UNIT_TESTS (CIBUILDING). Update when a chain changes
 //
 // TGUI: tgui/packages/tgui/interfaces/FamilySettingsPanel.tsx
 //       tgui/packages/tgui/interfaces/FamilyDisplayPanel.tsx
@@ -150,3 +151,4 @@
 #include "familytree_graph_api.dm"
 #include "familytree_debug.dm"
 #include "familytree_debug_populate.dm"
+#include "familytree_unit_tests.dm"
