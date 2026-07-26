@@ -4360,10 +4360,6 @@
 /obj/item/cooking/platter,
 /turf/open/floor/rogue/ruinedwood/spiral,
 /area/rogue/indoors/town/physician)
-"aRU" = (
-/obj/structure/fermentation_keg/water,
-/turf/open/transparent/openspace,
-/area/rogue/outdoors/town/roofs/rockhillroofs)
 "aRV" = (
 /obj/effect/decal/cleanable/blood/tracks{
 	dir = 4
@@ -14054,11 +14050,6 @@
 	},
 /turf/open/floor/rogue/greenstone,
 /area/rogue/under/town/sewer)
-"cNA" = (
-/turf/closed/wall/mineral/rogue/decostone/long{
-	dir = 1
-	},
-/area/rogue/outdoors/rtfield/rockhill/above)
 "cNC" = (
 /turf/open/floor/rogue/rooftop/green{
 	dir = 4
@@ -89334,7 +89325,7 @@
 /turf/open/floor/rogue/rooftop/green{
 	dir = 8
 	},
-/area/rogue/outdoors/rtfield/rockhill/above)
+/area/rogue/indoors/town/church)
 "slT" = (
 /obj/structure/rack/rogue,
 /obj/effect/spawner/lootdrop/roguetown/dungeon/weapons,
@@ -103280,9 +103271,6 @@
 /obj/effect/landmark/quest_spawner/generic,
 /turf/open/floor/rogue/naturalstone,
 /area/rogue/under/cave)
-"viH" = (
-/turf/closed/wall/mineral/rogue/decostone,
-/area/rogue/outdoors/rtfield/rockhill/above)
 "viI" = (
 /obj/machinery/light/rogue/firebowl/standing,
 /turf/open/floor/rogue/tile,
@@ -396051,7 +396039,7 @@ tML
 wAm
 tMu
 wAm
-viH
+tML
 xlA
 xlA
 xlA
@@ -396483,7 +396471,7 @@ teW
 eZo
 dRw
 mGl
-cNA
+teW
 xlA
 xlA
 xlA
@@ -397779,7 +397767,7 @@ skv
 bof
 otD
 ueg
-cNA
+teW
 xlA
 xlA
 xlA
@@ -398211,7 +398199,7 @@ tML
 wAm
 tMu
 wAm
-viH
+tML
 xlA
 xlA
 xlA
@@ -506209,10 +506197,10 @@ jVd
 hmC
 sfb
 fIY
-xlA
-xlA
-xlA
-xlA
+pLf
+pLf
+pLf
+cDU
 xlA
 xlA
 xlA
@@ -506641,10 +506629,10 @@ jVd
 hmC
 sfb
 fIY
-xlA
-xlA
-xlA
-xlA
+sfb
+sfb
+sfb
+fIY
 xlA
 xlA
 xlA
@@ -507073,10 +507061,10 @@ jCh
 hmC
 sfb
 fIY
-xlA
-xlA
-xlA
-xlA
+sfb
+sfb
+sfb
+fIY
 xlA
 xlA
 xlA
@@ -507505,10 +507493,10 @@ jVd
 hmC
 sfb
 fIY
-xlA
-xlA
-xlA
-xlA
+sfb
+sfb
+sfb
+fIY
 xlA
 xlA
 xlA
@@ -507937,10 +507925,10 @@ jCh
 hmC
 sfb
 fIY
-xlA
-xlA
-xlA
-xlA
+sfb
+sfb
+sfb
+fIY
 xlA
 xlA
 xlA
@@ -508369,10 +508357,10 @@ jVd
 hmC
 sfb
 fIY
-xlA
-xlA
-xlA
-xlA
+eSZ
+eSZ
+eSZ
+hJx
 xlA
 xlA
 xlA
@@ -657283,7 +657271,7 @@ fZJ
 fZJ
 fZJ
 fZJ
-fZJ
+vdf
 vdf
 hcx
 cCZ
@@ -657715,7 +657703,7 @@ fZJ
 fZJ
 fZJ
 fZJ
-fZJ
+vdf
 vdf
 uSx
 nJy
@@ -658147,7 +658135,7 @@ fZJ
 fZJ
 fZJ
 fZJ
-aRU
+vdf
 vdf
 bSu
 eUZ
