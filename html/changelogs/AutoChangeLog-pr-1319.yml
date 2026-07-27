@@ -1,0 +1,4 @@
+author: "Vladmar11"
+delete-after: True
+changes:
+  - balance: "Маскарад теперь не жрет слот мажор антагов"
