@@ -57,8 +57,8 @@ drinksomeblood()
 */
 
 #define TA_VAMP_BLOODDRINK_INITIAL_BLOOD_LOSS 3
-#define TA_VAMP_BLOODDRINK_VITAE_DRAIN 167
-#define TA_VAMP_BLOODDRINK_TARGET_FINAL_BLOOD 200
+#define TA_VAMP_BLOODDRINK_FULL_DRAIN_BITES 6
+#define TA_VAMP_BLOODDRINK_TARGET_FINAL_BLOOD BLOOD_VOLUME_BAD
 #define TA_VAMP_BLOODDRINK_LOCK_TIMEOUT (45 SECONDS)
 // Temporarily disabled. Uncomment to restore Vampire Lord forced conversion.
 //#define TA_VAMP_LORD_FORCE_CONVERT
@@ -242,7 +242,7 @@ drinksomeblood()
 	return blood_handle
 
 /mob/living/carbon/human/proc/consume_vitae(mob/living/carbon/victim)
-	var/used_vitae = TA_VAMP_BLOODDRINK_VITAE_DRAIN
+	var/used_vitae = get_vitae_drain_per_bite(victim)
 
 	victim.blood_volume = max(victim.blood_volume - get_vitae_blood_loss(victim), 0)
 
@@ -259,9 +259,11 @@ drinksomeblood()
 	adjust_bloodpool(used_vitae)
 	adjust_hydration(used_vitae * 0.1)
 
+/mob/living/carbon/human/proc/get_vitae_drain_per_bite(mob/living/carbon/victim)
+	return max(CEILING(victim.maxbloodpool / TA_VAMP_BLOODDRINK_FULL_DRAIN_BITES, 1), 1)
+
 /mob/living/carbon/human/proc/get_vitae_blood_loss(mob/living/carbon/victim)
-	var/full_drain_bites = max(victim.maxbloodpool / TA_VAMP_BLOODDRINK_VITAE_DRAIN, 1)
-	return max(((BLOOD_VOLUME_NORMAL - TA_VAMP_BLOODDRINK_TARGET_FINAL_BLOOD) / full_drain_bites) - TA_VAMP_BLOODDRINK_INITIAL_BLOOD_LOSS, 0)
+	return max(((BLOOD_VOLUME_NORMAL - TA_VAMP_BLOODDRINK_TARGET_FINAL_BLOOD) / TA_VAMP_BLOODDRINK_FULL_DRAIN_BITES) - TA_VAMP_BLOODDRINK_INITIAL_BLOOD_LOSS, 0)
 
 /// DIABLERIE
 /mob/living/carbon/human/proc/handle_diablerie(mob/living/carbon/victim, datum/antagonist/vampire/VDrinker, datum/antagonist/vampire/VVictim)
@@ -983,6 +985,6 @@ drinksomeblood()
 	resolve_blooddrink_consequences(victim)
 
 #undef TA_VAMP_BLOODDRINK_INITIAL_BLOOD_LOSS
-#undef TA_VAMP_BLOODDRINK_VITAE_DRAIN
+#undef TA_VAMP_BLOODDRINK_FULL_DRAIN_BITES
 #undef TA_VAMP_BLOODDRINK_TARGET_FINAL_BLOOD
 #undef TA_VAMP_BLOODDRINK_LOCK_TIMEOUT
