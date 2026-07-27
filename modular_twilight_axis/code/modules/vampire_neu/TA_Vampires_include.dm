@@ -18,6 +18,8 @@
 #include "./overrides/portal.dm"
 #include "./overrides/vampire_forms.dm"
 #include "./overrides/discipline_balance.dm"
+#include "./necromantic_coven.dm"
+#include "./bestial_coven.dm"
 #include "./ascended_covens.dm"
 #include "./coven_level_purchases.dm"
 #include "./crimson_crucible_ru_i18n.dm"
