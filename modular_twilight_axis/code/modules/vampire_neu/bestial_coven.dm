@@ -25,18 +25,32 @@
 	QDEL_NULL(ta_shift_spell)
 	return ..()
 
-/datum/coven_power/bestial/activate(atom/target)
+/proc/ta_is_shapeshifted(mob/living/carbon/human/vampire)
+	return istype(vampire?.loc, /obj/shapeshift_holder)
+
+/datum/coven_power/bestial/proc/ta_refund_failed_use()
+	if(owner && cost_system == COVEN_COST_VITAE)
+		owner.adjust_bloodpool(vitae_cost)
+	return FALSE
+
+/datum/coven_power/bestial/pre_activation_checks(atom/target)
 	. = ..()
+	if(!.)
+		return FALSE
 
 	if(!owner || !length(ta_shapes))
-		return FALSE
+		return ta_refund_failed_use()
 
 	if(!ta_shift_spell)
 		ta_shift_spell = new()
 		ta_shift_spell.possible_shapes = ta_shapes.Copy()
 
+	var/was_shifted = ta_is_shapeshifted(owner)
 	ta_shift_spell.shapeshift_type = null
 	ta_shift_spell.cast(list(owner), owner)
+
+	if(ta_is_shapeshifted(owner) == was_shifted)
+		return ta_refund_failed_use()
 	return TRUE
 
 /datum/coven_power/bestial/crawling

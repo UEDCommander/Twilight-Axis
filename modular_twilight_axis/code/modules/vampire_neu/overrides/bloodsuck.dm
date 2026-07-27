@@ -962,10 +962,9 @@ drinksomeblood()
 	var/conversion_priority = ta_conversion_takes_priority(victim)
 	var/lethal_finish = !conversion_priority && requires_finishing_blooddrink_delay(victim)
 
-	if(!conversion_priority && !lethal_finish && victim.blood_volume <= BLOOD_VOLUME_BAD)
-		to_chat(src, span_warning("[victim] почти обескровлен - ещё глоток задушит его. Я разжимаю зубы."))
+	if(!conversion_priority && !lethal_finish && victim.client && victim.blood_volume <= BLOOD_VOLUME_BAD)
+		to_chat(src, span_warning("[victim] почти обескровлен - каждый глоток теперь душит его. Я перестаю тянуть кровь сам."))
 		ta_stop_blood_sipping()
-		return
 
 	ta_blooddrink_busy_since = world.time
 	ta_run_blooddrink(victim, sublimb_grabbed, lethal_finish)
