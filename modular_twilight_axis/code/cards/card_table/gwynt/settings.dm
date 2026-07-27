@@ -1303,9 +1303,9 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 	return -removed
 
 /client/proc/ccg_admin_management()
-	set name = "Gwynt Management"
+	set name = "Arlette Management"
 	set category = "Admin.Admin"
-	set desc = "Manage Gwynt collections and saved decks."
+	set desc = "Manage Arlette collections and saved decks."
 	if(!check_rights(R_ADMIN))
 		return
 	holder?.ccg_management_panel()
@@ -1318,7 +1318,7 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 		return
 	var/list/html = list("<!DOCTYPE html><html><body><style>body{margin:14px;background:#15171d;color:#d9dce5;font-family:Verdana,sans-serif;font-size:12px}h2,h3{margin:0}header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding:10px 12px;background:#232834;border-left:4px solid #c39b55}table{border-collapse:collapse;width:100%;background:#1d212b}th{position:sticky;top:0;background:#303747;color:#fff;text-align:left}th,td{border:1px solid #3e4658;padding:7px}tr:nth-child(even){background:#202631}.count{font-weight:bold;text-align:center;width:64px}.actions{white-space:nowrap;width:135px}a{color:#e0b96c;text-decoration:none;margin-right:7px}.control{display:inline-block;min-width:20px;text-align:center;padding:2px 5px;border:1px solid #69758b;background:#2b3240}.danger{color:#ff9c9c}.muted{color:#a6adbc}.toolbar{margin:12px 0}</style>")
 	if(target_ckey)
-		html += "<header><div><h2>Gwynt Management</h2><span class='muted'>Player collection</span></div><a href='?src=[REF(src)];[HrefToken()];ccg_manage=index'>Players</a></header>"
+		html += "<header><div><h2>Arlette Management</h2><span class='muted'>Player collection</span></div><a href='?src=[REF(src)];[HrefToken()];ccg_manage=index'>Players</a></header>"
 		html += "<h3>[html_encode(target_ckey)]</h3>"
 		html += "<p class='toolbar'><a href='?src=[REF(src)];[HrefToken()];ccg_manage=clear_collection;ckey=[url_encode(target_ckey)]' class='danger'>Clear collection</a>"
 		html += "<a href='?src=[REF(src)];[HrefToken()];ccg_manage=clear_decks;ckey=[url_encode(target_ckey)]' class='danger'>Clear saved decks</a></p>"
@@ -1359,7 +1359,7 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 			qdel(players_query)
 			to_chat(usr, span_warning("The card collection database is unavailable."))
 			return
-		html += "<header><div><h2>Gwynt Management</h2><span class='muted'>Stored player collections</span></div></header><table><tr><th>Ckey</th><th class='actions'>Actions</th></tr>"
+		html += "<header><div><h2>Arlette Management</h2><span class='muted'>Stored player collections</span></div></header><table><tr><th>Ckey</th><th class='actions'>Actions</th></tr>"
 		while(players_query.NextRow())
 			var/player_ckey = players_query.item[1]
 			html += "<tr><td><a href='?src=[REF(src)];[HrefToken()];ccg_manage=view;ckey=[url_encode(player_ckey)]'>[html_encode(player_ckey)]</a></td>"
@@ -1383,10 +1383,10 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 		ccg_management_panel(target_ckey)
 		return
 	if(action == "add")
-		var/added_card_id = owner.ccg_admin_choose_card("Add Gwynt Card")
+		var/added_card_id = owner.ccg_admin_choose_card("Add Arlette Card")
 		if(added_card_id && !isnull(ccg_admin_change_card_amount(target_ckey, added_card_id, 1)))
-			log_admin("[key_name(usr)] added 1 x [added_card_id] to Gwynt collection of [target_ckey].")
-			message_admins("[key_name_admin(usr)] added 1 x [added_card_id] to Gwynt collection of [target_ckey].")
+			log_admin("[key_name(usr)] added 1 x [added_card_id] to Arlette collection of [target_ckey].")
+			message_admins("[key_name_admin(usr)] added 1 x [added_card_id] to Arlette collection of [target_ckey].")
 		ccg_management_panel(target_ckey)
 		return
 	if(action == "change")
@@ -1394,22 +1394,22 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 		var/change_amount = clamp(text2num(href_list["amount"]), -1, 1)
 		var/changed = ccg_admin_change_card_amount(target_ckey, changed_card_id, change_amount)
 		if(changed)
-			log_admin("[key_name(usr)] changed Gwynt card [changed_card_id] by [changed] for [target_ckey].")
-			message_admins("[key_name_admin(usr)] changed Gwynt card [changed_card_id] by [changed] for [target_ckey].")
+			log_admin("[key_name(usr)] changed Arlette card [changed_card_id] by [changed] for [target_ckey].")
+			message_admins("[key_name_admin(usr)] changed Arlette card [changed_card_id] by [changed] for [target_ckey].")
 		ccg_management_panel(target_ckey)
 		return
 	if(action == "clear_collection")
-		if(alert(usr, "Delete every Gwynt card for [target_ckey]? Starter cards will be restored on their next Gwynt load.", "Clear Gwynt Collection", "Delete", "Cancel") == "Delete")
+		if(alert(usr, "Delete every Arlette card for [target_ckey]? Starter cards will be restored on their next Arlette load.", "Clear Arlette Collection", "Delete", "Cancel") == "Delete")
 			var/datum/preferences/collection_prefs = ccg_admin_online_preferences(target_ckey)
 			if((!GLOB.directory[target_ckey] || collection_prefs) && ccg_admin_execute_sql("DELETE FROM [format_table_name("ccg_collection")] WHERE ckey = :ckey", list("ckey" = target_ckey)))
 				if(collection_prefs)
 					collection_prefs.ccg_known_rare_cards = list()
-				log_admin("[key_name(usr)] cleared Gwynt collection for [target_ckey].")
-				message_admins("[key_name_admin(usr)] cleared Gwynt collection for [target_ckey].")
+				log_admin("[key_name(usr)] cleared Arlette collection for [target_ckey].")
+				message_admins("[key_name_admin(usr)] cleared Arlette collection for [target_ckey].")
 		ccg_management_panel(target_ckey)
 		return
 	if(action == "clear_decks")
-		if(alert(usr, "Delete all saved Gwynt deck presets for [target_ckey]?", "Clear Gwynt Decks", "Delete", "Cancel") == "Delete")
+		if(alert(usr, "Delete all saved Arlette deck presets for [target_ckey]?", "Clear Arlette Decks", "Delete", "Cancel") == "Delete")
 			var/datum/preferences/deck_prefs = ccg_admin_online_preferences(target_ckey)
 			var/success = (!GLOB.directory[target_ckey] || deck_prefs) && ccg_admin_execute_sql("START TRANSACTION")
 			success = success && ccg_admin_execute_sql("DELETE FROM [format_table_name("ccg_deck_cards")] WHERE ckey = :ckey", list("ckey" = target_ckey))
@@ -1419,8 +1419,8 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 				if(deck_prefs)
 					deck_prefs.ccg_saved_decks = list()
 					deck_prefs.ccg_saved_deck_cards = list()
-				log_admin("[key_name(usr)] cleared saved Gwynt decks for [target_ckey].")
-				message_admins("[key_name_admin(usr)] cleared saved Gwynt decks for [target_ckey].")
+				log_admin("[key_name(usr)] cleared saved Arlette decks for [target_ckey].")
+				message_admins("[key_name_admin(usr)] cleared saved Arlette decks for [target_ckey].")
 			else
 				ccg_admin_execute_sql("ROLLBACK")
 		ccg_management_panel(target_ckey)
@@ -1441,12 +1441,12 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 	return choice ? card_choices[choice] : null
 
 /client/proc/ccg_admin_show_collection()
-	set name = "Inspect Gwynt Cards"
+	set name = "Inspect Arlette Cards"
 	set category = "Admin.Admin"
-	set desc = "Show a player's Gwynt card collection from SQL."
+	set desc = "Show a player's Arlette card collection from SQL."
 	if(!check_rights(R_ADMIN))
 		return
-	var/target_ckey = ccg_admin_target_ckey("Inspect Gwynt Cards")
+	var/target_ckey = ccg_admin_target_ckey("Inspect Arlette Cards")
 	if(!target_ckey || !SSdbcore.Connect())
 		return
 	var/datum/DBQuery/query = SSdbcore.NewQuery({"
@@ -1459,7 +1459,7 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 		qdel(query)
 		to_chat(src, span_warning("The card collection database is unavailable."))
 		return
-	var/list/lines = list("Gwynt collection for [target_ckey]:")
+	var/list/lines = list("Arlette collection for [target_ckey]:")
 	while(query.NextRow())
 		var/card_id = query.item[1]
 		var/datum/ccg_card/card = ccg_card(card_id)
@@ -1468,21 +1468,21 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 	if(lines.len == 1)
 		lines += "No cards stored."
 	src << browse("<pre>[jointext(lines, "\n")]</pre>", "window=ccg_admin_collection;size=500x600")
-	log_admin("[key_name(usr)] inspected Gwynt collection for [target_ckey].")
+	log_admin("[key_name(usr)] inspected Arlette collection for [target_ckey].")
 
 /client/proc/ccg_admin_give_card()
-	set name = "Give Gwynt Card"
+	set name = "Give Arlette Card"
 	set category = "Admin.Admin"
-	set desc = "Add a card to a player's Gwynt collection in SQL."
+	set desc = "Add a card to a player's Arlette collection in SQL."
 	if(!check_rights(R_ADMIN))
 		return
-	var/target_ckey = ccg_admin_target_ckey("Give Gwynt Card")
+	var/target_ckey = ccg_admin_target_ckey("Give Arlette Card")
 	if(!target_ckey)
 		return
-	var/card_id = ccg_admin_choose_card("Give Gwynt Card")
+	var/card_id = ccg_admin_choose_card("Give Arlette Card")
 	if(!card_id)
 		return
-	var/input_amount = input(src, "How many copies?", "Give Gwynt Card", 1) as null|num
+	var/input_amount = input(src, "How many copies?", "Give Arlette Card", 1) as null|num
 	if(isnull(input_amount))
 		return
 	var/amount = clamp(round(input_amount), 1, 100)
@@ -1501,22 +1501,22 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 		P.ccg_known_rare_cards[card_id] = (P.ccg_known_rare_cards[card_id] || 0) + amount
 	var/datum/ccg_card/card = ccg_card(card_id)
 	to_chat(src, span_notice("Added [amount] x [card ? card.name : card_id] to [target_ckey]."))
-	log_admin("[key_name(usr)] gave [amount] x [card_id] to Gwynt collection of [target_ckey].")
-	message_admins("[key_name_admin(usr)] gave [amount] x [card_id] to Gwynt collection of [target_ckey].")
+	log_admin("[key_name(usr)] gave [amount] x [card_id] to Arlette collection of [target_ckey].")
+	message_admins("[key_name_admin(usr)] gave [amount] x [card_id] to Arlette collection of [target_ckey].")
 
 /client/proc/ccg_admin_take_card()
-	set name = "Take Gwynt Card"
+	set name = "Take Arlette Card"
 	set category = "Admin.Admin"
-	set desc = "Remove copies of a card from a player's Gwynt collection in SQL."
+	set desc = "Remove copies of a card from a player's Arlette collection in SQL."
 	if(!check_rights(R_ADMIN))
 		return
-	var/target_ckey = ccg_admin_target_ckey("Take Gwynt Card")
+	var/target_ckey = ccg_admin_target_ckey("Take Arlette Card")
 	if(!target_ckey)
 		return
-	var/card_id = ccg_admin_choose_card("Take Gwynt Card")
+	var/card_id = ccg_admin_choose_card("Take Arlette Card")
 	if(!card_id)
 		return
-	var/input_amount = input(src, "How many copies?", "Take Gwynt Card", 1) as null|num
+	var/input_amount = input(src, "How many copies?", "Take Arlette Card", 1) as null|num
 	if(isnull(input_amount) || !SSdbcore.Connect())
 		return
 	var/amount = clamp(round(input_amount), 1, 100)
@@ -1548,19 +1548,19 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 			P.ccg_known_rare_cards -= card_id
 	var/datum/ccg_card/card = ccg_card(card_id)
 	to_chat(src, span_notice("Removed [taken_amount] x [card ? card.name : card_id] from [target_ckey]."))
-	log_admin("[key_name(usr)] took [taken_amount] x [card_id] from Gwynt collection of [target_ckey].")
-	message_admins("[key_name_admin(usr)] took [taken_amount] x [card_id] from Gwynt collection of [target_ckey].")
+	log_admin("[key_name(usr)] took [taken_amount] x [card_id] from Arlette collection of [target_ckey].")
+	message_admins("[key_name_admin(usr)] took [taken_amount] x [card_id] from Arlette collection of [target_ckey].")
 
 /client/proc/ccg_admin_clear_collection()
-	set name = "Clear Gwynt Collection"
+	set name = "Clear Arlette Collection"
 	set category = "Admin.Admin"
-	set desc = "Delete every stored Gwynt card for a player."
+	set desc = "Delete every stored Arlette card for a player."
 	if(!check_rights(R_ADMIN))
 		return
-	var/target_ckey = ccg_admin_target_ckey("Clear Gwynt Collection")
+	var/target_ckey = ccg_admin_target_ckey("Clear Arlette Collection")
 	if(!target_ckey)
 		return
-	if(alert(src, "Delete every Gwynt card for [target_ckey]? Starter cards will be restored on their next Gwynt load.", "Clear Gwynt Collection", "Delete", "Cancel") != "Delete")
+	if(alert(src, "Delete every Arlette card for [target_ckey]? Starter cards will be restored on their next Arlette load.", "Clear Arlette Collection", "Delete", "Cancel") != "Delete")
 		return
 	var/datum/preferences/P = ccg_admin_online_preferences(target_ckey)
 	if(GLOB.directory[target_ckey] && !P)
@@ -1571,20 +1571,20 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 		return
 	if(P)
 		P.ccg_known_rare_cards = list()
-	to_chat(src, span_notice("Cleared Gwynt collection for [target_ckey]."))
-	log_admin("[key_name(usr)] cleared Gwynt collection for [target_ckey].")
-	message_admins("[key_name_admin(usr)] cleared Gwynt collection for [target_ckey].")
+	to_chat(src, span_notice("Cleared Arlette collection for [target_ckey]."))
+	log_admin("[key_name(usr)] cleared Arlette collection for [target_ckey].")
+	message_admins("[key_name_admin(usr)] cleared Arlette collection for [target_ckey].")
 
 /client/proc/ccg_admin_clear_decks()
-	set name = "Clear Gwynt Decks"
+	set name = "Clear Arlette Decks"
 	set category = "Admin.Admin"
-	set desc = "Delete every saved Gwynt deck preset for a player."
+	set desc = "Delete every saved Arlette deck preset for a player."
 	if(!check_rights(R_ADMIN))
 		return
-	var/target_ckey = ccg_admin_target_ckey("Clear Gwynt Decks")
+	var/target_ckey = ccg_admin_target_ckey("Clear Arlette Decks")
 	if(!target_ckey)
 		return
-	if(alert(src, "Delete all saved Gwynt deck presets for [target_ckey]?", "Clear Gwynt Decks", "Delete", "Cancel") != "Delete")
+	if(alert(src, "Delete all saved Arlette deck presets for [target_ckey]?", "Clear Arlette Decks", "Delete", "Cancel") != "Delete")
 		return
 	var/datum/preferences/P = ccg_admin_online_preferences(target_ckey)
 	if(GLOB.directory[target_ckey] && !P)
@@ -1603,9 +1603,9 @@ GLOBAL_LIST_EMPTY(ccg_round_trade_loss_progress_awarded)
 	if(P)
 		P.ccg_saved_decks = list()
 		P.ccg_saved_deck_cards = list()
-	to_chat(src, span_notice("Cleared saved Gwynt decks for [target_ckey]."))
-	log_admin("[key_name(usr)] cleared saved Gwynt decks for [target_ckey].")
-	message_admins("[key_name_admin(usr)] cleared saved Gwynt decks for [target_ckey].")
+	to_chat(src, span_notice("Cleared saved Arlette decks for [target_ckey]."))
+	log_admin("[key_name(usr)] cleared saved Arlette decks for [target_ckey].")
+	message_admins("[key_name_admin(usr)] cleared saved Arlette decks for [target_ckey].")
 
 /mob/living/verb/open_ccg_deck()
 	set name = "Arlette Deck"
