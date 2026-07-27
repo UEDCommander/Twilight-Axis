@@ -59,6 +59,7 @@ drinksomeblood()
 #define TA_VAMP_BLOODDRINK_INITIAL_BLOOD_LOSS 3
 #define TA_VAMP_BLOODDRINK_VITAE_DRAIN 167
 #define TA_VAMP_BLOODDRINK_TARGET_FINAL_BLOOD 200
+#define TA_VAMP_BLOODDRINK_LOCK_TIMEOUT (45 SECONDS)
 // Temporarily disabled. Uncomment to restore Vampire Lord forced conversion.
 //#define TA_VAMP_LORD_FORCE_CONVERT
 
@@ -74,10 +75,48 @@ drinksomeblood()
 	remove_overlay(SUNDER_LAYER)
 
 /// BASIC CHECKS
+/mob/living/carbon/human
+	var/tmp/ta_blooddrink_busy_since = 0
+
+/mob/living/carbon/human/proc/ta_blooddrink_in_progress()
+	if(!ta_blooddrink_busy_since)
+		return FALSE
+	if(world.time >= ta_blooddrink_busy_since + TA_VAMP_BLOODDRINK_LOCK_TIMEOUT)
+		ta_blooddrink_busy_since = 0
+		return FALSE
+	return TRUE
+
 /mob/living/carbon/human/proc/can_use_drinksomeblood()
 	if(world.time <= next_move)
 		return FALSE
 	if(world.time < last_drinkblood_use + 2 SECONDS)
+		return FALSE
+	return TRUE
+
+/mob/living/carbon/human/proc/ta_stop_blood_sipping()
+	for(var/obj/item/grabbing/bite/grab in held_items)
+		grab.sippy = FALSE
+
+/mob/living/carbon/human/proc/ta_conversion_takes_priority(mob/living/carbon/victim)
+	if(!ishuman(victim))
+		return FALSE
+
+	var/datum/antagonist/vampire/VDrinker = get_vampire_drinker()
+	if(!VDrinker)
+		return FALSE
+
+	var/mob/living/carbon/human/H = victim
+	if(H.vampire_conversion_prompt_active)
+		return TRUE
+	if(get_vampire_victim(victim))
+		return FALSE
+	if(!victim.mind)
+		return FALSE
+	if(get_siring_block_reason(victim, TRUE))
+		return FALSE
+	if(HAS_TRAIT_FROM(H, TRAIT_REFUSED_VAMP_CONVERT, REF(src)) && !ta_get_rockhill_conversion_ambition(src, H.mind))
+		return FALSE
+	if(!VDrinker.can_sire_thrall() && !can_offer_pallid_drain(victim))
 		return FALSE
 	return TRUE
 
@@ -859,6 +898,14 @@ drinksomeblood()
 				consume_vitae(victim)
 			return
 
+	if(ta_conversion_takes_priority(victim))
+		var/blood_handle = build_blood_handle(victim, VVictim)
+		clan.handle_bloodsuck(src, blood_handle)
+		if(victim.bloodpool > 0)
+			consume_vitae(victim)
+		attempt_siring_prompt(victim, VDrinker)
+		return
+
 	if(process_vampire_blood(victim, VDrinker, VVictim))
 		return
 
@@ -884,8 +931,13 @@ drinksomeblood()
 
 /// ENTRY POINT
 /mob/living/carbon/human/drinksomeblood(mob/living/carbon/victim, sublimb_grabbed)
+	if(ta_blooddrink_in_progress())
+		return
+
 	if(!can_use_drinksomeblood())
 		return
+
+	last_drinkblood_use = world.time
 
 	if(!istype(victim))
 		to_chat(src, span_warning("Я могу пить кровь только из живых, разумных существ!"))
@@ -907,12 +959,25 @@ drinksomeblood()
 	if(!check_silver_block(victim))
 		return
 
-	if(requires_finishing_blooddrink_delay(victim))
+	var/conversion_priority = ta_conversion_takes_priority(victim)
+	var/lethal_finish = !conversion_priority && requires_finishing_blooddrink_delay(victim)
+
+	if(!conversion_priority && !lethal_finish && victim.blood_volume <= BLOOD_VOLUME_BAD)
+		to_chat(src, span_warning("[victim] почти обескровлен - ещё глоток задушит его. Я разжимаю зубы."))
+		ta_stop_blood_sipping()
+		return
+
+	ta_blooddrink_busy_since = world.time
+	ta_run_blooddrink(victim, sublimb_grabbed, lethal_finish)
+	ta_blooddrink_busy_since = 0
+
+/mob/living/carbon/human/proc/ta_run_blooddrink(mob/living/carbon/victim, sublimb_grabbed, lethal_finish = FALSE)
+	if(lethal_finish)
 		visible_message(span_danger("[src] сжимает хватку и готовится выпить [victim] до последней капли!"))
 		if(!do_mob(src, victim, TA_VAMP_LETHAL_BLOODDRINK_DELAY, double_progress = TRUE, can_move = FALSE))
 			to_chat(src, span_warning("Мне не удалось завершить смертельное кровопитие."))
 			return
-		if(QDELETED(victim))
+		if(QDELETED(victim) || QDELETED(src))
 			return
 
 	perform_initial_blooddrink(victim, sublimb_grabbed)
@@ -921,3 +986,4 @@ drinksomeblood()
 #undef TA_VAMP_BLOODDRINK_INITIAL_BLOOD_LOSS
 #undef TA_VAMP_BLOODDRINK_VITAE_DRAIN
 #undef TA_VAMP_BLOODDRINK_TARGET_FINAL_BLOOD
+#undef TA_VAMP_BLOODDRINK_LOCK_TIMEOUT
