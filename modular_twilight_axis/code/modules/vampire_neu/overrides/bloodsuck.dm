@@ -511,19 +511,15 @@ drinksomeblood()
 
 	ADD_TRAIT(src, TRAIT_REFUSED_VAMP_CONVERT, REF(sire))
 
-	if(use_pallid_conversion_rules())
-		to_chat(src, span_userdanger("Отвергнутое проклятие оставляет след на моей душе!"))
-		to_chat(sire, span_danger("[src] отвергает проклятие, но скверна остаётся в крови!"))
+	to_chat(src, span_userdanger("Отвергнутое проклятие оставляет след на моей душе!"))
+	to_chat(sire, span_danger("[src] отвергает проклятие, но скверна остаётся в крови!"))
 
-		apply_pallid_curse(sire)
+	apply_pallid_curse(sire)
 
-		vampire_conversion_prompt_active = FALSE
-		return TRUE
-
-	to_chat(src, span_userdanger("Проклятие разрывает моё тело изнутри!"))
-	to_chat(sire, span_danger("[src] отвергает проклятие и погибает от его силы!"))
-
-	death()
+	var/datum/antagonist/vampire/VDrinker = sire?.get_vampire_drinker()
+	if(VDrinker)
+		sire.apply_vampire_conversion_reward(VDrinker, TA_VAMP_REFUSAL_RESEARCH_REWARD, 0)
+		to_chat(sire, span_notice("Отвергнутая кровь всё же чему-то меня научила. +[TA_VAMP_REFUSAL_RESEARCH_REWARD] ОИ"))
 
 	vampire_conversion_prompt_active = FALSE
 	return TRUE
