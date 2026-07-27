@@ -26,7 +26,6 @@
 	if(stat != DEAD && istype(loc, /turf/open/water))
 		var/turf/open/water/W = loc
 		handle_inwater(W)
-	
 	var/bprv = handle_bodyparts()
 	if(bprv & BODYPART_LIFE_UPDATE_HEALTH)
 		update_stamina() //needs to go before updatehealth to remove stamcrit
@@ -603,10 +602,6 @@ GLOBAL_LIST_INIT(ballmer_windows_me_msg, list("Yo man, what if, we like, uh, put
 	if(HAS_TRAIT(src, TRAIT_NOSLEEP))
 		if(!(mobility_flags & MOBILITY_STAND))
 			energy_add(5)
-		if(mind?.has_antag_datum(/datum/antagonist/vampire))
-			if(!(mobility_flags & MOBILITY_STAND))
-				energy_add(10)
-			energy_add(4)
 	//Healing while sleeping in a bed
 	if(IsSleeping())
 		if(HAS_TRAIT(src, TRAIT_NOREGEN) || HAS_TRAIT(src, TRAIT_IRONMAN))
