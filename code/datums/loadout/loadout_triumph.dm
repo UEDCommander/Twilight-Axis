@@ -1,4 +1,4 @@
-//////////////////
+/*//////////////////
 //  TRIUMPHS !  //
 //////////////////
 
@@ -687,3 +687,4 @@
 	path = /obj/item/clothing/head/roguetown/decoration/orle/donator_dyeable
 	triumph_cost = 3
 	sort_category = "Triumphs"
+*/
