@@ -229,6 +229,7 @@
 	var/npcdamfactor = 2
 	var/reloaded = FALSE
 	var/silenced = FALSE
+	var/breech_open = FALSE
 	var/load_time = 50
 	var/gunpowder
 	var/obj/item/twilight_powderflask/actual_gunpowder //I looked at all the code, and there is no way in hell I'm changing all that
@@ -332,6 +333,32 @@
 	update_icon()
 
 /obj/item/gun/ballistic/twilight_firearm/attack_self(mob/living/user)
+	if(locktype == "Breech")
+		if(!reloaded)
+			if(chambered)
+				if(move_after(user, 1 SECONDS, target = user))
+					playsound(src, "modular_twilight_axis/firearms/sound/musketcock.ogg",  100, FALSE)
+					user.visible_message("<span class='notice'>[user] has finished reloading [src].</span>")
+					reloaded = TRUE
+					breech_open = FALSE
+					if(advanced_icon)
+						icon = advanced_icon
+			else if(breech_open == TRUE)
+				if(move_after(user, 1 SECONDS, target = user))
+					playsound(src, "modular_twilight_axis/firearms/sound/musketcock.ogg",  100, FALSE)
+					to_chat(user, span_info("You close down the breech of [src]"))
+					breech_open = FALSE
+					if(advanced_icon)
+						icon = advanced_icon
+			else
+				if(move_after(user, 1 SECONDS, target = user))
+					playsound(src, "modular_twilight_axis/firearms/sound/musketcock.ogg",  100, FALSE)
+					to_chat(user, span_info("You open up the breech of [src]"))
+					breech_open = TRUE
+					if(advanced_icon_f)
+						icon = advanced_icon_f
+		update_icon()
+		return
 	if(twohands_required)
 		return
 	if(altgripped || wielded) //Trying to unwield it
@@ -352,31 +379,64 @@
 		if(chambered)
 			to_chat(user, "<span class='warning'>There is already a [chambered.name] in [src]!</span>")
 			return
-		if(!gunpowder)
+		if(!gunpowder && !(V.breech_loaded))
 			to_chat(user, "<span class='warning'>You must fill [src] with gunpowder first!</span>")
 			return
 		if(V.caliber != magazine.caliber)
 			to_chat(user, "<span class='warning'>The [V.name] doesn't fit into [src]!</span>")
 			return
-		if((loc == user) && (user.get_inactive_held_item() != src))
+		if(V.breech_loaded && locktype != "Breech")
+			to_chat(user, "<span class='warning'>The [V.name] can only be loaded into breech-loaded weapons!</span>")
+			return
+		if((loc == user) && (user.get_inactive_held_item() != src) && !(V.breech_loaded))
 			return
 		if (bolt_type == BOLT_TYPE_NO_BOLT || internal_magazine)
-			if (chambered && !chambered.BB)
-				chambered.forceMove(drop_location())
-				chambered = null
-			var/num_loaded = magazine.attackby(A, user, params, TRUE)
-			if (num_loaded)
-				playsound(src, "modular_twilight_axis/firearms/sound/insert.ogg",  100, FALSE)
-				user.visible_message("<span class='notice'>[user] forces a [V.name] down the barrel of [src].</span>")
-				if(advanced_icon)
-					if(!myrod && advanced_icon_norod)
-						icon = advanced_icon_norod
+			if(locktype == "Breech")
+				if(breech_open == TRUE)
+					if(istype(V, /obj/item/ammo_casing/caseless/rogue/twilight_lead/paper))
+						playsound(src, "modular_twilight_axis/firearms/sound/puffer_reload.ogg",  100, FALSE)
+					to_chat(user, span_info("You begin loading [src]..."))
+					if(move_after(user, load_time_skill, target = user))
+						if (chambered && !chambered.BB)
+							to_chat(user, "<span class='warning'>You clear [src] and load it with a new [V.name].</span>")
+							chambered.forceMove(drop_location())
+							chambered = null
+						var/num_loaded = magazine.attackby(A, user, params, TRUE)
+						if (num_loaded)
+							playsound(src, "modular_twilight_axis/firearms/sound/insert.ogg",  100, FALSE)
+							user.visible_message("<span class='notice'>[user] inserts [V.name] into the breech of [src].</span>")
+							if(!gunpowder)
+								gunpowder = "black gunpowder"
+							if (chambered == null && bolt_type == BOLT_TYPE_NO_BOLT)
+								chamber_round()
+							if(advanced_icon_r)
+								icon = advanced_icon_r
+							A.update_icon()
+							update_icon()
 					else
-						icon = advanced_icon
-				if (chambered == null && bolt_type == BOLT_TYPE_NO_BOLT)
-					chamber_round()
-				A.update_icon()
-				update_icon()
+						to_chat(user, "<span class='warning'>You fumble the reload, dropping the [V.name]!</span>")
+						V.forceMove(drop_location())
+						return
+				else
+					to_chat(user, span_info("You must open the breech first!"))
+					return
+			else
+				if (chambered && !chambered.BB)
+					chambered.forceMove(drop_location())
+					chambered = null
+				var/num_loaded = magazine.attackby(A, user, params, TRUE)
+				if (num_loaded)
+					playsound(src, "modular_twilight_axis/firearms/sound/insert.ogg",  100, FALSE)
+					user.visible_message("<span class='notice'>[user] forces a [V.name] down the barrel of [src].</span>")
+					if(advanced_icon)
+						if(!myrod && advanced_icon_norod)
+							icon = advanced_icon_norod
+						else
+							icon = advanced_icon
+					if (chambered == null && bolt_type == BOLT_TYPE_NO_BOLT)
+						chamber_round()
+					A.update_icon()
+					update_icon()
 			return
 		user.update_inv_hands()
 		return
@@ -388,8 +448,23 @@
 		else if(W.charges < powder_per_reload)
 			user.visible_message("<span class='notice'>The [W.name] doesn't contain enough gunpowder to reload [src]!</span>")
 			return
+		else if(locktype == "Breech" && !(breech_open))
+			user.visible_message("You must open the breech first!")
+			return
 		else
-			playsound(src, "modular_twilight_axis/firearms/sound/pour_powder.ogg",  100, FALSE)
+			switch(W.gunpowder)
+				if("fyrepowder", "holy fyrepowder", "psypowder")
+					playsound(src, "modular_twilight_axis/firearms/sound/fyrepowder/pour_powder.ogg",  100, FALSE)
+				if("thunderpowder")
+					playsound(src, "modular_twilight_axis/firearms/sound/thunderpowder/pour_powder.ogg",  100, FALSE)
+				if("corrosive gunpowder")
+					playsound(src, "modular_twilight_axis/firearms/sound/corrpowder/pour_powder.ogg",  100, FALSE)
+				if("arcyne gunpowder")
+					playsound(src, "modular_twilight_axis/firearms/sound/arcynepowder/pour_powder.ogg",  100, FALSE)
+				if("terrorpowder")
+					playsound(src, "modular_twilight_axis/firearms/sound/terrorpowder/pour_powder.ogg",  100, FALSE)
+				else
+					playsound(src, "modular_twilight_axis/firearms/sound/pour_powder.ogg",  100, FALSE)
 			if(do_after(user, load_time_skill, src))
 				user.visible_message("<span class='notice'>[user] fills [src] with [W.gunpowder].</span>")
 				gunpowder = W.gunpowder
@@ -523,6 +598,8 @@
 			. += span_info("Это оружие оснащено фитильным замком. Перед выстрелом нужно засыпать порох, установить пулю и уплотнить заряд шомполом.")
 		if(LOCKTYPE_FUSE)
 			. += span_info("Это оружие приводится в действие запальным фитилем. Перед выстрелом нужно засыпать порох, установить пулю и сам фитиль.")
+		if("Breech")
+			. += span_info("Это — казнозарядное колесцовое оружие. Перед выстрелом нужно открыть казенник, вставить патрон, и закрыть казенник, взведя замок.")
 	. += span_info("Прицельная дальность стрельбы: [effective_range]0 метров.")
 	if(gunpowder)
 		if(chambered)
@@ -559,7 +636,7 @@
 		else
 			icon = advanced_icon
 	spark_act()
-	if(locktype == LOCKTYPE_MATCHLOCK || locktype == LOCKTYPE_WHEELLOCK)
+	if(locktype == "Matchlock" || locktype == "Wheellock" || locktype == "Breech")
 		..()
 		if(!silenced)
 			var/obj/effect/particle_effect/effect_to_spawn = actual_gunpowder.smoke
@@ -970,3 +1047,16 @@
 	advanced_icon_r = 'modular_twilight_axis/firearms/icons/harquebus/harquebus_r.dmi'
 	advanced_icon_norod	= 'modular_twilight_axis/firearms/icons/harquebus/harquebus_norod.dmi'
 	advanced_icon_r_norod = 'modular_twilight_axis/firearms/icons/harquebus/harquebus_r_norod.dmi'
+
+/obj/item/gun/ballistic/twilight_firearm/arquebus_pistol/puffer
+	name = "puffer"
+	desc = "Компактное огнестрельное оружие отаванского производства, предназначенное для стрельбы из седла. Выполнен по нестандартной казнозарядной схеме и может заряжаться бумажными патронами, что позволяет всаднику готовить его к стрельбе одной рукой."
+	icon = 'modular_twilight_axis/firearms/icons/puffer/pistol.dmi'
+	advanced_icon = 'modular_twilight_axis/firearms/icons/puffer/pistol.dmi'
+	advanced_icon_r = 'modular_twilight_axis/firearms/icons/puffer/pistol_r.dmi'
+	advanced_icon_f = 'modular_twilight_axis/firearms/icons/puffer/pistol_f.dmi'
+	advanced_icon_norod	= null
+	advanced_icon_r_norod = null
+	effective_range = 5
+	cartridge_wording = "bullet"
+	locktype = "Breech"
