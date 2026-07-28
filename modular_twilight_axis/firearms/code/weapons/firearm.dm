@@ -1,6 +1,7 @@
 #define LOCKTYPE_WHEELLOCK "Wheellock"
 #define LOCKTYPE_MATCHLOCK "Matchlock"
 #define LOCKTYPE_FUSE "Fuse"
+#define LOCKTYPE_BREECH "Breech"
 
 /obj/item/twilight_ramrod
 	name = "ramrod"
@@ -333,7 +334,7 @@
 	update_icon()
 
 /obj/item/gun/ballistic/twilight_firearm/attack_self(mob/living/user)
-	if(locktype == "Breech")
+	if(locktype == LOCKTYPE_BREECH)
 		if(!reloaded)
 			if(chambered)
 				if(move_after(user, 1 SECONDS, target = user))
@@ -385,13 +386,13 @@
 		if(V.caliber != magazine.caliber)
 			to_chat(user, "<span class='warning'>The [V.name] doesn't fit into [src]!</span>")
 			return
-		if(V.breech_loaded && locktype != "Breech")
+		if(V.breech_loaded && locktype != LOCKTYPE_BREECH)
 			to_chat(user, "<span class='warning'>The [V.name] can only be loaded into breech-loaded weapons!</span>")
 			return
 		if((loc == user) && (user.get_inactive_held_item() != src) && !(V.breech_loaded))
 			return
 		if (bolt_type == BOLT_TYPE_NO_BOLT || internal_magazine)
-			if(locktype == "Breech")
+			if(locktype == LOCKTYPE_BREECH)
 				if(breech_open == TRUE)
 					if(istype(V, /obj/item/ammo_casing/caseless/rogue/twilight_lead/paper))
 						playsound(src, "modular_twilight_axis/firearms/sound/puffer_reload.ogg",  100, FALSE)
@@ -448,23 +449,11 @@
 		else if(W.charges < powder_per_reload)
 			user.visible_message("<span class='notice'>The [W.name] doesn't contain enough gunpowder to reload [src]!</span>")
 			return
-		else if(locktype == "Breech" && !(breech_open))
+		else if(locktype == LOCKTYPE_BREECH && !(breech_open))
 			user.visible_message("You must open the breech first!")
 			return
 		else
-			switch(W.gunpowder)
-				if("fyrepowder", "holy fyrepowder", "psypowder")
-					playsound(src, "modular_twilight_axis/firearms/sound/fyrepowder/pour_powder.ogg",  100, FALSE)
-				if("thunderpowder")
-					playsound(src, "modular_twilight_axis/firearms/sound/thunderpowder/pour_powder.ogg",  100, FALSE)
-				if("corrosive gunpowder")
-					playsound(src, "modular_twilight_axis/firearms/sound/corrpowder/pour_powder.ogg",  100, FALSE)
-				if("arcyne gunpowder")
-					playsound(src, "modular_twilight_axis/firearms/sound/arcynepowder/pour_powder.ogg",  100, FALSE)
-				if("terrorpowder")
-					playsound(src, "modular_twilight_axis/firearms/sound/terrorpowder/pour_powder.ogg",  100, FALSE)
-				else
-					playsound(src, "modular_twilight_axis/firearms/sound/pour_powder.ogg",  100, FALSE)
+			playsound(src, "modular_twilight_axis/firearms/sound/pour_powder.ogg",  100, FALSE)
 			if(do_after(user, load_time_skill, src))
 				user.visible_message("<span class='notice'>[user] fills [src] with [W.gunpowder].</span>")
 				gunpowder = W.gunpowder
@@ -598,7 +587,7 @@
 			. += span_info("Это оружие оснащено фитильным замком. Перед выстрелом нужно засыпать порох, установить пулю и уплотнить заряд шомполом.")
 		if(LOCKTYPE_FUSE)
 			. += span_info("Это оружие приводится в действие запальным фитилем. Перед выстрелом нужно засыпать порох, установить пулю и сам фитиль.")
-		if("Breech")
+		if(LOCKTYPE_BREECH)
 			. += span_info("Это — казнозарядное колесцовое оружие. Перед выстрелом нужно открыть казенник, вставить патрон, и закрыть казенник, взведя замок.")
 	. += span_info("Прицельная дальность стрельбы: [effective_range]0 метров.")
 	if(gunpowder)
@@ -636,7 +625,7 @@
 		else
 			icon = advanced_icon
 	spark_act()
-	if(locktype == "Matchlock" || locktype == "Wheellock" || locktype == "Breech")
+	if(locktype == LOCKTYPE_MATCHLOCK || locktype == LOCKTYPE_WHEELLOCK || locktype == LOCKTYPE_BREECH)
 		..()
 		if(!silenced)
 			var/obj/effect/particle_effect/effect_to_spawn = actual_gunpowder.smoke
@@ -1059,4 +1048,4 @@
 	advanced_icon_r_norod = null
 	effective_range = 5
 	cartridge_wording = "bullet"
-	locktype = "Breech"
+	locktype = LOCKTYPE_BREECH
