@@ -1,3 +1,5 @@
+#define ROUND_START_MUSIC_LIST "strings/round_start_sounds.txt"
+
 GLOBAL_VAR_INIT(round_timer, INITIAL_ROUND_TIMER)
 
 SUBSYSTEM_DEF(ticker)
@@ -160,8 +162,7 @@ SUBSYSTEM_DEF(ticker)
 		music -= S
 
 	if(isemptylist(music))
-		music = world.file2list(ROUND_START_MUSIC_LIST, "
-")
+		music = world.file2list(ROUND_START_MUSIC_LIST, "\n")
 		if(length(music))
 			login_music = pick(music)
 	else
@@ -951,3 +952,5 @@ SUBSYSTEM_DEF(ticker)
 	priority_announce("ASTRATA's now-weary light slowly seeps back into existence. The WORM recedes; the sky is safe. God is here. God is here and all is well once more.", "THIS DAMNED SUN /// EKPYROSIS ENDS", 'sound/misc/otavanlament.ogg')
 	settod()
 	SSParticleWeather.run_weather(/datum/particle_weather/rain_gentle, TRUE)
+
+#undef ROUND_START_MUSIC_LIST
