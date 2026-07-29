@@ -202,6 +202,8 @@
 var/global/datum/art_gallery/glob_gallery
 var/global/list/art_gallery_deletion_logs = null
 var/global/const/art_gallery_log_path = "data/paintings/deletion_logs.json"
+var/global/list/art_gallery_likes = list()
+
 
 /client/verb/open_art_gallery()
 	set name = "Art Gallery"
@@ -263,6 +265,11 @@ var/global/const/art_gallery_log_path = "data/paintings/deletion_logs.json"
 						"round_id" = meta["round_id"]
 					))
 
+					var/list/likes = meta["likes"]
+					if(!islist(likes))
+						likes = list()
+					art_gallery_likes[id] = likes
+
 	data["paintings"] = paintings
 	return data
 
@@ -270,12 +277,23 @@ var/global/const/art_gallery_log_path = "data/paintings/deletion_logs.json"
 	var/list/data = list()
 	var/is_admin = user.client.holder ? TRUE : FALSE
 	data["is_admin"] = is_admin
+	data["my_ckey"] = user.ckey
+	data["likes_map"] = art_gallery_likes
 
 	if(is_admin)
 		load_logs()
 		data["deletion_logs"] = art_gallery_deletion_logs
 
 	return data
+
+/datum/art_gallery/proc/save_painting_likes(id, list/likes)
+	var/json_path = "[persistence_path][id].json"
+	if(fexists(json_path))
+		var/list/meta = json_decode(file2text(json_path))
+		if(islist(meta))
+			meta["likes"] = likes
+			fdel(json_path)
+			text2file(json_encode(meta), json_path)
 
 /datum/art_gallery/ui_act(action, list/params, datum/tgui/ui)
 	. = ..()
@@ -293,6 +311,27 @@ var/global/const/art_gallery_log_path = "data/paintings/deletion_logs.json"
 				var/icon/I = icon(img_path)
 				SStgui.update_uis(src)
 				ui.send_update(list("image_data" = list("id" = id, "base64" = icon2base64(I))))
+			return TRUE
+
+		if("like_painting")
+			var/id = params["id"]
+			if(!id || findtext(id, "/") || findtext(id, "\\") || findtext(id, ".."))
+				return TRUE
+
+			var/user_ckey = user.ckey
+			var/list/likes = art_gallery_likes[id]
+			if(!islist(likes))
+				likes = list()
+
+			if(user_ckey in likes)
+				likes -= user_ckey
+			else
+				likes += user_ckey
+
+			art_gallery_likes[id] = likes
+
+			save_painting_likes(id, likes)
+			SStgui.update_uis(src)
 			return TRUE
 
 		if("delete_painting")
@@ -315,6 +354,8 @@ var/global/const/art_gallery_log_path = "data/paintings/deletion_logs.json"
 
 			if(fexists("[persistence_path][id].png")) fdel("[persistence_path][id].png")
 			if(fexists("[persistence_path][id].json")) fdel("[persistence_path][id].json")
+
+			art_gallery_likes -= id
 
 			SStgui.close_uis(src)
 			return TRUE
