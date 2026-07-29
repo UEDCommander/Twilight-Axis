@@ -598,7 +598,7 @@
 /datum/loadout_item/donator/lmwevil/brassbeak
 	name = "Donator Item - Brass Beak Mask"
 	path = /obj/item/enchantingkit/lmwevil_brassbeak
-	ckeywhitelist = list("lmwevil")
+	ckeywhitelist = list("lmwevil", "theeternalflame")
 
 /datum/loadout_item/donator/shudderfly/eoranspike
 	name = "Donator Kit - Eoran Spike"
