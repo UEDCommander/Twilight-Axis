@@ -558,7 +558,7 @@
 /datum/status_effect/debuff/permadeath
 	id = "permadeath"
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/permadeath
-	duration = 10 MINUTES //Effectively determines how long a character is threatened with permadeath. Kicks into gear once the initial deathmark-imposed grace period completes. Timed to match Revival Sickness.
+	duration = 60 MINUTES //Effectively determines how long a character is threatened with permadeath. Kicks into gear once the initial deathmark-imposed grace period completes. Timed to match Revival Sickness.
 	examine_text = "<font color='#b40000'>SUBJECTPRONOUN appears haunted by an unseen burden. It feels as though their spirit hangs by the thinnest of threads. Another death may well be their last.</font>"
 
 /atom/movable/screen/alert/status_effect/debuff/permadeath
@@ -1006,6 +1006,24 @@
 	name = "Vampyrebiten"
 	desc = "You are feeling something... Interesting.."
 	icon_state = "acid"
+
+//TA EDIT
+/datum/status_effect/debuff/impure_vitae
+	id = "impurevitae"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/impure_vitae
+	effectedstats = list(STATKEY_CON = -1, STATKEY_INT = -1)
+	duration = 1 MINUTES
+
+/datum/status_effect/debuff/impure_vitae/on_apply()
+	. = ..()
+	owner.add_stress(/datum/stressevent/high)
+
+/datum/status_effect/debuff/impure_vitae/on_remove()
+	owner.remove_stress(/datum/stressevent/high)
+
+/atom/movable/screen/alert/status_effect/debuff/impure_vitae
+	name = "Invigorated"
+	desc = "AGH.. My heart is hurt... My head... This sinful soul stirs my thoughts and body in sin.."
 
 /datum/status_effect/debuff/joybringer_druqks
 	id = "joybringer_druqks"
