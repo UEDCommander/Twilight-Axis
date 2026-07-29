@@ -10,7 +10,7 @@
 	)
 	target_mobtypes = list(/mob/living/carbon/human)
 	possible_locs = list(
-		BODY_ZONE_HEAD,
+		BODY_ZONE_HEAD, // TA EDIT
 		BODY_ZONE_CHEST,
 	)
 
