@@ -43,10 +43,10 @@
 	list_reagents = list(/datum/reagent/medicine/strongmana = 50)
 
 /obj/item/reagent_containers/glass/bottle/rogue/stampot
-	list_reagents = list(/datum/reagent/medicine/stampot = 50)
+	list_reagents = list(/datum/reagent/medicine/stampot = 30)
 
 /obj/item/reagent_containers/glass/bottle/rogue/strongstampot
-	list_reagents = list(/datum/reagent/medicine/strongstam = 50)
+	list_reagents = list(/datum/reagent/medicine/strongstam = 30)
 
 /obj/item/reagent_containers/glass/bottle/rogue/antidote
 	list_reagents = list(/datum/reagent/medicine/antidote = 50)
@@ -107,6 +107,9 @@
 
 /obj/item/reagent_containers/glass/bottle/alchemical/restoration
 	list_reagents = list(/datum/reagent/medicine/restoration = 30)
+
+/obj/item/reagent_containers/glass/bottle/alchemical/water
+	list_reagents = list(/datum/reagent/water = 30)
 
 //////////////////////////
 /// ALCOHOLIC BOTTLES ///

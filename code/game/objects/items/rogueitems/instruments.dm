@@ -2,6 +2,7 @@
 	mid_length = 2400 // 4 minutes for some reason. better would be each song having a specific length
 	volume = 100
 	extra_range = 5
+	blocked_z_levels = list(1)
 	persistent_loop = TRUE
 	var/stress2give = /datum/stressevent/music
 	sound_group = /datum/sound_group/instruments //reserves sound channels for up to 10 instruments at a time
@@ -171,6 +172,7 @@
 			if(curfile)
 				playing = TRUE
 				soundloop.set_mid_sounds(list(curfile))
+				soundloop.mid_length = rustg_sound_length("[curfile]")
 				soundloop.start()
 				user.apply_status_effect(/datum/status_effect/buff/playing_music, stressevent, note_color)
 				record_round_statistic(STATS_SONGS_PLAYED)
@@ -202,10 +204,11 @@
 								bandinstrumentspersonal.curfile = bandinstrumentspersonal.song_list[bandinstrumentspersonal.curfile]
 			if(do_after(user, 1))
 				for(var/obj/item/rogue/instrument/bandinstrumentsband in instrumentsintheband)
-					if(!curfile)
+					if(!bandinstrumentsband.curfile)
 						return
 					bandinstrumentsband.playing = TRUE
 					bandinstrumentsband.groupplaying = TRUE
+					bandinstrumentsband.soundloop.mid_length = rustg_sound_length("[bandinstrumentsband.curfile]")
 					bandinstrumentsband.soundloop.set_mid_sounds(list(bandinstrumentsband.curfile))
 					bandinstrumentsband.soundloop.start()
 					for(var/mob/living/carbon/human/A in bandmates)

@@ -94,7 +94,8 @@
 	if(SSticker.current_state != GAME_STATE_FINISHED)
 		return
 	status_flags |= GODMODE
-	ai_controller?.set_ai_status(AI_STATUS_OFF)
+	if(istype(ai_controller, /datum/ai_controller))
+		ai_controller.set_ai_status(AI_STATUS_OFF)
 	if(client)
 		add_verb(client, /client/proc/lobbyooc)
 		add_verb(client, /client/proc/view_stats)
@@ -118,12 +119,6 @@
 	var/atom/movable/screen/splash/credits/S = new(src, FALSE)
 	S.Fade(FALSE,FALSE)
 	RollCredits()
-	if(GLOB.credits_icons.len)
-		for(var/i=0, i<=GLOB.credits_icons.len, i++)
-			var/atom/movable/screen/P = new()
-			P.layer = SPLASHSCREEN_LAYER+1
-			P.appearance = GLOB.credits_icons
-			screen += P
 
 /datum/controller/subsystem/ticker/proc/declare_completion()
 	set waitfor = FALSE
