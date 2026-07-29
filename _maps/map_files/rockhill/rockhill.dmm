@@ -13226,7 +13226,7 @@
 "cFq" = (
 /obj/effect/decal/cleanable/debris/woody,
 /obj/machinery/light/rogue/smelter,
-/turf/open/floor/rogue/ruinedwood/spiral,
+/turf/open/floor/rogue/cobblerock,
 /area/rogue/indoors/shelter/bog)
 "cFr" = (
 /obj/structure/closet/crate/drawer{
@@ -25021,7 +25021,7 @@
 /obj/structure/rack/rogue,
 /obj/item/flint,
 /obj/item/rogueweapon/tongs,
-/turf/open/floor/rogue/ruinedwood/spiral,
+/turf/open/floor/rogue/cobblerock,
 /area/rogue/indoors/shelter/bog)
 "eWM" = (
 /obj/structure/chair/wood/rogue/fancy{
@@ -30558,8 +30558,9 @@
 /turf/open/floor/rogue/church,
 /area/rogue/indoors/town/church)
 "gea" = (
-/turf/closed/wall/mineral/rogue/craftstone,
-/area/rogue/indoors/shelter/mountains)
+/obj/item/roguebin/water/gross,
+/turf/open/floor/rogue/cobblerock,
+/area/rogue/indoors/shelter/bog)
 "ged" = (
 /obj/machinery/light/rogue/firebowl/standing/blue,
 /turf/open/floor/rogue/grass,
@@ -30805,10 +30806,6 @@
 /obj/machinery/light/rogue/torchholder/c,
 /turf/open/floor/rogue/blocks,
 /area/rogue/indoors/town/garrison)
-"ghj" = (
-/obj/structure/dungeon_entry/center,
-/turf/closed/wall/mineral/rogue/craftstone,
-/area/rogue/indoors/shelter/mountains)
 "ghs" = (
 /obj/effect/spawner/lootdrop/general_loot_hi/x3,
 /turf/open/floor/rogue/ruinedwood{
@@ -38021,10 +38018,6 @@
 /obj/structure/well,
 /turf/open/floor/rogue/dirt,
 /area/rogue/outdoors/rtfield/rockhill)
-"hGx" = (
-/obj/structure/bars/steel,
-/turf/open/floor/rogue/cobble/mossy,
-/area/rogue/outdoors/mountains/decap/somewhere)
 "hGA" = (
 /obj/effect/decal/cobbleedge{
 	dir = 8;
@@ -47759,9 +47752,6 @@
 /turf/open/floor/rogue/carpet,
 /area/rogue/indoors/town/tavern)
 "jGb" = (
-/obj/effect/decal/cleanable/roguerune/arcyne/teleport{
-	color = "#cfd660"
-	},
 /mob/living/simple_animal/hostile/retaliate/rogue/infernal/watcher,
 /turf/open/floor/rogue/concrete{
 	color = "#d4ffcf"
@@ -49412,9 +49402,6 @@
 /turf/open/floor/rogue/herringbone,
 /area/rogue/indoors/town/church)
 "jWu" = (
-/obj/structure/stairs/stone{
-	dir = 8
-	},
 /obj/structure/stairs/stone{
 	dir = 8
 	},
@@ -59889,6 +59876,11 @@
 	},
 /turf/open/floor/rogue/concrete,
 /area/rogue/indoors/town/church)
+"mfA" = (
+/obj/structure/bed/rogue/inn/double,
+/obj/item/bedsheet/rogue/double_pelt,
+/turf/open/floor/carpet/royalblack,
+/area/rogue/indoors/town/manor/rockhill)
 "mfD" = (
 /obj/effect/landmark/chimeric_calyx_spawner/fifteen,
 /turf/open/floor/rogue/grass,
@@ -62478,8 +62470,7 @@
 "mIj" = (
 /obj/structure/fluff/railing/border,
 /obj/machinery/light/roguestreet/orange/walllamp{
-	dir = 8;
-	light_depth = 2
+	dir = 8
 	},
 /turf/open/floor/rogue/wood,
 /area/rogue/outdoors/town/rockhill)
@@ -63233,7 +63224,7 @@
 /turf/open/floor/rogue/ruinedwood,
 /area/rogue/indoors/shelter/mountains)
 "mQK" = (
-/obj/machinery/light/rogue/smelter/great,
+/obj/machinery/light/rogue/smelter,
 /turf/open/floor/rogue/cobblerock,
 /area/rogue/indoors/shelter/bog)
 "mQN" = (
@@ -86909,8 +86900,7 @@
 	pixel_x = 2
 	},
 /obj/machinery/light/roguestreet/orange/walllamp{
-	dir = 8;
-	light_depth = 2
+	dir = 8
 	},
 /obj/structure/fluff/railing/border{
 	dir = 10
@@ -90953,7 +90943,7 @@
 /area/rogue/indoors/town/church)
 "sDu" = (
 /obj/item/rogueore/coal,
-/turf/open/floor/rogue/dirt/road,
+/turf/open/floor/rogue/cobblerock,
 /area/rogue/indoors/shelter/bog)
 "sDy" = (
 /obj/structure/chair/wood/rogue/fancy{
@@ -94408,9 +94398,9 @@
 /turf/open/floor/rogue/ruinedwood/spiral,
 /area/rogue/indoors/inq/basement/shipshold)
 "tpo" = (
-/obj/structure/bars/steel,
-/turf/open/floor/rogue/snow,
-/area/rogue/outdoors/mountains/decap/somewhere)
+/obj/effect/decal/cleanable/debris/woody,
+/turf/open/floor/rogue/cobblerock,
+/area/rogue/indoors/shelter/bog)
 "tpr" = (
 /obj/structure/mineral_door/wood{
 	locked = 1;
@@ -104559,8 +104549,9 @@
 /turf/open/floor/carpet/red,
 /area/rogue/indoors/town/manor/rockhill)
 "vvp" = (
-/turf/open/floor/rogue/cobble/mossy,
-/area/rogue/outdoors/mountains/decap/somewhere)
+/obj/effect/decal/cleanable/blood/old,
+/turf/open/floor/rogue/cobblerock,
+/area/rogue/indoors/shelter/bog)
 "vvr" = (
 /obj/structure/stairs{
 	dir = 8
@@ -279061,8 +279052,8 @@ dux
 qrc
 iDf
 iDf
-qjQ
-uqO
+kRI
+tpo
 ctx
 gHX
 uWK
@@ -279493,9 +279484,9 @@ wfu
 wLx
 iDf
 cFq
-qjQ
+kRI
 sDu
-qjQ
+kRI
 uqO
 uWK
 uWK
@@ -279926,7 +279917,7 @@ wLx
 iDf
 mQK
 dbH
-iup
+vvp
 eWF
 ujk
 qrc
@@ -280358,7 +280349,7 @@ uWK
 iDf
 iDf
 wWZ
-xZv
+gea
 ctx
 gHX
 sfD
@@ -406204,10 +406195,10 @@ euP
 euP
 euP
 euP
-hRE
-hRE
-hRE
-hRE
+jAW
+jAW
+jAW
+jAW
 pfp
 yhZ
 eBg
@@ -406636,10 +406627,10 @@ euP
 euP
 euP
 euP
-hRE
-hRE
-hRE
-hRE
+jAW
+jAW
+jAW
+jAW
 pfp
 yhZ
 eBg
@@ -407069,7 +407060,7 @@ euP
 euP
 euP
 euP
-hRE
+jAW
 ekG
 jAW
 pfp
@@ -505950,7 +505941,7 @@ kKp
 kKp
 kKp
 kKp
-dBw
+kKp
 kKp
 kKp
 kKp
@@ -506379,7 +506370,7 @@ kKp
 kKp
 kKp
 kKp
-dBw
+kKp
 kPD
 kKp
 kPD
@@ -516366,10 +516357,10 @@ euP
 wtF
 wtF
 wtF
-jAW
-jAW
-jAW
-wtF
+euP
+euP
+euP
+uOL
 eBg
 ixc
 gUJ
@@ -516797,11 +516788,11 @@ euP
 euP
 euP
 euP
-jAW
-jAW
-ekG
-ekG
-wtF
+euP
+euP
+euP
+euP
+eBg
 uOL
 jDm
 jDm
@@ -517230,7 +517221,7 @@ euP
 euP
 euP
 euP
-ekG
+euP
 euP
 euP
 eBg
@@ -521121,7 +521112,7 @@ euP
 euP
 euP
 euP
-wtF
+eBg
 uOL
 ldA
 mvO
@@ -521553,7 +521544,7 @@ wtF
 euP
 euP
 euP
-wtF
+uOL
 eBg
 eUz
 cMD
@@ -587439,7 +587430,7 @@ aWy
 aWy
 aWy
 tAB
-tAB
+cgk
 lVl
 vNQ
 lVl
@@ -596075,10 +596066,10 @@ fON
 fON
 fON
 fON
-gea
-viR
-viR
-viR
+fON
+aWy
+aWy
+aWy
 aWy
 aWy
 pQt
@@ -596505,12 +596496,12 @@ fON
 fON
 fON
 fON
-gea
-gea
-gea
-gea
-tSh
-tpo
+fON
+fON
+fON
+fON
+rvi
+aWy
 aWy
 kyc
 tSh
@@ -596937,19 +596928,19 @@ fON
 fON
 fON
 fON
-gea
-gea
-gea
-gea
-vvp
-hGx
+fON
+fON
+fON
+fON
+aWy
+aWy
 pQt
 pQt
 pQt
 aWy
-vvp
 pQt
-vvp
+pQt
+pQt
 pQt
 tAB
 tAB
@@ -597369,14 +597360,14 @@ fON
 fON
 fON
 fON
-gea
-gea
-gea
-ghj
-vvp
-tpo
+fON
+fON
+fON
+fON
 aWy
-vvp
+aWy
+aWy
+pQt
 aWy
 aWy
 kyc
@@ -597801,17 +597792,17 @@ fON
 fON
 fON
 fON
-gea
-gea
-gea
-gea
-vvp
-hGx
+fON
+fON
+fON
+fON
+aWy
+rvi
 aWy
 pQt
-vvp
 pQt
-vvp
+pQt
+pQt
 aWy
 pQt
 tAB
@@ -598233,13 +598224,13 @@ fON
 tmH
 tmH
 tmH
-gea
-gea
-gea
-gea
-ngR
-hGx
-pQt
+fON
+fON
+fON
+fON
+aWy
+aWy
+aWy
 kyc
 ngR
 pQt
@@ -598667,10 +598658,10 @@ tmH
 tmH
 tmH
 tmH
-gea
-gea
-gea
-viR
+fON
+fON
+fON
+aWy
 aWy
 aWy
 aWy
@@ -599100,11 +599091,11 @@ tmH
 tmH
 tmH
 tmH
-tmH
-tmH
+fON
+fON
 tmH
 rvi
-aWy
+ngR
 aWy
 aWy
 tAB
@@ -599969,7 +599960,7 @@ tmH
 tmH
 tmH
 hNo
-rvi
+aWy
 aWy
 aWy
 aWy
@@ -623110,7 +623101,7 @@ fZJ
 fZJ
 vdf
 gPy
-mxb
+mfA
 kLr
 rTt
 gPy
