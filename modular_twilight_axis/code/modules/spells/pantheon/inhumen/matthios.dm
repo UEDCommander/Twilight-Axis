@@ -11,7 +11,7 @@
 	options = list(
 		//a simple 'blinds u for 1 sec' throwable
 		"Pocket Sand" = list(
-			path = /obj/item/impact_grenade/pocketsand,
+			path = /obj/item/pocketsand,
 			m_cooldown = 60 SECONDS,
 			m_devotion = 10,
 			m_rank = SKILL_LEVEL_NOVICE,
@@ -872,7 +872,7 @@
 	icon = 'modular_twilight_axis/icons/roguetown/weapons/64.dmi'
 	icon_state = "matthios_standard"
 	resistance_flags = FIRE_PROOF
-	
+
 /obj/item/rogueweapon/spear/matthios_standard/Initialize()
 	. = ..()
 	for(var/mob/living/carbon/human/H as anything in SSspatial_grid.orthogonal_range_search(src, SPATIAL_GRID_CONTENTS_TYPE_CLIENTS, 7))
@@ -1045,7 +1045,7 @@
 
 		var/datum/action/cooldown/spell/projectile/fireball/fireball = new /datum/action/cooldown/spell/projectile/fireball
 		var/datum/action/cooldown/spell/projectile/spitfire/spitfire = new /datum/action/cooldown/spell/projectile/spitfire
-		
+
 		fireball.Grant(src)
 		spitfire.Grant(src)
 
@@ -1325,7 +1325,7 @@
 	W.grant_language(/datum/language/draconic)
 	W.base_intents = list(INTENT_HELP, INTENT_DISARM, INTENT_GRAB)
 	W.update_a_intents()
-	
+
 	if(getorganslot(ORGAN_SLOT_PENIS))
 		W.internal_organs_slot[ORGAN_SLOT_PENIS] = /obj/item/organ/penis/knotted/big
 	if(getorganslot(ORGAN_SLOT_TESTICLES))
@@ -1339,7 +1339,7 @@
 	ADD_TRAIT(src, TRAIT_NOSLEEP, TRAIT_SOURCE_WILDSHAPE)
 	ADD_TRAIT(src, TRAIT_NOBREATH, TRAIT_SOURCE_WILDSHAPE)
 	ADD_TRAIT(src, TRAIT_NOPAIN, TRAIT_SOURCE_WILDSHAPE)
-	ADD_TRAIT(src, TRAIT_TOXIMMUNE, TRAIT_SOURCE_WILDSHAPE)	
+	ADD_TRAIT(src, TRAIT_TOXIMMUNE, TRAIT_SOURCE_WILDSHAPE)
 	ADD_TRAIT(src, TRAIT_NOHUNGER, TRAIT_SOURCE_WILDSHAPE)
 	ADD_TRAIT(src, TRAIT_NOMOOD, TRAIT_SOURCE_WILDSHAPE)
 	ADD_TRAIT(src, TRAIT_PACIFISM, TRAIT_SOURCE_WILDSHAPE) // just an extra layer of protection in case something will go wrong
