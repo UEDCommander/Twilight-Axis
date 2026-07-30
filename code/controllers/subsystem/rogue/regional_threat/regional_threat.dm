@@ -21,13 +21,12 @@ GLOBAL_LIST_INIT(threat_region_templates, list(
 	THREAT_REGION_DESERT_DEEP = /datum/threat_region/desert_deep,
 	THREAT_REGION_AL_ASHUR_OASIS = /datum/threat_region/al_ashur_oasis,
 	THREAT_REGION_AL_ASHUR_CARAVAN_ROAD = /datum/threat_region/al_ashur_caravan_road,
-	THREAT_REGION_AL_ASHUR_SPICE_DUNES = /datum/threat_region/al_ashur_spice_dunes,
-	THREAT_REGION_AL_ASHUR_DEEP_DUNES = /datum/threat_region/al_ashur_deep_dunes,
-	THREAT_REGION_AL_ASHUR_SUNKEN_RUINS = /datum/threat_region/al_ashur_sunken_ruins,
+	THREAT_REGION_AL_ASHUR_SPICE_DUNES = /datum/threat_region/al_ashur/spice_dunes,
+	THREAT_REGION_AL_ASHUR_DEEP_DUNES = /datum/threat_region/al_ashur/deep_dunes,
+	THREAT_REGION_AL_ASHUR_SUNKEN_RUINS = /datum/threat_region/al_ashur/sunken_ruins,
 	THREAT_REGION_DESERTDARK = /datum/threat_region/desertdark,
 	THREAT_REGION_DESERTDARK_DEEP = /datum/threat_region/desertdark_deep
 ))
-
 
 // Subsystem meant to handle regional threat level
 
@@ -36,12 +35,14 @@ SUBSYSTEM_DEF(regionthreat)
 	wait = 30 MINUTES
 	flags = SS_KEEP_TIMING | SS_BACKGROUND
 	runlevels = RUNLEVEL_GAME
+
 	// Regions are loaded from the active map_adjustment template in on_map_ready().
 	var/list/threat_regions = list()
 
 /datum/controller/subsystem/regionthreat/fire(resumed)
 	var/player_count = GLOB.player_list.len
 	var/ishighpop = player_count >= LOWPOP_THRESHOLD
+
 	for(var/T in threat_regions)
 		var/datum/threat_region/TR = T
 		if(ishighpop)
@@ -54,30 +55,36 @@ SUBSYSTEM_DEF(regionthreat)
 		var/datum/threat_region/TR = T
 		if(TR.region_name == region_name)
 			return TR
+
 	return null
 
-/// Weighted pick of a region that allows the given quest type, weighted by fill ratio
-/// (latent_ambush / max_ambush). Regions with more relative threat are picked more often, so
-/// as adventurers clear a region its quest share naturally drops. Returns null if no region
-/// allows the type.
+/// Weighted pick of a region that allows the given quest type, weighted by fill ratio.
+/// Regions with more relative threat are picked more often, so as adventurers clear a
+/// region its quest share naturally drops. Returns null if no region allows the type.
 /datum/controller/subsystem/regionthreat/proc/pick_region_for_quest(quest_type)
 	var/list/weights = list()
+
 	for(var/T in threat_regions)
 		var/datum/threat_region/TR = T
 		if(!TR.allows_quest_type(quest_type))
 			continue
+
 		var/weight = TR.get_threat_weight()
 		if(weight <= 0)
 			continue
+
 		weights[TR] = weight
+
 	if(!length(weights))
 		// Fall back: any region that allows the type, ignoring fill ratio.
 		for(var/T in threat_regions)
 			var/datum/threat_region/TR = T
 			if(TR.allows_quest_type(quest_type))
 				weights[TR] = 1
+
 		if(!length(weights))
 			return null
+
 	return pickweight(weights)
 
 /datum/threat_region_display
@@ -85,24 +92,30 @@ SUBSYSTEM_DEF(regionthreat)
 	var/danger_level
 	var/danger_color
 	var/list/ic_description = list()
-	var/can_be_cleared = FALSE //TA EDIT
+	var/can_be_cleared = FALSE // TA EDIT
 
 /datum/controller/subsystem/regionthreat/proc/get_threat_regions_for_display()
 	var/list/threat_region_displays = list()
+
 	for(var/T in threat_regions)
 		var/datum/threat_region/TR = T
 		var/datum/threat_region_display/TRS = new /datum/threat_region_display
+
 		TRS.region_name = TR.region_name
 		TRS.danger_level = TR.get_danger_level()
 		TRS.danger_color = TR.get_danger_color()
 		TRS.ic_description = TR.get_ic_description()
-		if(TR.min_ambush == 0) //TA EDIT
-			TRS.can_be_cleared = TRUE //TA EDIT
+
+		if(TR.min_ambush == 0) // TA EDIT
+			TRS.can_be_cleared = TRUE // TA EDIT
+
 		threat_region_displays += TRS
+
 	return threat_region_displays
 
 /datum/controller/subsystem/regionthreat/proc/on_map_ready()
 	threat_regions = list()
+
 	var/datum/map_adjustment/template/map = SSmapping.map_adjustment
 	if(!map)
 		stack_trace("RegionThreat: map_adjustment missing in on_map_ready()")
@@ -117,6 +130,7 @@ SUBSYSTEM_DEF(regionthreat)
 		if(!path)
 			stack_trace("RegionThreat: Missing threat template for [region_name]")
 			continue
+
 		threat_regions += new path()
 
 	log_world("RegionThreat: Loaded [threat_regions.len] threat regions for [map.realm_name]")

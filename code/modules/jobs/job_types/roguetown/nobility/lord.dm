@@ -43,7 +43,7 @@ GLOBAL_LIST_EMPTY(lord_titles)
 		/datum/advclass/lord/mage,
 		/datum/advclass/lord/inbred
 	)
-	
+
 
 /datum/outfit/job/roguetown/lord
 	job_bitflag = BITFLAG_ROYALTY
@@ -115,29 +115,41 @@ GLOBAL_LIST_EMPTY(lord_titles)
 	if(player.prefs)
 		if(SSmapping.config.map_name == "Rockhill")
 			if(!istype(player.prefs.virtue_origin, /datum/virtue/origin/enigma) && !istype(player.prefs.virtue_origin, /datum/virtue/origin/valorian) && !istype(player.prefs.virtue_origin, /datum/virtue/origin/zybantian))
-				var/list/new_origins = list("Enigma" = /datum/virtue/origin/enigma, 
-				"Valoria" = /datum/virtue/origin/valorian,
-				"Zybantu" = /datum/virtue/origin/zybantian)
+				var/list/new_origins = list(
+					"Enigma" = /datum/virtue/origin/enigma,
+					"Valoria" = /datum/virtue/origin/valorian,
+					"Zybantu" = /datum/virtue/origin/zybantian
+				)
 				var/new_origin
 				var/choice = input(player, "Your origins are not compatible with the Kingdom. Where do you hail from?", "ANCESTRY") as anything in new_origins
 				if(choice)
 					new_origin = new_origins[choice]
 				else
 					to_chat(player, span_notice("No choice detected. Picking a random compatible origin."))
-					new_origin = pick(/datum/virtue/origin/enigma, /datum/virtue/origin/valorian, /datum/virtue/origin/zybantian)
+					new_origin = pick(
+						/datum/virtue/origin/enigma,
+						/datum/virtue/origin/valorian,
+						/datum/virtue/origin/zybantian
+					)
 				change_origin(H, new_origin, "Royal line")
 		else
 			if(!istype(player.prefs.virtue_origin, /datum/virtue/origin/azuria) && !istype(player.prefs.virtue_origin, /datum/virtue/origin/grenzelhoft) && !istype(player.prefs.virtue_origin, /datum/virtue/origin/valorian))
-				var/list/new_origins = list("Azuria" = /datum/virtue/origin/azuria, 
-				"Grenzelhoft" = /datum/virtue/origin/grenzelhoft,
-				"Valoria" = /datum/virtue/origin/valorian)
+				var/list/new_origins = list(
+					"Azuria" = /datum/virtue/origin/azuria,
+					"Grenzelhoft" = /datum/virtue/origin/grenzelhoft,
+					"Valoria" = /datum/virtue/origin/valorian
+				)
 				var/new_origin
 				var/choice = input(player, "Your origins are not compatible with the Duchy. Where do you hail from?", "ANCESTRY") as anything in new_origins
 				if(choice)
 					new_origin = new_origins[choice]
 				else
 					to_chat(player, span_notice("No choice detected. Picking a random compatible origin."))
-					new_origin = pick(/datum/virtue/origin/grenzelhoft, /datum/virtue/origin/valorian, /datum/virtue/origin/azuria)
+					new_origin = pick(
+						/datum/virtue/origin/grenzelhoft,
+						/datum/virtue/origin/valorian,
+						/datum/virtue/origin/azuria
+					)
 				change_origin(H, new_origin, "Royal line")
 
 //	SSticker.rulermob = H
@@ -178,7 +190,7 @@ GLOBAL_LIST_EMPTY(lord_titles)
 	subclass_virtues = list(
 		/datum/virtue/utility/riding
 	)
-	
+
 	subclass_stashed_items = list(
 		"Ducal Caparison (Saiga)" = /obj/item/caparison/azure,
 		"Fogbeast Caparison" = /obj/item/caparison/fogbeast)
@@ -586,7 +598,7 @@ GLOBAL_LIST_EMPTY(lord_titles)
 	accept_message = "FOR THE CROWN!"
 	refuse_message = "I refuse."
 	recharge_time = 100
-	applied_traits = list(TRAIT_FOOD_STIPEND)
+	applied_traits = list(TRAIT_ROYAL_SUBSIDY)
 
 /obj/effect/proc_holder/spell/self/convertrole/bog
 	name = "Recruit Warden"
@@ -595,3 +607,4 @@ GLOBAL_LIST_EMPTY(lord_titles)
 	recruitment_message = "Serve the Wardens, %RECRUIT!"
 	accept_message = "FOR THE GROVE!"
 	refuse_message = "I refuse."
+=
