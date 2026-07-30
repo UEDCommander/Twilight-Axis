@@ -6,7 +6,7 @@
 
 /datum/migrant_wave/gronn_reavers
 	name = "Gronnian Reavers"
-	track = MIGRANT_TRACK_REGULAR
+	track = MIGRANT_TRACK_SPECIAL
 	weight = 20
 	required_roles = list(
 		/datum/migrant_role/gronn/jarl = 1,
@@ -114,7 +114,6 @@
 	backr = /obj/item/rogueweapon/scabbard/gwstrap
 	beltl = /obj/item/rogueweapon/mace/steel
 	beltr = /obj/item/flashlight/flare/torch/lantern
-	id = /obj/item/clothing/neck/roguetown/psicross/silver
 	r_hand = /obj/item/rogueweapon/greataxe/steel
 	backpack_contents = list(
 		/obj/item/storage/belt/rogue/pouch/coins/mid = 1,
@@ -180,7 +179,6 @@
 	backr = /obj/item/rogueweapon/scabbard/gwstrap
 	beltl = /obj/item/rogueweapon/scabbard/sheath
 	beltr = /obj/item/storage/belt/rogue/surgery_bag/full/bad
-	id = /obj/item/clothing/neck/roguetown/psicross/abyssor
 	r_hand = /obj/item/rogueweapon/spear/trident
 	l_hand = /obj/item/rogueweapon/huntingknife/bronze
 	backpack_contents = list(
@@ -242,7 +240,6 @@
 	backl = /obj/item/storage/backpack/rogue/satchel
 	beltl = /obj/item/rogueweapon/stoneaxe/woodcut/steel/atgervi
 	beltr = /obj/item/rogueweapon/stoneaxe/woodcut/steel/atgervi
-	id = /obj/item/clothing/neck/roguetown/psicross/silver
 	backpack_contents = list(
 		/obj/item/rogueweapon/huntingknife = 1,
 		/obj/item/rogueweapon/scabbard/sheath = 1,
@@ -303,7 +300,6 @@
 	backl = /obj/item/storage/backpack/rogue/satchel
 	backr = /obj/item/rogueweapon/shield/atgervi
 	beltl = /obj/item/rogueweapon/stoneaxe/woodcut/steel/atgervi
-	id = /obj/item/clothing/neck/roguetown/psicross/silver
 	backpack_contents = list(
 		/obj/item/rogueweapon/huntingknife = 1,
 		/obj/item/rogueweapon/scabbard/sheath = 1,
