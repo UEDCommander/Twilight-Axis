@@ -2011,11 +2011,26 @@
       politics, PVE, AI, icon updates, tgui, spells and crafting so that less PRs
       touching these domains will slip pass by accident without review.
   - balance: Change 12 points reset aspect budget back to 4 for mage
+  - rscadd: Redid Towner Quests again, this time there's variations you can pick for
+      different ore veins / caravan types. Removed the Easy difficulty, rebalanced
+      to just medium. Made the two options mostly equal.
+  - rscadd: Redid Blockade Balance, now they no longer multiplies massively by region.
+      They now have 180 TP per wave and should have some varieties in composition.
+      They scales by 20% per additional person in sight spotted - up to 5. So if you
+      bring 5, rewards and amount of enemies fought should scale slightly.
+  - rscadd: Cleaned up an issue where quest on spawn had a legacy function that blanketly
+      applied quest faction to every mobs nearby, including toward Conjured Summons,
+      making them completely useless in blockade fight.
   YakumoChen:
   - rscadd: Added allspice to merchant
   - balance: Merchant sugar is cheaper (less cheap than stockpile of course)
   - balance: rebalanced peppermill recipe to cooking 5(M) instead of carpentry 4(E)
   borneblood:
+  - refactor: TRAIT_FOOD_STIPEND -> TRAIT_ROYAL_SUBSIDY
+  - rscadd: Added a check that makes all Steward Ledger spam be bundled in 1 line.
+  - balance: Royal Subsidy does not let you sell things to the Stockpile anymore.
+      Royal Subsidy ignores taxes, you're omega-hired my dude.
+  - bugfix: Royal Subsidy lets you import things from the Stockpile.
   - bugfix: Enduring and Construct traits work again.
   - bugfix: Blackblooded Inquisitors are less dramatic now.
   changelingonberry:
