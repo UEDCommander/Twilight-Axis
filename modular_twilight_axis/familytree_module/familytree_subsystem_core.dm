@@ -40,7 +40,11 @@ SUBSYSTEM_DEF(familytree)
 	var/ftlog_counter = 0
 	var/ftlog_error_count = 0
 	var/ftlog_warn_count = 0
+#ifdef FAMILYTREE_DEBUG_LOGGING
+	var/verbose_logging = TRUE
+#else
 	var/verbose_logging = FALSE
+#endif
 
 #define FTLOG_DEBUG "DEBUG"
 #define FTLOG_INFO  "INFO"
@@ -64,7 +68,6 @@ SUBSYSTEM_DEF(familytree)
 	WRITE_LOG(familytree_log_file, "\[[logtime]] [level] #[ftlog_counter] [msg]")
 
 /datum/controller/subsystem/familytree/proc/ftlog_state(tag = "SNAPSHOT")
-#ifdef FAMILYTREE_DEBUG_LOGGING
 	ftlog("=== [tag] ===", FTLOG_INFO)
 	ftlog("[tag] families=[families.len] viable_spouses=[viable_spouses.len] errors=[ftlog_error_count] warns=[ftlog_warn_count]", FTLOG_INFO)
 	var/assigned_count = 0
@@ -89,7 +92,6 @@ SUBSYSTEM_DEF(familytree)
 				names += "[node.person.real_name]([node.person.ckey || "NPC"])"
 		ftlog("[tag] HOUSE '[house.housename]' race=[house.dominant_race] members=[house.member_nodes.len]: [names.Join(", ")]", FTLOG_DEBUG)
 	ftlog("=== /[tag] ===", FTLOG_INFO)
-#endif
 
 /datum/controller/subsystem/familytree/proc/register_family(datum/heritage/house)
 	if(!house)
@@ -204,9 +206,6 @@ SUBSYSTEM_DEF(familytree)
 	if(H.ai_controller || initial(H.ai_controller))
 		ftlog("on_mob_created SKIP: AI-controlled NPC ([H.ai_controller || initial(H.ai_controller)]), not a real player character")
 		return
-	if(!H.ckey && !H.client && !H.mind && !H.job)
-		ftlog("on_mob_created SKIP: [H.real_name] has no player behind it")
-		return
 	ftlog("on_mob_created PASS: registering [H.real_name] (ckey=[H.ckey] - may be empty, login will handle)")
 	register_human(H)
 	if(H.ckey)
@@ -225,6 +224,7 @@ SUBSYSTEM_DEF(familytree)
 		if(try_grant_holy_spells(H))
 			granted++
 	ftlog("scan_and_grant_holy_spells DONE: scanned=[scanned] granted=[granted]")
+	ftlog_state("ROUNDSTART")
 
 /datum/controller/subsystem/familytree/proc/try_grant_holy_spells(mob/living/carbon/human/H)
 	if(!H || QDELETED(H) || !H.ckey || !H.mind)

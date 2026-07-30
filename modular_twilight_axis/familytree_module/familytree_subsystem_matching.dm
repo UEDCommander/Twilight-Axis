@@ -107,6 +107,7 @@
 	if(!familytree_has_round_prefs(H))
 		ftlog("AddLocal STOP: [H.real_name] has no round preference datum")
 		return
+	familytree_tick_timeout_blocks(H)
 	var/family_mode = familytree_pref_mask(status)
 	if(!family_mode)
 		return
@@ -769,7 +770,7 @@
 			continue
 		var/list/assignment = familytree_pick_random_relative_assignment(house, H, forced_role)
 		if(!assignment)
-			reject_mask |= FTREJ_H_AGE
+			reject_mask |= familytree_house_fully_blocked(house, H) ? FTREJ_H_BLOCKED : FTREJ_H_AGE
 			continue
 		candidates += house
 		assignments_by_house[house] = assignment
@@ -886,7 +887,7 @@
 			reject_mask |= FTREJ_H_OFFLINE
 			continue
 		if(!familytree_house_supports_role(house, H, forced_role))
-			reject_mask |= FTREJ_H_AGE
+			reject_mask |= familytree_house_fully_blocked(house, H) ? FTREJ_H_BLOCKED : FTREJ_H_AGE
 			continue
 
 		candidates += house
@@ -925,6 +926,18 @@
 		return null
 	assignment["member"] = new_member
 	return assignment
+
+/datum/controller/subsystem/familytree/proc/familytree_house_fully_blocked(datum/heritage/house, mob/living/carbon/human/person)
+	if(!house || !person)
+		return FALSE
+	var/real_members = 0
+	for(var/datum/family_member/member as anything in house.members)
+		if(!member?.person || member.person == person || member.cosmetic || member.phantom)
+			continue
+		real_members++
+		if(!familytree_pair_blocked(person, member.person))
+			return FALSE
+	return real_members > 0
 
 /datum/controller/subsystem/familytree/proc/familytree_pick_random_relative_assignment(datum/heritage/house, mob/living/carbon/human/person, forced_role = null, adopted = FALSE)
 	if(!house || !person)
@@ -2171,6 +2184,7 @@
 	if(mask & FTREJ_H_AGE)       parts += "age"
 	if(mask & FTREJ_H_EMPTY)     parts += "empty"
 	if(mask & FTREJ_H_OFFLINE)   parts += "offline"
+	if(mask & FTREJ_H_BLOCKED)   parts += "blocked_pair"
 	return parts.Join(",")
 
 /proc/ftreject_decode_newlywed(mask)

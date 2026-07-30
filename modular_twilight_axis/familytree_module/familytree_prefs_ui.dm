@@ -53,6 +53,7 @@
 	var/familytree_random_siblings = 0
 	var/familytree_random_children = 0
 	var/tmp/list/familytree_blocked_ckeys = list()
+	var/tmp/list/familytree_timeout_blocks = list()
 
 /proc/familytree_pref_mask(pref)
 	if(isnum(pref))

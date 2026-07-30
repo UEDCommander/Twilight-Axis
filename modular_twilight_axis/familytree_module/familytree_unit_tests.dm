@@ -239,20 +239,30 @@
 	FT_ASSERT_NULL(settled.familytree_wake_timerid, "the wake runner must always release its timer id")
 	FT_ASSERT_EQUAL(settled.family_datum, house, "a player who already has a family must not be re-matched by a stale wake")
 
-/datum/unit_test/familytree/npc_is_never_tracked/Run()
+/datum/unit_test/familytree/dummy_is_never_tracked/Run()
 	var/turf/spot = run_loc_floor_bottom_left
-	var/mob/living/carbon/human/npc = allocate(/mob/living/carbon/human, spot)
-	FT_ASSERT_NOTNULL(npc, "could not allocate the NPC stand-in")
-	npc.ckey = null
-	npc.mind = null
-	npc.job = null
-	npc.familytree_module_signal_bound = FALSE
+	var/mob/living/carbon/human/dummy/mannequin = allocate(/mob/living/carbon/human/dummy, spot)
+	FT_ASSERT_NOTNULL(mannequin, "could not allocate the preview dummy")
 
-	SSfamilytree.on_mob_created(null, npc)
+	FT_ASSERT(!mannequin.familytree_module_signal_bound, "preview dummies must never get subsystem signals bound")
+	FT_ASSERT(!SSfamilytree.familytree_has_round_prefs(mannequin), "a dummy must never own round prefs")
+	FT_ASSERT_NULL(mannequin.family_datum, "a dummy must never be given a family")
 
-	FT_ASSERT(!npc.familytree_module_signal_bound, "a mob with no player behind it must never get subsystem signals bound")
-	FT_ASSERT(!SSfamilytree.familytree_has_round_prefs(npc), "a player-less mob must never own round prefs")
-	FT_ASSERT_NULL(npc.family_datum, "a player-less mob must never be given a family")
+	SSfamilytree.on_mob_created(null, mannequin)
+
+	FT_ASSERT(!mannequin.familytree_module_signal_bound, "a replayed creation signal must not bind a dummy either")
+
+/datum/unit_test/familytree/fresh_body_is_tracked/Run()
+	var/turf/spot = run_loc_floor_bottom_left
+	var/mob/living/carbon/human/body = allocate(/mob/living/carbon/human, spot)
+	FT_ASSERT_NOTNULL(body, "could not allocate the fresh body")
+
+	FT_ASSERT_NULL(body.ckey, "a body straight out of new() owns no ckey yet, exactly like create_character()")
+	FT_ASSERT_NULL(body.mind, "a body straight out of new() owns no mind yet")
+	FT_ASSERT_NULL(body.client, "a body straight out of new() owns no client yet")
+	FT_ASSERT_NULL(body.job, "a body straight out of new() owns no job yet")
+
+	FT_ASSERT(body.familytree_module_signal_bound, "COMSIG_GLOB_MOB_CREATED fires as the first line of /mob/Initialize(), so ckey/client/mind/job are all null for every player character; gating registration on them drops every single player and nothing rebinds them later")
 
 #undef FT_SOURCE
 #undef FT_ASSERT

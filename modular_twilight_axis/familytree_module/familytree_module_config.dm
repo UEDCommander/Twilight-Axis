@@ -71,6 +71,9 @@
 #define FAMILYTREE_MAX_RANDOM_RELATIVES 3
 #define FAMILYTREE_DONATOR_RELATIVES_TIER 1
 #define FAMILYTREE_SETSPOUSE_TIMEOUT (30 MINUTES)
+// An unanswered confirmation is not a refusal: the pair is held back for this many
+// matching iterations of each side, then becomes available again.
+#define FAMILYTREE_TIMEOUT_BLOCK_ITERATIONS 3
 
 #define ANY_GENDER 1
 #define SAME_GENDER 2
@@ -107,6 +110,7 @@
 #define FTREJ_H_AGE          (1<<4)
 #define FTREJ_H_EMPTY        (1<<5)
 #define FTREJ_H_OFFLINE      (1<<6)
+#define FTREJ_H_BLOCKED      (1<<7)
 
 // FindNewlyWedMatch
 #define FTREJ_N_POLY         (1<<0)

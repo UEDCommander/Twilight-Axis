@@ -32,6 +32,7 @@
 #include "./overrides/transfix.dm"
 #include "./overrides/vampire.dm"
 #include "./overrides/vampire_lord_title.dm"
+#include "./overrides/vampire_lord_royal_ancestor.dm"
 #include "./overrides/crucible_access.dm"
 #include "./overrides/thinblood_restrictions.dm"
 #include "./overrides/obfuscate.dm"
