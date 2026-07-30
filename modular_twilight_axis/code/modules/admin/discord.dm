@@ -92,7 +92,7 @@
 
 	var/admin_bans_channel = CONFIG_GET(string/admin_bans_channel)
 	var/admin_bans_channel2 = CONFIG_GET(string/admin_bans_channel2)
-	
+
 
 	if(!admin_bans_channel && !admin_bans_channel2)
 		return
@@ -381,31 +381,33 @@
 		"Duration" = "Срок",
 		"Reason" = "Причина",
 	)
+
 	var/list/change_lines = list()
+	var/reason_text = "Причина не изменялась."
+
 	for(var/change_key in changes)
 		var/change_name = change_names[change_key]
 		if(!change_name)
 			change_name = change_key
+
 		var/change_value = replacetext("[changes[change_key]]", "<br>", "\n")
-		change_lines += "**[change_name]:**\n[change_value]"
+		if(change_key == "Reason")
+			reason_text = change_value
+		else
+			change_lines += "**[change_name]:**\n[change_value]"
 
-	var/full_text = "**Игрок:** `[player_ckey]`\n**Администратор:** `[admin_ckey]`\n\n[change_lines.Join("\n\n")]"
-	var/list/chunks = split_discord_log_text(full_text)
-	for(var/index in 1 to chunks.len)
-		var/datum/tgs_chat_embed/structure/embed = new()
-		if(index == 1)
-			embed.title = "Изменение бана"
-		embed.description = chunks[index]
-		embed.colour = "#f5a97f"
-		if(index == chunks.len)
-			embed.footer = create_discord_embed_footer()
+	var/description = length(change_lines) ? change_lines.Join("\n\n") : "Изменена причина бана."
 
-		var/datum/tgs_message_content/message = new("")
-		message.embed = embed
-		if(admin_bans_channel)
-			send2chat(message, admin_bans_channel)
-		if(admin_bans_channel2)
-			send2chat(message, admin_bans_channel2)
+	send_discord_ban_log(
+		"Изменение бана",
+		description,
+		"#f5a97f",
+		player_ckey,
+		admin_ckey,
+		reason_text,
+		admin_bans_channel,
+		admin_bans_channel2,
+	)
 
 /world/proc/TgsAnnounceAdminMessageDeletion(admin_ckey, target_key, type, text)
 	if(!TgsAvailable())
