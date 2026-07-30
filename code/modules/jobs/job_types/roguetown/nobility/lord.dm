@@ -126,11 +126,7 @@ GLOBAL_LIST_EMPTY(lord_titles)
 					new_origin = new_origins[choice]
 				else
 					to_chat(player, span_notice("No choice detected. Picking a random compatible origin."))
-					new_origin = pick(
-						/datum/virtue/origin/enigma,
-						/datum/virtue/origin/valorian,
-						/datum/virtue/origin/zybantian
-					)
+					new_origin = pick(/datum/virtue/origin/enigma, /datum/virtue/origin/valorian, /datum/virtue/origin/zybantian)
 				change_origin(H, new_origin, "Royal line")
 		else
 			if(!istype(player.prefs.virtue_origin, /datum/virtue/origin/azuria) && !istype(player.prefs.virtue_origin, /datum/virtue/origin/grenzelhoft) && !istype(player.prefs.virtue_origin, /datum/virtue/origin/valorian))
@@ -145,11 +141,7 @@ GLOBAL_LIST_EMPTY(lord_titles)
 					new_origin = new_origins[choice]
 				else
 					to_chat(player, span_notice("No choice detected. Picking a random compatible origin."))
-					new_origin = pick(
-						/datum/virtue/origin/grenzelhoft,
-						/datum/virtue/origin/valorian,
-						/datum/virtue/origin/azuria
-					)
+					new_origin = pick(/datum/virtue/origin/grenzelhoft, /datum/virtue/origin/valorian, /datum/virtue/origin/azuria)
 				change_origin(H, new_origin, "Royal line")
 
 //	SSticker.rulermob = H
@@ -607,4 +599,3 @@ GLOBAL_LIST_EMPTY(lord_titles)
 	recruitment_message = "Serve the Wardens, %RECRUIT!"
 	accept_message = "FOR THE GROVE!"
 	refuse_message = "I refuse."
-=
