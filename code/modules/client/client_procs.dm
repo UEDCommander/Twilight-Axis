@@ -737,9 +737,10 @@ GLOBAL_LIST_EMPTY(external_rsc_urls)
 	if(!query_get_related_ip.Execute())
 		qdel(query_get_related_ip)
 		return
-	related_accounts_ip = ""
+	var/list/related_ip_ckeys = list()
 	while(query_get_related_ip.NextRow())
-		related_accounts_ip += "[query_get_related_ip.item[1]], "
+		related_ip_ckeys += query_get_related_ip.item[1]
+	related_accounts_ip = jointext(related_ip_ckeys, ", ")
 	qdel(query_get_related_ip)
 	var/datum/DBQuery/query_get_related_cid = SSdbcore.NewQuery(
 		"SELECT ckey FROM [format_table_name("player")] WHERE computerid = :computerid AND ckey != :ckey",
@@ -748,9 +749,10 @@ GLOBAL_LIST_EMPTY(external_rsc_urls)
 	if(!query_get_related_cid.Execute())
 		qdel(query_get_related_cid)
 		return
-	related_accounts_cid = ""
+	var/list/related_cid_ckeys = list()
 	while (query_get_related_cid.NextRow())
-		related_accounts_cid += "[query_get_related_cid.item[1]], "
+		related_cid_ckeys += query_get_related_cid.item[1]
+	related_accounts_cid = jointext(related_cid_ckeys, ", ")
 	qdel(query_get_related_cid)
 	var/admin_rank = "Player"
 	if (src.holder && src.holder.rank)
@@ -839,6 +841,7 @@ GLOBAL_LIST_EMPTY(external_rsc_urls)
 		qdel(query_log_player)
 	if(!account_join_date)
 		account_join_date = "Error"
+	notify_admins_of_related_accounts()
 	var/datum/DBQuery/query_log_connection = SSdbcore.NewQuery({"
 		INSERT INTO `[format_table_name("connection_log")]` (`id`,`datetime`,`server_ip`,`server_port`,`round_id`,`ckey`,`ip`,`computerid`)
 		VALUES(null,Now(),INET_ATON(:internet_address),:port,:round_id,:ckey,INET_ATON(:ip),:computerid)
@@ -848,6 +851,19 @@ GLOBAL_LIST_EMPTY(external_rsc_urls)
 	if(new_player)
 		player_age = -1
 	. = player_age
+
+/client/proc/notify_admins_of_related_accounts()
+	if(holder || GLOB.deadmins[ckey])
+		return
+	if(!length(related_accounts_cid) || computer_id == "4055623708")
+		return
+
+	var/message = "<b>Possible multikey:</b> [key_name_admin(src)] connected with a CID previously used by: [related_accounts_cid]."
+	if(length(related_accounts_ip))
+		message += " Accounts seen from the same IP: [related_accounts_ip]."
+
+	message_admins(span_adminnotice(message))
+	log_access("Possible multikey: [key_name(src)] connected with CID [computer_id]. Related CID accounts: [related_accounts_cid]. Related IP accounts: [related_accounts_ip].")
 
 /client/proc/toggle_fullscreeny(new_value)
 	if(new_value)
