@@ -381,33 +381,67 @@
 		"Duration" = "Срок",
 		"Reason" = "Причина",
 	)
-
 	var/list/change_lines = list()
-	var/reason_text = "Причина не изменялась."
-
 	for(var/change_key in changes)
 		var/change_name = change_names[change_key]
 		if(!change_name)
 			change_name = change_key
-
 		var/change_value = replacetext("[changes[change_key]]", "<br>", "\n")
-		if(change_key == "Reason")
-			reason_text = change_value
+		change_lines += "**[change_name]:**\n[change_value]"
+
+	var/full_text = "**Игрок:** `[player_ckey]`\n**Администратор:** `[admin_ckey]`\n\n[change_lines.Join("\n\n")]"
+	var/list/chunks = split_discord_log_text(full_text)
+	for(var/index in 1 to chunks.len)
+		var/datum/tgs_chat_embed/structure/embed = new()
+		if(index == 1)
+			embed.title = "Изменение бана"
+		embed.description = chunks[index]
+		embed.colour = "#f5a97f"
+		if(index == chunks.len)
+			embed.footer = create_discord_embed_footer()
+
+		var/datum/tgs_message_content/message = new("")
+		message.embed = embed
+		if(admin_bans_channel)
+			send2chat(message, admin_bans_channel)
+		if(admin_bans_channel2)
+			send2chat(message, admin_bans_channel2)
+
+/world/proc/TgsAnnounceAdminMessageEdit(editor_ckey, target_key, author_key, type, old_text, new_text)
+	if(!TgsAvailable())
+		return
+
+	var/admin_notes_channel = CONFIG_GET(string/admin_notes_channel)
+	if(!admin_notes_channel)
+		return
+
+	var/pretty_type
+	switch(type)
+		if("note")
+			pretty_type = "заметки"
+		if("message")
+			pretty_type = "сообщения"
+		if("watchlist entry")
+			pretty_type = "записи в watchlist"
 		else
-			change_lines += "**[change_name]:**\n[change_value]"
+			return
 
-	var/description = length(change_lines) ? change_lines.Join("\n\n") : "Изменена причина бана."
+	var/old_discord_text = replacetext("[old_text]", "<br>", "\n")
+	var/new_discord_text = replacetext("[new_text]", "<br>", "\n")
+	var/full_text = "**Игрок:** `[target_key]`\n**Автор записи:** `[author_key]`\n**Изменил:** `[editor_ckey]`\n\n**Было:**\n[old_discord_text]\n\n**Стало:**\n[new_discord_text]"
+	var/list/chunks = split_discord_log_text(full_text)
+	for(var/index in 1 to chunks.len)
+		var/datum/tgs_chat_embed/structure/embed = new()
+		if(index == 1)
+			embed.title = "Изменение [pretty_type]"
+		embed.description = chunks[index]
+		embed.colour = "#f5a97f"
+		if(index == chunks.len)
+			embed.footer = create_discord_embed_footer()
 
-	send_discord_ban_log(
-		"Изменение бана",
-		description,
-		"#f5a97f",
-		player_ckey,
-		admin_ckey,
-		reason_text,
-		admin_bans_channel,
-		admin_bans_channel2,
-	)
+		var/datum/tgs_message_content/message = new("")
+		message.embed = embed
+		send2chat(message, admin_notes_channel)
 
 /world/proc/TgsAnnounceAdminMessageDeletion(admin_ckey, target_key, type, text)
 	if(!TgsAvailable())
