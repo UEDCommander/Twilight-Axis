@@ -5,6 +5,8 @@
  */
 
 import {
+  // TA EDIT
+  colorList,
   type HsvaColor,
   hexToHsva,
   hsvaToHex,
@@ -21,6 +23,7 @@ import { Window } from 'tgui/layouts';
 import {
   Autofocus,
   Box,
+  Button,
   Input,
   NumberInput,
   Section,
@@ -49,12 +52,15 @@ interface ColorPickerData {
 type ColorPickerModalProps = Record<never, never>;
 
 export const ColorPickerModal: React.FC<ColorPickerModalProps> = () => {
-  const { data } = useBackend<ColorPickerData>();
+  // TA EDIT
+  const { act, data } = useBackend<ColorPickerData>();
   const {
     timeout,
     message,
     autofocus,
     default_color = '#000000',
+    // TA EDIT
+    presets = '',
     named_presets,
   } = data;
   let { title } = data;
@@ -65,15 +71,54 @@ export const ColorPickerModal: React.FC<ColorPickerModalProps> = () => {
     hexToHsva(default_color),
   );
 
+  // TA EDIT START
+  const [selectedPreset, setSelectedPreset] = useState<number | undefined>(
+    undefined,
+  );
+  const [lastSelectedColor, setLastSelectedColor] = useState<string>('');
+  const [allowEditing, setAllowEditing] = useState<boolean>(false);
+  // TA EDIT END
+
   useEffect(() => {
     setSelectedColor(hexToHsva(default_color));
   }, [default_color]);
+
+  // TA EDIT START
+  useEffect(() => {
+    const hexCol = hsvaToHex(selectedColor);
+    if (
+      selectedPreset !== undefined &&
+      lastSelectedColor !== hexCol &&
+      allowEditing
+    ) {
+      setLastSelectedColor(hexCol);
+      act('preset', { color: hexCol, index: selectedPreset + 1 });
+    }
+  }, [selectedColor]);
+
+  const ourPresets = presets
+    .replaceAll('#', '')
+    .replace(/(^;)|(;$)/g, '')
+    .split(';');
+  while (ourPresets.length < 20) {
+    ourPresets.push('FFFFFF');
+  }
+  const presetList = ourPresets.reduce(
+    (input, entry, index) => {
+      if (index < 10) {
+        return [[...input[0], entry], input[1]];
+      } else {
+        return [input[0], [...input[1], entry]];
+      }
+    },
+    [[], []],
+  );
+  // TA EDIT END
 
   if (!title) {
     title = 'Color';
   }
 
-  // Increase height when named presets are shown
   let windowHeight = message ? 460 : 420;
   if (hasNamedPresets) {
     windowHeight += 90;
@@ -113,6 +158,8 @@ export const ColorPickerModal: React.FC<ColorPickerModalProps> = () => {
                           cursor: 'pointer',
                         }}
                         onClick={() => {
+                          // TA EDIT
+                          setSelectedPreset(undefined);
                           setSelectedColor(hexToHsva(hex));
                         }}
                       />
@@ -128,6 +175,11 @@ export const ColorPickerModal: React.FC<ColorPickerModalProps> = () => {
                 color={selectedColor}
                 setColor={setSelectedColor}
                 defaultColor={default_color}
+                presetList={presetList}
+                selectedPreset={selectedPreset}
+                onSelectedPreset={setSelectedPreset}
+                allowEditing={allowEditing}
+                onAllowEditing={setAllowEditing}
               />
             </Section>
           </Stack.Item>
@@ -140,14 +192,129 @@ export const ColorPickerModal: React.FC<ColorPickerModalProps> = () => {
   );
 };
 
+// TA EDIT START
+interface ColorPresetsProps {
+  setColor: (color: HsvaColor) => void;
+  setShowPresets: (show: boolean) => void;
+  presetList: string[][];
+  selectedPreset: number | undefined;
+  onSelectedPreset: React.Dispatch<React.SetStateAction<number | undefined>>;
+  allowEditing: boolean;
+  onAllowEditing: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const ColorPresets: React.FC<ColorPresetsProps> = React.memo(
+  ({
+    setColor,
+    setShowPresets,
+    presetList,
+    selectedPreset,
+    onSelectedPreset,
+    allowEditing,
+    onAllowEditing,
+  }) => {
+    return (
+      <>
+        <Button
+          onClick={() => setShowPresets(false)}
+          position="absolute"
+          right="4px"
+          icon="arrow-left"
+        />
+        <Stack justify="center" vertical g={0}>
+          <Stack.Item>
+            {colorList.map((row, index) => (
+              <Stack.Item key={index} width="100%">
+                <Stack justify="center" g={0}>
+                  {row.map((entry) => (
+                    <Box key={entry} p="1px" backgroundColor="black">
+                      <Box
+                        p="1px"
+                        backgroundColor="#AAAAAA"
+                        onClick={() => {
+                          setColor(hexToHsva(entry));
+                          onSelectedPreset(undefined);
+                        }}
+                      >
+                        <Box
+                          backgroundColor={`#${entry}`}
+                          width="21px"
+                          height="14px"
+                        />
+                      </Box>
+                    </Box>
+                  ))}
+                </Stack>
+              </Stack.Item>
+            ))}
+          </Stack.Item>
+          <Stack.Item mt={0.5}>
+            {presetList.map((row, index) => (
+              <Stack.Item key={index} grow>
+                <Stack justify="center" g={0}>
+                  {row.map((entry, i) => (
+                    <Box key={i} p="1px" backgroundColor="black">
+                      <Box
+                        p="1px"
+                        backgroundColor={
+                          selectedPreset === 10 * index + i
+                            ? '#FF0000'
+                            : '#AAAAAA'
+                        }
+                        onClick={() => {
+                          setColor(hexToHsva(entry));
+                          onSelectedPreset(10 * index + i);
+                        }}
+                      >
+                        <Box
+                          backgroundColor={`#${entry}`}
+                          width="21px"
+                          height="14px"
+                        />
+                      </Box>
+                    </Box>
+                  ))}
+                </Stack>
+              </Stack.Item>
+            ))}
+          </Stack.Item>
+        </Stack>
+        <Button
+          color={allowEditing ? 'green' : 'red'}
+          position="absolute"
+          right="4px"
+          bottom="4px"
+          icon="lock"
+          onClick={() => onAllowEditing(!allowEditing)}
+        />
+      </>
+    );
+  },
+);
+// TA EDIT END
+
 interface ColorSelectorProps {
   color: HsvaColor;
   setColor: React.Dispatch<React.SetStateAction<HsvaColor>>;
   defaultColor: string;
+  presetList: string[][];
+  selectedPreset: number | undefined;
+  onSelectedPreset: React.Dispatch<React.SetStateAction<number | undefined>>;
+  allowEditing: boolean;
+  onAllowEditing: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const ColorSelector: React.FC<ColorSelectorProps> = React.memo(
-  ({ color, setColor, defaultColor }) => {
+  ({
+    color,
+    setColor,
+    defaultColor,
+    presetList,
+    selectedPreset,
+    onSelectedPreset,
+    allowEditing,
+    onAllowEditing,
+  }) => {
     const handleChange = useCallback(
       (params: Partial<HsvaColor>) => {
         setColor((current) => ({ ...current, ...params }));
@@ -155,6 +322,8 @@ const ColorSelector: React.FC<ColorSelectorProps> = React.memo(
       [setColor],
     );
 
+    const [showPresets, setShowPresets] = useState<boolean>(false);
+    const rgb = hsvaToRgba(color);
     const hexColor = hsvaToHex(color);
 
     return (
@@ -199,32 +368,50 @@ const ColorSelector: React.FC<ColorSelectorProps> = React.memo(
           </Stack>
         </Stack.Item>
         <Stack.Item grow fontSize="15px" lineHeight="24px">
-          <Stack vertical>
-            <Stack.Item>
-              <Stack>
-                <Stack.Item>
-                  <Box textColor="label">Hex:</Box>
-                </Stack.Item>
-                <Stack.Item grow height="24px">
-                  <HexColorInput
-                    fluid
-                    color={hsvaToHex(color).substring(1)}
-                    onChange={(value) => {
-                      setColor(hexToHsva(value));
-                    }}
-                  />
-                </Stack.Item>
-              </Stack>
-            </Stack.Item>
-            <Stack.Divider />
-            <HueRow color={color} handleChange={handleChange} />
-            <SaturationRow color={color} handleChange={handleChange} />
-            <ValueRow color={color} handleChange={handleChange} />
-            <Stack.Divider />
-            <RedRow color={color} handleChange={handleChange} />
-            <GreenRow color={color} handleChange={handleChange} />
-            <BlueRow color={color} handleChange={handleChange} />
-          </Stack>
+          {showPresets ? (
+            <ColorPresets
+              setColor={(c) => handleChange(c)}
+              setShowPresets={setShowPresets}
+              presetList={presetList}
+              selectedPreset={selectedPreset}
+              onSelectedPreset={onSelectedPreset}
+              allowEditing={allowEditing}
+              onAllowEditing={onAllowEditing}
+            />
+          ) : (
+            <Stack vertical>
+              <Stack.Item>
+                <Stack>
+                  <Stack.Item>
+                    <Box textColor="label">Hex:</Box>
+                  </Stack.Item>
+                  <Stack.Item grow height="24px">
+                    <HexColorInput
+                      fluid
+                      color={hsvaToHex(color).substring(1)}
+                      onChange={(value) => {
+                        setColor(hexToHsva(value));
+                      }}
+                    />
+                  </Stack.Item>
+                  <Stack.Item>
+                    <Button
+                      icon="eye-dropper"
+                      onClick={() => setShowPresets(true)}
+                    />
+                  </Stack.Item>
+                </Stack>
+              </Stack.Item>
+              <Stack.Divider />
+              <HueRow color={color} handleChange={handleChange} />
+              <SaturationRow color={color} handleChange={handleChange} />
+              <ValueRow color={color} handleChange={handleChange} />
+              <Stack.Divider />
+              <RedRow color={color} handleChange={handleChange} />
+              <GreenRow color={color} handleChange={handleChange} />
+              <BlueRow color={color} handleChange={handleChange} />
+            </Stack>
+          )}
         </Stack.Item>
       </Stack>
     );
