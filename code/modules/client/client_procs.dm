@@ -853,17 +853,62 @@ GLOBAL_LIST_EMPTY(external_rsc_urls)
 	. = player_age
 
 /client/proc/notify_admins_of_related_accounts()
-	if(holder || GLOB.deadmins[ckey])
-		return
 	if(!length(related_accounts_cid) || computer_id == "4055623708")
 		return
 
-	var/message = "<b>Possible multikey:</b> [key_name_admin(src)] connected with a CID previously used by: [related_accounts_cid]."
-	if(length(related_accounts_ip))
-		message += " Accounts seen from the same IP: [related_accounts_ip]."
+	var/automatic_admin_ckey = "multikeydetector"
+	var/datum/DBQuery/query_existing_note = SSdbcore.NewQuery(
+		"SELECT 1 FROM [format_table_name("messages")] WHERE type = 'note' AND targetckey = :target_ckey AND adminckey = :admin_ckey LIMIT 1",
+		list("target_ckey" = ckey, "admin_ckey" = automatic_admin_ckey)
+	)
+	if(!query_existing_note.warn_execute())
+		qdel(query_existing_note)
+		return
+	if(query_existing_note.NextRow())
+		qdel(query_existing_note)
+		return
+	qdel(query_existing_note)
 
-	message_admins(span_adminnotice(message))
-	log_access("Possible multikey: [key_name(src)] connected with CID [computer_id]. Related CID accounts: [related_accounts_cid]. Related IP accounts: [related_accounts_ip].")
+	var/list/note_lines = list(
+		"Автоматическая проверка: возможный твинк.",
+		"Ключ при обнаружении: [key]",
+		"Ckey при обнаружении: [ckey]",
+		"IP при обнаружении: [address]",
+		"CID при обнаружении: [computer_id]",
+		"Аккаунты с таким же CID: [related_accounts_cid]",
+		"Раунд при обнаружении: [GLOB.round_id]"
+	)
+	if(address == "91.208.52.195")
+		note_lines += "Вход выполнен через серверный прокси 91.208.52.195; совпадения по IP не учитывались."
+	else if(length(related_accounts_ip))
+		note_lines += "Аккаунты с таким же IP: [related_accounts_ip]"
+	else
+		note_lines += "Другие аккаунты с таким же IP не найдены."
+
+	var/note_text = note_lines.Join("<br>")
+	var/server_name = CONFIG_GET(string/serversqlname)
+	var/datum/DBQuery/query_create_note = SSdbcore.NewQuery({"
+		INSERT INTO [format_table_name("messages")] (type, targetckey, adminckey, text, timestamp, server, server_ip, server_port, round_id, secret, expire_timestamp, severity)
+		VALUES ('note', :target_ckey, :admin_ckey, :text, Now(), :server, INET_ATON(:internet_address), :port, :round_id, 1, NULL, 'minor')
+	"}, list(
+		"target_ckey" = ckey,
+		"admin_ckey" = automatic_admin_ckey,
+		"text" = note_text,
+		"server" = server_name,
+		"internet_address" = world.internet_address || "0",
+		"port" = "[world.port]",
+		"round_id" = GLOB.round_id,
+	))
+	if(!query_create_note.warn_execute())
+		qdel(query_create_note)
+		return
+	qdel(query_create_note)
+
+	message_admins(span_adminnotice("<b>Возможный твинк:</b> [key_name_admin(src)] вошёл с CID [computer_id], который также использовали: [related_accounts_cid]. Автоматическая заметка добавлена."))
+	log_admin_private("Automatic multikey note created for [key_name(src)]. IP: [address]. CID: [computer_id]. Related CID accounts: [related_accounts_cid]. Related IP accounts: [related_accounts_ip].")
+	admin_ticket_log(ckey, "<font color='blue'>Automatic possible multikey note created</font>")
+	admin_ticket_log(ckey, note_text)
+	world.TgsAnnounceAdminMessageEntry(automatic_admin_ckey, key, "note", replacetext(note_text, "<br>", "\n"), TRUE, null)
 
 /client/proc/toggle_fullscreeny(new_value)
 	if(new_value)
