@@ -163,6 +163,8 @@ GLOBAL_LIST_INIT(department_radio_keys, list(
 
 	// language comma detection.
 	var/datum/language/message_language = get_message_language(message)
+	if(findtext(message, ",y", 1, 3) == 1 || findtext(message, ",mst", 1, 5) == 1) // TA EDIT
+		message_language = null // TA EDIT
 	if(message_language)
 		// No, you cannot speak in xenocommon just because you know the key
 		if(can_speak_in_language(message_language))
@@ -536,7 +538,7 @@ GLOBAL_LIST_INIT(department_radio_keys, list(
 			AM.Hear(eavesrendered, src, message_language, eavesdropping, , spans, message_mode, original_message)
 		else
 			AM.Hear(rendered, src, message_language, (highlighted_message ? highlighted_message : message), , spans, message_mode, original_message)
-			
+
 
 	SEND_GLOBAL_SIGNAL(COMSIG_GLOB_LIVING_SAY_SPECIAL, src, message)
 
