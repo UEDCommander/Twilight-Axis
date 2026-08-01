@@ -18,15 +18,20 @@
 	class_select_category = CLASS_CAT_RANGER
 	traits_applied = list(TRAIT_FIREARMS_MARKSMAN)
 	maximum_possible_slots = 2
+	subclass_stats = list(
+		STATKEY_PER = 3,
+		STATKEY_WIL = 2,
+		STATKEY_CON = 1,
+	)
 	classes = list("Kaper" = "During the Twilight War, you served aboard a Reichsmarine warship, intercepting, \
 	boarding and ravaging Golden Empire's trade vessels on Kaiser's orders. \
 	After the war ended, your crew saw it fit to continue with the practice, flying a flag with a different shade of black.",
-	
+
 	"Wōkòu" = "For a long time you plundered ships of various flags and origins, \
 	burning through your lyfe on the islands of Kazengun. \
 	After your peak, you were smashed against the rocks of battles and had to flee further from your native seas \
 	to foreign lands to continue your trade.",
-	
+
 	"Reaver" = "Where others rely on speed and stealth, you learned that a ship's deck offers no cover. \
 	Clad in maille and plate, you lead the boarding party through grapeshot and blade, \
 	shrugging off blows that would fell a lesser corsair.")
@@ -60,9 +65,6 @@
 	var/crimes = list("I'm nobody", "They fear me")
 	var/crimeschoice = input(H, "Who am I?", "How much have I done?") as anything in crimes
 	H.set_blindness(0)
-	H.change_stat(STATKEY_PER, 3)
-	H.change_stat(STATKEY_WIL, 2)
-	H.change_stat(STATKEY_CON, 2)
 	switch(classchoice)
 		if("Kaper")
 			ADD_TRAIT(H, TRAIT_DODGEEXPERT, TRAIT_GENERIC)
