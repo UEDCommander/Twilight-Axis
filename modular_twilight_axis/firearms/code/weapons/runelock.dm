@@ -25,7 +25,7 @@
 	var/misfire_chance = 0
 	/// Reload time, in SECONDS
 	var/reload_time = 8
-	var/reload_stamina_cost = 15
+	var/reload_stamina_cost = 40
 	damfactor = 1
 	var/critfactor = 0.7
 	var/npcdamfactor = 4
@@ -190,39 +190,41 @@
 
 /datum/intent/shoot/twilight_runelock
 	chargedrain = 0
+	no_early_release = TRUE
 
 /datum/intent/shoot/twilight_runelock/get_chargetime()
 	if(mastermob && chargetime)
 		var/newtime = chargetime
 		//skill block
 		newtime = newtime + 75
-		newtime = newtime - (mastermob.get_skill_level(/datum/skill/combat/twilight_firearms) * 15)
+		newtime = newtime / max(1, mastermob.get_skill_level(/datum/skill/combat/twilight_firearms))
 		//per block
 		newtime = newtime + 20
 		newtime = newtime - ((mastermob.STAPER)*1.5)
-		if(newtime > 0)
+		if(newtime > 10)
 			return newtime
 		else
-			return 0.1
+			return 10
 	return chargetime
 
 /datum/intent/arc/twilight_runelock
 	chargetime = 1
 	chargedrain = 0
+	no_early_release = TRUE
 
 /datum/intent/arc/twilight_runelock/get_chargetime()
 	if(mastermob && chargetime)
 		var/newtime = chargetime
 		//skill block
 		newtime = newtime + 70
-		newtime = newtime - (mastermob.get_skill_level(/datum/skill/combat/twilight_firearms) * 15)
+		newtime = newtime / max(1, mastermob.get_skill_level(/datum/skill/combat/twilight_firearms))
 		//per block
 		newtime = newtime + 20
 		newtime = newtime - ((mastermob.STAPER)*1.5)
-		if(newtime > 0)
+		if(newtime > 10)
 			return newtime
 		else
-			return 1
+			return 10
 	return chargetime
 
 /obj/item/gun/ballistic/revolver/grenadelauncher/twilight_runelock/rifle
@@ -251,7 +253,7 @@
 	damfactor = 1.5
 	critfactor = 1
 	reload_time = 12
-	reload_stamina_cost = 20
+	reload_stamina_cost = 60
 
 /obj/item/gun/ballistic/revolver/grenadelauncher/twilight_runelock/rifle/getonmobprop(tag)
 	. = ..()
