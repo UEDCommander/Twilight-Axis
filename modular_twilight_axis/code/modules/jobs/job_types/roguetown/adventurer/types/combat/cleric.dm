@@ -244,12 +244,12 @@
 		H.adjust_skillrank_up_to(/datum/skill/misc/lockpicking, SKILL_LEVEL_JOURNEYMAN, TRUE)
 		H.adjust_skillrank_up_to(/datum/skill/misc/music, SKILL_LEVEL_NOVICE, TRUE)
 
-//Penitent
-/datum/advclass/cleric/penitent
-	name = "Penitent"
+//Oblate
+/datum/advclass/cleric/oblate
+	name = "Oblate"
 	tutorial = "The Psydon was struck - and yet endured. You are sworn to mirror His wound. Violence is beneath you; endurance is not. Flesh fails. Faith does not."
-	outfit = /datum/outfit/job/roguetown/adventurer/penitent
-	forbidden_races = list(RACES_OOZE)
+	outfit = /datum/outfit/job/roguetown/adventurer/oblate
+	forbidden_races = list(RACES_CONSTRUCT RACES_OOZE)
 	allowed_patrons = list(/datum/patron/old_god)
 	subclass_languages = list(/datum/language/otavan)
 	min_pq = 9
@@ -284,7 +284,7 @@
 	)
 	extra_context = "This is a psydonite only subclass. You will be a pacifist and are able to draw upon a weaker version of the abilities known by a Absolver."
 
-/datum/outfit/job/roguetown/adventurer/penitent/pre_equip(mob/living/carbon/human/H, visualsOnly)
+/datum/outfit/job/roguetown/adventurer/oblate/pre_equip(mob/living/carbon/human/H, visualsOnly)
 	. = ..()
 	H.adjust_blindness(-3)
 	gloves = /obj/item/clothing/gloves/roguetown/otavan/psygloves
@@ -293,7 +293,7 @@
 	backr = /obj/item/storage/backpack/rogue/satchel/otavan
 	belt = /obj/item/storage/belt/rogue/leather/black
 	pants = /obj/item/clothing/under/roguetown/heavy_leather_pants/otavan
-	armor = /obj/item/clothing/suit/roguetown/armor/regenerating/skin/penitent
+	armor = /obj/item/clothing/suit/roguetown/armor/regenerating/skin/oblate
 	shoes = /obj/item/clothing/shoes/roguetown/boots/psydonboots
 	cloak = /obj/item/clothing/cloak/absolutionistrobe/black
 	head = /obj/item/clothing/head/roguetown/helmet/blacksteel/psychains
@@ -325,7 +325,7 @@
 	item_state = "psyblindfold"
 	tint = 1
 
-/obj/item/clothing/suit/roguetown/armor/regenerating/skin/penitent
+/obj/item/clothing/suit/roguetown/armor/regenerating/skin/oblate
 	name = "vicarious skin"
 	desc = "You do not strike back; you merely endure, a living monument to His eternal sacrifice."
 	max_integrity = 250
