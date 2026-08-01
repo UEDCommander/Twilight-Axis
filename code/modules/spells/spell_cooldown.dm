@@ -1,7 +1,7 @@
 // /datum/action/cooldown/spell - Ported from Vanderlin
 // This is the new spell system built on top of /datum/action/cooldown.
 // We'll gradually move spells over to this new system to complete the job of nuking proc holder from our codebase
-// Adapted for AP. No Mana or Attunement system because imo, 
+// Adapted for AP. No Mana or Attunement system because imo,
 // Attunement causes balance issues by varying effectiveness of spell dramatically based on caster's attunement
 // And Mana is not necessary because we are going to stick with using blue / green bar to balance instead of a third bar and forcing long out of combat rest time that stacks on top of sleep based rest time. Just one system to KISS.
 
@@ -135,6 +135,10 @@
 	/// Variable dictating if the spell will use turf based aim assist.
 	var/aim_assist = TRUE
 
+
+	var/supports_fellowship_snap = FALSE
+	var/fellowship_snap = FALSE
+
 	// Charged vars
 	/// If the spell requires time to charge.
 	var/charge_required = TRUE
@@ -188,12 +192,15 @@
 	/// If FALSE (default), spell uses hold-and-release: hold middle-click to charge, release to cast.
 	var/charge_then_click = FALSE
 	var/blocks_defense_while_channeling = FALSE
+	var/cancel_penalty_mult = 1
 
 	/// Lore/flavor text. Shown on hover in spell lists, always shown in detailed examine.
 	var/fluff_desc = ""
 
 	/// If the spell creates visual effects.
 	var/has_visual_effects = TRUE
+	/// If TRUE, no overhead spell icon is shown while charging.
+	var/hide_charge_effect = FALSE
 	/// The color used for spell visual effects (rune, particles, wave). Each spell sets its own.
 	var/spell_color = "#FFFFFF"
 	/// Glow intensity while casting. Uses GLOW_INTENSITY defines. 0 = no glow.
@@ -205,14 +212,14 @@
 
 	/// Timer ID for the auto cancel, so we can cancel it
 	var/auto_cancel_timer = null
-	
+
 	/// A parent variable to store devotion cost. -- Kuan's Note: This is kinda needed if we want to shift Miracles from proc_holder to spell/cooldown
 	var/devotion_cost = null
 
 /datum/action/cooldown/spell/New(Target)
 	. = ..()
 	// Create overhead spell icon effect (matching old proc_holder system)
-	if(button_icon_state)
+	if(button_icon_state && !hide_charge_effect)
 		var/obj/effect/R = new /obj/effect/spell_rune
 		R.icon = button_icon
 		R.icon_state = button_icon_state
@@ -290,7 +297,10 @@
 		fully_charged = TRUE
 		if(owner.client)
 			owner.client.mouse_pointer_icon = 'icons/effects/mousemice/swang/acharged.dmi'
-			playsound(owner, 'sound/magic/charged.ogg', 40, TRUE)
+			if(hide_charge_effect)
+				owner.playsound_local(owner, 'sound/magic/charged.ogg', 40, TRUE)
+			else
+				playsound(owner, 'sound/magic/charged.ogg', 40, TRUE)
 
 /datum/action/cooldown/spell/Grant(mob/grant_to)
 	// Spells are hard baked to pratically only work with living owners
@@ -395,8 +405,8 @@
 /datum/action/cooldown/spell/unset_click_ability(mob/on_who, refund_cooldown = TRUE)
 	if(click_to_activate)
 		if(currently_charging || charged)
-			cancel_casting()
-			on_who.balloon_alert(on_who, "Channeling was interrupted!")
+			if(!cancel_casting(voluntary = refund_cooldown))
+				on_who.balloon_alert(on_who, "Channeling was interrupted!")
 		on_deactivation(on_who, refund_cooldown = refund_cooldown)
 
 		// Clean up our own MOUSEDOWN/MOUSEUP and any lingering mob-level charge signals
@@ -473,6 +483,13 @@
 		modifiers = params2list(modifiers)
 	if(!LAZYACCESS(modifiers, MIDDLE_CLICK))
 		return
+
+	if(fellowship_snap && click_target != clicker && !(isliving(click_target) && shares_fellowship(clicker, click_target)))
+		var/mob/living/snapped = get_snap_target(clicker)
+		if(snapped)
+			click_target = snapped
+		else
+			clicker.balloon_alert(clicker, "no fellow in range!")
 
 	if(charge_required && !charged)
 		end_charging()
@@ -561,6 +578,13 @@
 	var/base = cooldown_time
 	var/newcd = base
 
+	// Dominant faith adjust
+	if(istype(living_owner) && (primary_resource_type == SPELL_COST_DEVOTION || secondary_resource_type == SPELL_COST_DEVOTION) && !ispath(living_owner.patron.associated_faith, /datum/faith/old_god) && !ispath(GLOB.dominant_faith_tracker.dominant_faith, /datum/faith/old_god))
+		if(living_owner.patron.associated_faith == GLOB.dominant_faith_tracker.dominant_faith)
+			newcd -= base * DOMINANT_FAITH_ADJUST
+		else
+			newcd += base * DOMINANT_FAITH_ADJUST
+
 	// Stat scaling
 	var/stat_value = get_caster_stat(living_owner)
 	if(stat_value > SPELL_SCALING_THRESHOLD)
@@ -632,10 +656,33 @@
 			owner.balloon_alert(owner, "Can't focus on casting...")
 		return FALSE
 
+	if(HAS_TRAIT(owner, TRAIT_SPELL_VAMPIRE_BLOCK))
+		if(feedback)
+			owner.balloon_alert(owner, "My vitae drowns out the spell!")
+		return FALSE
+
 	if(HAS_TRAIT(owner, TRAIT_NOC_CURSE))
 		if(feedback)
 			owner.balloon_alert(owner, "My magicka has left me...")
 		return FALSE
+
+	if(owner.mind?.has_spellmiracle_block_antag())
+		if(primary_resource_type == SPELL_COST_DEVOTION || secondary_resource_type == SPELL_COST_DEVOTION)
+			if(feedback)
+				owner.balloon_alert(owner, "The gods reject what I am!")
+			return FALSE
+		if(source_aspect)
+			if(feedback)
+				owner.balloon_alert(owner, "The arcyne rejects what I am!")
+			return FALSE
+
+	// Vampires may only use T1 and lesser miracles, for self heal and disguise, more powerful miracles are denied - If you metacheck this I'll skrill you.
+	if(owner.mind?.has_antag_datum(/datum/antagonist/vampire))
+		var/vamp_miracle_tier = get_miracle_tier(type)
+		if(!isnull(vamp_miracle_tier) && vamp_miracle_tier > CLERIC_T1)
+			if(feedback)
+				owner.balloon_alert(owner, "I cannot disguise my nature to use such powers!")
+			return FALSE
 
 	var/mob/living/living_owner = owner
 	if(istype(living_owner) && living_owner.has_status_effect(/datum/status_effect/debuff/exposed))
@@ -646,6 +693,11 @@
 	if(!(spell_requirements & SPELL_CASTABLE_WHILE_MOUNTED) && owner.client && owner.buckled && isliving(owner.buckled))
 		if(feedback)
 			owner.balloon_alert(owner, "Too distracted riding to cast!")
+		return FALSE
+
+	if((spell_requirements & SPELL_REQUIRES_CMODE) && !owner.cmode)
+		if(feedback)
+			owner.balloon_alert(owner, "Only in combat mode!")
 		return FALSE
 
 	for(var/datum/action/cooldown/spell/spell in owner.actions)
@@ -660,7 +712,11 @@
 		return FALSE
 
 	// Certain spells are not allowed on the centcom zlevel
-	var/turf/caster_turf = get_turf(owner)
+	var/turf/caster_turf = owner.loc
+	if(!istype(caster_turf))
+		if(feedback)
+			owner.balloon_alert(owner, "Cannot cast here!")
+		return FALSE // no spell casting when you're inside something please
 	if((spell_requirements & SPELL_REQUIRES_STATION) && is_centcom_level(caster_turf.z))
 		if(feedback)
 			owner.balloon_alert(owner, "Cannot cast here!")
@@ -708,6 +764,12 @@
 	if(click_to_activate && !self_cast_possible)
 		if(cast_on == owner)
 			owner.balloon_alert(owner, "Can't self cast!")
+			return FALSE
+
+	if((spell_requirements & SPELL_REQUIRES_TARGET_CMODE) && isliving(cast_on))
+		var/mob/living/living_target = cast_on
+		if(!living_target.cmode)
+			owner.balloon_alert(owner, "They aren't ready to fight!")
 			return FALSE
 
 	return TRUE
@@ -1034,7 +1096,7 @@
 
 /// When finish charging the spell called from set_click_ability or try_casting
 /// This does not mean we succeeded in charging the spell just that we did mouseUp/ended the do_after
-/datum/action/cooldown/spell/proc/on_end_charge(success)
+/datum/action/cooldown/spell/proc/on_end_charge(success, quiet = FALSE)
 	if(owner)
 		owner.tempfixeye = FALSE
 		if(!owner.fixedeye)
@@ -1044,7 +1106,7 @@
 	if(success)
 		charged = TRUE
 		return
-	if(owner)
+	if(owner && !quiet)
 		owner.balloon_alert(owner, "Channeling was interrupted!")
 
 /// End the charging cycle
@@ -1145,16 +1207,56 @@
 	if(SW && SW.duration != -1)
 		SW.duration = max(SW.duration, world.time + (charge_swingdelay_duration || 20))
 
+/datum/action/cooldown/spell/proc/is_cancel_penalized()
+	if(!cancel_penalty_mult)
+		return FALSE
+	if(!source_aspect || ispath(source_aspect, /datum/magic_aspect/pseudo))
+		return FALSE
+	return TRUE
+
+/datum/action/cooldown/spell/proc/past_cancel_commitment()
+	if(fully_charged || charged)
+		return TRUE
+	if(charge_target_time <= 0 || !charge_started_at)
+		return FALSE
+	return (world.time - charge_started_at) >= max(charge_target_time * CANCEL_GRACE_FRACTION, CANCEL_GRACE_MINIMUM)
+
+/datum/action/cooldown/spell/proc/apply_cancel_penalty(was_fully_charged)
+	if(!owner)
+		return
+
+	var/penalty_cooldown = min(round(get_adjusted_cooldown() * CANCEL_PENALTY_COOLDOWN * cancel_penalty_mult), CANCEL_PENALTY_COOLDOWN_MAX)
+	if(penalty_cooldown > 0)
+		StartCooldown(penalty_cooldown)
+
+	owner.balloon_alert(owner, was_fully_charged ? "Canceled! Full cost applied!" : "Canceled! Partial cost applied!")
+
+	// Last, because a drain that caps the stamina bar emotes and sleeps.
+	var/cost_mult = (was_fully_charged ? CANCEL_PENALTY_COST_CHARGED : CANCEL_PENALTY_COST_PARTIAL) * cancel_penalty_mult
+	invoke_resource_cost(primary_resource_type, primary_resource_cost * cost_mult)
+	invoke_resource_cost(secondary_resource_type, secondary_resource_cost * cost_mult)
+
 /// Cancel casting and all its effects.
-/datum/action/cooldown/spell/proc/cancel_casting()
+/// [voluntary] must only be TRUE when the caster themselves backed out.
+/datum/action/cooldown/spell/proc/cancel_casting(voluntary = FALSE)
 	if(QDELETED(src)) // Timer
 		return
 	if(auto_cancel_timer)
 		deltimer(auto_cancel_timer)
 		auto_cancel_timer = null
+
+	var/penalise = voluntary && is_cancel_penalized() && past_cancel_commitment()
+	var/was_fully_charged = fully_charged || charged
+
 	charged = FALSE
 	end_charging() // end_charging() handles MOUSEDOWN re-registrations
 	reset_spell_cooldown()
+
+	if(!penalise)
+		return FALSE
+	// Async so the stamina drain (which can emote) leaves the SIGNAL_HANDLER call stack.
+	INVOKE_ASYNC(src, PROC_REF(apply_cancel_penalty), was_fully_charged)
+	return TRUE
 
 /// Checks if the current OWNER of the spell is in a valid state to say the spell's invocation
 /datum/action/cooldown/spell/proc/can_invoke(feedback = TRUE)
@@ -1488,6 +1590,11 @@
 	var/base = cooldown_time
 	var/stat_value = get_caster_stat(user)
 	var/stat_label = get_stat_label()
+	if((primary_resource_type == SPELL_COST_DEVOTION || secondary_resource_type == SPELL_COST_DEVOTION) && !ispath(user.patron.associated_faith, /datum/faith/old_god) && !ispath(GLOB.dominant_faith_tracker.dominant_faith, /datum/faith/old_god))
+		if(user.patron.associated_faith == GLOB.dominant_faith_tracker.dominant_faith)
+			breakdown += span_smallgreen("  Dominant faith: -[DisplayTimeText(base * DOMINANT_FAITH_ADJUST)]")
+		else
+			breakdown += span_smallred("  Suppressed faith: +[DisplayTimeText(base * DOMINANT_FAITH_ADJUST)]")
 	if(stat_value > SPELL_SCALING_THRESHOLD)
 		var/diff = min(stat_value, SPELL_POSITIVE_SCALING_THRESHOLD) - SPELL_SCALING_THRESHOLD
 		var/stat_mod = base * diff * COOLDOWN_REDUCTION_PER_INT
@@ -1632,7 +1739,11 @@
 			owner.balloon_alert(owner, "Spell ready — middle-click target!")
 		return
 
-	if(!on_end_charge(success)) // Give them another try — end_charging() already re-registered MOUSEDOWN
+	var/penalised = !success && is_cancel_penalized() && past_cancel_commitment()
+	if(penalised)
+		INVOKE_ASYNC(src, PROC_REF(apply_cancel_penalty), fully_charged)
+
+	if(!on_end_charge(success, quiet = penalised)) // Give them another try — end_charging() already re-registered MOUSEDOWN
 		return
 
 	var/list/modifiers = params2list(params)
@@ -1686,7 +1797,7 @@
 		return FALSE
 	if(target == owner)
 		return FALSE
-	if(isnull(attacker) && ispath(associated_skill, /datum/skill/magic/arcane))
+	if(isnull(attacker))
 		attacker = owner
 	return target.guard_deflect_spell(name, no_message, attacker)
 
@@ -1750,7 +1861,51 @@
 /// Override on spells that have an alt mode (e.g. cycling ward types). Called by the Alt Mode keybind (Shift+G).
 /// Return TRUE if handled.
 /datum/action/cooldown/spell/proc/toggle_alt_mode(mob/user)
-	return FALSE
+	if(!supports_fellowship_snap)
+		return FALSE
+	fellowship_snap = !fellowship_snap
+	if(fellowship_snap)
+		to_chat(user, span_notice("[name]: Fellowship Mode enabled - an off-target cast snaps to your nearest fellowship member in range."))
+	else
+		to_chat(user, span_notice("[name]: Fellowship Mode disabled."))
+	update_snap_maptext()
+	return TRUE
+
+/datum/action/cooldown/spell/proc/get_snap_target(mob/living/clicker)
+	if(!clicker.current_fellowship)
+		return null
+	var/mob/living/nearest
+	var/nearest_dist = INFINITY
+	for(var/mob/living/candidate in view(cast_range, clicker))
+		if(candidate == clicker)
+			continue
+		if(candidate.stat == DEAD)
+			continue
+		if(!candidate.mind)
+			continue
+		if(!shares_fellowship(clicker, candidate))
+			continue
+		var/dist = get_dist(clicker, candidate)
+		if(dist < nearest_dist)
+			nearest_dist = dist
+			nearest = candidate
+	return nearest
+
+/datum/action/cooldown/spell/proc/update_snap_maptext()
+	for(var/datum/hud/hud as anything in viewers)
+		var/atom/movable/screen/movable/action_button/B = viewers[hud]
+		var/atom/movable/screen/arc_maptext_holder/holder
+		for(var/atom/movable/screen/arc_maptext_holder/existing in B.vis_contents)
+			holder = existing
+			break
+		if(!holder)
+			holder = new(B)
+			B.vis_contents.Add(holder)
+		if(fellowship_snap)
+			holder.maptext = MAPTEXT("SNAP")
+			holder.color = "#66ff66"
+		else
+			holder.maptext = null
 
 /// Cancel spell visual effects. Cleans up rune (particles auto-clean via signal).
 /mob/living/proc/cancel_spell_visual_effects()

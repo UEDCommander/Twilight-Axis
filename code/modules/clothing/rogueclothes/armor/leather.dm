@@ -170,6 +170,13 @@
 	item_state = "hatangafur"
 	color = null
 
+/obj/item/clothing/suit/roguetown/armor/leather/heavy/coat/steppe/loadout
+	name = "aesthetic fur-woven hatanga coat"
+
+/obj/item/clothing/suit/roguetown/armor/leather/heavy/coat/steppe/loadout/Initialize()
+	. = ..()
+	loadoutize()
+
 /obj/item/clothing/suit/roguetown/armor/leather/heavy/coat/gravecoat
 	name = "gravetender's coat"
 	desc = "A padded coat bearing the same hues one would find on a Necran. Small steel braces adorn the wrists, a symbol of Necra's grasp on those who serve her."
@@ -186,6 +193,13 @@
 	item_state = "hatanga"
 	sellprice = 100
 	color = null
+
+/obj/item/clothing/suit/roguetown/armor/leather/heavy/coat/trophyfur/loadout
+	name = "aesthetic treated trophy fur robes"
+
+/obj/item/clothing/suit/roguetown/armor/leather/heavy/coat/trophyfur/loadout/Initialize()
+	. = ..()
+	loadoutize()
 
 /obj/item/clothing/suit/roguetown/armor/leather/heavy/jacket
 	name = "hardened leather jacket"
@@ -230,6 +244,13 @@
 /obj/item/clothing/suit/roguetown/armor/leather/heavy/freifechter/Initialize()
 	..()
 	update_icon()
+
+/obj/item/clothing/suit/roguetown/armor/leather/heavy/freifechter/loadout
+	name = "aesthetic fencing jacket"
+
+/obj/item/clothing/suit/roguetown/armor/leather/heavy/freifechter/loadout/Initialize()
+	. = ..()
+	loadoutize()
 
 /obj/item/clothing/suit/roguetown/armor/leather/heavy/shepherd
 	name = "shepherd's vest"
@@ -294,6 +315,8 @@
 	sleevetype = null
 	sleeved = null
 	armor_class = ARMOR_CLASS_NONE
+	grid_height = 64
+	grid_height = 64
 
 /obj/item/clothing/suit/roguetown/armor/leather/vest/sailor
 	name = "sea jacket"

@@ -1042,6 +1042,16 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	category = "Аксессуары"
 	path = /obj/item/clothing/head/roguetown/dendormask
 
+/datum/loadout_item/tutorialbook
+	name = "A Tutorialeer's Handbook"
+	category = "Аксессуары"
+	path = /obj/item/recipe_book/survival
+
+/datum/loadout_item/ball
+	name = "Ball"
+	category = "Аксессуары"
+	path = /obj/item/ball
+
 /datum/loadout_item/eorahood
 	name = "Opera Mask - Eoran Hood"
 	category = list("Аксессуары", "Донат")
@@ -1882,6 +1892,7 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/enchantingkit/weapon/euthanasia
 	donatitem = TRUE
 
+
 /*
 /datum/loadout_item/donator_zydrasiconocrown
 	name = "Donator Kit - Iconoclast Crown - Required: Barred Helmet(Only men, no small races)"
@@ -2316,6 +2327,12 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/enchantingkit/kumie_shirt
 	donatitem = TRUE
 
+/datum/loadout_item/donator/universal/armor_gothic_psydonic
+	name = "Donator Kit - Gothic Psydonic Cuirass - Required: Psydonic Cuirass"
+	category = list("Броня", "Донат")
+	path = /obj/item/enchantingkit/gothicpsydoniccuirass
+	donatitem = TRUE
+
 /datum/loadout_item/donator_kumie4
 	name = "Donator Kit - Aristocratic Coat - Required: Hardened Leather Coat or Lightweight Brigandine(No Small Races)"
 	category = list("Броня", "Донат")
@@ -2383,6 +2400,13 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/enchantingkit/weapon/triumph_weaponkit_wodao
 	category = list("Оружие", "Донат")
 	donatitem = TRUE
+
+/datum/loadout_item/donator_athena_solace
+	name = "Donator Kit - Solace - Required: Rapier"
+	path = /obj/item/enchantingkit/weapon/athena_solace
+	category = list("Оружие", "Донат")
+	donatitem = TRUE
+	donat_tier = 2
 
 /datum/loadout_item/donator_weaponkitdadao
 	name = "Donator Kit - Dadao - Required: Iron Hunting Sword, Iron Dueling Messer, Steel Messer, Steel Hunting Sword Or Falx"
@@ -2653,11 +2677,12 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/clothing/cloak/cape/blkknight
 	donatitem = TRUE
 
-/datum/loadout_item/donat/furcloak
-	name = "Меховой плащ"
+/datum/loadout_item/donator/longest_night
+	name = "Donator Item - Longest Night Cloak"
 	category = list("Плащи", "Донат")
-	path = /obj/item/clothing/cloak/raincloak/furcloak
+	path = /obj/item/clothing/cloak/longest_night
 	donatitem = TRUE
+	donat_tier = 2
 
 /datum/loadout_item/donat/snowcloak
 	name = "Снежный плащ"
@@ -3677,6 +3702,13 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	name = "Donator Kit - Imbued Longsword - Required: Longsword"
 	category = list("Оружие", "Донат")
 	path = /obj/item/enchantingkit/weapon/donator_imbuedlongsword
+	donatitem = TRUE
+	donat_tier = 2
+
+/datum/loadout_item/donator/falling_star
+	name = "Donator Kit - Falling Star - Required: Greatsword"
+	category = list("Оружие", "Донат")
+	path = /obj/item/enchantingkit/weapon/falling_star
 	donatitem = TRUE
 	donat_tier = 2
 

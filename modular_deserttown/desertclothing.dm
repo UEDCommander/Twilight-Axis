@@ -612,7 +612,6 @@
 	icon = 'modular_deserttown/icons/clothing/belts.dmi'
 	mob_overlay_icon = 'modular_deserttown/icons/clothing/onmob/belts.dmi'
 	icon_state = "noblesash"
-	sellprice = 5
 
 /datum/crafting_recipe/roguetown/sewing/zybnoblesash
 	name = "sash (zybantine noble)"
