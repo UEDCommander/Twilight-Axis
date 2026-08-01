@@ -63,13 +63,23 @@
 			update_icon()
 			break
 
-/obj/structure/handcart/dump_contents()
-	var/atom/L = drop_location()
-	for(var/atom/movable/AM in src)
-		AM.forceMove(L)
+/obj/structure/handcart/dump_contents() // TA EDIT START
+	var/turf/dump_turf = get_turf(src)
+	if(!dump_turf)
+		return
+	var/list/items_to_dump = contents.Copy()
+	for(var/atom/movable/AM as anything in items_to_dump)
+		if(QDELETED(AM))
+			contained_items -= AM
+			continue
+		if(AM.loc != src)
+			remove_from(AM)
+			continue
+		if(!AM.forceMove(dump_turf))
+			continue
 		remove_from(AM)
-	contained_items = list()
-	current_capacity = 0
+	recalculate_capacity()
+	update_icon() // TA EDIT END
 
 /obj/structure/handcart/Destroy()
 	dump_contents()
