@@ -239,6 +239,7 @@
 	var/match_delay = 10
 	var/effective_range = 5
 	var/obj/item/twilight_ramrod/myrod = null
+	var/ramrod_busy = FALSE
 
 	//Advanced icon stuff
 	var/advanced_icon				//Default icon
@@ -276,22 +277,28 @@
 /obj/item/gun/ballistic/twilight_firearm/attack_right(mob/user)
 	if(user.get_active_held_item())
 		return
-	else
-		if(locktype == LOCKTYPE_MATCHLOCK || locktype == LOCKTYPE_WHEELLOCK)
-			if(myrod)
-				playsound(src, "sound/items/sharpen_short1.ogg",  100, FALSE)
-				to_chat(user, "<span class='warning'>I draw the ramrod from [src]!</span>")
-				var/obj/item/twilight_ramrod/AM
-				for(AM in src)
-					user.put_in_hands(AM)
-					myrod = null
-				if(advanced_icon_norod)
-					if(reloaded && advanced_icon_r_norod)
-						icon = advanced_icon_r_norod
-					else
-						icon = advanced_icon_norod
-			else
-				to_chat(user, "<span class='warning'>There is no rod stowed in [src]!</span>")
+	if(!(locktype == LOCKTYPE_MATCHLOCK || locktype == LOCKTYPE_WHEELLOCK))
+		return
+	if(ramrod_busy)
+		return
+
+	var/obj/item/twilight_ramrod/R = myrod
+	if(!R || QDELETED(R) || R.loc != src)
+		myrod = null
+		to_chat(user, "<span class='warning'>There is no rod stowed in [src]!</span>")
+		return
+
+	ramrod_busy = TRUE
+	myrod = null
+	playsound(src, "sound/items/sharpen_short1.ogg", 100, FALSE)
+	to_chat(user, "<span class='warning'>I draw the ramrod from [src]!</span>")
+	user.put_in_hands(R)
+	if(advanced_icon_norod)
+		if(reloaded && advanced_icon_r_norod)
+			icon = advanced_icon_r_norod
+		else
+			icon = advanced_icon_norod
+	ramrod_busy = FALSE
 
 /datum/intent/shoot/twilight_firarm
 	chargedrain = 0
@@ -371,6 +378,37 @@
 	if(gripped_intents)
 		wield(user)
 	update_icon()
+
+/obj/item/gun/ballistic/twilight_firearm/proc/handle_ramrod(obj/item/twilight_ramrod/R, mob/user, load_time_skill)
+	if(!(locktype == LOCKTYPE_MATCHLOCK || locktype == LOCKTYPE_WHEELLOCK))
+		return
+
+	if(!reloaded && chambered)
+		user.visible_message("<span class='notice'>[user] begins ramming the [R.name] down the barrel of [src].</span>")
+		playsound(src, "modular_twilight_axis/firearms/sound/ramrod.ogg", 100, FALSE)
+		if(do_after(user, load_time_skill, src))
+			user.visible_message("<span class='notice'>[user] has finished reloading [src].</span>")
+			reloaded = TRUE
+			if(advanced_icon_r_norod)
+				icon = advanced_icon_r_norod
+		return
+
+	if(myrod)
+		to_chat(user, span_warning("There's already a [myrod.name] inside of the [name]."))
+		return
+
+	if(user.transferItemToLoc(R, src))
+		myrod = R
+		playsound(src, "modular_twilight_axis/firearms/sound/musketload.ogg", 100, FALSE)
+		if(chambered)
+			user.visible_message("<span class='notice'>[user] stows the [R.name] under the barrel of [src].</span>")
+		else
+			user.visible_message("<span class='notice'>[user] stows the [R.name] under the barrel of [src] without chambering it.</span>")
+		if(advanced_icon)
+			if(reloaded && advanced_icon_r)
+				icon = advanced_icon_r
+			else
+				icon = advanced_icon
 
 /obj/item/gun/ballistic/twilight_firearm/attackby(obj/item/A, mob/user, params)
 	var/firearm_skill = (user?.mind ? user.get_skill_level(/datum/skill/combat/twilight_firearms) : 1)
@@ -467,41 +505,12 @@
 					user.put_in_hands(E)
 			return
 	else if(istype(A, /obj/item/twilight_ramrod))
-		if(locktype == LOCKTYPE_MATCHLOCK || locktype == LOCKTYPE_WHEELLOCK)
-			var/obj/item/twilight_ramrod/R=A
-			if(!reloaded)
-				if(chambered)
-					user.visible_message("<span class='notice'>[user] begins ramming the [R.name] down the barrel of [src].</span>")
-					playsound(src, "modular_twilight_axis/firearms/sound/ramrod.ogg",  100, FALSE)
-					if(do_after(user, load_time_skill, src))
-						user.visible_message("<span class='notice'>[user] has finished reloading [src].</span>")
-						reloaded = TRUE
-						if(advanced_icon_r_norod)
-							icon = advanced_icon_r_norod
-					return
-			if(reloaded && !myrod)
-				user.transferItemToLoc(R, src)
-				myrod = R
-				playsound(src, "modular_twilight_axis/firearms/sound/musketload.ogg",  100, FALSE)
-				user.visible_message("<span class='notice'>[user] stows the [R.name] under the barrel of [src].</span>")
-				if(advanced_icon)
-					if(reloaded && advanced_icon_r)
-						icon = advanced_icon_r
-					else
-						icon = advanced_icon
-			if(!chambered && !myrod)
-				user.transferItemToLoc(R, src)
-				myrod = R
-				playsound(src, "modular_twilight_axis/firearms/sound/musketload.ogg",  100, FALSE)
-				user.visible_message("<span class='notice'>[user] stows the [R.name] under the barrel of [src] without chambering it.</span>")
-				if(advanced_icon)
-					if(reloaded && advanced_icon_r)
-						icon = advanced_icon_r
-					else
-						icon = advanced_icon
-			if(!myrod == null)
-				to_chat(user, span_warning("There's already a [R.name] inside of the [name]."))
-				return
+		if(ramrod_busy)
+			return
+		ramrod_busy = TRUE
+		handle_ramrod(A, user, load_time_skill)
+		ramrod_busy = FALSE
+		return
 	else if(istype(A, /obj/item/natural/bundle/fibers))
 		var/obj/item/natural/bundle/fibers/W = A
 		if(locktype == LOCKTYPE_FUSE)
