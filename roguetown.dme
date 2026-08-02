@@ -4060,6 +4060,7 @@
 #include "modular_twilight_axis\code\modules\roguetown\roguemachine\hoardmaster.dm"
 #include "modular_twilight_axis\code\modules\roguetown\structures\onager.dm"
 #include "modular_twilight_axis\code\modules\roguetown\structures\onager_unfinished.dm"
+#include "modular_twilight_axis\code\modules\roguetown\structures\cannon.dm"
 #include "modular_twilight_axis\code\modules\spell\spell_types\runes.dm"
 #include "modular_twilight_axis\code\modules\spell\spell_types\wizard\newspell.dm"
 #include "modular_twilight_axis\code\modules\spell\spell_types\wizard\invoked_aoe\magicshield.dm"
