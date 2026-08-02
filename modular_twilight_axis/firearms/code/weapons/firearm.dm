@@ -269,7 +269,8 @@
 	if(silenced)
 		fire_sound = "modular_twilight_axis/firearms/sound/umbra_fire2.ogg"
 	else
-		fire_sound = pick(actual_gunpowder.fire_sounds)
+		if(!istype(src, /obj/item/gun/ballistic/twilight_firearm/arquebus_pistol/puffer))
+			fire_sound = pick(actual_gunpowder.fire_sounds)
 	. = ..()
 
 /obj/item/gun/ballistic/twilight_firearm/attack_right(mob/user)
@@ -408,6 +409,7 @@
 							user.visible_message("<span class='notice'>[user] inserts [V.name] into the breech of [src].</span>")
 							if(!gunpowder)
 								gunpowder = "black gunpowder"
+								actual_gunpowder = /obj/item/twilight_powderflask
 							if (chambered == null && bolt_type == BOLT_TYPE_NO_BOLT)
 								chamber_round()
 							if(advanced_icon_r)
