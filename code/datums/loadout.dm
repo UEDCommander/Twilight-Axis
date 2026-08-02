@@ -603,6 +603,16 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	path = /obj/item/clothing/cloak/tabard/stabard/crusader/t/undivided
 	triumph_cost = 3
 
+/datum/loadout_item/ranger_cloak
+	name = "Ranger Cloak, Forest Green"
+	category = "Плащи"
+	path = /obj/item/clothing/cloak/rangercloak
+
+/datum/loadout_item/ranger_cloak_gray
+	name = "Ranger Cloak, Neutral Gray"
+	category = "Плащи"
+	path = /obj/item/clothing/cloak/rangercloak/gray
+
 /datum/loadout_item/scaledcloak
 	name = "Scaled Cloak"
 	category = "Плащи"
