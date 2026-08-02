@@ -183,7 +183,7 @@
 	inviter_ckey = null
 	inviter_name = null
 
-/obj/item/ccg_deck/proc/get_active_match()
+/obj/item/ccg_deck/proc/get_active_match() as /datum/ccg_match
 	if(match)
 		return match
 	if(match_host?.match)
