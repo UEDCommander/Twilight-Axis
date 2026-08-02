@@ -164,7 +164,13 @@
 	var/skill = user.get_skill_level(/datum/skill/combat/twilight_firearms)
 	if(skill)
 		misfire_chance = max(0, misfire_chance - (skill * 2))
-		spread = max(3, spread / skill)
+	if(user.client)
+		if(user.client.chargedprog >= 100)
+			spread = 0
+		else
+			spread = 150 - (150 * (user.client.chargedprog / 100))
+	else
+		spread = 0
 	if(prob(misfire_chance))
 		to_chat(user, span_warning("The [name] misfires!"))
 		explosion(src, light_impact_range = 2, heavy_impact_range = 1, smoke = FALSE, soundin = 'sound/misc/explode/bomb.ogg')
@@ -190,7 +196,6 @@
 
 /datum/intent/shoot/twilight_runelock
 	chargedrain = 0
-	no_early_release = TRUE
 
 /datum/intent/shoot/twilight_runelock/get_chargetime()
 	if(mastermob && chargetime)
@@ -210,7 +215,6 @@
 /datum/intent/arc/twilight_runelock
 	chargetime = 1
 	chargedrain = 0
-	no_early_release = TRUE
 
 /datum/intent/arc/twilight_runelock/get_chargetime()
 	if(mastermob && chargetime)
