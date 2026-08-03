@@ -1460,7 +1460,7 @@ SUBSYSTEM_DEF(gamemode)
 	for(var/datum/round_event_control/event as anything in valid_events)
 		if(event.occurrences)
 			continue
-		if((event.storyteller_antag_flags & STORYTELLER_ANTAG_VILLAIN) && event.vars["consumes_hard_antag_slot"])
+		if(event.storyteller_antag_flags & STORYTELLER_ANTAG_VILLAIN)
 			guaranteed_events[event] = valid_events[event]
 	return guaranteed_events
 
