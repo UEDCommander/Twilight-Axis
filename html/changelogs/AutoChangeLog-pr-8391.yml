@@ -1,5 +1,0 @@
-author: "borneblood"
-delete-after: True
-changes:
-  - bugfix: "Bees can now timeout when pursuing bad plants."
-  - rscadd: "Examining Apiary gives you a few more insights on how your bees are doing. Magnifying glasses also improved."

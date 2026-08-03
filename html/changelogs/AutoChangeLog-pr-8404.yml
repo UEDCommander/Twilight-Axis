@@ -1,4 +1,0 @@
-author: "KatTheFox"
-delete-after: True
-changes:
-  - bugfix: "Wings will now render below tails from the south specifically. This fix only applies to new character slots or if you change your character's species to something else and back. Which will reset all your customization. Yeah."
