@@ -128,15 +128,17 @@ SUBSYSTEM_DEF(automapper)
 	var/list/main_map_files = islist(SSmapping.config.map_file) ? SSmapping.config.map_file : list(SSmapping.config.map_file)
 	for(var/datum/map_template/automap_template/iterating_template as anything in preloaded_map_templates)
 		var/builtin_map_matches = iterating_template.affects_builtin_map && (LAZYLEN(main_map_files & map_names) || (LAZYLEN(map_names) == 1 && (map_names[1] in main_map_files)))
-		if(!builtin_map_matches && !(iterating_template.required_map in map_names))
+		if(builtin_map_matches)
+			iterating_template.resolve_load_turf()
+			if(iterating_template.load_turf)
+				for(var/turf/old_turf as anything in iterating_template.get_affected_turfs(iterating_template.load_turf, FALSE))
+					init_contents(old_turf)
+		else if(!(iterating_template.required_map in map_names))
 			continue
 
 		iterating_template.resolve_load_turf()
 		if(!iterating_template.load_turf)
 			CRASH("Automapper: locate failed for [iterating_template.name] at [iterating_template.load_x],[iterating_template.load_y],[iterating_template.load_z] (required_map=[iterating_template.required_map]) world=[world.maxx]x[world.maxy]x[world.maxz]")
-
-		for(var/turf/old_turf as anything in iterating_template.get_affected_turfs(iterating_template.load_turf, FALSE))
-			init_contents(old_turf)
 
 		iterating_template.nuke_placement_area(iterating_template.load_turf, FALSE, /turf/open/transparent/openspace)
 
@@ -153,7 +155,7 @@ SUBSYSTEM_DEF(automapper)
 	for(var/atom/atom_to_init as anything in parent.get_all_contents_ignoring(type_blacklist) - parent)
 		if(atom_to_init.flags_1 & INITIALIZED_1)
 			continue
-		SSatoms.InitAtom(atom_to_init, FALSE, mapload_args)
+		SSatoms.InitAtom(atom_to_init, mapload_args)
 
 	SSatoms.initialized = previous_initialized_value
 
