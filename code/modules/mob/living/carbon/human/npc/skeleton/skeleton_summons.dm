@@ -1,5 +1,13 @@
 /mob/living/carbon/human/species/skeleton/npc/summon //Unique skilled NPC summons exclusive to necromancers, these guys are a menace to fight.
 	skel_outfit = /datum/outfit/job/roguetown/npc/skeleton/npc/summon
+	ai_controller = /datum/ai_controller/human_npc/melee // TA EDIT START
+	pet_passive = FALSE
+
+/mob/living/carbon/human/species/skeleton/npc/summon/after_creation()
+	..()
+	ADD_TRAIT(src, TRAIT_CONJURED_SUMMON, TRAIT_GENERIC)
+	if(ai_controller)
+		ai_controller.wake_for_combat() // TA EDIT END
 
 /datum/outfit/job/roguetown/npc/skeleton/npc/summon //On par getup almost with greater summons, because sovl.
 

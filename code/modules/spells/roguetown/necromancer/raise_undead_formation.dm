@@ -84,12 +84,18 @@
 			S.health = S.maxHealth
 
 		var/aggro_range = 8
+		var/mob/living/initial_target // TA EDIT
+		var/datum/targetting_datum/targetting_datum = S.ai_controller?.blackboard[BB_TARGETTING_DATUM] // TA EDIT
 
 		for(var/mob/living/M in view(aggro_range, S))
 			if(M == S)
 				continue
 			if(M.stat == DEAD)
 				continue
+
+			if(!initial_target && targetting_datum && targetting_datum.can_attack(S, M)) // TA EDIT
+				initial_target = M // TA EDIT
+
 			if(M.mind)
 				continue
 			if(!M.ai_controller)
@@ -108,6 +114,16 @@
 				aggro.add_threat_to_mob(S, 1000)
 				aggro.add_threat_to_mob(owner, -1000)
 
+		if(S.ai_controller) // TA EDIT START
+			S.pet_passive = FALSE
+			if(initial_target)
+				var/datum/component/ai_aggro_system/skeleton_aggro = S.GetComponent(/datum/component/ai_aggro_system)
+				if(skeleton_aggro)
+					skeleton_aggro.add_threat_to_mob(initial_target, 1000)
+				else
+					S.ai_controller.set_blackboard_key(BB_BASIC_MOB_CURRENT_TARGET, initial_target)
+					S.ai_controller.set_blackboard_key(BB_HIGHEST_THREAT_MOB, initial_target)
+			S.ai_controller.wake_for_combat() // TA EDIT END
 
 		apply_mob_lifespan(S, owner, spawn_lifespan)
 

@@ -38,7 +38,7 @@
 	apply_mob_lifespan(skeleton_new, owner, spawn_lifespan)
 	var/caster_name = owner.mind?.current?.real_name
 	if(caster_name)
-		addtimer(CALLBACK(src, PROC_REF(add_skeleton_faction), skeleton_new, caster_name), 1.1 SECONDS)
+		add_skeleton_faction(skeleton_new, caster_name) // TA EDIT
 	return TRUE
 
 /datum/action/cooldown/spell/raise_undead_guard/proc/add_skeleton_faction(mob/living/skeleton, caster_name)
