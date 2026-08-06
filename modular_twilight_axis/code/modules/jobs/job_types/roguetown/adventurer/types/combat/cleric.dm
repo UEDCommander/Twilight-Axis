@@ -251,7 +251,6 @@
 	outfit = /datum/outfit/job/roguetown/adventurer/oblate
 	forbidden_races = list(RACES_CONSTRUCT RACES_OOZE)
 	allowed_patrons = list(/datum/patron/old_god)
-	subclass_languages = list(/datum/language/otavan)
 	min_pq = 9
 	traits_applied = list(
 		TRAIT_IGNOREDAMAGESLOWDOWN,
@@ -273,7 +272,6 @@
 		/datum/skill/magic/holy = SKILL_LEVEL_JOURNEYMAN,
 		/datum/skill/craft/sewing = SKILL_LEVEL_APPRENTICE,
 		/datum/skill/craft/cooking = SKILL_LEVEL_APPRENTICE,
-		/datum/skill/craft/sewing = SKILL_LEVEL_APPRENTICE,
 		/datum/skill/labor/fishing = SKILL_LEVEL_APPRENTICE,
 		/datum/skill/misc/athletics = SKILL_LEVEL_APPRENTICE,
 		/datum/skill/misc/climbing = SKILL_LEVEL_APPRENTICE,
@@ -298,14 +296,17 @@
 	cloak = /obj/item/clothing/cloak/absolutionistrobe/black
 	head = /obj/item/clothing/head/roguetown/helmet/blacksteel/psychains
 	backpack_contents = list(
-		/obj/item/storage/belt/rogue/pouch/coins/poor = 1,
 		/obj/item/flashlight/flare/torch = 1,
 		/obj/item/storage/belt/rogue/pouch/medicine = 1
 		)
-	if(should_wear_masc_clothes(H))
-		mask = /obj/item/clothing/head/roguetown/roguehood/psydon/black
-	if(should_wear_femme_clothes(H))
-		mask = /obj/item/clothing/mask/rogue/blindfold/psydon
+	var/list/facewear = list(
+		"Psydonic Hood" = /obj/item/clothing/head/roguetown/roguehood/psydon/black,
+		"Blessed Blindfold" = /obj/item/clothing/mask/rogue/blindfold/psydon
+	)
+	var/facewear_choice = input(H, "Choose your facewear.", "PSYDON'S VESTMENTS.") as anything in facewear
+	if(!facewear_choice)
+		facewear_choice = "Psydonic Hood"
+	mask = facewear[facewear_choice]
 	if(H.mind)
 		H.mind.RemoveSpell(/datum/action/cooldown/spell/psydon/respite)
 		H.mind.AddSpell(new /datum/action/cooldown/spell/psydon/persist)
