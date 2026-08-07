@@ -1,3 +1,67 @@
+/datum/ai_planning_subtree/summoned_skeleton_find_target // TA EDIT START
+/datum/ai_planning_subtree/summoned_skeleton_find_target/SelectBehaviors(datum/ai_controller/controller, delta_time)
+	var/mob/living/pawn = controller.pawn
+	if(!istype(pawn))
+		return
+
+	var/datum/targetting_datum/targetting_datum = controller.blackboard[BB_TARGETTING_DATUM]
+	if(!targetting_datum)
+		return
+
+	var/mob/living/current_target = controller.blackboard[BB_BASIC_MOB_CURRENT_TARGET]
+	var/maintain_range = controller.blackboard[BB_AGGRO_MAINTAIN_RANGE] || 12
+	if(isliving(current_target) && !QDELETED(current_target) && current_target.stat != DEAD && get_dist(pawn, current_target) <= maintain_range && targetting_datum.can_attack(pawn, current_target))
+		return
+
+	controller.clear_blackboard_key(BB_BASIC_MOB_CURRENT_TARGET)
+	controller.clear_blackboard_key(BB_BASIC_MOB_CURRENT_TARGET_HIDING_LOCATION)
+	controller.clear_blackboard_key(BB_HIGHEST_THREAT_MOB)
+
+	var/mob/living/commanded_target = controller.blackboard[BB_CURRENT_PET_TARGET]
+	if(isliving(commanded_target) && !QDELETED(commanded_target) && commanded_target.stat != DEAD && targetting_datum.can_attack(pawn, commanded_target))
+		controller.CancelActions()
+		controller.set_blackboard_key(BB_BASIC_MOB_CURRENT_TARGET, commanded_target)
+		controller.set_blackboard_key(BB_HIGHEST_THREAT_MOB, commanded_target)
+		pawn.cmode = TRUE
+		return
+	if(commanded_target)
+		controller.clear_blackboard_key(BB_CURRENT_PET_TARGET)
+
+	if(pawn.pet_passive)
+		return
+
+	var/next_scan = controller.blackboard["summoned_skeleton_next_target_scan"] || 0
+	if(world.time < next_scan)
+		return
+	controller.set_blackboard_key("summoned_skeleton_next_target_scan", world.time + 0.5 SECONDS)
+
+	var/aggro_range = controller.blackboard[BB_AGGRO_RANGE] || 9
+	var/mob/living/chosen_target
+	var/best_distance = aggro_range + 1
+	for(var/mob/living/potential_target in view(aggro_range, pawn))
+		if(potential_target == pawn || QDELETED(potential_target) || potential_target.stat == DEAD)
+			continue
+		if(!targetting_datum.can_attack(pawn, potential_target))
+			continue
+		if(potential_target.rogue_sneaking && !pawn.npc_detect_sneak(potential_target, 0))
+			continue
+		var/target_distance = get_dist(pawn, potential_target)
+		if(target_distance >= best_distance)
+			continue
+		chosen_target = potential_target
+		best_distance = target_distance
+
+	if(!chosen_target)
+		return
+
+	controller.CancelActions()
+	var/datum/component/ai_aggro_system/aggro = pawn.GetComponent(/datum/component/ai_aggro_system)
+	if(aggro)
+		aggro.add_threat_to_mob(chosen_target, 100)
+	controller.set_blackboard_key(BB_BASIC_MOB_CURRENT_TARGET, chosen_target)
+	controller.set_blackboard_key(BB_HIGHEST_THREAT_MOB, chosen_target)
+	pawn.cmode = TRUE // TA EDIT END
+
 /datum/action/cooldown/spell/raise_undead_formation
 	name = "Raise Undead Formation"
 	desc = "Invoke forbidden magicka to summon a cohort of mindless, shambling skeletons.\nMindless skeletons can be given orders to guard, patrol, and attack by their summoner.\nThese skeletons are weaker than their more complex-jointed counterparts, but are harder to incapacitate."
@@ -87,6 +151,26 @@
 		var/mob/living/initial_target // TA EDIT
 		var/datum/targetting_datum/targetting_datum = S.ai_controller?.blackboard[BB_TARGETTING_DATUM] // TA EDIT
 
+		if(S.ai_controller) // TA EDIT START
+			S.ai_controller.CancelActions()
+			if(istype(S, /mob/living/simple_animal/hostile/rogue/skeleton/spear))
+				S.ai_controller.replace_planning_subtrees(list(
+					/datum/ai_planning_subtree/summoned_skeleton_find_target,
+					/datum/ai_planning_subtree/attack_obstacle_in_path,
+					/datum/ai_planning_subtree/spacing/melee,
+					/datum/ai_planning_subtree/basic_melee_attack_subtree/spear,
+					/datum/ai_planning_subtree/being_a_minion,
+				))
+			else
+				S.ai_controller.replace_planning_subtrees(list(
+					/datum/ai_planning_subtree/summoned_skeleton_find_target,
+					/datum/ai_planning_subtree/attack_obstacle_in_path,
+					/datum/ai_planning_subtree/basic_melee_attack_subtree,
+					/datum/ai_planning_subtree/being_a_minion,
+				))
+			S.ai_controller.set_blackboard_key(BB_FOLLOW_TARGET, owner)
+			S.pet_passive = FALSE // TA EDIT END
+
 		for(var/mob/living/M in view(aggro_range, S))
 			if(M == S)
 				continue
@@ -115,7 +199,6 @@
 				aggro.add_threat_to_mob(owner, -1000)
 
 		if(S.ai_controller) // TA EDIT START
-			S.pet_passive = FALSE
 			if(initial_target)
 				var/datum/component/ai_aggro_system/skeleton_aggro = S.GetComponent(/datum/component/ai_aggro_system)
 				if(skeleton_aggro)
@@ -123,6 +206,7 @@
 				else
 					S.ai_controller.set_blackboard_key(BB_BASIC_MOB_CURRENT_TARGET, initial_target)
 					S.ai_controller.set_blackboard_key(BB_HIGHEST_THREAT_MOB, initial_target)
+			S.ai_controller.nudge_target_scan()
 			S.ai_controller.wake_for_combat() // TA EDIT END
 
 		apply_mob_lifespan(S, owner, spawn_lifespan)
