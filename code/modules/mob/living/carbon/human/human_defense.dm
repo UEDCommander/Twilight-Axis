@@ -366,6 +366,8 @@
 /mob/living/carbon/human/attack_animal(mob/living/simple_animal/M)
 	. = ..()
 	if(.)
+		if(checkdefense(M.a_intent, M)) // TA EDIT START
+			return FALSE // TA EDIT END
 		var/damage = rand(M.melee_damage_lower, M.melee_damage_upper)
 		if(check_shields(M, damage, "the [M.name]", MELEE_ATTACK, M.armor_penetration))
 			return FALSE
