@@ -225,3 +225,18 @@
   - refactor: Zizo skeleton summoning is fixed (again x6) by reworking the spell.
   - rscdel: The new Zizo spells have been reverted temporarily for reorganization
       purposes, they'll be back shortly.
+2026-08-07:
+  Quinalion:
+  - rscadd: Penitent class for adventurer.
+  Ryan180602:
+  - balance: Reduce integrity range of light armour.
+  - balance: most skin armour is now manual instead of regenerating.
+  - balance: most skin armour is mutually exclusive to other armour in shirt/armour
+      slot.
+  - rscadd: donor item
+  Ryumi:
+  - qol: Examine windows now display the character's custom song title, if they have
+      one set.
+  WeNeedMorePhoron:
+  - rscadd: Blockade now scales threat and rewards up to the sixth instead of the
+      fifth person.
