@@ -75,6 +75,7 @@ GLOBAL_VAR_INIT(adventurer_hugbox_duration_still, 3 MINUTES)
 		/datum/advclass/foreigner/bronzeclad,
 		/datum/advclass/foreigner/lesserblackoak
 	)
+	has_subprefs = TRUE
 
 /datum/status_effect/advclass_selection
 	id = "advclass_selection"
