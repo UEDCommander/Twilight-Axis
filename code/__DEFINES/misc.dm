@@ -512,4 +512,4 @@ GLOBAL_LIST_INIT(pda_styles, sortList(list(MONO, VT, ORBITRON, SHARE)))
 #define DEAD_TO_ZOMBIE_TIME 7 MINUTES	/// Time spent dead before rising as a deadite.
 #define REVIVED_DEBUFF_DURATION 15 MINUTES	/// Revival Sickness.
 #define DEATHMARK_GRACE_PERIOD 5 MINUTES	/// Grace after a chair revival before the deathmark is checked for and applied.
-#define PERMADEATH_DURATION 10 MINUTES	/// How long the deathmark lasts once it lands. Dying inside it is permanent for the round.
+#define PERMADEATH_DURATION 60 MINUTES	/// How long the deathmark lasts once it lands. Dying inside it is permanent for the round.
