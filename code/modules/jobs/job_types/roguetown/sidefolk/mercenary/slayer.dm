@@ -23,6 +23,7 @@
 		/datum/skill/combat/wrestling = SKILL_LEVEL_JOURNEYMAN,
 		/datum/skill/combat/unarmed = SKILL_LEVEL_APPRENTICE,
 		/datum/skill/misc/athletics = SKILL_LEVEL_EXPERT,
+		/datum/skill/misc/reading = SKILL_LEVEL_APPRENTICE,
 		/datum/skill/misc/climbing = SKILL_LEVEL_JOURNEYMAN,
 		/datum/skill/misc/tracking = SKILL_LEVEL_JOURNEYMAN,
 		/datum/skill/labor/butchering = SKILL_LEVEL_JOURNEYMAN, // Butcher trolls
@@ -47,7 +48,8 @@
 			/obj/item/rogueweapon/huntingknife = 1,
 			/obj/item/roguekey/mercenary = 1,
 			/obj/item/rope/chain = 1,
-			/obj/item/natural/head/troll = 1 // will spawn inside of the belt but I can't be bothered to make it spawn in the headhook
+			/obj/item/natural/head/troll = 1, // will spawn inside of the belt but I can't be bothered to make it spawn in the headhook
+			/obj/item/book/rogue/trophy_rules = 1 //TA edit - added trophy_hunter component
 		)
 		var/weapons = list("Hatchets", "Greataxe")
 		var/weapon_choice = input(H, "Choose your weapon", "How will you channel your rage?") as anything in weapons
@@ -58,6 +60,7 @@
 				backl = /obj/item/rogueweapon/stoneaxe/woodcut/steel/slayer
 				beltl = /obj/item/rogueweapon/stoneaxe/woodcut/steel/slayer
 				ADD_TRAIT(H, TRAIT_DUALWIELDER, TRAIT_GENERIC)
+		H.AddComponent(/datum/component/trophy_hunter) //TA edit - added trophy_hunter component
 
 /obj/item/rogueweapon/stoneaxe/woodcut/steel/slayer
 	name = "slayer axe"
@@ -132,7 +135,7 @@
 		/datum/species/dwarf/mountain
 		)
 	surgery_cover = FALSE
-	max_integrity = 135
+	max_integrity = 325
 	sewrepair = FALSE
 	repairmsg_begin = "The thick skin cover starts to bulge and repair tears"
 	repairmsg_continue = "More of the tears on the skin close up"
@@ -140,7 +143,7 @@
 	repairmsg_end = "Your skin looks just as shiny as ever, like it might stop the blow of a fully grown troll once more."
 
 	interrupt_damount = 25
-	repair_time = 35 SECONDS
+	repair_time = 30 SECONDS
 
 /obj/item/clothing/suit/roguetown/armor/regenerating/slayer/Initialize(mapload)
 	. = ..()
@@ -167,6 +170,12 @@
 	sound = 'sound/magic/axedance.ogg'
 
 /obj/effect/proc_holder/spell/self/axedance/cast(mob/living/user)
+	if(ishuman(user))
+		var/mob/living/carbon/human/H = user
+		recharge_time = round(initial(recharge_time) * H.get_trophy_rage_cooldown_mult())
+	else
+		recharge_time = initial(recharge_time)
+
 	user.apply_status_effect(/datum/status_effect/buff/axedance)
 	return TRUE
 
@@ -185,8 +194,13 @@
 
 /datum/status_effect/buff/axedance/on_apply()
 	. = ..()
+	duration = initial(duration)
+	if(ishuman(owner))
+		var/mob/living/carbon/human/H = owner
+		duration += H.get_trophy_rage_duration_bonus()
+
 	var/filter = owner.get_filter(AXEDANCE_FILTER)
-	if (!filter)
+	if(!filter)
 		owner.add_filter(AXEDANCE_FILTER, 2, list("type" = "outline", "color" = outline_colour, "alpha" = 50, "size" = 1))
 	to_chat(owner, span_warning("I AM AN AVATAR OF DIVINE MIGHT!"))
 	ADD_TRAIT(owner, TRAIT_HARDDISMEMBER, STATUS_EFFECT_TRAIT)
@@ -195,6 +209,8 @@
 	ADD_TRAIT(owner, TRAIT_STRENGTH_UNCAPPED, STATUS_EFFECT_TRAIT)
 	ADD_TRAIT(owner, TRAIT_NODEF, STATUS_EFFECT_TRAIT)
 	ADD_TRAIT(owner, TRAIT_NOPAINSTUN, STATUS_EFFECT_TRAIT)
+
+#define STAMINA_AFTER_RAGE_SPENT_PERCENT 0.8 //TA add - slayer balance
 
 /datum/status_effect/buff/axedance/on_remove()
 	. = ..()
@@ -207,8 +223,9 @@
 	REMOVE_TRAIT(owner, TRAIT_NODEF, STATUS_EFFECT_TRAIT)
 	REMOVE_TRAIT(owner, TRAIT_NOPAINSTUN, STATUS_EFFECT_TRAIT)
 	owner.apply_status_effect(/datum/status_effect/debuff/axe_exhaustion)
-	owner.stamina = 400
+	owner.stamina = owner.max_stamina * STAMINA_AFTER_RAGE_SPENT_PERCENT //TA add - slayer balance
 
+#undef STAMINA_AFTER_RAGE_SPENT_PERCENT //TA add - slayer balance
 #undef AXEDANCE_FILTER
 
 /atom/movable/screen/alert/status_effect/debuff/axe_exhaustion
@@ -220,7 +237,7 @@
 	var/outline_colour = "#EB4445"
 	id = "axe_axhaustion"
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/axe_exhaustion
-	duration = 8 SECONDS // actually let people get away from him after the rage.
+	duration = 15 SECONDS // actually let people get away from him after the rage.  //TA edit - buindle fix
 	effectedstats = list("speed" = -5)
 
 /obj/item/storage/belt/rogue/leather/slayer

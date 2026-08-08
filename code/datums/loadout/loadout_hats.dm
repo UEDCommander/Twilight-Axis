@@ -1,4 +1,4 @@
-//HATS
+/*//HATS
 /datum/loadout_item/shalal
 	name = "Keffiyeh"
 	path = /obj/item/clothing/head/roguetown/roguehood/shalal
@@ -239,3 +239,4 @@
 	name = "Turban"
 	path = /obj/item/clothing/head/roguetown/veiled/loudmouth
 	sort_category = "Hats"
+*/
