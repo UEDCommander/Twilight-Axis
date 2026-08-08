@@ -1311,9 +1311,13 @@ GLOBAL_LIST_EMPTY(chosen_names)
 					subclass_tooltip = "Subclass: [selected_subclass] / [failure_text]"
 				subclass_button_html = " | <a href='?_src_=prefs;preference=job;task=set_job_subclass;text=[rank]' title='[subclass_tooltip]'><font color='[subclass_color]'>[subclass_star]</font></a>" // TA EDIT END
 
-			var/show_role_subprefs = job.has_subprefs
-			if(show_role_subprefs && length(job.job_subclasses) && islist(job.default_subprefs) && length(job.default_subprefs) == 1 && ("favorite_advclass" in job.default_subprefs))
-				show_role_subprefs = FALSE
+			var/show_role_subprefs = FALSE
+			if(job.has_subprefs && islist(job.default_subprefs))
+				for(var/subpref_key in job.default_subprefs)
+					if(subpref_key == "favorite_advclass")
+						continue
+					show_role_subprefs = TRUE
+					break
 
 			var/start_font = ""
 			var/end_font = ""

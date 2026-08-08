@@ -50,17 +50,11 @@ GLOBAL_LIST_EMPTY(lord_titles)
 	has_loadout = TRUE
 
 /datum/job/roguetown/lord/update_subprefs_window(mob/user)
-	if(!advclass_cat_rolls)
-		return
 	var/client/C = usr.client
 	if(!C || !C.prefs)
 		return
 	var/list/roleprefs = get_roleprefs(C)
-	var/datum/advclass/favorite = roleprefs["favorite_advclass"]
-	var/favorite_name = favorite ? favorite::name : "Choose"
 	var/HTML = {"
-		<i>You can choose a favorite subclass here. You'll automatically select this subclass on roundstart if possible.</i><br/><br/>
-		<b>Selected class:</b> <a href="?src=[REF(src)];class=1">[favorite_name]</a><br/>
 		<i>You can choose your ducal colors here; this will only take effect if both are set.</i><br/>
 		<b>Primary color:</b> <a href="?src=[REF(src)];primcolor=1">[roleprefs["primcolor"] || "Choose"]</a><br/>
 		<b>Secondary color:</b> <a href="?src=[REF(src)];seccolor=1">[roleprefs["seccolor"] || "Choose"]</a><br/>

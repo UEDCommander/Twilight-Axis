@@ -80,11 +80,7 @@
 	if(!C || !C.prefs)
 		return
 	var/list/roleprefs = get_roleprefs(C)
-	var/datum/advclass/favorite = roleprefs["favorite_advclass"]
-	var/favorite_name = favorite ? favorite::name : "Choose"
 	var/HTML = {"
-		<i>You can choose a favorite subclass here. You'll automatically select this subclass on roundstart if possible.</i><br/><br/>
-		<b>Selected class:</b> <a href="?src=[REF(src)];class=1">[favorite_name]</a><br/><br/>
 		<i>Set your advertisement here to automatically enroll with the mercenary statue on spawn. You'll be set to 'Available' status immediately if this is set.</i><br/>
 		<b>Mercenary advertisement:</b> <a href="?src=[REF(src)];merc_ad=1">Edit</a>
 		[roleprefs["merc_ad"] ? "<hr/>[roleprefs["merc_ad"]]<hr/>":""]

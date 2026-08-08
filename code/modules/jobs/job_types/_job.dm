@@ -225,12 +225,8 @@
 	var/client/C = usr.client
 	if(!C || !C.prefs)
 		return
-	var/list/roleprefs = get_roleprefs(C)
-	var/datum/advclass/favorite = roleprefs["favorite_advclass"]
-	var/favorite_name = favorite ? favorite::name : "Choose"
+	get_roleprefs(C)
 	var/HTML = {"
-		<i>You can choose a favorite subclass here. You'll automatically select this subclass on roundstart if possible.</i><br/><br/>
-		<b>Selected class:</b> <a href="?src=[REF(src)];class=1">[favorite_name]</a>
 		<center><a href="?src=[REF(src)];subprefsexit=1">EXIT</a>\t\t<a href="?src=[REF(src)];subprefsreset=1">RESET</a></center>
 	"}
 	// the fact that the window width/height will be different each time is the main reason this isn't all done in a parent proc on /datum/job
@@ -857,37 +853,11 @@
 	if(!roleprefs)
 		return
 
-	if(href_list["class"])
-		var/list/class_sel = list()
-		if(length(job_subclasses))
-			var/datum/preferences/character_prefs = prefs.get_job_prefs(title)
-			for(var/subclass_path in job_subclasses)
-				var/datum/advclass/subclass_type = subclass_path
-				var/datum/advclass/subclass = SSrole_class_handler.get_advclass_by_name(initial(subclass_type.name))
-				if(!subclass)
-					continue
-				if(!subclass.check_preferences_requirements(character_prefs, C, FALSE, FALSE))
-					continue
-				class_sel[subclass.name] = subclass.type
-		else
-			for(var/ctag in advclass_cat_rolls)
-				var/list/subsystem_ctag_list = SSrole_class_handler.sorted_class_categories[ctag]
-				for(var/datum/advclass/advdatum in subsystem_ctag_list)
-					class_sel[advdatum.name] = advdatum.type
-		if(length(class_sel))
-			var/input_name = tgui_input_list(usr, "What path do your talents follow?", "Subclass Select", class_sel)
-			var/input = class_sel[input_name]
-			if(input)
-				roleprefs["favorite_advclass"] = input
-				if(length(job_subclasses))
-					prefs.job_subclass_preferences[title] = input_name
-					prefs.job_subclass_strict -= title
-				prefs.save_character()
-		update_subprefs_window(usr)
 	if(href_list["subprefsreset"])
+		var/favorite_advclass = roleprefs["favorite_advclass"]
 		prefs.job_subprefs[title] = islist(default_subprefs) ? default_subprefs.Copy() : list()
-		prefs.job_subclass_preferences -= title
-		prefs.job_subclass_strict -= title
+		if(favorite_advclass)
+			prefs.job_subprefs[title]["favorite_advclass"] = favorite_advclass
 		prefs.save_character()
 		update_subprefs_window(usr)
 	. = ..()
