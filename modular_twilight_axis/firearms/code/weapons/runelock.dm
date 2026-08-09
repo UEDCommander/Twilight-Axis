@@ -25,7 +25,7 @@
 	var/misfire_chance = 0
 	/// Reload time, in SECONDS
 	var/reload_time = 8
-	var/reload_stamina_cost = 40
+	var/reload_stamina_cost = 30
 	damfactor = 1
 	var/critfactor = 0.7
 	var/npcdamfactor = 4
@@ -257,7 +257,7 @@
 	damfactor = 1.5
 	critfactor = 1
 	reload_time = 12
-	reload_stamina_cost = 60
+	reload_stamina_cost = 50
 
 /obj/item/gun/ballistic/revolver/grenadelauncher/twilight_runelock/rifle/getonmobprop(tag)
 	. = ..()
