@@ -1,5 +1,6 @@
 /datum/ai_controller/human_npc/melee/summoned_skeleton // TA EDIT START
 	max_target_distance = 12
+	idle_requires_client = TRUE // TA EDIT
 	planning_subtrees = list(
 		/datum/ai_planning_subtree/summoned_skeleton_find_target,
 		/datum/ai_planning_subtree/generic_break_restraints,
@@ -36,12 +37,10 @@
 	if(master.mind?.current)
 		master = master.mind.current
 	summoner = master.real_name
-	faction = master.faction.Copy()
-	faction += "[master.real_name]_faction"
+	faction = list(FACTION_CABAL, "[master.real_name]_faction") // TA EDIT
 	var/datum/antagonist/lich/lich_antag = master.mind?.has_antag_datum(/datum/antagonist/lich)
 	if(lich_antag && master.real_name)
 		faction += FACTION_UNDEAD
-		faction += "[master.real_name]_faction"
 	ADD_TRAIT(src, TRAIT_CONJURED_SUMMON, TRAIT_GENERIC)
 	pet_passive = FALSE
 	ai_controller.CancelActions()
@@ -52,9 +51,8 @@
 	ai_controller.clear_blackboard_key(BB_HIGHEST_THREAT_MOB)
 	ai_controller.clear_blackboard_key(BB_CURRENT_PET_TARGET)
 	ai_controller.blackboard[BB_MOB_AGGRO_TABLE] = list()
-	ai_controller.set_blackboard_key(BB_FOLLOW_TARGET, master)
 	ai_controller.nudge_target_scan()
-	ai_controller.wake_for_combat() // TA EDIT END
+	ai_controller.reset_ai_status() // TA EDIT END
 
 /datum/outfit/job/roguetown/npc/skeleton/npc/summon //On par getup almost with greater summons, because sovl.
 
