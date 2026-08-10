@@ -19,8 +19,8 @@
 	override_candidatereq = TRUE
 	storyteller_min_players = CHARACTER_INJECTION_MIN_POP
 	storyteller_slot_scaling = 1	// unused: bandits use a flat cap, not storyteller_scale_slots
-	storyteller_slot_default_cap = 4 // TA EDIT
-	storyteller_maxcaps = list( // TA EDIT START
+	storyteller_slot_default_cap = 4 // TA EDIT START
+	storyteller_maxcaps = list(
 		/datum/storyteller/gamemode/guaranteed_antag = 5,			// High Intensity
 		/datum/storyteller/gamemode/guaranteed_antag/low_wretch = 4,	// Tempered Intensity
 	) // TA EDIT END

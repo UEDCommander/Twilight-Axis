@@ -257,8 +257,8 @@ SUBSYSTEM_DEF(gamemode)
 	var/list/last_round_events = list()
 	/// Has a roundstart event been run
 	var/ran_roundstart = FALSE
-	var/roundstart_prejob_roll = FALSE // TA EDIT START
-	var/roundstart_prejob_attempted = FALSE // TA EDIT END
+	var/roundstart_prejob_roll = FALSE // TA EDIT
+	var/roundstart_prejob_attempted = FALSE // TA EDIT
 	/// Are we able to run roundstart events
 	var/can_run_roundstart = TRUE
 	var/list/triggered_round_events = list()
@@ -586,8 +586,8 @@ SUBSYSTEM_DEF(gamemode)
 	if(!use_ready_population && roundstart_prejob_attempted) // TA EDIT START
 		return FALSE
 	if(use_ready_population)
-		roundstart_prejob_attempted = TRUE // TA EDIT END
-	if(!use_ready_population) // TA EDIT START
+		roundstart_prejob_attempted = TRUE
+	if(!use_ready_population)
 		roundstart_live = TRUE // TA EDIT END
 	if(!ispath(roundstart_storyteller, /datum/storyteller))
 		roundstart_storyteller = selected_storyteller
@@ -766,8 +766,8 @@ SUBSYSTEM_DEF(gamemode)
 	log_storyteller("Roundstart gamemode locked in: [current_storyteller?.name] ([allow_vote ? "player vote" : "admin-set"]).")
 	calculate_ready_players()
 	roll_pre_setup_points()
-	roll_roundstart_antag(TRUE) // TA EDIT START
-	update_bandits_slots() // TA EDIT END
+	roll_roundstart_antag(TRUE) // TA EDIT
+	update_bandits_slots() // TA EDIT
 	return TRUE
 
 ///Everyone should now be on the station and have their normal gear.  This is the place to give the special roles extra things
