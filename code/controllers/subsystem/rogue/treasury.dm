@@ -329,7 +329,6 @@ SUBSYSTEM_DEF(treasury)
 	var/datum/fund/account = get_account(target)
 	if(!account)
 		return FALSE
-
 	if(amt > 0)
 		if(mint_new)
 			if(!mint(account, amt, source, mint_label))
@@ -539,6 +538,8 @@ SUBSYSTEM_DEF(treasury)
 	for(var/datum/roguestock/D in stockpile_datums)
 		if(!D.importexport_amt || D.trade_good_id)
 			continue
+		if(D.autoexport_disabled)
+			continue
 		if((autoexport_percentage * D.stockpile_limit) >= D.stockpile_amount)
 			continue
 		if(D.get_export_price() <= (D.payout_price * D.importexport_amt))
@@ -568,6 +569,8 @@ SUBSYSTEM_DEF(treasury)
 		if(!D.trade_good_id)
 			continue
 		if(!D.automatic_price)
+			continue
+		if(D.autoexport_disabled)
 			continue
 		if(!D.importexport_amt)
 			continue
@@ -740,7 +743,7 @@ SUBSYSTEM_DEF(treasury)
 /datum/controller/subsystem/treasury/proc/get_poll_tax_category(mob/living/H)
 	if(!H)
 		return null
-	if(HAS_TRAIT(H, TRAIT_OUTLAW))
+	if(HAS_TRAIT(H, TRAIT_OUTLAW) || HAS_TRAIT(H, TRAIT_ROYAL_SUBSIDY))
 		return null
 	if(HAS_TRAIT(H, TRAIT_NOBLE) || (H.job in GLOB.noble_positions))
 		return POLL_TAX_CAT_NOBLE
