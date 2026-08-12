@@ -587,7 +587,6 @@
 	special = null
 	max_integrity = 0
 
-
 /obj/item/rogueweapon/scabbard/sword/kazengun/steel
 	name = "hwang scabbard"
 	desc = "A cloud-patterned scabbard with a cloth sash. Used for blocking."
