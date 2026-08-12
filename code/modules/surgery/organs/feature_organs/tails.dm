@@ -34,6 +34,9 @@
 /obj/item/organ/tail/anthro
 	name = "wild-kin tail"
 
+/obj/item/organ/tail/moth
+	name = "fluvian abdomen"
+
 /obj/item/organ/tail/lupian
 	name = "lupian tail"
 
