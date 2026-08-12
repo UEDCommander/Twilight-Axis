@@ -85,3 +85,7 @@
 	icon_state = "koboldtail" //TA_EDIT
 	color = "#116611"
 	accessory_type =  /datum/sprite_accessory/tail/lizard/kobold
+
+/obj/item/organ/tail/goblin
+	name = "goblin tail"
+	accessory_type =  /datum/sprite_accessory/tail/goblin1
