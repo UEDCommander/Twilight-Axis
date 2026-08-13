@@ -258,5 +258,5 @@
 	name = "crystalline rapier"
 	desc = "A crystalline rapier, born from a single tear and weeks of prayers and enchantments, Oh my guiding Moonlight!"
 	icon_state = "aisuwand"
-	icon = 'icons/obj/items/donor_weapons.dmi'
+	icon = 'modular_twilight_axis/icons/obj/items/donor_weapons.dmi'
 
