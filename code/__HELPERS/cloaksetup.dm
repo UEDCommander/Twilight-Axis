@@ -13,6 +13,8 @@
 			"Hood" = 		/obj/item/clothing/cloak/tabard/stabard/guardhood,
 			"Tabard" = 	/obj/item/clothing/cloak/tabard/retinue,
 			"Cape" = 			/obj/item/clothing/cloak/cape/guard,
+			"Halfcloak" = 	/obj/item/clothing/cloak/half/guard, //TA EDIT
+			"Fur Cloak" =	/obj/item/clothing/cloak/raincloak/furcloak/guard // TA EDIT
 			)
 		if("Squire")
 			name_index = "squire's"
@@ -38,6 +40,33 @@
 			"Hood" = 		/obj/item/clothing/cloak/tabard/stabard/guardhood,
 			"Cape" = 			/obj/item/clothing/cloak/cape/guard,
 			)
+
+		if("Royal Guard") //TA EDIT START
+			name_index = "royal guard"
+			allowed_cloaks = list(
+			"Jupon" = 			/obj/item/clothing/cloak/tabard/stabard/surcoat/guard,
+			"Surcoat" = 			/obj/item/clothing/cloak/tabard/stabard/guard,
+			"Hood" = 		/obj/item/clothing/cloak/tabard/stabard/guardhood,
+			)
+		if("Royal Guard Sergeant")
+			name_index = "royal guard sergeant"
+			allowed_cloaks = list(
+			"Jupon" = 			/obj/item/clothing/cloak/tabard/stabard/surcoat/guard,
+			"Surcoat" = 			/obj/item/clothing/cloak/tabard/stabard/guard,
+			"Hood" = 		/obj/item/clothing/cloak/tabard/stabard/guardhood,
+			"Cape" = 			/obj/item/clothing/cloak/cape/guard,
+			)
+		if("Royal Knight")
+			name_index = "royal knight"
+			allowed_cloaks = list(
+			"Jupon" = 			/obj/item/clothing/cloak/tabard/stabard/surcoat/guard,
+			"Surcoat" = 			/obj/item/clothing/cloak/tabard/stabard/guard,
+			"Hood" = 		/obj/item/clothing/cloak/tabard/stabard/guardhood,
+			"Tabard" = 	/obj/item/clothing/cloak/tabard/retinue,
+			"Cape" = 			/obj/item/clothing/cloak/cape/guard,
+			"Halfcloak" = 	/obj/item/clothing/cloak/half/guard,
+			"Fur Cloak" =	/obj/item/clothing/cloak/raincloak/furcloak/guard
+			) //TA EDIT END
 
 	var/choive_key = input(src, "Choose your cloak.", "IDENTIFY YOURSELF") as anything in allowed_cloaks
 	var/typepath = allowed_cloaks[choive_key]
