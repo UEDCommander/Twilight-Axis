@@ -138,6 +138,21 @@
 	cost = 50
 	contains = list(/obj/item/rogueweapon/sword/rapier)
 
+/datum/supply_pack/rogue/Alchemist/sabre
+	name = "Sabre"
+	cost = 40
+	contains = list(/obj/item/rogueweapon/sword/sabre)
+
+/datum/supply_pack/rogue/Alchemist/shamshir
+	name = "Shamshir"
+	cost = 50
+	contains = list(/obj/item/rogueweapon/sword/sabre/shamshir)
+
+/datum/supply_pack/rogue/Knave/rapier
+	name = "Rapier"
+	cost = 50
+	contains = list(/obj/item/rogueweapon/sword/rapier)
+
 /////////////
 //  BOMBS  //
 /////////////

@@ -123,6 +123,21 @@
 	cost = 30
 	contains = list(/obj/item/rogueweapon/sword/long/kriegmesser)
 
+/datum/supply_pack/rogue/Sellsword/sabre
+	name = "Sabre"
+	cost = 40
+	contains = list(/obj/item/rogueweapon/sword/sabre)
+
+/datum/supply_pack/rogue/Sellsword/shamshir
+	name = "Shamshir"
+	cost = 50
+	contains = list(/obj/item/rogueweapon/sword/sabre/shamshir)
+
+/datum/supply_pack/rogue/Sellsword/rapier
+	name = "Rapier"
+	cost = 50
+	contains = list(/obj/item/rogueweapon/sword/rapier)
+
 /datum/supply_pack/rogue/Sellsword/SZweihandersword
 	name = "Steel Zweihander"
 	cost = 100
