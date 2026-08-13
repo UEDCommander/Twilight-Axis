@@ -82,16 +82,16 @@
 					user.say(m)
 
 /obj/item/book/rogue/bibble/psy/MiddleClick(mob/user, params)
-	var/sects = list("Завет Псайдона", "Житиё Псайдона", "Завет Отавика", "Завет Судьбы")
+	var/sects = list("ЗАВЕТ ПСАЙДОНА", "ЖИТИЁ ПСАЙДОНА", "ЗАВЕТ ОТАВИКА", "ЗАВЕТ СУДЬБЫ")
 	var/sect_choice = input(user, "Выберите Завет", "О ПСАЙДОНИИ") as anything in sects
 	switch(sect_choice)
-		if("Завет Псайдона")
+		if("ЗАВЕТ ПСАЙДОНА")
 			sect = "sect1"
-		if("Житиё Псайдона")
+		if("ЖИТИЁ ПСАЙДОНА")
 			sect = "sect2"
-		if("Завет Отавика")
+		if("ЗАВЕТ ОТАВИКА")
 			sect = "sect3"
-		if("Завет Судьбы")
+		if("ЗАВЕТ СУДЬБЫ")
 			sect = "sect4"
 	return
 
