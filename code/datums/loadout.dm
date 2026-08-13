@@ -4263,6 +4263,8 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	name = "Flamboyant Hat"
 	category = "Головные уборы"
 	path = /obj/item/clothing/head/roguetown/flamboyant
+	donatitem = TRUE
+	donat_tier = 2
 
 /datum/loadout_item/dhoti
 	name = "Dhoti"
