@@ -148,6 +148,16 @@
 	cost = 60
 	contains = list(/obj/item/rogueweapon/huntingknife/idagger/silver/elvish)
 
+/datum/supply_pack/rogue/Knave/shortsword
+	name = "Steel Shortsword"
+	cost = 40
+	contains = list(/obj/item/rogueweapon/sword/short)
+
+/datum/supply_pack/rogue/Knave/falchion
+	name = "Falchion"
+	cost = 40
+	contains = list(/obj/item/rogueweapon/sword/short/falchion)
+
 //////////////////////
 // WEAPONS - RANGED //
 //////////////////////

@@ -66,9 +66,19 @@
 	cost = 50
 	contains =  list(/obj/item/clothing/suit/roguetown/armor/plate/cuirass)
 
+/datum/supply_pack/rogue/Sellsword/brigandine
+	name = "Brigandine"
+	cost = 80
+	contains = list(/obj/item/clothing/suit/roguetown/armor/brigandine)
+
 ///////////////////
 // WRISTS/GLOVES //
 ///////////////////
+
+/datum/supply_pack/rogue/Sellsword/brigandine_bracers
+	name = "Brigandine Rerebraces"
+	cost = 30
+	contains = list(/obj/item/clothing/wrists/roguetown/bracers/brigandine)
 
 /datum/supply_pack/rogue/Sellsword/bracers
 	name = "Steel Bracers"
@@ -83,6 +93,11 @@
 ///////////////
 // LEGS/FEET //
 ///////////////
+
+/datum/supply_pack/rogue/Sellsword/brigandine_chausses
+	name = "Brigandine Chausses"
+	cost = 30
+	contains = list(/obj/item/clothing/under/roguetown/brigandinelegs)
 
 /datum/supply_pack/rogue/Sellsword/chainlegs
 	name = "Chain Chausses"
@@ -112,6 +127,16 @@
 	name = "Steel Zweihander"
 	cost = 100
 	contains = list(/obj/item/rogueweapon/greatsword/grenz)
+
+/datum/supply_pack/rogue/Sellsword/steelmace
+	name = "Steel Mace"
+	cost = 40
+	contains = list(/obj/item/rogueweapon/mace/steel)
+
+/datum/supply_pack/rogue/Sellsword/steelwarhammer
+	name = "Steel Warhammer"
+	cost = 60
+	contains = list(/obj/item/rogueweapon/mace/warhammer/steel)
 
 /datum/supply_pack/rogue/Sellsword/halberd
 	name = "Halberd"
