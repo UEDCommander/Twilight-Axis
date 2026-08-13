@@ -315,7 +315,7 @@
 //////////////////////////////////////// CONVERT ////////////////////////////////////////
 
 /datum/crafting_recipe/roguetown/survival/i_chainlegs
-	name = "scrap-alter an iron chain kilt into chausses"
+	name = "scrap-alter an chain kilt into chausses"
 	result = list(/obj/item/craft_kit/chainlegs = 1)
 	reqs = list(/obj/item/clothing/under/roguetown/chainlegs/iron/kilt = 1, /obj/item/scrap = 2)
 	craftdiff = 3
@@ -326,7 +326,7 @@
 	verbage = "scrap-alters"
 
 /datum/crafting_recipe/roguetown/survival/i_kilt
-	name = "scrap-alter iron chain chausses into a kilt"
+	name = "scrap-alter chain chausses into a kilt"
 	result = list(/obj/item/craft_kit/kilt = 1)
 	reqs = list(/obj/item/clothing/under/roguetown/chainlegs/iron = 1, /obj/item/scrap = 2)
 	craftdiff = 3
@@ -339,7 +339,7 @@
 //////////////////////////////////////// ITEMS ////////////////////////////////////////
 
 /datum/crafting_recipe/roguetown/survival/scrap_lamp
-	name = "scrap-fashion an iron scrap lantern"
+	name = "scrap-fashion an scrap lantern"
 	result = list(/obj/item/flashlight/flare/torch/lantern/scrap = 1)
 	reqs = list(/obj/item/scrap = 4, /obj/item/natural/clay = 2, /obj/item/flashlight/flare/torch = 1)
 	craftdiff = 3
