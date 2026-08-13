@@ -1,30 +1,30 @@
 /datum/supply_pack/rogue/armor_exotic/raneshi_hmamluk
-	name = "Masked Mamluk Helmet"
+	name = "Masked Mamluk Helmet, Steel"
 	cost = 110
 	contains = list(/obj/item/clothing/head/roguetown/helmet/heavy/knight/raneshi_hmamluk)
 
 /datum/supply_pack/rogue/armor_exotic/raneshi_vmamluk
-	name = "Hound Masked Mamluk Helmet"
+	name = "Hound Masked Mamluk Helmet, Steel"
 	cost = 110
 	contains = list(/obj/item/clothing/head/roguetown/helmet/heavy/knight/raneshi_hmamluk/raneshi_vmamluk)
 
 /datum/supply_pack/rogue/armor_exotic/raneshi_jarhelmet
-	name = "Ranesheni Jar Helmet"
+	name = "Ranesheni Jar Helmet, Steel"
 	cost = 100
 	contains = list(/obj/item/clothing/head/roguetown/helmet/raneshi_jarhelmet)
 
 /datum/supply_pack/rogue/armor_exotic/raneshen_new_coat //Только в продаже, т.к. с точки зрения лора делается из специальных чешуек.
-	name = "Ranesheni Scale Coat"
+	name = "Ranesheni Scale Coat, Leather"
 	cost = 80
 	contains = list(/obj/item/clothing/suit/roguetown/armor/leather/heavy/coat/raneshen/new_coat)
 
 /datum/supply_pack/rogue/armor_exotic/raneshen_scale
-	name = "Ranesheni Scalemail"
+	name = "Ranesheni Scalemail, Steel"
 	cost = 110
 	contains = list(/obj/item/clothing/suit/roguetown/armor/plate/raneshen_scale)
 
 /datum/supply_pack/rogue/armor_exotic/raneshen_plated
-	name = "Ranesheni Plate Armor"
+	name = "Ranesheni Plate Armor, Steel"
 	cost = 380 //Взял цену флютированных лат, т.к. там +1 железо, а у меня +1 бронза, seems fair?
 	contains = list(/obj/item/clothing/suit/roguetown/armor/plate/full/raneshen_plated)
 
