@@ -38,7 +38,7 @@
 	controller.set_blackboard_key("summoned_skeleton_next_target_scan", world.time + 0.5 SECONDS)
 
 	var/list/visible_targets = view(aggro_range, pawn) // TA EDIT
-	if(current_target && current_target in visible_targets) // TA EDIT
+	if(current_target && (current_target in visible_targets)) // TA EDIT
 		return
 	if(current_target) // TA EDIT
 		controller.CancelActions()
