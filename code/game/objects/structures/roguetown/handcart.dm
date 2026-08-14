@@ -197,6 +197,12 @@
 	return TRUE
 
 /obj/structure/handcart/proc/put_in(atom/movable/O, mob/user)
+	if(isitem(O)) // TA EDIT START
+		var/obj/item/I = O
+		if(I.GetComponent(/datum/component/cursed_item))
+			if(user)
+				to_chat(user, span_warning("[I] cannot be placed into [src]."))
+			return FALSE // TA EDIT END
 	if(!fits_in_cart(O))
 		to_chat(user, span_warning("The cart cannot hold any more weight!"))
 		return FALSE
