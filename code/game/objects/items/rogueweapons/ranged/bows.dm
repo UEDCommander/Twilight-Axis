@@ -136,6 +136,33 @@
 	cartridge_articles = "an"
 	var/spill_ammo_on_drop = TRUE
 	var/ranged_skill = /datum/skill/combat/bows
+	var/datum/special_intent/special
+
+/obj/item/gun/ballistic/revolver/grenadelauncher/bow/equipped(mob/user, slot) //TA EDIT START
+	. = ..()
+	if(slot == ITEM_SLOT_HANDS)
+		if(HAS_TRAIT(user, TRAIT_BOW_DOUBLESHOT))
+			if(!istype(special, /datum/special_intent/range_special/bow_doubleshot))
+				special = new /datum/special_intent/range_special/bow_doubleshot()
+				
+		else if(HAS_TRAIT(user, TRAIT_BOW_LONGSHOT))
+			if(!istype(special, /datum/special_intent/range_special/bow_longshot))
+				special = new /datum/special_intent/range_special/bow_longshot()
+		
+		else if(HAS_TRAIT(user, TRAIT_BOW_BACKSTEP))
+			if(!istype(special, /datum/special_intent/range_special/bow_backstep))
+				special = new /datum/special_intent/range_special/bow_backstep()
+
+		else
+			special = null
+
+/obj/item/gun/ballistic/revolver/grenadelauncher/bow/Destroy()
+	if(special)
+		qdel(special)
+		special = null
+
+	return ..()//TA EDIT END
+
 
 /obj/item/gun/ballistic/revolver/grenadelauncher/bow/can_quick_load(mob/user)
 	if(user.get_num_arms(FALSE) < 2 || user.get_inactive_held_item())
@@ -242,8 +269,9 @@
 /obj/item/gun/ballistic/revolver/grenadelauncher/bow/shoot_with_empty_chamber()
 	return
 
-/obj/item/gun/ballistic/revolver/grenadelauncher/bow/dropped()
+/obj/item/gun/ballistic/revolver/grenadelauncher/bow/dropped(mob/user, silent)
 	. = ..()
+	special = null
 	if(chambered && spill_ammo_on_drop)
 		chambered = null
 		var/num_unloaded = 0
@@ -251,7 +279,7 @@
 			CB.forceMove(drop_location())
 //			CB.bounce_away(FALSE, NONE)
 			num_unloaded++
-		if (num_unloaded)
+		if(num_unloaded)
 			update_icon()
 
 /obj/item/gun/ballistic/revolver/grenadelauncher/bow/process_fire(atom/target, mob/living/user, message = TRUE, params = null, zone_override = "", bonus_spread = 0)

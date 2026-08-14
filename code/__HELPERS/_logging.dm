@@ -106,7 +106,7 @@
 	logger.Log(LOG_CATEGORY_GAME_SAY, text)
 
 /proc/log_npc_say(text)
-    logger.Log(LOG_CATEGORY_GAME_SAY, text)
+	logger.Log(LOG_CATEGORY_GAME_SAY, text)
 
 /proc/log_ooc(text)
 	logger.Log(LOG_CATEGORY_GAME_OOC, text)
@@ -140,6 +140,11 @@
 
 /proc/log_vote(text)
 	logger.Log(LOG_CATEGORY_GAME_VOTE, text)
+
+// TA EDIT START
+/proc/log_telepathy(text)
+	logger.Log(LOG_CATEGORY_GAME, "ANTAG TELEPATHY: [text]")
+// TA EDIT END
 
 /proc/log_topic(text)
 	logger.Log(LOG_CATEGORY_GAME_TOPIC, text)
@@ -292,7 +297,7 @@
 		if(C && C.holder && C.holder.fakekey && !include_name)
 			if(include_link)
 				. += "<a href='?priv_msg=[C.findStealthKey()]'>"
-			. += "Administrator"
+			. += C.holder.fakekey // TA EDIT
 		else
 			if(include_link)
 				. += "<a href='?priv_msg=[ckey]'>"

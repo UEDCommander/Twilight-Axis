@@ -3,7 +3,7 @@
 	desc = "By birth, blade or brain, I am noble known to the royalty of these lands, and have all the benefits associated with it. I've cleverly stashed away a healthy amount of coinage, alongside a familial heirloom."
 	restricted = TRUE
 	max_choices = 1
-	races = list(/datum/species/construct, /datum/species/dullahan)
+	races = list(/datum/species/construct, /datum/species/dullahan, /datum/species/ooze) //TA EDIT
 	added_traits = list(TRAIT_NOBLE, TRAIT_EXPERT_HUNTER)
 	added_skills = list(list(/datum/skill/misc/reading, 1, 6))
 	added_stashed_items = list("Hefty Coinpurse" = /obj/item/storage/belt/rogue/pouch/coins/virtuepouch)
@@ -168,8 +168,9 @@
 		"Orcish" = /datum/language/orcish,
 		"Infernal" = /datum/language/hellspeak,
 		"Draconic" = /datum/language/draconic,
-		"Celestial" = /datum/language/celestial,
-		"Ranesheni" = /datum/language/raneshi,
+		"Valorian" = /datum/language/valorian, //TA EDIT
+		"Sama'glos" = /datum/language/raneshi, //TA EDIT
+		"Gyedzenese" = /datum/language/gyedzenese, //TA EDIT
 		"Grenzelhoftian" = /datum/language/grenzelhoftian,
 		"Kazengunese" = /datum/language/kazengunese,
 		"Lingyuese" = /datum/language/lingyuese,
