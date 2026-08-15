@@ -227,6 +227,9 @@
 		timing_id = null
 
 /obj/item/mimictrinket/attack_obj(obj/target, mob/living/user)
+	if(istype(target, /obj/structure)) // TA EDIT START
+		to_chat(user, span_warning("[src] cannot mimic structures."))
+		return // TA EDIT END
 	if(ready)
 		to_chat(user,span_notice("[src] takes the form of [target]!"))
 		oldicon = icon
