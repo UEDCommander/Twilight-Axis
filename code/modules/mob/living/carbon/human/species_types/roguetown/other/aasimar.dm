@@ -97,6 +97,8 @@
 	)
 	mechanics_explanations = list("Are the only race whose lux is already purified when extracted. However, their lux takes far longer to regrow than every other races.")
 
+	blood_color = "#b98b17" //TA EDIT
+
 /datum/species/aasimar/on_species_gain(mob/living/carbon/C, datum/species/old_species)
 	..()
 	RegisterSignal(C, COMSIG_MOB_SAY, PROC_REF(handle_speech))
