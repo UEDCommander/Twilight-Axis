@@ -4507,14 +4507,14 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	category = list("Броня", "Донат")
 	path = /obj/item/enchantingkit/chivalre_aasimar
 	donatitem = TRUE
-	donat_tier = 2
+	donat_tier = 1
 
 /datum/loadout_item/donator/chivalre_aasimar_sack
 	name = "Donator Kit - Aasimari Equipment(Only Female, No Small Races), Sackful"
 	category = list("Разное", "Донат")
 	path = /obj/item/storage/roguebag/donator_chivalre_elixirs
 	donatitem = TRUE
-	donat_tier = 1
+	donat_tier = 2
 
 /datum/loadout_item/donator/truill_flowerblade
 	name = "Donator Kit - Beflowered Longsword - Required: Enduring Longsword, Psydonic Longsword or Anointed Longsword"
