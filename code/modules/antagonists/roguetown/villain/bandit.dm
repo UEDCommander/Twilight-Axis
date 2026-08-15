@@ -21,8 +21,9 @@
 	storyteller_slot_scaling = 1	// unused: bandits use a flat cap, not storyteller_scale_slots
 	storyteller_slot_default_cap = 4 // TA EDIT START
 	storyteller_maxcaps = list(
-		/datum/storyteller/gamemode/guaranteed_antag = 5,			// High Intensity
-		/datum/storyteller/gamemode/guaranteed_antag/low_wretch = 4,	// Tempered Intensity
+		/datum/storyteller/gamemode/guaranteed_antag = 6,			// High Intensity
+		/datum/storyteller/gamemode/guaranteed_antag/low_wretch = 5,	// Tempered Intensity
+		/datum/storyteller/gamemode/no_antag = 5,
 	) // TA EDIT END
 	var/favor = 150
 	var/totaldonated = 0

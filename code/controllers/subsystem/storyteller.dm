@@ -1286,7 +1286,7 @@ SUBSYSTEM_DEF(gamemode)
 		return 0
 	storyteller_type = story_policy_type(roundstart, storyteller_type)
 	var/storyteller_antag_flags = initial(antag_datum:storyteller_antag_flags)
-	if(storyteller_blocks_antag(storyteller_antag_flags, roundstart, storyteller_type))
+	if(storyteller_blocks_antag(storyteller_antag_flags, roundstart, storyteller_type) && !(ispath(antag_datum, /datum/antagonist/bandit) && storyteller_type == /datum/storyteller/gamemode/no_antag)) // TA EDIT
 		return 0
 	var/default_cap = max(0, initial(antag_datum:storyteller_slot_default_cap))
 	var/list/maxcaps = get_antag_maxcaps(antag_datum)
