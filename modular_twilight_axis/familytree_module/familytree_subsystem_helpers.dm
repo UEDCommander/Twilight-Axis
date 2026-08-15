@@ -385,6 +385,29 @@ GLOBAL_LIST_INIT(familytree_title_prefixes, list(
 			return "neuter"
 	return "unknown"
 
+/datum/controller/subsystem/familytree/proc/familytree_anatomy_label(mob/living/carbon/human/H)
+	if(!H)
+		return "unknown"
+	var/has_penis = H.getorganslot(ORGAN_SLOT_PENIS) != null
+	var/has_vagina = H.getorganslot(ORGAN_SLOT_VAGINA) != null
+	if(has_penis && has_vagina)
+		return "both"
+	if(has_penis)
+		return "penis"
+	if(has_vagina)
+		return "vagina"
+	return "none"
+
+/datum/controller/subsystem/familytree/proc/familytree_anatomy_pref_label(anatomy_pref)
+	switch(anatomy_pref)
+		if(0)
+			return "any"
+		if(1)
+			return "penis"
+		if(2)
+			return "vagina"
+	return "unknown([anatomy_pref])"
+
 /datum/controller/subsystem/familytree/proc/familytree_seeks_sex_label(mob/living/carbon/human/H, gender_pref = null)
 	if(!H)
 		return "unknown"
@@ -409,10 +432,10 @@ GLOBAL_LIST_INIT(familytree_title_prefixes, list(
 
 /datum/controller/subsystem/familytree/proc/familytree_search_actor_summary(mob/living/carbon/human/H)
 	if(!H)
-		return "search_id=0 name='null' ckey='null' sex=unknown seeks_sex=unknown pronouns_pref=unknown role=unknown target=''"
+		return "search_id=0 name='null' ckey='null' sex=unknown self_anatomy=unknown seeks_sex=unknown seeks_anatomy=unknown pronouns_pref=unknown role=unknown target=''"
 	var/gender_pref = H.gender_choice_pref || ANY_GENDER
 	var/target_name = istext(H.setspouse) ? H.setspouse : ""
-	return "search_id=[familytree_search_id(H)] name='[H.real_name]' ckey='[H.ckey]' sex=[familytree_sex_label(H)] seeks_sex=[familytree_seeks_sex_label(H, gender_pref)] pronouns_pref=[familytree_gender_pref_label(gender_pref)] role=[familytree_relative_pref_label(H.desired_relative_role)]([H.desired_relative_role]) target='[target_name]'"
+	return "search_id=[familytree_search_id(H)] name='[H.real_name]' ckey='[H.ckey]' sex=[familytree_sex_label(H)] self_anatomy=[familytree_anatomy_label(H)] seeks_sex=[familytree_seeks_sex_label(H, gender_pref)] seeks_anatomy=[familytree_anatomy_pref_label(H.preferred_species_anatomy)] pronouns_pref=[familytree_gender_pref_label(gender_pref)] role=[familytree_relative_pref_label(H.desired_relative_role)]([H.desired_relative_role]) target='[target_name]'"
 
 /datum/controller/subsystem/familytree/proc/familytree_reject_count_add(list/reject_counts, reason, amount = 1)
 	if(!reject_counts || !reason || amount <= 0)
@@ -518,7 +541,7 @@ GLOBAL_LIST_INIT(familytree_title_prefixes, list(
 		var/list/species_names = islist(H.preferred_species_types) ? H.preferred_species_types : list()
 		var/specific_species_text = species_names.len ? species_names.Join(", ") : "none"
 		species_text += "; species=[specific_species_text]"
-	species_text += "; anatomy=[H.preferred_species_anatomy]"
+	species_text += "; seeks_anatomy=[familytree_anatomy_pref_label(H.preferred_species_anatomy)]; anatomy_pref=[H.preferred_species_anatomy]"
 	return species_text
 
 /datum/controller/subsystem/familytree/proc/familytree_search_summary(mob/living/carbon/human/H)
@@ -531,6 +554,7 @@ GLOBAL_LIST_INIT(familytree_title_prefixes, list(
 	parts += "pref=[familytree_pref_label(H.familytree_pref)]"
 	parts += "desired_role=[familytree_relative_pref_label(H.desired_relative_role)]"
 	parts += "sex=[familytree_sex_label(H)]"
+	parts += "self_anatomy=[familytree_anatomy_label(H)]"
 	parts += "seeks_sex=[familytree_seeks_sex_label(H, H.gender_choice_pref)]"
 	parts += "gender=[familytree_gender_pref_label(H.gender_choice_pref)]"
 	parts += "polygamy=[familytree_polygamy_pref_label(H.polygamy_mode)]"
