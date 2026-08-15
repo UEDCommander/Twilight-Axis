@@ -1263,6 +1263,11 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	category = list("Аксессуары")
 	path = /obj/item/clothing/neck/roguetown/psicross/inhumen/gronn
 
+/datum/loadout_item/psicross/gronnspider
+	name = "Spider Talisman"
+	category = list("Аксессуары")
+	path = /obj/item/clothing/neck/roguetown/psicross/inhumen/gronn/spider
+
 /datum/loadout_item/psicross/gronnbaotha
 	name = "Leopard Talisman"
 	category = list("Аксессуары")
