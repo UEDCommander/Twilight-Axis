@@ -387,6 +387,7 @@
 		/obj/item/clothing/head/roguetown/helmet/bascinet/pigface				= /obj/item/clothing/head/roguetown/helmet/bascinet/pigface/burgeonet
 	)
 	result_item = null
+	icon_loadout = /obj/item/clothing/head/roguetown/helmet/bascinet/pigface/burgeonet
 	exact_type = TRUE
 
 /obj/item/enchantingkit/gothicpsydoniccuirass
@@ -415,6 +416,7 @@
 		/obj/item/clothing/suit/roguetown/armor/plate/cuirass/bronze		= /obj/item/clothing/suit/roguetown/armor/plate/cuirass/bronze/donator,
 		/obj/item/clothing/suit/roguetown/armor/plate/cuirass/iron			= /obj/item/clothing/suit/roguetown/armor/plate/cuirass/iron/donator,
 		/obj/item/clothing/suit/roguetown/armor/plate/cuirass				= /obj/item/clothing/suit/roguetown/armor/plate/cuirass/donator,
+		/obj/item/clothing/suit/roguetown/armor/plate/cuirass/fluted/holysee = /obj/item/clothing/suit/roguetown/armor/plate/cuirass/donator,
 		/obj/item/clothing/suit/roguetown/armor/leather						= /obj/item/clothing/suit/roguetown/armor/leather/donator
 	)
 	result_item = null
@@ -542,6 +544,7 @@
 		/obj/item/clothing/suit/roguetown/armor/plate/cuirass/bronze		= /obj/item/clothing/suit/roguetown/armor/plate/cuirass/bronze/donator_girdle,
 		/obj/item/clothing/suit/roguetown/armor/plate/cuirass/fencer		= /obj/item/clothing/suit/roguetown/armor/plate/cuirass/fencer/donator_girdle,
 		/obj/item/clothing/suit/roguetown/armor/plate/cuirass				= /obj/item/clothing/suit/roguetown/armor/plate/cuirass/donator_girdle,
+		/obj/item/clothing/suit/roguetown/armor/plate/cuirass/fluted/holysee = /obj/item/clothing/suit/roguetown/armor/plate/cuirass/donator_girdle,
 		/obj/item/clothing/suit/roguetown/armor/leather						= /obj/item/clothing/suit/roguetown/armor/leather/donator_girdle
 	)
 	result_item = null
@@ -585,6 +588,7 @@
 		/obj/item/rogueweapon/sword											= /obj/item/rogueweapon/sword/donator_elegant
 	)
 	result_item = null
+	icon_loadout = /obj/item/rogueweapon/huntingknife/idagger/steel/decorated/donator_elegant
 
 /obj/item/enchantingkit/weapon/donator_universal_whips
 	name = "'Elegant Whip' morphing elixir"
@@ -612,6 +616,7 @@
 		/obj/item/clothing/suit/roguetown/armor/gambeson = /obj/item/clothing/suit/roguetown/armor/gambeson/donator_cropped
 	)
 	result_item = null
+	icon_loadout = /obj/item/clothing/suit/roguetown/armor/gambeson/heavy/donator_cropped
 
 /obj/item/enchantingkit/donator_universal_shield
 	name = "'Elegant Kite Shield' morphing elixir"
@@ -1221,6 +1226,7 @@
 		/obj/item/clothing/head/roguetown/helmet/heavy/abyssorgreathelm			= /obj/item/clothing/head/roguetown/helmet/heavy/abyssorgreathelm/limetease,
 	)
 	result_item = null
+	icon_loadout = /obj/item/clothing/head/roguetown/helmet/sallet/visored/limetease
 
 //MortoSasye - Ice Staffs
 /obj/item/enchantingkit/morto_staff
@@ -1247,6 +1253,7 @@
 		/obj/item/clothing/suit/roguetown/armor/brigandine/light			= /obj/item/clothing/suit/roguetown/armor/brigandine/light/tyesca
 	)
 	result_item = null
+	icon_loadout = /obj/item/clothing/suit/roguetown/armor/plate/cuirass/fencer/tyesca
 	exact_type = TRUE
 
 //Racobio - Obsidian Staff
@@ -1310,6 +1317,7 @@
 		/obj/item/rogueweapon/mace/steel								= /obj/item/rogueweapon/mace/steel/aasimar
 	)
 	result_item = null
+	icon_loadout = /obj/item/clothing/suit/roguetown/armor/plate/cuirass/fluted/aasimar
 	exact_type = TRUE
 
 /obj/item/storage/roguebag/donator_chivalre_elixirs
@@ -1336,6 +1344,7 @@
 		/obj/item/rogueweapon/sword/long/cleric			= /obj/item/rogueweapon/sword/long/cleric/donator_truill
 	)
 	result_item = null
+	icon_loadout = /obj/item/rogueweapon/sword/long/oldpsysword/donator_truill
 	exact_type = TRUE
 
 //RhynnRhynn
@@ -1347,6 +1356,7 @@
 		/obj/item/rogueweapon/woodstaff/implement/grand/blacksteel			= /obj/item/rogueweapon/woodstaff/implement/grand/blacksteel/donator_rhynn
 	)
 	result_item = null
+	icon_loadout = /obj/item/rogueweapon/woodstaff/implement/greater/blacksteel/donator_rhynn
 
 /obj/item/enchantingkit/rhynnrhynn_staff_crested
 	name = "'Celestial Staff, Crested' morphing elixir"
@@ -1356,6 +1366,7 @@
 		/obj/item/rogueweapon/woodstaff/implement/grand/blacksteel			= /obj/item/rogueweapon/woodstaff/implement/grand/blacksteel/donator_rhynn/crested
 	)
 	result_item = null
+	icon_loadout = /obj/item/rogueweapon/woodstaff/implement/greater/blacksteel/donator_rhynn/crested
 
 /obj/item/enchantingkit/rhynnrhynn_staff_winged
 	name = "'Celestial Staff, Winged' morphing elixir"
@@ -1365,6 +1376,7 @@
 		/obj/item/rogueweapon/woodstaff/implement/grand/blacksteel			= /obj/item/rogueweapon/woodstaff/implement/grand/blacksteel/donator_rhynn/winged
 	)
 	result_item = null
+	icon_loadout = /obj/item/rogueweapon/woodstaff/implement/greater/blacksteel/donator_rhynn/winged
 
 /obj/item/enchantingkit/rhynnrhynn_staff_solar
 	name = "'Celestial Staff, Solar' morphing elixir"
@@ -1374,6 +1386,7 @@
 		/obj/item/rogueweapon/woodstaff/implement/grand/blacksteel			= /obj/item/rogueweapon/woodstaff/implement/grand/blacksteel/donator_rhynn/solar
 	)
 	result_item = null
+	icon_loadout = /obj/item/rogueweapon/woodstaff/implement/greater/blacksteel/donator_rhynn/solar
 
 //Lamprey
 /obj/item/enchantingkit/lamprey_stechhelm
@@ -1385,6 +1398,7 @@
 		/obj/item/clothing/head/roguetown/helmet/heavy/aventail 		= /obj/item/clothing/head/roguetown/helmet/heavy/aventail/donator_lamprey
 	)
 	result_item = null
+	icon_loadout = /obj/item/clothing/head/roguetown/helmet/heavy/aventail/iron/donator_lamprey
 
 //Squidqueen
 /obj/item/enchantingkit/squidqueen_longcoat
@@ -1396,6 +1410,7 @@
 		/obj/item/clothing/suit/roguetown/armor/longcoat 					= /obj/item/clothing/suit/roguetown/armor/longcoat/donator_squidqueen
 	)
 	result_item = null
+	icon_loadout = /obj/item/clothing/suit/roguetown/armor/leather/heavy/coat/donator_squidqueen
 	exact_type = TRUE
 
 /obj/item/enchantingkit/squidqueen_longcoat_alt
@@ -1406,6 +1421,7 @@
 		/obj/item/clothing/suit/roguetown/armor/longcoat 					= /obj/item/clothing/suit/roguetown/armor/longcoat/donator_squidqueen_alt
 	)
 	result_item = null
+	icon_loadout = /obj/item/clothing/suit/roguetown/armor/leather/heavy/coat/donator_squidqueen_alt
 	exact_type = TRUE
 
 //Hellpossum
@@ -1423,6 +1439,7 @@
 		/obj/item/clothing/suit/roguetown/armor/plate/full						= /obj/item/clothing/suit/roguetown/armor/plate/full/apostle
 	)
 	result_item = null
+	icon_loadout = /obj/item/clothing/suit/roguetown/armor/plate/full/apostle
 	exact_type = TRUE
 
 /obj/item/enchantingkit/hellpossum_robed_apostle_armor
@@ -1441,6 +1458,7 @@
 		/obj/item/clothing/suit/roguetown/armor/plate/full						= /obj/item/clothing/suit/roguetown/armor/plate/full/robed
 	)
 	result_item = null
+	icon_loadout = /obj/item/clothing/suit/roguetown/armor/plate/full/robed
 	exact_type = TRUE
 
 /obj/item/enchantingkit/hellpossum_apostle_helm
@@ -1454,6 +1472,7 @@
 		/obj/item/clothing/head/roguetown/helmet/heavy/aventail					= /obj/item/clothing/head/roguetown/helmet/bascinet/apostle/aventail
 	)
 	result_item = null
+	icon_loadout = /obj/item/clothing/head/roguetown/helmet/bascinet/apostle
 	exact_type = TRUE
 
 /obj/item/enchantingkit/hellpossum_apostle_winghelm
@@ -1465,6 +1484,7 @@
 		/obj/item/clothing/head/roguetown/helmet/bascinet/pigface				= /obj/item/clothing/head/roguetown/helmet/bascinet/apostle_winged
 	)
 	result_item = null
+	icon_loadout = /obj/item/clothing/head/roguetown/helmet/bascinet/apostle_winged
 	exact_type = TRUE
 
 /obj/item/enchantingkit/hellpossum_apostle_wingsallet
@@ -1486,6 +1506,7 @@
 		/obj/item/clothing/head/roguetown/helmet/heavy/aventail					= /obj/item/clothing/head/roguetown/helmet/bascinet/apostle/aventail/grandmaster
 	)
 	result_item = null
+	icon_loadout = /obj/item/clothing/head/roguetown/helmet/bascinet/apostle/grandmaster
 	exact_type = TRUE
 
 /obj/item/enchantingkit/hellpossum_grandmaster_habit
@@ -1499,6 +1520,7 @@
 		/obj/item/clothing/head/roguetown/helmet/heavy/aventail					= /obj/item/clothing/head/roguetown/helmet/grandmaster_habit/aventail
 	)
 	result_item = null
+	icon_loadout = /obj/item/clothing/head/roguetown/helmet/grandmaster_habit
 	exact_type = TRUE
 
 /obj/item/enchantingkit/hellpossum_grandmaster_armor
@@ -1509,10 +1531,12 @@
 		/obj/item/clothing/suit/roguetown/armor/plate/full/fluted/ornate		= /obj/item/clothing/suit/roguetown/armor/plate/full/robed/grandmaster,
 		/obj/item/clothing/suit/roguetown/armor/chainmail/hauberk/ornate		= /obj/item/clothing/suit/roguetown/armor/chainmail/hauberk/fluted/robed/grandmaster,
 		/obj/item/clothing/suit/roguetown/armor/chainmail/hauberk/fluted		= /obj/item/clothing/suit/roguetown/armor/chainmail/hauberk/fluted/robed/grandmaster,
+		/obj/item/clothing/suit/roguetown/armor/chainmail/hauberk/heavy         = /obj/item/clothing/suit/roguetown/armor/chainmail/hauberk/fluted/robed/grandmaster,
 		/obj/item/clothing/suit/roguetown/armor/plate/full/fluted				= /obj/item/clothing/suit/roguetown/armor/plate/full/robed/grandmaster,
 		/obj/item/clothing/suit/roguetown/armor/plate/full						= /obj/item/clothing/suit/roguetown/armor/plate/full/robed/grandmaster
 	)
 	result_item = null
+	icon_loadout = /obj/item/clothing/suit/roguetown/armor/plate/full/robed/grandmaster
 	exact_type = TRUE
 
 // RosySaturniidae - Beaked Mask
@@ -1525,6 +1549,7 @@
 		/obj/item/clothing/mask/rogue/facemask/steel/maille/fluted
 	)
 	result_item = /obj/item/clothing/mask/rogue/facemask/steel/maille/birdmask
+	icon_loadout = /obj/item/clothing/mask/rogue/facemask/steel/maille/birdmask
 
 /////////////////////////////
 // ! Triumph-Exc. Kits !   //

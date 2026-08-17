@@ -110,6 +110,9 @@
 /obj/item/book/rogue/bibble/zizo/MiddleClick(mob/user, params)
 	return
 
+/obj/item/book/rogue/bibble/zizo/get_mechanics_examine(mob/user)
+	return
+
 /obj/item/book/rogue/bibble/zizo/read(mob/living/carbon/human/user)
 	if(!open)
 		to_chat(user, span_info("Open it first."))

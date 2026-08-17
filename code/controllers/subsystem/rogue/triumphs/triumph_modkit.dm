@@ -45,6 +45,7 @@
 		/obj/item/clothing/suit/roguetown/armor/plate	  					= /obj/item/clothing/suit/roguetown/armor/plate/triumph_slim
 		)
 	result_item = null
+	icon_loadout = /obj/item/clothing/suit/roguetown/armor/plate/full/fluted/triumph_slim
 
 /obj/item/enchantingkit/triumph_armorkit_drow
 	name = "'Drowcraft Armor' morphing elixir"
@@ -229,6 +230,7 @@
 		/obj/item/rogueweapon/huntingknife/idagger				= /obj/item/rogueweapon/huntingknife/idagger/triumph_classic
 		)
 	result_item = null
+	icon_loadout = /obj/item/rogueweapon/huntingknife/idagger/steel/triumph_classic
 
 
 /obj/item/enchantingkit/triumph_weaponkit_psyswords
@@ -239,6 +241,7 @@
 		/obj/item/rogueweapon/sword/long/psysword			= /obj/item/rogueweapon/sword/long/psysword/triumph_slim
 		)
 	result_item = null
+	icon_loadout = /obj/item/rogueweapon/sword/long/oldpsysword/triumph_slim
 
 /obj/item/enchantingkit/triumph_transmutekit_armorkinis
 	name = "'Armorkini' transmutation elixir"
@@ -415,6 +418,7 @@
 		/obj/item/clothing/head/roguetown/helmet/heavy/ravoxhelm			= /obj/item/clothing/head/roguetown/helmet/heavy/ravoxhelm/triumph
 		)
 	result_item = null
+	icon_loadout = /obj/item/clothing/head/roguetown/helmet/heavy/bucket/crusader/triumph
 
 /obj/item/enchantingkit/triumph_weaponkit_psymace
 	name = "'Classic Psydonic Handmace' morphing elixir"
@@ -424,6 +428,7 @@
 		/obj/item/rogueweapon/mace/cudgel/psy	  						= /obj/item/rogueweapon/mace/cudgel/psy/triumph_classic
 		)
 	result_item = null
+	icon_loadout = /obj/item/rogueweapon/mace/cudgel/psy/old/triumph_classic
 
 //////////////////////////////
 // TRIUMPH-RESKIN EXAMPLES! //
