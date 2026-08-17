@@ -3506,6 +3506,45 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 
 // Nightmare Kit End
 
+// COMMANDANT SET START
+
+/datum/loadout_item/donator_commandant_helmet
+	name = "Donator Kit - Commandant's Helmet - Required: Heavy Helmet"
+	category = list("Броня", "Донат")
+	path = /obj/item/enchantingkit/commandant_helmet
+	donatitem = TRUE
+	ckeywhitelist = list("alex23116571")
+
+/datum/loadout_item/donator_commandant_cloak
+	name = "Donator Kit - Commandant's Cloak"
+	category = list("Плащи", "Донат")
+	path = /obj/item/clothing/cloak/commandant
+	donatitem = TRUE
+	ckeywhitelist = list("alex23116571")
+
+/datum/loadout_item/donator_commandant_coat
+	name = "Donator Kit - Commandant's Coat - Required: Hardened Leather Coat/Lightweight Brigandine"
+	category = list("Броня", "Донат")
+	path = /obj/item/enchantingkit/commandant_coat
+	donatitem = TRUE
+	ckeywhitelist = list("alex23116571")
+
+/datum/loadout_item/donator_commandant_belt
+	name = "Donator Kit - Officer's Belt"
+	category = list("Одежда", "Донат")
+	path = /obj/item/storage/belt/rogue/leather/twilight_holsterbelt/commandant
+	donatitem = TRUE
+	ckeywhitelist = list("alex23116571")
+
+/datum/loadout_item/donator_commandant_pistol
+	name = "Donator Kit - Elegant Pistol - Required: Arquebus Pistol"
+	category = list("Оружие", "Донат")
+	path = /obj/item/enchantingkit/commandant_pistol
+	donatitem = TRUE
+	ckeywhitelist = list("alex23116571")
+
+// COMMANDANT SET END
+
 // Etruscan vol.3 Kit Start
 
 /datum/loadout_item/etrhat
