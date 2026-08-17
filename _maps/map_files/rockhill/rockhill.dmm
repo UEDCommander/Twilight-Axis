@@ -74294,14 +74294,14 @@
 /turf/open/water/cleanshallow,
 /area/rogue/under/cavewet)
 "oTd" = (
-/obj/structure/bars/passage/shutter{
-	name = "Whitevein Lounge";
-	redstone_id = "whitevein_desk"
-	},
 /obj/structure/table/wood,
 /obj/structure/bars{
 	icon_state = "barsbent";
 	layer = 2.81
+	},
+/obj/structure/bars/passage/shutter{
+	name = "Whitevein Lounge";
+	redstone_id = "whitevein_desk"
 	},
 /turf/open/floor/rogue/concrete,
 /area/rogue/indoors/town/bath)
@@ -105210,7 +105210,7 @@
 "vpe" = (
 /obj/structure/bars/grille{
 	icon = 'icons/roguetown/misc/roguewindow.dmi';
-	icon_state = "harem3-solid";
+	icon_state = "shrafa3-solid";
 	desc = "greenhouse roof"
 	},
 /turf/open/transparent/openspace,
