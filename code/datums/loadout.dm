@@ -1985,7 +1985,7 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	donatitem = TRUE
 
 /datum/loadout_item/donator_zydrashauberk
-	name = "Donator Kit - Iron Gardbrace & Fauld - Required: Iron Mailled Hauberk"
+	name = "Donator Kit - Mailled Cuirass - Required: iron plate-and-maille"
 	path = /obj/item/enchantingkit/zydrashauberk
 	category = list("Броня", "Донат")
 	donatitem = TRUE
