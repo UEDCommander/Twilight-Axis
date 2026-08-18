@@ -312,7 +312,9 @@ SUBSYSTEM_DEF(migrants)
 
 	SSticker.minds += character.mind
 	GLOB.joined_player_list += character.ckey
-	update_scaling_slots()
+	update_wretch_slots()
+	update_mercenary_slots()
+	update_adventurer_slots()
 	if(character.client)
 		character.client.update_ooc_verb_visibility()
 
@@ -324,10 +326,12 @@ SUBSYSTEM_DEF(migrants)
 		GLOB.character_list[character.mobid] = "[fakekey] was [character.real_name] ([rank])<BR>"
 		GLOB.character_ckey_list[character.real_name] = character.ckey
 		var/mob_name = character.real_name
-		var/mob_rank = rank
+		var/mob_rank = role.name // TA EDIT
 		if(character.mind.special_role == "Court Agent")
 			mob_rank = "Adventurer"
-		GLOB.actors_list[character.mobid] = list("name" = mob_name, "rank" = mob_rank)
+		if(!GLOB.actors_list["Migrants"]) // TA EDIT
+			GLOB.actors_list["Migrants"] = list() // TA EDIT
+		GLOB.actors_list["Migrants"] += list("[character.mobid]" = "[mob_name] as the [humanc.dna.species.name] [mob_rank]<BR>") // TA EDIT
 		log_character("[character.ckey] ([fakekey]) - [character.real_name] - [rank]")
 	if(GLOB.respawncounts[character.ckey])
 		var/AN = GLOB.respawncounts[character.ckey]
@@ -346,6 +350,8 @@ SUBSYSTEM_DEF(migrants)
 		to_chat(character, span_notice("[wave_greet]"))
 	if(role.greet_text)
 		to_chat(character, span_notice("[role.greet_text]"))
+
+	ADD_TRAIT(character, TRAIT_OUTLANDER, TRAIT_GENERIC) //TA EDIT
 
 	if(role.outfit)
 		var/datum/outfit/outfit = new role.outfit()
@@ -499,7 +505,7 @@ SUBSYSTEM_DEF(migrants)
 	var/base_weight = wave.weight
 	var/triumph_bonus = wave.triumph_total
 
-	var/triumph_multiplier = 6
+	var/triumph_multiplier = wave.triumph_weight_multiplier // TA EDIT
 	var/final_weight = base_weight + (triumph_bonus * triumph_multiplier)
 
 	return max(final_weight, 1)

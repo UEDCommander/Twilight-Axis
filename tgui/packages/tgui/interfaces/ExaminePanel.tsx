@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Button, Stack } from 'tgui-core/components';
 
 import { useBackend } from '../backend';
@@ -11,6 +11,11 @@ enum Page {
   FlavorText,
   ImageGallery,
 }
+
+// TA EDIT START
+const isValidAssetValue = (value?: string | null) =>
+  !!value && value !== '0' && value !== '00';
+// TA EDIT END
 
 export const ExaminePanel = (props) => {
   const { act, data } = useBackend<ExaminePanelData>();
@@ -25,9 +30,31 @@ export const ExaminePanel = (props) => {
     nsfw_img_gallery,
     examine_theme,
   } = data;
+
   const [currentPage, setCurrentPage] = useState(Page.FlavorText);
-  const hasAnyGalleryImages =
-    img_gallery.length > 0 || nsfw_img_gallery.length > 0;
+
+  // TA EDIT START
+  const safeSfwGallery = useMemo(
+    () => (img_gallery || []).filter(isValidAssetValue),
+    [img_gallery],
+  );
+
+  const safeNsfwGallery = useMemo(
+    () => (nsfw_img_gallery || []).filter(isValidAssetValue),
+    [nsfw_img_gallery],
+  );
+
+  const hasSfwGallery = safeSfwGallery.length > 0;
+  const hasNsfwGallery = safeNsfwGallery.length > 0;
+  const hasAnyGallery = Boolean(hasSfwGallery || hasNsfwGallery);
+  const shouldShowTabs = Boolean(hasAnyGallery);
+
+  useEffect(() => {
+    if (currentPage === Page.ImageGallery && !hasAnyGallery) {
+      setCurrentPage(Page.FlavorText);
+    }
+  }, [currentPage, hasAnyGallery]);
+  // TA EDIT END
 
   let pageContents;
 
@@ -37,6 +64,9 @@ export const ExaminePanel = (props) => {
       break;
     case Page.ImageGallery:
       pageContents = <ImageGalleryPage />;
+      break;
+    default:
+      pageContents = <FlavorTextPage />;
       break;
   }
 
@@ -82,29 +112,36 @@ export const ExaminePanel = (props) => {
     >
       <Window.Content>
         <Stack vertical fill>
-          {hasAnyGalleryImages && (
-            <Stack style={{ marginBottom: '4px' }}>
-              <Stack.Item grow>
-                <PageButton
-                  currentPage={currentPage}
-                  page={Page.FlavorText}
-                  setPage={setCurrentPage}
-                >
-                  Flavor Text
-                </PageButton>
-              </Stack.Item>
-              <Stack.Item grow>
-                <PageButton
-                  currentPage={currentPage}
-                  page={Page.ImageGallery}
-                  setPage={setCurrentPage}
-                >
-                  Image Gallery
-                </PageButton>
-              </Stack.Item>
-            </Stack>
+          {shouldShowTabs && (
+            <>
+              <Stack style={{ marginBottom: '4px' }}>
+                <Stack.Item grow>
+                  <PageButton
+                    currentPage={currentPage}
+                    page={Page.FlavorText}
+                    setPage={setCurrentPage}
+                  >
+                    Flavor Text
+                  </PageButton>
+                </Stack.Item>
+
+                {hasAnyGallery && (
+                  <Stack.Item grow>
+                    <PageButton
+                      currentPage={currentPage}
+                      page={Page.ImageGallery}
+                      setPage={setCurrentPage}
+                    >
+                      Image Gallery
+                    </PageButton>
+                  </Stack.Item>
+                )}
+              </Stack>
+
+              <Stack.Divider />
+            </>
           )}
-          {hasAnyGalleryImages && <Stack.Divider />}
+
           <Stack.Item
             grow
             position="relative"

@@ -1,4 +1,4 @@
-//PANTS
+/*//PANTS
 /datum/loadout_item/tights
 	name = "Cloth Tights"
 	path = /obj/item/clothing/under/roguetown/tights/black
@@ -69,3 +69,4 @@
 	path = /obj/item/clothing/under/roguetown/skirt/formal
 	sort_category = "Pants"
 
+*/

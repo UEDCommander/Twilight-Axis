@@ -1,4 +1,4 @@
-//CLOAKS
+/*//CLOAKS
 /datum/loadout_item/tabard
 	name = "Tabard"
 	path = /obj/item/clothing/cloak/tabard
@@ -218,7 +218,7 @@
 	name = "Ranger Cloak, Neutral Gray"
 	path = /obj/item/clothing/cloak/rangercloak/gray
 	sort_category = "Cloaks"
-
+ 
 /datum/loadout_item/toga
 	name = "Toga, Robed"
 	path = /obj/item/clothing/cloak/tabard/toga
@@ -229,3 +229,4 @@
 	path = /obj/item/clothing/cloak/tabard/toga/dress
 	sort_category = "Cloaks"
 
+*/

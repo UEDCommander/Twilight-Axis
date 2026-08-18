@@ -95,29 +95,22 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 
 						species_name = "Venardine"
 		_load_species(S, species_name)
-	if(current_version < 35) // Migrate old 3-slot loadout to gear_list
-		gear_list = list()
-		var/list/old_keys = list(
-			list("loadout", "loadout_1_hex"),
-			list("loadout2", "loadout_2_hex"),
-			list("loadout3", "loadout_3_hex"),
-		)
-		for(var/list/pair in old_keys)
-			var/loadout_type
-			S[pair[1]] >> loadout_type
-			if(!loadout_type || !ispath(loadout_type))
-				continue
-			var/datum/loadout_item/LI = GLOB.loadout_items[loadout_type]
-			if(!LI || LI.name == "Parent loadout datum")
-				continue
-			var/list/meta = list()
-			var/old_hex
-			S[pair[2]] >> old_hex
-			if(old_hex)
-				if(old_hex[1] != "#")
-					old_hex = "#[old_hex]"
-				meta["color"] = old_hex
-			gear_list[LI.name] = meta
+	if(current_version < 35) // Migrate old 3-slot loadout to selected_loadout_items
+		var/list/saved_selected_loadout_items
+		S["selected_loadout_items"] >> saved_selected_loadout_items
+		if(!islist(saved_selected_loadout_items))
+			selected_loadout_items = list()
+			var/list/old_keys = list("loadout", "loadout2", "loadout3")
+			for(var/old_key in old_keys)
+				var/loadout_type
+				S[old_key] >> loadout_type
+				if(!loadout_type || !ispath(loadout_type))
+					continue
+				var/datum/loadout_item/LI = GLOB.loadout_items[loadout_type]
+				if(!LI || LI.name == "Parent loadout datum")
+					continue
+				if(!(LI.name in selected_loadout_items))
+					selected_loadout_items.Add(LI.name)
 	if(current_version < 36) // Strip the old per-item favorite/hated food & drink data now that preferences are category flags
 		S.dir.Remove("culinary_preferences")
 
@@ -167,8 +160,12 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["lobbymusicvol"]		>> lobbymusicvol
 	S["ambiencevol"]		>> ambiencevol
 	S["anonymize"]			>> anonymize
+	S["donor_ooc_color"]	>> donor_ooc_color // TA EDIT
+	S["donor_ooc_icon"]	>> donor_ooc_icon // TA EDIT 
+	S["donor_examine_icon"]	>> donor_examine_icon // TA EDIT
 	S["stopdroning"]		>> stopdroning
 	S["masked_examine"]		>> masked_examine
+	S["nsfw_examine_always"]>> nsfw_examine_always // TA EDIT
 	S["full_examine"]		>> full_examine
 	S["feint_hud"]			>> feint_hud
 	S["mute_animal_emotes"]	>> mute_animal_emotes
@@ -181,10 +178,12 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["top_examine"]		>> top_examine
 	S["crt"]				>> crt
 	S["grain"]				>> grain
+	S["icon_scaling"]		>> icon_scaling
 	S["sexable"]			>> sexable
 	S["shake"]				>> shake
 	S["mastervol"]			>> mastervol
 	S["lastclass"]			>> lastclass
+	load_donor_job_boost_prefs(S) // TA EDIT
 	S["compliance_notifs"]	>> compliance_notifs
 
 
@@ -217,12 +216,20 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	// Custom hotkeys
 	S["key_bindings"]		>> key_bindings
 
+	S["no_runechat_animation"] >> no_runechat_animation //TA EDIT
+	S["defiant"]			>> defiant
+	// TA Addition start - new ERP SYSTEM
+	S["erp_custom_actions"] >> erp_custom_actions	
+	S["erp_kink_prefs"] >> erp_kink_prefs
+	S["erp_organ_sensitivity"] >> erp_organ_prefs
+	// TA Addition end - new ERP SYSTEM
+
 	//try to fix any outdated data if necessary
 	if(needs_update >= 0)
 		update_preferences(needs_update, S)		//needs_update = savefile_version if we need an update (positive integer)
 
 	//Sanitize
-	asaycolor		= sanitize_ooccolor(sanitize_hexcolor(asaycolor, 6, 1, initial(asaycolor)))
+	asaycolor		= sanitize_hexcolor(asaycolor, 6, 1, initial(asaycolor)) // TA EDIT
 	ooccolor		= sanitize_ooccolor(sanitize_hexcolor(ooccolor, 6, 1, initial(ooccolor)))
 	lastchangelog	= sanitize_text(lastchangelog, initial(lastchangelog))
 	UI_style		= sanitize_inlist(UI_style, GLOB.available_ui_styles, GLOB.available_ui_styles[1])
@@ -240,6 +247,9 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	preferred_ui_language = sanitize_preferred_ui_language(preferred_ui_language)
 	buttons_locked	= sanitize_integer(buttons_locked, 0, 1, initial(buttons_locked))
 	windowflashing	= sanitize_integer(windowflashing, 0, 1, initial(windowflashing))
+	crt			= sanitize_integer(crt, 0, 1, initial(crt))
+	grain			= sanitize_integer(grain, 0, 1, initial(grain))
+	icon_scaling	= sanitize_integer(icon_scaling, 0, 1, initial(icon_scaling))
 	default_slot	= sanitize_integer(default_slot, 1, max_save_slots, initial(default_slot))
 	toggles			= sanitize_integer(toggles, 0, INFINITY, initial(toggles))
 	combat_toggles = sanitize_integer(combat_toggles, 0, INFINITY, initial(combat_toggles))
@@ -260,6 +270,36 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	pda_style		= sanitize_inlist(pda_style, GLOB.pda_styles, initial(pda_style))
 	pda_color		= sanitize_hexcolor(pda_color, 6, 1, initial(pda_color))
 	key_bindings	= sanitize_islist(key_bindings, list())
+	donor_ooc_color	= sanitize_integer(donor_ooc_color, FALSE, TRUE, TRUE) // TA EDIT
+	donor_ooc_icon	= sanitize_integer(donor_ooc_icon, FALSE, TRUE, TRUE) // TA EDIT
+	donor_examine_icon	= sanitize_integer(donor_examine_icon, FALSE, TRUE, TRUE) // TA EDIT
+	defiant	= sanitize_integer(defiant, FALSE, TRUE, TRUE)
+	//TA Addition start - new ERP SYSTEM
+	erp_custom_actions = sanitize_islist(erp_custom_actions, list())
+	sanitize_erp_custom_actions()
+	erp_kink_prefs = sanitize_islist(erp_kink_prefs, list())
+	sanitize_erp_kink_prefs()
+	erp_organ_prefs = sanitize_islist(erp_organ_prefs, list())
+	sanitize_erp_organ_prefs()
+	//TA Addition end - new ERP SYSTEM
+
+	S["ccg_known_rare_cards"] >> ccg_known_rare_cards
+	ccg_known_rare_cards = SANITIZE_LIST(ccg_known_rare_cards)
+	S["ccg_selected_deck"] >> ccg_selected_deck
+	ccg_selected_deck = SANITIZE_LIST(ccg_selected_deck)
+	S["ccg_saved_deck_cards"] >> ccg_saved_deck_cards
+	ccg_saved_deck_cards = SANITIZE_LIST(ccg_saved_deck_cards)
+	S["ccg_saved_deck_faction"] >> ccg_saved_deck_faction
+	S["ccg_saved_deck_leader"] >> ccg_saved_deck_leader
+	S["ccg_saved_decks"] >> ccg_saved_decks
+	ccg_saved_decks = SANITIZE_LIST(ccg_saved_decks)
+	S["ccg_active_deck_index"] >> ccg_active_deck_index
+	S["ccg_deckbuilder_view_mode"] >> ccg_deckbuilder_view_mode
+	S["ccg_soundtrack_enabled"] >> ccg_soundtrack_enabled
+	S["ccg_presets_are_virtual"] >> ccg_presets_are_virtual
+	if(!length(ccg_saved_deck_cards) && length(ccg_selected_deck))
+		ccg_saved_deck_cards = ccg_selected_deck.Copy()
+	ccg_load_or_migrate_sql()
 
 	verify_keybindings_valid()
 	return TRUE
@@ -313,8 +353,12 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["lobbymusicvol"], lobbymusicvol)
 	WRITE_FILE(S["ambiencevol"], ambiencevol)
 	WRITE_FILE(S["anonymize"], anonymize)
+	WRITE_FILE(S["donor_ooc_color"], donor_ooc_color) // TA EDIT
+	WRITE_FILE(S["donor_ooc_icon"], donor_ooc_icon) // TA EDIT 
+	WRITE_FILE(S["donor_examine_icon"], donor_examine_icon) // TA EDIT
 	WRITE_FILE(S["stopdroning"], stopdroning)
 	WRITE_FILE(S["masked_examine"], masked_examine)
+	WRITE_FILE(S["nsfw_examine_always"], nsfw_examine_always) // TA EDIT
 	WRITE_FILE(S["full_examine"], full_examine)
 	WRITE_FILE(S["feint_hud"], feint_hud)
 	WRITE_FILE(S["mute_animal_emotes"], mute_animal_emotes)
@@ -326,9 +370,12 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["no_redflash"], no_redflash)
 	WRITE_FILE(S["top_examine"], top_examine)
 	WRITE_FILE(S["crt"], crt)
+	WRITE_FILE(S["grain"], grain)
+	WRITE_FILE(S["icon_scaling"], icon_scaling)
 	WRITE_FILE(S["sexable"], sexable)
 	WRITE_FILE(S["shake"], shake)
 	WRITE_FILE(S["lastclass"], lastclass)
+	save_donor_job_boost_prefs(S) // TA EDIT
 	WRITE_FILE(S["mastervol"], mastervol)
 	WRITE_FILE(S["ooccolor"], ooccolor)
 	WRITE_FILE(S["lastchangelog"], lastchangelog)
@@ -376,6 +423,13 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["key_bindings"], key_bindings)
 	WRITE_FILE(S["attack_blip_frequency"] , attack_blip_frequency)
 	WRITE_FILE(S["compliance_notifs"], compliance_notifs)
+	WRITE_FILE(S["defiant"], defiant)
+	WRITE_FILE(S["no_runechat_animation"], no_runechat_animation) //TA EDIT
+	// TA Addition start - new ERP SYSTEM
+	WRITE_FILE(S["erp_custom_actions"], erp_custom_actions)
+	WRITE_FILE(S["erp_kink_prefs"], erp_kink_prefs)
+	WRITE_FILE(S["erp_organ_sensitivity"], erp_organ_prefs)
+	// TA Addition end - new ERP SYSTEM
 	return TRUE
 
 
@@ -445,68 +499,147 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		statpack = GLOB.statpacks[statpack]
 		//statpack = new statpack
 
+
+/datum/preferences/proc/copy_virtue_choices(list/choices)
+	if(!islist(choices))
+		return list()
+	return choices.Copy()
+
+/datum/preferences/proc/get_saved_virtue_choices(savefile/S, choices_key)
+	var/list/choices
+	if(choices_key)
+		S[choices_key] >> choices
+	return copy_virtue_choices(choices)
+
+/datum/preferences/proc/normalize_saved_virtue(saved_value, savefile/S, choices_key)
+	var/virtue_type = /datum/virtue/none
+	var/list/choices = list()
+
+	if(ispath(saved_value, /datum/virtue))
+		virtue_type = saved_value
+		choices = get_saved_virtue_choices(S, choices_key)
+	else if(istype(saved_value, /datum/virtue))
+		var/datum/virtue/loaded_virtue = saved_value
+		if(ispath(loaded_virtue.type, /datum/virtue))
+			virtue_type = loaded_virtue.type
+		choices = copy_virtue_choices(loaded_virtue.picked_choices)
+		qdel(loaded_virtue)
+
+	return list(virtue_type, choices)
+
+/datum/preferences/proc/validate_virtue_choices(datum/virtue/clean_virtue, list/choices)
+	if(!clean_virtue || !islist(choices))
+		return list()
+	if(length(choices) > clean_virtue.max_choices)
+		return list()
+
+	var/list/clean_choices = list()
+	for(var/choice in choices)
+		if(choice in clean_choices)
+			return list()
+		if(!(choice in clean_virtue.extra_choices))
+			return list()
+		clean_choices += choice
+
+	return clean_choices
+
+/datum/preferences/proc/load_clean_virtue(virtue_type, list/choices)
+	if(!ispath(virtue_type, /datum/virtue))
+		virtue_type = /datum/virtue/none
+
+	var/datum/virtue/clean_virtue = new virtue_type
+	clean_virtue.picked_choices = validate_virtue_choices(clean_virtue, choices)
+	clean_virtue.on_load()
+	return clean_virtue
+
+/datum/preferences/proc/write_clean_virtue_paths(savefile/S, virtue_type = /datum/virtue/none, virtuetwo_type = /datum/virtue/none, origin_type = /datum/virtue/none, list/virtue_choices = null, list/virtuetwo_choices = null)
+	if(!ispath(virtue_type, /datum/virtue))
+		virtue_type = /datum/virtue/none
+	if(!ispath(virtuetwo_type, /datum/virtue))
+		virtuetwo_type = /datum/virtue/none
+	if(!ispath(origin_type, /datum/virtue))
+		origin_type = /datum/virtue/none
+
+	WRITE_FILE(S["virtue"], virtue_type)
+	WRITE_FILE(S["virtuetwo"], virtuetwo_type)
+	WRITE_FILE(S["virtue_origin"], origin_type)
+	WRITE_FILE(S["virtue_choices"], copy_virtue_choices(virtue_choices))
+	WRITE_FILE(S["virtuetwo_choices"], copy_virtue_choices(virtuetwo_choices))
+
 /datum/preferences/proc/_load_virtue(S)
-	var/virtue_type
-	var/virtuetwo_type
-	var/origin_type
-	S["virtue"] >> virtue_type
-	S["virtuetwo"] >> virtuetwo_type
-	S["virtue_origin"] >> origin_type
-	var/list/virtue_choices = list()
-	var/list/virtuetwo_choices = list()
-	var/virtone
-	var/virttwo
-	S["virtuechoices"] >> virtone
-	S["virtuetwochoices"] >> virttwo
-	virtue_choices = virtone
-	virtuetwo_choices = virttwo
+	var/saved_virtue_type
+	var/saved_virtuetwo_type
+	var/saved_origin_type
+	S["virtue"] >> saved_virtue_type
+	S["virtuetwo"] >> saved_virtuetwo_type
+	S["virtue_origin"] >> saved_origin_type
 
-	// If we still find a living ref, we clean it up. This is deprecated and we shouldn't be saving whole datums.
-	if (istype(virtue_type, /datum/virtue))
-		var/datum/virtue/V = virtue_type
-		virtue = new V.type
-		if(length(V.picked_choices))
-			virtue.picked_choices = V.picked_choices
-		qdel(V)
-	else if(ispath(virtue_type, /datum/virtue))
-		virtue = new virtue_type
-	else
-		virtue = new /datum/virtue/none
+	var/list/virtue_data = normalize_saved_virtue(saved_virtue_type, S, "virtue_choices")
+	var/list/virtuetwo_data = normalize_saved_virtue(saved_virtuetwo_type, S, "virtuetwo_choices")
+	var/list/origin_data = normalize_saved_virtue(saved_origin_type, S, "virtue_origin_choices")
 
-	// Ditto, but for the second virtue.
-	if(istype(virtuetwo_type, /datum/virtue))
-		var/datum/virtue/V = virtuetwo_type
-		virtuetwo = new V.type
-		if(length(V.picked_choices))
-			virtuetwo.picked_choices = V.picked_choices
-		qdel(V)
-	else if(ispath(virtuetwo_type, /datum/virtue))
-		virtuetwo = new virtuetwo_type
-	else
-		virtuetwo = new /datum/virtue/none
+	virtue = load_clean_virtue(virtue_data[1], virtue_data[2])
+	virtuetwo = load_clean_virtue(virtuetwo_data[1], virtuetwo_data[2])
+	virtue_origin = load_clean_virtue(origin_data[1], origin_data[2])
 
-	if(length(virtue_choices))
-		virtue.picked_choices = virtue_choices.Copy()
+	write_clean_virtue_paths(S, virtue.type, virtuetwo.type, virtue_origin.type, virtue.picked_choices, virtuetwo.picked_choices)
 
-	if(length(virtuetwo_choices))
-		virtuetwo.picked_choices = virtuetwo_choices.Copy()
+/datum/preferences/proc/_load_loadout(S)
+	S["selected_loadout_items"] >> selected_loadout_items
+	selected_loadout_items = SANITIZE_LIST(selected_loadout_items)
+	var/list/root_ccg_known_rare_cards = islist(ccg_known_rare_cards) ? ccg_known_rare_cards.Copy() : list()
+	var/list/root_ccg_selected_deck = islist(ccg_selected_deck) ? ccg_selected_deck.Copy() : list()
+	var/list/root_ccg_saved_deck_cards = islist(ccg_saved_deck_cards) ? ccg_saved_deck_cards.Copy() : list()
+	var/root_ccg_saved_deck_faction = ccg_saved_deck_faction
+	var/root_ccg_saved_deck_leader = ccg_saved_deck_leader
+	var/list/root_ccg_saved_decks = islist(ccg_saved_decks) ? deepCopyList(ccg_saved_decks) : list()
+	var/root_ccg_active_deck_index = ccg_active_deck_index
+	var/root_ccg_deckbuilder_view_mode = ccg_deckbuilder_view_mode
+	var/root_ccg_soundtrack_enabled = ccg_soundtrack_enabled
+	var/root_ccg_presets_are_virtual = ccg_presets_are_virtual
+	S["ccg_known_rare_cards"] >> ccg_known_rare_cards
+	ccg_known_rare_cards = SANITIZE_LIST(ccg_known_rare_cards)
+	S["ccg_selected_deck"] >> ccg_selected_deck
+	ccg_selected_deck = SANITIZE_LIST(ccg_selected_deck)
+	S["ccg_saved_deck_cards"] >> ccg_saved_deck_cards
+	ccg_saved_deck_cards = SANITIZE_LIST(ccg_saved_deck_cards)
+	S["ccg_saved_deck_faction"] >> ccg_saved_deck_faction
+	S["ccg_saved_deck_leader"] >> ccg_saved_deck_leader
+	S["ccg_saved_decks"] >> ccg_saved_decks
+	ccg_saved_decks = SANITIZE_LIST(ccg_saved_decks)
+	S["ccg_active_deck_index"] >> ccg_active_deck_index
+	S["ccg_deckbuilder_view_mode"] >> ccg_deckbuilder_view_mode
+	S["ccg_soundtrack_enabled"] >> ccg_soundtrack_enabled
+	S["ccg_presets_are_virtual"] >> ccg_presets_are_virtual
+	if(!length(ccg_known_rare_cards) && length(root_ccg_known_rare_cards))
+		ccg_known_rare_cards = root_ccg_known_rare_cards
+	if(!length(ccg_selected_deck) && length(root_ccg_selected_deck))
+		ccg_selected_deck = root_ccg_selected_deck
+	if(!length(ccg_saved_deck_cards) && length(root_ccg_saved_deck_cards))
+		ccg_saved_deck_cards = root_ccg_saved_deck_cards
+	if(!length(ccg_saved_decks) && length(root_ccg_saved_decks))
+		ccg_saved_decks = root_ccg_saved_decks
+	if(!ccg_saved_deck_faction)
+		ccg_saved_deck_faction = root_ccg_saved_deck_faction
+	if(!ccg_saved_deck_leader)
+		ccg_saved_deck_leader = root_ccg_saved_deck_leader
+	if(!ccg_active_deck_index)
+		ccg_active_deck_index = root_ccg_active_deck_index
+	if(!ccg_deckbuilder_view_mode)
+		ccg_deckbuilder_view_mode = root_ccg_deckbuilder_view_mode
+	if(isnull(ccg_soundtrack_enabled))
+		ccg_soundtrack_enabled = root_ccg_soundtrack_enabled
+	if(isnull(ccg_presets_are_virtual))
+		ccg_presets_are_virtual = root_ccg_presets_are_virtual
+	if(!length(ccg_saved_deck_cards) && length(ccg_selected_deck))
+		ccg_saved_deck_cards = ccg_selected_deck.Copy()
+	ccg_load_or_migrate_sql()
 
-	virtue.on_load()
-	virtuetwo.on_load()
+/datum/preferences/proc/_load_loadout_colours(S)
+	S["loadout_1_hex"] >> loadout_1_hex
+	S["loadout_2_hex"] >> loadout_2_hex
+	S["loadout_3_hex"] >> loadout_3_hex
 
-	if(origin_type)
-		virtue_origin = new origin_type
-	else
-		virtue_origin = new /datum/virtue/none
-
-/datum/preferences/proc/_load_gear_list(savefile/S)
-	S["gear_list"] >> gear_list
-	if(!islist(gear_list))
-		gear_list = list()
-	// Validate: remove items that no longer exist
-	for(var/item_name in gear_list)
-		if(!(item_name in GLOB.loadout_items_by_name))
-			gear_list -= item_name
 
 /datum/preferences/proc/_load_height(S)
 	var/preview_height
@@ -517,24 +650,24 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 /datum/preferences/proc/_load_combat_music(S)
 	var/combat_music_type
 	S["combat_music"] >> combat_music_type
-	if (GLOB.cmode_tracks_by_type[combat_music_type])
+	S["custom_cmode_name"] >> custom_cmode_name // TA EDIT START
+	S["custom_cmode_file"] >> custom_cmode_file
+	S["custom_cmode_enabled"] >> custom_cmode_enabled
+
+	if(custom_cmode_file && !is_valid_custom_combat_music_path(custom_cmode_file))
+		custom_cmode_file = null
+		custom_cmode_name = null
+		custom_cmode_enabled = FALSE
+
+	if(custom_cmode_enabled)
+		if(build_custom_combat_music(parent?.ckey))
+			return
+		custom_cmode_enabled = FALSE
+
+	if(GLOB.cmode_tracks_by_type[combat_music_type]) // TA EDIT END
 		combat_music = GLOB.cmode_tracks_by_type[combat_music_type]
 	else
 		combat_music = GLOB.cmode_tracks_by_type[default_cmusic_type]
-
-/datum/preferences/proc/_load_barks(S)
-	S["bark_id"] >> bark_id
-	S["bark_speed"] >> bark_speed
-	S["bark_pitch"] >> bark_pitch
-	S["bark_variance"] >> bark_variance
-	S["mute_barks"] >> mute_barks
-
-	if(!(bark_id in GLOB.bark_list))
-		bark_id = pick(GLOB.bark_random_list)
-	var/datum/bark/B = GLOB.bark_list[bark_id]
-	bark_speed = round(clamp(bark_speed, initial(B.minspeed), initial(B.maxspeed)), 1)
-	bark_pitch = clamp(bark_pitch, initial(B.minpitch), initial(B.maxpitch))
-	bark_variance = clamp(bark_variance, initial(B.minvariance), initial(B.maxvariance))
 
 /datum/preferences/proc/_load_appearence(S)
 	S["real_name"]			>> real_name
@@ -624,10 +757,9 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	// LETHALSTONE edit: jank-ass load our statpack choice
 	_load_statpack(S)
 
-	_load_gear_list(S)
+	_load_loadout(S)
 
 	_load_combat_music(S)
-	_load_barks(S)
 
 	if(!S["features["mcolor"]"] || S["features["mcolor"]"] == "#000")
 		WRITE_FILE(S["features["mcolor"]"]	, "#FFF")
@@ -651,6 +783,10 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		if(!selected_patron) //failsafe
 			selected_patron = GLOB.patronlist[default_patron]
 
+	S["have_manor"] >> have_manor  //TA EDIT
+	S["manor_name"] >> manor_name  //TA EDIT
+	S["manor_type"] >> manor_type  //TA EDIT
+
 	//Custom names
 	for(var/custom_name_id in GLOB.preferences_custom_names)
 		var/savefile_slot_name = custom_name_id + "_name" //TODO remove this
@@ -664,6 +800,10 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	//Load prefs
 	S["job_preferences"] >> job_preferences
 	S["job_subprefs"] >> job_subprefs
+
+	S["job_characters"] >> job_characters //TA EDIT
+	S["job_subclass_preferences"] >> job_subclass_preferences // TA EDIT START
+	S["job_subclass_strict"] >> job_subclass_strict // TA EDIT END
 
 	//Quirks
 	S["all_quirks"] >> all_quirks
@@ -694,12 +834,22 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["flavortext"]			>> flavortext
 	S["ooc_notes"]			>> ooc_notes
 	S["ooc_extra"]			>> ooc_extra
+	S["ooc_extra_img"]		>> ooc_extra_img
+	S["ooc_extra_img_link"]	>> ooc_extra_img_link
+	if(!valid_headshot_link(null, ooc_extra_img_link, FALSE, list("jpg", "jpeg", "png", "gif", "mp4")))
+		ooc_extra_img = null
+		ooc_extra_img_link = null
 	S["rumour"]			>> rumour
 	S["noble_gossip"]			>> noble_gossip
 	S["averse_chosen_faction"] >> averse_chosen_faction
 	S["song_artist"]		>> song_artist
 	S["song_title"]			>> song_title
 	S["nsfwflavortext"]	>> nsfwflavortext
+	S["nsfw_ooc_extra_img"]		>> nsfw_ooc_extra_img
+	S["nsfw_ooc_extra_img_link"]	>> nsfw_ooc_extra_img_link
+	if(!valid_headshot_link(null, nsfw_ooc_extra_img_link, FALSE, list("jpg", "jpeg", "png", "gif", "mp4")))
+		nsfw_ooc_extra_img = null
+		nsfw_ooc_extra_img_link = null
 	S["erpprefs"]			>> erpprefs
 	S["preset_bounty_enabled"] >> preset_bounty_enabled
 	S["preset_bounty_poster_key"] >> preset_bounty_poster_key
@@ -711,7 +861,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["img_gallery"]	>> img_gallery
 	img_gallery = SANITIZE_LIST(img_gallery)
 
-	S["nsfw_img_gallery"]	>> nsfw_img_gallery
+	S["nsfw_img_gallery"] >> nsfw_img_gallery
 	nsfw_img_gallery = SANITIZE_LIST(nsfw_img_gallery)
 
 	S["examine_theme"]		>> examine_theme
@@ -809,9 +959,9 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["topjob"] >> topjob
 	var/topjob_found = FALSE
 	for(var/j in job_preferences)
-		if(job_preferences[j] != JP_LOW && job_preferences[j] != JP_MEDIUM && job_preferences[j] != JP_HIGH)
+		if(job_preferences[j] != JP_LOW && job_preferences[j] != JP_MEDIUM && job_preferences[j] != JP_HIGH && job_preferences[j] != JP_BOOST) // TA EDIT
 			job_preferences -= j
-		if(job_preferences[j] == JP_HIGH)
+		if(job_preferences[j] == JP_HIGH || job_preferences[j] == JP_BOOST) // TA EDIT
 			topjob_found = TRUE
 			var/datum/job/prefjob = SSjob.GetJob(j)
 			if(prefjob)
@@ -821,12 +971,149 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		topjob = null
 		WRITE_FILE(S["topjob"], topjob)
 
+	if(parent) // TA EDIT
+		sanitize_donor_job_boost(parent.mob) // TA EDIT
+
+	if(!islist(job_characters)) //TA EDIT START
+		job_characters = list()
+	for(var/job_title in job_characters)
+		
+		var/slot_num = job_characters[job_title]
+		if(!isnum(slot_num) || slot_num < 1 || slot_num > max_save_slots)
+			job_characters -= job_title //TA EDIT END
+
+	if(!islist(job_subclass_preferences)) // TA EDIT START
+		job_subclass_preferences = list()
+	if(!islist(job_subclass_strict))
+		job_subclass_strict = list()
+	for(var/job_title in job_subclass_preferences.Copy())
+		var/subclass_name = job_subclass_preferences[job_title]
+		var/datum/job/J = SSjob.GetJob(job_title)
+		var/valid_subclass = FALSE
+		if(istext(subclass_name) && length(J?.job_subclasses))
+			for(var/subclass_path in J.job_subclasses)
+				var/datum/advclass/subclass_type = subclass_path
+				if(initial(subclass_type.name) == subclass_name)
+					valid_subclass = TRUE
+					break
+		if(!valid_subclass)
+			job_subclass_preferences -= job_title
+			job_subclass_strict -= job_title
+	for(var/job_title in job_subclass_strict.Copy())
+		if(!(job_title in job_subclass_preferences))
+			job_subclass_strict -= job_title
+		else
+			job_subclass_strict[job_title] = sanitize_integer(job_subclass_strict[job_title], FALSE, TRUE, FALSE)
+			if(!job_subclass_strict[job_title])
+				job_subclass_strict -= job_title // TA EDIT END
+
+	if(!islist(job_subprefs))
+		job_subprefs = list()
+	for(var/job_title in job_subprefs.Copy())
+		if(!islist(job_subprefs[job_title]))
+			job_subprefs -= job_title
+
+	for(var/job_title in job_subclass_preferences)
+		var/datum/job/J = SSjob.GetJob(job_title)
+		if(!J)
+			continue
+		var/local_subclass_path
+		for(var/subclass_path in J.job_subclasses)
+			var/datum/advclass/subclass_type = subclass_path
+			if(initial(subclass_type.name) != job_subclass_preferences[job_title])
+				continue
+			local_subclass_path = subclass_path
+			break
+		if(!local_subclass_path)
+			continue
+		var/list/roleprefs = job_subprefs[job_title]
+		if(!islist(roleprefs))
+			roleprefs = islist(J.default_subprefs) ? J.default_subprefs.Copy() : list()
+			job_subprefs[job_title] = roleprefs
+		roleprefs["favorite_advclass"] = local_subclass_path
+
+	for(var/job_title in job_subprefs)
+		if(job_subclass_preferences[job_title])
+			continue
+		var/list/roleprefs = job_subprefs[job_title]
+		var/favorite_subclass_path = roleprefs["favorite_advclass"]
+		if(!favorite_subclass_path)
+			continue
+		if(!ispath(favorite_subclass_path, /datum/advclass))
+			roleprefs["favorite_advclass"] = null
+			continue
+		var/datum/job/J = SSjob.GetJob(job_title)
+		if(!J || !length(J.job_subclasses))
+			continue
+		if(!(favorite_subclass_path in J.job_subclasses))
+			roleprefs["favorite_advclass"] = null
+			continue
+		var/datum/advclass/favorite_subclass_type = favorite_subclass_path
+		job_subclass_preferences[job_title] = initial(favorite_subclass_type.name)
+		job_subclass_strict -= job_title
+	
 	all_quirks = SANITIZE_LIST(all_quirks)
 
 	S["customizer_entries"] >> customizer_entries
 	validate_customizer_entries()
 
+	// TA EDIT START - load familytree settings from the active character slot.
+	familytree_module_load_character_from_savefile(S, slot, TRUE)
+	// TA EDIT END
+	
 	return TRUE
+
+/datum/preferences/proc/fast_scan_for_job(savefile/S, slot)
+	S.cd = "/character[slot]"
+	
+	
+	S["real_name"] >> real_name
+	if(!real_name) real_name = "Slot [slot]"
+
+	
+	var/species_name
+	S["species"] >> species_name
+	if(species_name && GLOB.species_list[species_name])
+		var/race_type = GLOB.species_list[species_name]
+		pref_species = new race_type
+	else
+		pref_species = new default_species.type
+
+	
+	S["age"] >> age
+	S["gender"] >> gender
+
+	
+	var/patron_typepath
+	S["selected_patron"] >> patron_typepath
+	if(patron_typepath && GLOB.patronlist[patron_typepath])
+		selected_patron = GLOB.patronlist[patron_typepath]
+	else
+		selected_patron = GLOB.patronlist[default_patron]
+
+	
+	var/saved_virtue_type
+	var/saved_virtuetwo_type
+	var/saved_origin_type
+	S["virtue"] >> saved_virtue_type
+	S["virtuetwo"] >> saved_virtuetwo_type
+	S["virtue_origin"] >> saved_origin_type
+	
+	var/list/virtue_data = normalize_saved_virtue(saved_virtue_type, S, "virtue_choices")
+	var/list/virtuetwo_data = normalize_saved_virtue(saved_virtuetwo_type, S, "virtuetwo_choices")
+	var/list/origin_data = normalize_saved_virtue(saved_origin_type, S, "virtue_origin_choices")
+
+	virtue = load_clean_virtue(virtue_data[1], virtue_data[2])
+	virtuetwo = load_clean_virtue(virtuetwo_data[1], virtuetwo_data[2])
+	virtue_origin = load_clean_virtue(origin_data[1], origin_data[2])
+
+	
+	charflaws.Cut()
+	var/list/loaded_flaws
+	S["charflaws"] >> loaded_flaws
+	if(loaded_flaws)
+		for(var/ftype in loaded_flaws)
+			if(ispath(ftype)) charflaws += new ftype
 
 /datum/preferences/proc/save_character()
 	if(!path)
@@ -873,6 +1160,9 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["feature_mcolor3"]		, features["mcolor3"])
 	WRITE_FILE(S["feature_ethcolor"]	, features["ethcolor"])
 	WRITE_FILE(S["nickname"]			, nickname)
+	WRITE_FILE(S["have_manor"]		, have_manor) //TA EDIT
+	WRITE_FILE(S["manor_name"]		, manor_name) //TA EDIT
+	WRITE_FILE(S["manor_type"]		, manor_type) //TA EDIT
 	WRITE_FILE(S["highlight_color"]		, highlight_color)
 	WRITE_FILE(S["taur_type"]			, taur_type)
 	WRITE_FILE(S["taur_color"]			, taur_color)
@@ -894,6 +1184,10 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	//Write prefs
 	WRITE_FILE(S["job_preferences"] , job_preferences)
 	WRITE_FILE(S["job_subprefs"] , job_subprefs)
+
+	WRITE_FILE(S["job_characters"]  , job_characters) //TA EDIT
+	WRITE_FILE(S["job_subclass_preferences"], job_subclass_preferences) // TA EDIT START
+	WRITE_FILE(S["job_subclass_strict"], job_subclass_strict) // TA EDIT END
 
 	//Quirks
 	WRITE_FILE(S["all_quirks"]			, all_quirks)
@@ -918,13 +1212,6 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["descriptor_entries"] , descriptor_entries)
 	WRITE_FILE(S["custom_descriptors"] , custom_descriptors)
 
-	//Barks
-	WRITE_FILE(S["bark_id"]					, bark_id)
-	WRITE_FILE(S["bark_speed"]				, bark_speed)
-	WRITE_FILE(S["bark_pitch"]				, bark_pitch)
-	WRITE_FILE(S["bark_variance"]			, bark_variance)
-	WRITE_FILE(S["mute_barks"]				, mute_barks)
-
 	WRITE_FILE(S["dnr"] , dnr_pref)
 	WRITE_FILE(S["update_mutant_colors"] , update_mutant_colors)
 	WRITE_FILE(S["headshot_link"] , headshot_link)
@@ -941,6 +1228,8 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["flavortext"] , html_decode(flavortext))
 	WRITE_FILE(S["ooc_notes"] , html_decode(ooc_notes))
 	WRITE_FILE(S["ooc_extra"] ,	ooc_extra)
+	WRITE_FILE(S["ooc_extra_img"] , ooc_extra_img)
+	WRITE_FILE(S["ooc_extra_img_link"] , ooc_extra_img_link)
 	WRITE_FILE(S["rumour"] , html_decode(rumour))
 	WRITE_FILE(S["noble_gossip"] , html_decode(noble_gossip))
 	WRITE_FILE(S["averse_chosen_faction"] , html_decode(averse_chosen_faction))
@@ -954,20 +1243,25 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["titles_pref"] , titles_pref)
 	WRITE_FILE(S["clothes_pref"] , clothes_pref)
 	WRITE_FILE(S["statpack"] , statpack.type)
-	WRITE_FILE(S["virtue"] , virtue.type)
-	WRITE_FILE(S["virtuechoices"] , virtue.picked_choices)
-	WRITE_FILE(S["virtuetwo"], virtuetwo.type)
-	WRITE_FILE(S["virtuetwochoices"] , virtuetwo.picked_choices)
-	WRITE_FILE(S["virtue_origin"], virtue_origin.type)
+
+	write_clean_virtue_paths(S, virtue ? virtue.type : /datum/virtue/none, virtuetwo ? virtuetwo.type : /datum/virtue/none, virtue_origin ? virtue_origin.type : /datum/virtue/none, virtue ? virtue.picked_choices : null, virtuetwo ? virtuetwo.picked_choices : null)
+
 	WRITE_FILE(S["race_bonus"], race_bonus)
-	WRITE_FILE(S["combat_music"], combat_music.type)
+	var/combat_music_save_type = default_cmusic_type // TA EDIT START
+	if(!custom_cmode_enabled && combat_music)
+		combat_music_save_type = combat_music.type
+	WRITE_FILE(S["combat_music"], combat_music_save_type)
+	WRITE_FILE(S["custom_cmode_name"], custom_cmode_name)
+	WRITE_FILE(S["custom_cmode_file"], custom_cmode_file)
+	WRITE_FILE(S["custom_cmode_enabled"], custom_cmode_enabled) // TA EDIT END
 	WRITE_FILE(S["body_size"] , features["body_size"])
 	WRITE_FILE(S["nsfwflavortext"] , html_decode(nsfwflavortext))
+	WRITE_FILE(S["nsfw_ooc_extra_img"] , nsfw_ooc_extra_img)
+	WRITE_FILE(S["nsfw_ooc_extra_img_link"] , nsfw_ooc_extra_img_link)
 	WRITE_FILE(S["erpprefs"] , html_decode(erpprefs))
 	WRITE_FILE(S["img_gallery"] , img_gallery)
 	WRITE_FILE(S["nsfw_img_gallery"] , nsfw_img_gallery)
-
-	WRITE_FILE(S["gear_list"], gear_list)
+	WRITE_FILE(S["selected_loadout_items"], selected_loadout_items)
 
 	//Familiar Files
 	WRITE_FILE(S["familiar_names"] , familiar_prefs.familiar_names)
@@ -981,6 +1275,18 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["familiar_ooc_notes_display"] , familiar_prefs.familiar_ooc_notes_display)
 	WRITE_FILE(S["familiar_ooc_extra"] , familiar_prefs.familiar_ooc_extra)
 	WRITE_FILE(S["familiar_ooc_extra_link"] , familiar_prefs.familiar_ooc_extra_link)
+
+	WRITE_FILE(S["loadout_1_hex"], loadout_1_hex)
+	WRITE_FILE(S["loadout_2_hex"], loadout_2_hex)
+	WRITE_FILE(S["loadout_3_hex"], loadout_3_hex)
+
+	// TA EDIT START - save familytree settings with the active character slot.
+	familytree_module_save_character_to_savefile(S, default_slot)
+	// TA EDIT END
+
+	if(loaded_job_slots["[default_slot]"]) //TA EDIT
+		loaded_job_slots["[default_slot]"] = null
+
 
 	return TRUE
 

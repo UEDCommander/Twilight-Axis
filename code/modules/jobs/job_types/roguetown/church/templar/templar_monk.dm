@@ -7,8 +7,8 @@
 	subclass_languages = list(/datum/language/grenzelhoftian)
 	traits_applied = list(TRAIT_DODGEEXPERT, TRAIT_CIVILIZEDBARBARIAN)
 	subclass_stats = list(
-		STATKEY_STR = 2,
-		STATKEY_CON = 1,
+		STATKEY_STR = 3, // TA EDIT
+		STATKEY_CON = 2,
 		STATKEY_WIL = 2,
 		STATKEY_SPD = 1
 	)
@@ -43,9 +43,16 @@
 	H.cmode_music = 'sound/music/cmode/church/combat_reckoning.ogg'
 	switch(H.patron?.type)
 		if(/datum/patron/divine/undivided)
-			mask = /obj/item/clothing/head/roguetown/roguehood/undivided
+			var/colors = list("Normal", "Clerical")
+			var/colorchoice = input(H,"Choose style", "TAKE UP FASHION") as anything in colors
+			switch(colorchoice)
+				if("Normal")
+					mask = /obj/item/clothing/head/roguetown/roguehood/undivided
+					cloak = /obj/item/clothing/suit/roguetown/shirt/robe/undivided
+				if("Clerical")
+					mask = /obj/item/clothing/head/roguetown/roguehood/undividedcleric
+					cloak = /obj/item/clothing/suit/roguetown/shirt/robe/undividedcleric
 			neck = /obj/item/clothing/neck/roguetown/psicross/undivided
-			cloak = /obj/item/clothing/suit/roguetown/shirt/robe/undivided
 		if(/datum/patron/divine/astrata)
 			mask = /obj/item/clothing/head/roguetown/roguehood/astrata
 			neck = /obj/item/clothing/neck/roguetown/psicross/astrata
@@ -126,8 +133,8 @@
 
 	var/weapon_choice = input(H,"Choose your weapon.", "TAKE UP ARMS") as anything in weapons
 	switch(weapon_choice)
-		if("Pugilist")
-			H.adjust_skillrank_up_to(/datum/skill/misc/athletics, SKILL_LEVEL_MASTER, TRUE)
+		if("Discipline - Unarmed")
+			H.adjust_skillrank_up_to(/datum/skill/combat/unarmed, SKILL_LEVEL_MASTER, TRUE) // TA EDIT
 			H.put_in_hands(new /obj/item/clothing/gloves/roguetown/bandages/pugilist(H))
 		if("Katar")
 			H.put_in_hands(new /obj/item/rogueweapon/katar(H))
@@ -158,8 +165,6 @@
 	if(H.patron?.type == /datum/patron/divine/dendor)
 		H.adjust_skillrank(/datum/skill/labor/farming, SKILL_LEVEL_NOVICE, TRUE)
 		H.adjust_skillrank(/datum/skill/misc/climbing, SKILL_LEVEL_NOVICE, TRUE)
-		H.adjust_skillrank(/datum/skill/misc/hunting, SKILL_LEVEL_NOVICE, TRUE)
-		ADD_TRAIT(H, TRAIT_EXPERT_HUNTER, TRAIT_GENERIC)
 	if(H.patron?.type == /datum/patron/divine/noc)
 		H.adjust_skillrank(/datum/skill/misc/reading, SKILL_LEVEL_JOURNEYMAN, TRUE) // Really good at reading... does this really do anything? No. BUT it's soulful.
 		H.adjust_skillrank(/datum/skill/craft/alchemy, SKILL_LEVEL_NOVICE, TRUE)
@@ -185,6 +190,7 @@
 		// see acolyte.dm's eora page. they dont get farming bc they dont have a tree.
 		H.adjust_skillrank(/datum/skill/craft/sewing, SKILL_LEVEL_NOVICE, TRUE)
 		H.adjust_skillrank(/datum/skill/craft/cooking, SKILL_LEVEL_NOVICE, TRUE)
+		H.mind.special_items["Alt Tabard"] = /obj/item/clothing/cloak/templar/eoran/alt // TA EDIT
 	if(H.patron?.type == /datum/patron/divine/malum)
 		ADD_TRAIT(H, TRAIT_SMITHING_EXPERT, TRAIT_GENERIC) // ONE exception for the "no combat role get this" rules
 		H.adjust_skillrank(/datum/skill/craft/blacksmithing, SKILL_LEVEL_NOVICE, TRUE)

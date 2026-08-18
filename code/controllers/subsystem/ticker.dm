@@ -1,3 +1,5 @@
+#define ROUND_START_MUSIC_LIST "strings/round_start_sounds.txt"
+
 GLOBAL_VAR_INIT(round_timer, INITIAL_ROUND_TIMER)
 
 SUBSYSTEM_DEF(ticker)
@@ -72,6 +74,7 @@ SUBSYSTEM_DEF(ticker)
 	var/realm_type = "Grand Duchy"
 	/// Short form for casual references (e.g. "Duchy", "Republic"). Changed by usurpation rites.
 	var/realm_type_short = "Duchy"
+
 	/// Reports the current ruler's display name
 	var/rulertype = "Grand Duke"
 	/// The current ruling mob
@@ -109,7 +112,63 @@ SUBSYSTEM_DEF(ticker)
 /datum/controller/subsystem/ticker/Initialize(timeofday)
 	load_mode()
 
-	login_music = pick('sound/music/title.ogg','sound/music/title2.ogg')
+	var/list/byond_sound_formats = list(
+		"mid"  = TRUE,
+		"midi" = TRUE,
+		"mod"  = TRUE,
+		"it"   = TRUE,
+		"s3m"  = TRUE,
+		"xm"   = TRUE,
+		"oxm"  = TRUE,
+		"wav"  = TRUE,
+		"ogg"  = TRUE,
+		"raw"  = TRUE,
+		"wma"  = TRUE,
+		"aiff" = TRUE
+	)
+
+	var/list/provisional_title_music = flist("[global.config.directory]/title_music/sounds/")
+	var/list/music = list()
+	var/use_rare_music = prob(1)
+
+	for(var/S in provisional_title_music)
+		var/lower = lowertext(S)
+		var/list/L = splittext(lower,"+")
+		switch(L.len)
+			if(3) //rare+MAP+sound.ogg or MAP+rare.sound.ogg -- Rare Map-specific sounds
+				if(use_rare_music)
+					if(L[1] == "rare" && L[2] == SSmapping.config.map_name)
+						music += S
+					else if(L[2] == "rare" && L[1] == SSmapping.config.map_name)
+						music += S
+			if(2) //rare+sound.ogg or MAP+sound.ogg -- Rare sounds or Map-specific sounds
+				if((use_rare_music && L[1] == "rare") || (L[1] == SSmapping.config.map_name))
+					music += S
+			if(1) //sound.ogg -- common sound
+				if(L[1] == "exclude")
+					continue
+				music += S
+
+//	var/old_login_music = trim(file2text("data/last_round_lobby_music.txt"))
+//	if(music.len > 1)
+//		music -= old_login_music
+
+	for(var/S in music)
+		var/list/L = splittext(S,".")
+		if(L.len >= 2)
+			var/ext = lowertext(L[L.len]) //pick the real extension, no 'honk.ogg.exe' nonsense here
+			if(byond_sound_formats[ext])
+				continue
+		music -= S
+
+	if(isemptylist(music))
+		music = world.file2list(ROUND_START_MUSIC_LIST, "\n")
+		if(length(music))
+			login_music = pick(music)
+	else
+		login_music = "[global.config.directory]/title_music/sounds/[pick(music)]"
+
+	login_music = pick('sound/music/title.ogg', 'sound/music/title2.ogg', 'modular_twilight_axis/sound/music/title3.ogg', 'modular_twilight_axis/sound/music/title4.ogg', 'modular_twilight_axis/sound/music/title5.ogg')
 
 	if(!GLOB.syndicate_code_phrase)
 		GLOB.syndicate_code_phrase	= generate_code_phrase(return_list=TRUE)
@@ -139,11 +198,14 @@ SUBSYSTEM_DEF(ticker)
 //			start_at = world.time + (CONFIG_GET(number/lobby_countdown) * 10)
 			for(var/client/C in GLOB.clients)
 				window_flash(C, ignorepref = TRUE) //let them know lobby has opened up.
-//			to_world(span_boldnotice("Welcome to [station_name()]!"))
-			send2chat(new /datum/tgs_message_content("New round starting on [SSmapping.config.map_name]! (Round ID: [GLOB.round_id])"), CONFIG_GET(string/chat_announce_new_game))
+//			to_chat(world, span_boldnotice("Welcome to [station_name()]!"))
+
+//			send2chat(new /datum/tgs_message_content("New round starting on [SSmapping.config.map_name]! (Round ID: [GLOB.round_id])"), CONFIG_GET(string/chat_announce_new_game))
+
 			current_state = GAME_STATE_PREGAME
 			//Everyone who wants to be an observer is now spawned
 			create_observers()
+			SEND_SIGNAL(src, COMSIG_TICKER_ENTER_PREGAME)
 			fire()
 		if(GAME_STATE_PREGAME)
 			//lobby stats for statpanels
@@ -197,6 +259,7 @@ SUBSYSTEM_DEF(ticker)
 					timeLeft = null
 					Master.SetRunLevel(RUNLEVEL_LOBBY)
 				else
+					SEND_SIGNAL(src, COMSIG_TICKER_ENTER_SETTING_UP)
 					current_state = GAME_STATE_SETTING_UP
 					Master.SetRunLevel(RUNLEVEL_SETUP)
 					if(start_immediately)
@@ -209,6 +272,7 @@ SUBSYSTEM_DEF(ticker)
 				start_at = world.time + 600
 				timeLeft = null
 				Master.SetRunLevel(RUNLEVEL_LOBBY)
+				SEND_SIGNAL(src, COMSIG_TICKER_ERROR_SETTING_UP)
 
 		if(GAME_STATE_PLAYING)
 			check_queue()
@@ -288,10 +352,13 @@ SUBSYSTEM_DEF(ticker)
 
 /datum/controller/subsystem/ticker/proc/setup()
 	message_admins(span_boldannounce("Starting game..."))
-	var/init_start = world.timeofday
 
 	if(SSmapping.map_adjustment)
 		realm_name = SSmapping.map_adjustment.realm_name
+		realm_type = SSmapping.map_adjustment.realm_type // TA EDIT
+		realm_type_short = SSmapping.map_adjustment.realm_type_short // TA EDIT
+	to_chat(world, "<b><span class='notice'><span class='big'>Welcome to the [SSticker.realm_type] of [SSticker.realm_name].</span></span></b>")
+	var/init_start = world.timeofday
 	CHECK_TICK
 	//Configure mode and assign player to special mode stuff
 	var/can_continue = 0
@@ -302,17 +369,19 @@ SUBSYSTEM_DEF(ticker)
 
 	CHECK_TICK
 
+
 	// Pre-scale wretch and adventurer slots before job assignment using readied player count.
 	// Add ~10% buffer to account for immediate latejoins.
-	var/readied_count = 0
-	for(var/mob/dead/new_player/player in GLOB.new_player_list)
-		if(player.ready == PLAYER_READY_TO_PLAY)
-			readied_count++
-	var/estimated_pop = round(readied_count * 1.1)
+//	var/readied_count = 0
+//	for(var/mob/dead/new_player/player in GLOB.new_player_list)
+//		if(player.ready == PLAYER_READY_TO_PLAY)
+//			readied_count++
+//	var/estimated_pop = round(readied_count * 1.1)
 	gnollslot_update()
-	update_scaling_slots(estimated_pop)
+//	update_scaling_slots(estimated_pop)
 
-	can_continue = can_continue && SSjob.DivideOccupations(list())				//Distribute jobs
+	donor_job_boost_round_tick() // TA EDIT
+	can_continue = can_continue && SSjob.DivideOccupations(list()) 				//Distribute jobs
 
 	CHECK_TICK
 
@@ -409,6 +478,8 @@ SUBSYSTEM_DEF(ticker)
 	SSgamemode.current_storyteller?.process(STORYTELLER_WAIT_TIME * 0.1) // we want this asap
 	SSgamemode.current_storyteller?.round_started = TRUE
 
+	world.TgsAnnounceRoundStart()
+
 	setup_done = TRUE
 
 	job_change_locked = FALSE
@@ -462,7 +533,9 @@ SUBSYSTEM_DEF(ticker)
 			continue
 		if(player.ready == PLAYER_READY_TO_PLAY)
 			GLOB.joined_player_list += player.ckey
-			update_scaling_slots()
+			update_wretch_slots()
+			update_mercenary_slots()
+			update_adventurer_slots()
 			player.create_character(FALSE)
 		else
 			player.new_player_panel()
@@ -879,3 +952,5 @@ SUBSYSTEM_DEF(ticker)
 	priority_announce("ASTRATA's now-weary light slowly seeps back into existence. The WORM recedes; the sky is safe. God is here. God is here and all is well once more.", "THIS DAMNED SUN /// EKPYROSIS ENDS", 'sound/misc/otavanlament.ogg')
 	settod()
 	SSParticleWeather.run_weather(/datum/particle_weather/rain_gentle, TRUE)
+
+#undef ROUND_START_MUSIC_LIST

@@ -139,6 +139,17 @@
 		dest = src.loc
 	if(!dest)
 		return
+	var/climb_dir = get_dir(climber_turf, dest) // TA EDIT START
+	for(var/obj/structure/fluff/railing/fence/F in climber_turf)
+		if(F.dir == climb_dir)
+			if(ismob(A))
+				to_chat(A, span_warning("Something is blocking the way."))
+			return
+	for(var/obj/structure/fluff/railing/fence/blocking_fence in dest)
+		if(blocking_fence.dir == get_dir(dest, climber_turf))
+			if(ismob(A))
+				to_chat(A, span_warning("Something is blocking the way."))
+			return // TA EDIT END
 	if(dest.is_blocked_turf(source_atom = A))
 		if(ismob(A))
 			to_chat(A, span_warning("Something is blocking the way."))
@@ -343,6 +354,7 @@
 	icon = 'icons/roguetown/misc/structure.dmi'
 	icon_state = "bars"
 	density = TRUE
+	climbable = FALSE // TA EDIT
 	anchored = TRUE
 	blade_dulling = DULLING_BASHCHOP
 	max_integrity = 1400
@@ -416,6 +428,10 @@
 /obj/structure/bars/passage/steel
 	name = "steel bars"
 	max_integrity = 2500
+
+/obj/structure/bars/passage/obj_break(damage_flag) // TA EDIT START
+	. = ..()
+	icon_state = "passage1b" // TA EDIT END
 
 /obj/structure/bars/passage/redstone_triggered()
 	if(obj_broken)
@@ -600,8 +616,17 @@
 	..()
 
 /obj/structure/fluff/clock/attack_right(mob/user)
-	handle_special_items_retrieval(user, src)
-	return
+	if(user.mind && isliving(user))
+		if(user.mind.special_items && user.mind.special_items.len)
+			var/item = input(user, "What will I take?", "STASH") as null|anything in user.mind.special_items
+			if(item)
+				if(user.Adjacent(src))
+					if(user.mind.special_items[item])
+						var/path2item = user.mind.special_items[item]
+						user.mind.special_items -= item
+						var/obj/item/I = new path2item(user.loc)
+						user.put_in_hands(I)
+			return
 
 /obj/structure/fluff/clock/examine(mob/user)
 	. = ..()
@@ -647,8 +672,17 @@
 	pixel_y = 32
 
 /obj/structure/fluff/wallclock/attack_right(mob/user)
-	handle_special_items_retrieval(user, src)
-	return
+	if(user.mind && isliving(user))
+		if(user.mind.special_items && user.mind.special_items.len)
+			var/item = input(user, "What will I take?", "STASH") as null|anything in user.mind.special_items
+			if(item)
+				if(user.Adjacent(src))
+					if(user.mind.special_items[item])
+						var/path2item = user.mind.special_items[item]
+						user.mind.special_items -= item
+						var/obj/item/I = new path2item(user.loc)
+						user.put_in_hands(I)
+			return
 
 /obj/structure/fluff/wallclock/Destroy()
 	if(soundloop)
@@ -715,7 +749,34 @@
 	destroy_sound = 'sound/combat/hits/onwood/destroyfurniture.ogg'
 	attacked_sound = list('sound/combat/hits/onwood/woodimpact (1).ogg','sound/combat/hits/onwood/woodimpact (2).ogg')
 
+/obj/structure/fluff/signage/examine(mob/user)
+	. = ..()
+	var/realm_name = SSmapping.map_adjustment.realm_name //TA EDIT таблички теперь корректно работают на всех картах
+	if(!user.is_literate())
+		. += "I have no idea what it says."
+	else
+		. += "It says \"[realm_name]\""
+
 /obj/structure/fluff/sign
+	icon_state = "signwrote"
+	name = "sign"
+	desc = "It's a sign! These usually have words carved into them."
+	icon = 'icons/roguetown/misc/structure.dmi'
+
+/obj/structure/fluff/buysign
+	icon_state = "signwrote"
+	name = "sign"
+	desc = ""
+	icon = 'icons/roguetown/misc/structure.dmi'
+
+/obj/structure/fluff/buysign/examine(mob/user)
+	. = ..()
+	if(!user.is_literate())
+		. += "I have no idea what it says."
+	else
+		. += "It says \"IMPORTS\""
+
+/obj/structure/fluff/sellsign
 	icon_state = "signwrote"
 	name = "sign"
 	desc = "It's a sign! These usually have words carved into them."
@@ -824,7 +885,17 @@
 	. = ..()
 
 /obj/structure/fluff/statue/attack_right(mob/user)
-	handle_special_items_retrieval(user, src)
+	if(user.mind && isliving(user))
+		if(user.mind.special_items && user.mind.special_items.len)
+			var/item = input(user, "What will I take?", "STASH") as null|anything in user.mind.special_items
+			if(item)
+				if(user.Adjacent(src))
+					if(user.mind.special_items[item])
+						var/path2item = user.mind.special_items[item]
+						user.mind.special_items -= item
+						var/obj/item/I = new path2item(user.loc)
+						user.put_in_hands(I)
+			return
 
 /obj/structure/fluff/statue/CanPass(atom/movable/mover, turf/target)
 	if(get_dir(loc, mover) == dir)
@@ -1588,6 +1659,7 @@
 /obj/structure/bars/passage/shutter/bookcase/redstone_triggered()
 	if(obj_broken)
 		return
+
 	if(density)
 		icon_state = "decoybookcase1"
 		density = FALSE
