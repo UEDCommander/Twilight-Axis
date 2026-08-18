@@ -30,7 +30,7 @@
 	var/atom/target = controller.blackboard[target_key]
 	var/datum/targetting_datum/targetting_datum = controller.blackboard[targetting_datum_key]
 
-	if(!targetting_datum.can_attack(basic_mob, target))
+	if(controller.is_melee_target_ignored(target) || !targetting_datum.can_attack(basic_mob, target)) // TA EDIT
 		finish_action(controller, FALSE, target_key)
 		return
 
@@ -50,7 +50,19 @@
 	var/atom/swing_at = resolve_swing_target(controller, basic_mob, target, target_key, hiding_target)
 	if(!swing_at)
 		return
-	basic_mob.ClickOn(swing_at, list())
+
+	// TA EDIT START
+	if(hiding_target)
+		controller.reset_melee_attack_progress()
+		basic_mob.ClickOn(swing_at, list())
+	else
+		var/next_click_before = basic_mob.next_click
+		basic_mob.ClickOn(swing_at, list())
+		// Intentional upstream whiffs at a turf must not count as melee progress against the real target.
+		if(swing_at == target && basic_mob.next_click != next_click_before && controller.record_melee_attack_progress(target, target_key, hiding_location_key))
+			finish_action(controller, FALSE, target_key, targetting_datum_key, hiding_location_key)
+			return
+	// TA EDIT END
 
 	if(sidesteps_after && prob(sidestep_chance))
 		basic_mob.combat_sidestep(target, sidestep_offsets, sidestep_seeks_flank)

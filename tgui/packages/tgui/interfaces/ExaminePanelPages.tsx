@@ -1,9 +1,20 @@
+// TA EDIT
 import { useEffect, useMemo, useState } from 'react';
 import { Box, Button, Image, Section, Stack } from 'tgui-core/components';
 
 import { resolveAsset } from '../assets';
 import { useBackend } from '../backend';
 import type { ExaminePanelData } from './ExaminePanelData';
+
+const isValidAssetValue = (value?: string | null) =>
+  !!value && value !== '0' && value !== '00';
+
+const sanitizeMarkupValue = (value?: string | null) => {
+  if (!value || value === '0' || value === '00') {
+    return '';
+  }
+  return value;
+};
 
 export const FlavorTextPage = (props) => {
   const { data } = useBackend<ExaminePanelData>();
@@ -14,51 +25,87 @@ export const FlavorTextPage = (props) => {
     ooc_notes_nsfw,
     headshot,
     is_naked,
+    ooc_extra_image,
+    nsfw_ooc_extra_image,
+    nsfw_examine_always,
   } = data;
+
   const [oocNotesIndex, setOocNotesIndex] = useState('SFW');
   const [flavorTextIndex, setFlavorTextIndex] = useState('SFW');
-  const canViewNsfwFlavorText = is_naked && !!flavor_text_nsfw;
 
-  useEffect(() => {
-    if (flavorTextIndex === 'NSFW' && !canViewNsfwFlavorText) {
-      setFlavorTextIndex('SFW');
-    }
-  }, [canViewNsfwFlavorText, flavorTextIndex]);
+  const safeHeadshot = isValidAssetValue(headshot) ? headshot : null;
+  const safeFlavorText = sanitizeMarkupValue(flavor_text);
+  const safeFlavorTextNsfw = sanitizeMarkupValue(flavor_text_nsfw);
+  const safeOocNotes = sanitizeMarkupValue(ooc_notes);
+  const safeOocNotesNsfw = sanitizeMarkupValue(ooc_notes_nsfw);
+  const safeOocExtraImage = sanitizeMarkupValue(ooc_extra_image);
+  const safeNsfwOocExtraImage = sanitizeMarkupValue(nsfw_ooc_extra_image);
+  const canShowNsfwFlavor =
+    Boolean(safeFlavorTextNsfw) && Boolean(is_naked || nsfw_examine_always);
 
   const flavorHTML = useMemo(
     () => ({
-      __html: `<span className='Chat'>${flavor_text}</span>`,
+      __html: `<span class='Chat'>${safeFlavorText}</span>`,
     }),
-    [flavor_text],
+    [safeFlavorText],
   );
 
   const nsfwHTML = useMemo(
     () => ({
-      __html: `<span className='Chat'>${flavor_text_nsfw}</span>`,
+      __html: `<span class='Chat'>${safeFlavorTextNsfw}</span>`,
     }),
-    [flavor_text_nsfw],
+    [safeFlavorTextNsfw],
   );
 
   const oocHTML = useMemo(
     () => ({
-      __html: `<span className='Chat'>${ooc_notes}</span>`,
+      __html: `<span class='Chat'>${safeOocNotes}</span>`,
     }),
-    [ooc_notes],
+    [safeOocNotes],
   );
 
   const oocnsfwHTML = useMemo(
     () => ({
-      __html: `<span className='Chat'>${ooc_notes_nsfw}</span>`,
+      __html: `<span class='Chat'>${safeOocNotesNsfw}</span>`,
     }),
-    [ooc_notes_nsfw],
+    [safeOocNotesNsfw],
   );
+
+  // TA EDIT START
+  useEffect(() => {
+    if (flavorTextIndex === 'NSFW' && !canShowNsfwFlavor) {
+      setFlavorTextIndex('SFW');
+    }
+  }, [canShowNsfwFlavor, flavorTextIndex]);
+  // TA EDIT END
 
   return (
     <Stack fill>
       <Stack fill vertical>
         <Stack.Item align="center">
-          <img src={resolveAsset(headshot)} width="350px" height="350px" />
+          {safeHeadshot ? (
+            <img
+              src={resolveAsset(safeHeadshot)}
+              width="350px"
+              height="350px"
+            />
+          ) : (
+            <Box
+              width="350px"
+              height="350px"
+              align="center"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              color="gray"
+            >
+              No headshot available.
+            </Box>
+          )}
         </Stack.Item>
+
         <Stack.Item grow>
           <Stack fill>
             <Stack.Item grow width="300px">
@@ -80,7 +127,7 @@ export const FlavorTextPage = (props) => {
                     </Button>
                     <Button
                       selected={oocNotesIndex === 'NSFW'}
-                      disabled={!ooc_notes_nsfw}
+                      disabled={!safeOocNotesNsfw}
                       bold={oocNotesIndex === 'NSFW'}
                       onClick={() => setOocNotesIndex('NSFW')}
                       textAlign="center"
@@ -91,17 +138,25 @@ export const FlavorTextPage = (props) => {
                   </>
                 }
               >
-                {oocNotesIndex === 'SFW' && (
-                  <Box dangerouslySetInnerHTML={oocHTML} />
-                )}
-                {oocNotesIndex === 'NSFW' && (
-                  <Box dangerouslySetInnerHTML={oocnsfwHTML} />
-                )}
+                {oocNotesIndex === 'SFW' &&
+                  (safeOocNotes ? (
+                    <Box dangerouslySetInnerHTML={oocHTML} />
+                  ) : (
+                    <Box color="gray">No OOC notes available.</Box>
+                  ))}
+
+                {oocNotesIndex === 'NSFW' &&
+                  (safeOocNotesNsfw ? (
+                    <Box dangerouslySetInnerHTML={oocnsfwHTML} />
+                  ) : (
+                    <Box color="gray">No NSFW OOC notes available.</Box>
+                  ))}
               </Section>
             </Stack.Item>
           </Stack>
         </Stack.Item>
       </Stack>
+
       <Stack.Item grow>
         <Section
           scrollable
@@ -121,7 +176,7 @@ export const FlavorTextPage = (props) => {
               </Button>
               <Button
                 selected={flavorTextIndex === 'NSFW'}
-                disabled={!canViewNsfwFlavorText}
+                disabled={!canShowNsfwFlavor}
                 bold={flavorTextIndex === 'NSFW'}
                 onClick={() => setFlavorTextIndex('NSFW')}
                 textAlign="center"
@@ -133,10 +188,39 @@ export const FlavorTextPage = (props) => {
           }
         >
           {flavorTextIndex === 'SFW' && (
-            <Box dangerouslySetInnerHTML={flavorHTML} />
+            <>
+              {safeFlavorText ? (
+                <Box dangerouslySetInnerHTML={flavorHTML} />
+              ) : (
+                <Box color="gray">No flavor text available.</Box>
+              )}
+              {Boolean(safeOocExtraImage) && (
+                <Box
+                  mt={1}
+                  dangerouslySetInnerHTML={{
+                    __html: safeOocExtraImage,
+                  }}
+                />
+              )}
+            </>
           )}
+
           {flavorTextIndex === 'NSFW' && (
-            <Box dangerouslySetInnerHTML={nsfwHTML} />
+            <>
+              {safeFlavorTextNsfw ? (
+                <Box dangerouslySetInnerHTML={nsfwHTML} />
+              ) : (
+                <Box color="gray">No NSFW flavor text available.</Box>
+              )}
+              {Boolean(safeNsfwOocExtraImage) && (
+                <Box
+                  mt={1}
+                  dangerouslySetInnerHTML={{
+                    __html: safeNsfwOocExtraImage,
+                  }}
+                />
+              )}
+            </>
           )}
         </Section>
       </Stack.Item>
@@ -146,59 +230,85 @@ export const FlavorTextPage = (props) => {
 
 export const ImageGalleryPage = (props) => {
   const { data } = useBackend<ExaminePanelData>();
-  const { img_gallery, nsfw_img_gallery, is_naked } = data;
-  const [galleryIndex, setGalleryIndex] = useState('SFW');
-  const canViewNsfwGallery = is_naked && nsfw_img_gallery.length > 0;
+  const {
+    img_gallery,
+    nsfw_img_gallery,
+    is_naked,
+    nsfw_examine_always,
+  } = data;
 
+  const [galleryMode, setGalleryMode] = useState<'SFW' | 'NSFW'>('SFW');
+
+  const safeSfwGallery = useMemo(
+    () => (img_gallery || []).filter(isValidAssetValue),
+    [img_gallery],
+  );
+
+  const safeNsfwGallery = useMemo(
+    () => (nsfw_img_gallery || []).filter(isValidAssetValue),
+    [nsfw_img_gallery],
+  );
+
+  const images = galleryMode === 'NSFW' ? safeNsfwGallery : safeSfwGallery;
+  const canShowNsfwGallery =
+    safeNsfwGallery.length > 0 && Boolean(is_naked || nsfw_examine_always);
+
+  // TA EDIT START
   useEffect(() => {
-    if (galleryIndex === 'NSFW' && !canViewNsfwGallery) {
-      setGalleryIndex('SFW');
+    if (galleryMode === 'NSFW' && !canShowNsfwGallery) {
+      setGalleryMode('SFW');
     }
-  }, [canViewNsfwGallery, galleryIndex]);
-
-  const activeGallery =
-    galleryIndex === 'NSFW' && canViewNsfwGallery
-      ? nsfw_img_gallery
-      : img_gallery;
+  }, [canShowNsfwGallery, galleryMode]);
+  // TA EDIT END
 
   return (
     <Section
+      title="Image Gallery"
       fill
       scrollable
-      title="Image Gallery"
       buttons={
         <>
           <Button
-            selected={galleryIndex === 'SFW'}
-            bold={galleryIndex === 'SFW'}
-            onClick={() => setGalleryIndex('SFW')}
+            selected={galleryMode === 'SFW'}
+            bold={galleryMode === 'SFW'}
+            onClick={() => setGalleryMode('SFW')}
             textAlign="center"
-            width="60px"
+            minWidth="60px"
           >
             SFW
           </Button>
           <Button
-            selected={galleryIndex === 'NSFW'}
-            disabled={!canViewNsfwGallery}
-            bold={galleryIndex === 'NSFW'}
-            onClick={() => setGalleryIndex('NSFW')}
+            selected={galleryMode === 'NSFW'}
+            disabled={!canShowNsfwGallery}
+            bold={galleryMode === 'NSFW'}
+            onClick={() => setGalleryMode('NSFW')}
             textAlign="center"
-            width="60px"
+            minWidth="60px"
           >
             NSFW
           </Button>
         </>
       }
     >
-      <Stack fill justify="space-evenly">
-        {activeGallery.map((val) => (
-          <Stack.Item grow key={val}>
-            <Section align="center">
-              <Image maxHeight="100%" maxWidth="100%" src={resolveAsset(val)} />
-            </Section>
-          </Stack.Item>
-        ))}
-      </Stack>
+      {images.length === 0 ? (
+        <Box align="center" color="gray">
+          No images available.
+        </Box>
+      ) : (
+        <Stack fill justify="space-evenly">
+          {images.map((val) => (
+            <Stack.Item grow key={val}>
+              <Section align="center">
+                <Image
+                  maxHeight="100%"
+                  maxWidth="100%"
+                  src={resolveAsset(val)}
+                />
+              </Section>
+            </Stack.Item>
+          ))}
+        </Stack>
+      )}
     </Section>
   );
 };

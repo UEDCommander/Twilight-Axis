@@ -19,7 +19,7 @@
 	display_order = JDO_INQUISITOR
 	advclass_cat_rolls = list(CTAG_INQUSITOR = 20)
 	give_bank_account = 30
-	min_pq = 10
+	min_pq = 18
 	max_pq = null
 	round_contrib_points = 2
 	vice_restrictions = list(/datum/charflaw/silverweakness)
@@ -27,6 +27,7 @@
 		/datum/advclass/inquisitor/inspector,
 		/datum/advclass/inquisitor/ordinator
 	)
+	same_job_respawn_delay = 30 MINUTES
 
 /datum/outfit/job/roguetown/inquisitor
 	name = "Inquisitor"
@@ -53,6 +54,7 @@
 		TRAIT_PERFECT_TRACKER,
 		TRAIT_PURITAN,
 		TRAIT_SLEUTH,
+		TRAIT_ARTILLERY_EXPERT,
 		)
 	subclass_stats = list(
 		STATKEY_CON = 1,
@@ -80,7 +82,9 @@
 		/datum/skill/craft/sewing = SKILL_LEVEL_APPRENTICE,
 	)
 	subclass_stashed_items = list(
-		"The Book" = /obj/item/book/rogue/bibble/psy
+		"Tome of Psydon" = /obj/item/book/rogue/bibble/psy,
+		"Branding Letters" = /obj/item/branding_letters, //TA Branding
+		"Branding Iron" = /obj/item/branding_iron
 	)
 
 	tempo_capable = TRUE
@@ -122,7 +126,7 @@
 
 /datum/outfit/job/roguetown/inquisitor/inspector/choose_loadout(mob/living/carbon/human/H)
 	. = ..()
-	var/weapons = list("Relic, 'Stigmata' (Halberd)", "Relic, 'Eucharist' (Rapier)", "Relic, 'Providence' (Siegebow)", "Psydonic Tomahawk", "Psydonic Longsword", "Psydonic Rapier", "Psydonic Cudgel", "Psydonic Flanged Mace", "Your Faith (Expertise With Most Weapons)")
+	var/weapons = list("Relic, 'Stigmata' (Halberd)", "Relic, 'Eucharist' (Rapier)", "Relic, 'Providence' (Siegebow)", "Relic, 'Marshal's Writ' (Runelock Pistol)", "Psydonic Tomahawk", "Psydonic Longsword", "Psydonic Rapier", "Psydonic Cudgel", "Psydonic Flanged Mace", "Your Faith (Expertise With Most Weapons)") //TA EDIT
 	var/weapon_choice = input(H,"FLOURISH YOUR SILVER.", "WIELD THEM IN HIS NAME.") as anything in weapons
 	switch(weapon_choice)
 		if("Relic, 'Stigmata' (Halberd)")
@@ -141,6 +145,13 @@
 			H.equip_to_slot_or_del(new /obj/item/quiver/bolt/heavy/stake_silver, SLOT_BELT_R, TRUE)
 			H.equip_to_slot_or_del(new /obj/item/gun/ballistic/revolver/grenadelauncher/crossbow/heavy/relic, SLOT_BACK_L, TRUE)
 			H.adjust_skillrank_up_to(/datum/skill/combat/crossbows, 5, TRUE)
+		if("Relic, 'Marshal's Writ' (Runelock Pistol)") //TA EDIT START
+			qdel(H.get_item_by_slot(SLOT_BELT_L))
+			qdel(H.get_item_by_slot(SLOT_BELT))
+			H.equip_to_slot_or_del(new /obj/item/rogueweapon/whip/antique/psywhip, SLOT_BELT_L, TRUE)
+			H.equip_to_slot_or_del(new /obj/item/storage/belt/rogue/leather/twilight_holsterbelt/black/runelock, SLOT_BELT, TRUE)
+			H.equip_to_slot_or_del(new /obj/item/quiver/twilight_bullet/runicbag/runed, SLOT_BELT_R, TRUE)
+			H.adjust_skillrank_up_to(/datum/skill/combat/twilight_firearms, 3, TRUE) //TA EDIT END
 		if("Psydonic Longsword")
 			H.put_in_hands(new /obj/item/rogueweapon/sword/long/psysword(H))
 			H.put_in_hands(new /obj/item/rogueweapon/scabbard/sword/noble(H))
@@ -207,7 +218,7 @@
 		/datum/skill/misc/athletics = SKILL_LEVEL_MASTER,
 		/datum/skill/misc/swimming = SKILL_LEVEL_JOURNEYMAN,
 		/datum/skill/combat/knives = SKILL_LEVEL_EXPERT,
-		/datum/skill/combat/wrestling = SKILL_LEVEL_JOURNEYMAN,
+		/datum/skill/combat/wrestling = SKILL_LEVEL_EXPERT,
 		/datum/skill/combat/unarmed = SKILL_LEVEL_JOURNEYMAN,
 		/datum/skill/misc/riding = SKILL_LEVEL_JOURNEYMAN,
 		/datum/skill/misc/reading = SKILL_LEVEL_JOURNEYMAN,
@@ -216,9 +227,11 @@
 		/datum/skill/misc/tracking = SKILL_LEVEL_MASTER,
 	)
 	subclass_stashed_items = list(
-		"The Book" = /obj/item/book/rogue/bibble/psy
+		"Tome of Psydon" = /obj/item/book/rogue/bibble/psy,
+		"Branding Letters" = /obj/item/branding_letters, // TA Branding
+		"Branding Iron" = /obj/item/branding_iron
 	)
-	tempo_capable = FALSE
+	tempo_capable = TRUE
 
 /datum/outfit/job/roguetown/inquisitor/ordinator/pre_equip(mob/living/carbon/human/H)
 	..()

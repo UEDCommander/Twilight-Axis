@@ -46,8 +46,17 @@ export const SexSession = () => {
     act('start_action', { action_type: actionType });
   };
 
+  // TA EDIT START
+  const finishConditionText = data.do_until_finished
+    ? 'ПОКА НЕ КОНЧУ'
+    : 'ПОКА НЕ ОСТАНОВЛЮСЬ';
+  const interactionTarget = data.title
+    .replace('Соитие с ', '')
+    .replace('...', '');
+  // TA EDIT END
+
   return (
-    <Window title="Sate Desires" width={500} height={600}>
+    <Window title="Утолить Желания" width={500} height={600}>
       <Window.Content scrollable>
         <Stack vertical fill>
           <Stack.Item>
@@ -143,9 +152,7 @@ export const SexSession = () => {
                       color="transparent"
                       onClick={() => act('toggle_finished')}
                     >
-                      {data.do_until_finished
-                        ? "UNTIL I'M FINISHED"
-                        : 'UNTIL I STOP'}
+                      {finishConditionText}
                     </Button>
                     {!!data.has_knotted_penis && (
                       <>
@@ -165,7 +172,7 @@ export const SexSession = () => {
                                 : '#eac8de',
                             }}
                           >
-                            {data.do_knot_action ? 'USING KNOT' : 'TOGGLE KNOT'}
+                            {data.do_knot_action ? 'НЕ ИСПОЛЬЗОВАТЬ УЗЕЛ' : 'ИСПОЛЬЗОВАТЬ УЗЕЛ'}
                           </Box>
                         </Button>
                       </>
@@ -177,10 +184,10 @@ export const SexSession = () => {
                 <Stack.Item>
                   <Box textAlign="center">
                     <Input
-                      placeholder="Set arousal..."
+                      placeholder="Задать возбуждение..."
                       value={arousalInput}
                       onChange={setArousalInput}
-                      width="120px"
+                      width="180px"
                       onEnter={() => {
                         const amount = parseInt(arousalInput, 10);
                         if (!Number.isNaN(amount)) {
@@ -201,7 +208,7 @@ export const SexSession = () => {
                         }
                       }}
                     >
-                      SET
+                      УСТАНОВИТЬ
                     </Button>
                     {' | '}
                     <Button
@@ -210,7 +217,7 @@ export const SexSession = () => {
                       color="transparent"
                       onClick={() => act('freeze_arousal')}
                     >
-                      {data.frozen ? 'UNFREEZE' : 'FREEZE'}
+                      {data.frozen ? 'НЕ ВОЗБУЖДАТЬСЯ' : 'ВОЗБУЖДАТЬСЯ'}
                     </Button>
                     {' | '}
                     <Button
@@ -220,7 +227,7 @@ export const SexSession = () => {
                       disabled={!data.current_action}
                       onClick={() => act('stop_action')}
                     >
-                      STOP
+                      ОСТАНОВИТЬСЯ
                     </Button>
                   </Box>
                 </Stack.Item>
@@ -231,8 +238,7 @@ export const SexSession = () => {
           {/* Search */}
           <Stack.Item>
             <Box textAlign="center" italic color="label">
-              Doing unto{' '}
-              {data.title.replace('Interacting with ', '').replace('...', '')}
+              Сделать с {interactionTarget}
             </Box>
           </Stack.Item>
           <Stack.Item>
