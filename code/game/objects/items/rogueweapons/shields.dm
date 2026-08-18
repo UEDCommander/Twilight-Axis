@@ -465,7 +465,7 @@
 /obj/item/rogueweapon/shield/tower/metal/zizo/get_examine_highlight_status()
 	return list(EXAMINEHIGHLIGHT_HERESYSEVERITY_ALARMING, HERESYDESC_ZIZO_WEAPON)
 
-/obj/item/rogueweapon/shield/tower/metal/zizo/Initialize()
+/obj/item/rogueweapon/shield/tower/metal/zizo/Initialize(mapload)
 	. = ..()
 	AddComponent(/datum/component/cursed_item, TRAIT_CABAL, "SHIELD")
 
@@ -731,7 +731,7 @@
 	max_integrity = 300
 	bullet_damage_mult = 0.5 //TA EDIT
 
-/obj/item/rogueweapon/shield/iron/graggar/Initialize()
+/obj/item/rogueweapon/shield/iron/graggar/Initialize(mapload)
 	. = ..()
 	AddComponent(/datum/component/cursed_item, TRAIT_HORDE, "SHIELD", "RENDERED ASUNDER")
 

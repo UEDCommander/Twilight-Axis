@@ -710,6 +710,8 @@
       \ be affected by the changes rather than a summary of the PR's contents. -->"
   BurpleBineapple:
   - bugfix: fixes missing donor names and a missing path on apostle kits
+  - rscadd: File Garden can be used to upload media for flavourtexts, including music/OOC
+      extra/headshots/image galleries.
   FeniaFox:
   - code_imp: streamlined skin armor code to be neater and make better use of inheritance
       (~70 line delta yay).
@@ -728,6 +730,15 @@
       those are drakes.
   - rscadd: Gloves now have cosmetic slots, where you can put rings or more (unarmored)
       gloves.
+  Lamasmaster:
+  - rscadd: Adds bandage (underwear).
+  - image: Greyscales desert bra.
+  - bugfix: Fortify doubling itself.
+  Ollanius:
+  - rscadd: Woodland Mantle, Brigandine, and Shawl as donator-exclusive items for
+      Noire and Co.
+  - rscadd: Added additional CKEYs, at Noire's request, to the Sylvan weaponry whitelist.
+  - rscadd: Shawls as a new all-accessible hood.
   OrbisAnima:
   - bugfix: fixed Resident virtue takes not being known to the rest of the town and
       viceversa.
@@ -821,6 +832,9 @@
   Quinalion:
   - image: Added fading animations to right-click interactions.
   - image: Resprited the Psydonite & Zizite sign of faith.
+  Ryan180602:
+  - rscadd: Dark Jacket, Fur Collar, Scout Cloak to loadout.
+  - rscadd: Padded Leather reskin for leather armour.
   TankTheBirb:
   - rscadd: Changes Fyritius to behave like an herb instead of a crop, now following
       alchemy herb behavior regarding seed planting and harvesting. Method of obtaining
@@ -957,6 +971,8 @@
   - rscadd: Added Wheelbraces (Cart Upgrade) to the Silverface / Goldface for 25 /
       50
   - rscadd: Make Crossbows etc. sellable and in the Engineering categories
+  bearrrrrrrr:
+  - rscadd: Sahir mage now gets a unique ability
   changelingonberry:
   - admin: attacked zone is logged now
   - rscadd: aesthetic loadout items now fit into shirt, armor and cloak slots
@@ -974,6 +990,32 @@
       now have an unlocked right back slot, as well as a satchel to go with it. Mind,
       the right back slot does not allow for larger storage like backpacks.
 2026-08-16:
+  Aeiraea:
+  - bugfix: Fixes the missing icon and onmob sprites for the new spectacles introduced
+      in the previous RMH clothing port.
+  - rscadd: Added the ability to toggle between 'snout' and 'no snout' for the Face/Simple
+      Veil.
+  - bugfix: Fixed the Face/Simple Veil not concealing its wearer's identity.
+  - image: Added sprite and icon updates for the Face/Simple Veil, courtesy of Terracotta,
+      the artist of the mask!
+  KatTheFox:
+  - code_imp: Fixed and enabled the grep linter, added several new lint rules, and
+      refactored our codebase to be compliant with it. Should prevent recurrence of
+      things like the to_chat(world) incident.
+  - bugfix: The emote target menu no longer reveals invisible targets.
+  - bugfix: Azurosa petals can no longer be dried into normal rosa petals
+  Ollanius:
+  - bugfix: Resolved edge cases where the Cackledagger skin couldn't properly be applied
+      to certain steel-tier daggers.
+  - rscadd: Hauberk and fluted cuirass's compatibility with the Woodland Brigandine.
+  SneakySlinky:
+  - rscadd: Added the Decabun, and its decadently sweet jamtallowed and marmaladed
+      variants
+  eirenxiv:
+  - bugfix: fixed lower case ckey
+  - rscadd: Added a new ckey to eirenxiv donor sword
+  mumblemancer:
+  - rscdel: removed doorobrine
   Antoonij:
   - balance: "\u0432\u043E\u0437\u0432\u0440\u0430\u0442 \u0431\u043B\u0438\u043D\u043A\
       \u0430 \u043C\u0430\u0433\u0430\u043C"
