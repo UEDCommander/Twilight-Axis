@@ -8,37 +8,37 @@
 		if("Knight")
 			name_index = "knight's"
 			allowed_cloaks = list(
-			"Jupon" = 			/obj/item/clothing/cloak/tabard/stabard/surcoat/guard,
-			"Surcoat" = 	/obj/item/clothing/cloak/tabard/stabard/guard,
-			"Hood" = 		/obj/item/clothing/cloak/tabard/stabard/guardhood,
-			"Tabard" = 	/obj/item/clothing/cloak/tabard/retinue,
-			"Cape" = 			/obj/item/clothing/cloak/cape/guard,
+			"Jupon" =			/obj/item/clothing/cloak/tabard/stabard/surcoat/guard,
+			"Surcoat" =	/obj/item/clothing/cloak/tabard/stabard/guard,
+			"Hood" =		/obj/item/clothing/cloak/tabard/stabard/guardhood,
+			"Tabard" =	/obj/item/clothing/cloak/tabard/retinue,
+			"Cape" =			/obj/item/clothing/cloak/cape/guard,
 			"Halfcloak" = 	/obj/item/clothing/cloak/half/guard, //TA EDIT
 			"Fur Cloak" =	/obj/item/clothing/cloak/raincloak/furcloak/guard // TA EDIT
 			)
 		if("Squire")
 			name_index = "squire's"
 			allowed_cloaks = list(
-			"Jupon" = 			/obj/item/clothing/cloak/tabard/stabard/surcoat/guard,
-			"Surcoat" = 	/obj/item/clothing/cloak/tabard/stabard/guard,
-			"Hood" = 		/obj/item/clothing/cloak/tabard/stabard/guardhood,
+			"Jupon" =			/obj/item/clothing/cloak/tabard/stabard/surcoat/guard,
+			"Surcoat" =	/obj/item/clothing/cloak/tabard/stabard/guard,
+			"Hood" =		/obj/item/clothing/cloak/tabard/stabard/guardhood,
 			"Tabard" =		/obj/item/clothing/cloak/tabard/retinue,
-			"Cape" = 			/obj/item/clothing/cloak/cape/guard,
+			"Cape" =			/obj/item/clothing/cloak/cape/guard,
 			)
 		if("Man at Arms")
 			name_index = "man-at-arms"
 			allowed_cloaks = list(
-			"Jupon" = 			/obj/item/clothing/cloak/tabard/stabard/surcoat/guard,
-			"Surcoat" = 			/obj/item/clothing/cloak/tabard/stabard/guard,
-			"Hood" = 		/obj/item/clothing/cloak/tabard/stabard/guardhood,
+			"Jupon" =			/obj/item/clothing/cloak/tabard/stabard/surcoat/guard,
+			"Surcoat" =			/obj/item/clothing/cloak/tabard/stabard/guard,
+			"Hood" =		/obj/item/clothing/cloak/tabard/stabard/guardhood,
 			)
 		if("Sergeant")
 			name_index = "sergeant"
 			allowed_cloaks = list(
-			"Jupon" = 			/obj/item/clothing/cloak/tabard/stabard/surcoat/guard,
-			"Surcoat" = 			/obj/item/clothing/cloak/tabard/stabard/guard,
-			"Hood" = 		/obj/item/clothing/cloak/tabard/stabard/guardhood,
-			"Cape" = 			/obj/item/clothing/cloak/cape/guard,
+			"Jupon" =			/obj/item/clothing/cloak/tabard/stabard/surcoat/guard,
+			"Surcoat" =			/obj/item/clothing/cloak/tabard/stabard/guard,
+			"Hood" =		/obj/item/clothing/cloak/tabard/stabard/guardhood,
+			"Cape" =			/obj/item/clothing/cloak/cape/guard,
 			)
 
 		if("Royal Guard") //TA EDIT START
