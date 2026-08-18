@@ -3790,7 +3790,6 @@
 #include "modular_twilight_axis\code\modules\cargo\packsrogue\adventure_supplies.dm"
 #include "modular_twilight_axis\code\modules\cargo\packsrogue\alcohols.dm"
 #include "modular_twilight_axis\code\modules\cargo\packsrogue\Brigand.dm"
-#include "modular_twilight_axis\code\modules\cargo\packsrogue\instruments.dm"
 #include "modular_twilight_axis\code\modules\cargo\packsrogue\Knave.dm"
 #include "modular_twilight_axis\code\modules\cargo\packsrogue\Knight.dm"
 #include "modular_twilight_axis\code\modules\cargo\packsrogue\luxury.dm"
