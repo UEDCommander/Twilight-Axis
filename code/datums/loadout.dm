@@ -625,11 +625,26 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	category = "Плащи"
 	path = /obj/item/clothing/cloak/sleevedtabard
 
+/datum/loadout_item/toga
+	name = "Toga, Robed"
+	category = "Плащи"
+	path = /obj/item/clothing/cloak/tabard/toga
+
+/datum/loadout_item/toga_dress
+	name = "Toga, Dress"
+	category = "Плащи"
+	path = /obj/item/clothing/cloak/tabard/toga/dress
+
 //SHOES
 /datum/loadout_item/leatherboots
 	name = "Leather Boots"
 	category = "Обувь"
 	path = /obj/item/clothing/shoes/roguetown/boots/leather
+
+/datum/loadout_item/classicsandals
+	name = "Classical Sandals"
+	category = "Обувь"
+	path = /obj/item/clothing/shoes/roguetown/sandals/toga
 
 /datum/loadout_item/darkboots
 	name = "Dark Boots"
@@ -904,6 +919,11 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	name = "Black Foreign Shirt"
 	category = "Одежда"
 	path = /obj/item/clothing/suit/roguetown/shirt/undershirt/eastshirt1
+
+/datum/loadout_item/formalskirt
+	name = "Knee-High Skirt"
+	category = "Одежда"
+	path = /obj/item/clothing/under/roguetown/skirt/formal
 
 /datum/loadout_item/eastshirt2
 	name = "White Foreign Shirt"
