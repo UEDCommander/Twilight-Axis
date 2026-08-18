@@ -2742,7 +2742,7 @@ GLOBAL_LIST_EMPTY(chosen_names)
 						ShowChoices(user)
 						return
 					ooc_extra_img_link = link
-					var/ext = lowertext(splittext(link, ".")[length(splittext(link, "."))])
+					var/ext = LOWER_TEXT(splittext(link, ".")[length(splittext(link, "."))])
 					var/info
 					switch(ext)
 						if("jpg", "jpeg", "png", "gif")
@@ -2774,7 +2774,7 @@ GLOBAL_LIST_EMPTY(chosen_names)
 						ShowChoices(user)
 						return
 					nsfw_ooc_extra_img_link = link
-					var/ext = lowertext(splittext(link, ".")[length(splittext(link, "."))])
+					var/ext = LOWER_TEXT(splittext(link, ".")[length(splittext(link, "."))])
 					var/info
 					switch(ext)
 						if("jpg", "jpeg", "png", "gif")

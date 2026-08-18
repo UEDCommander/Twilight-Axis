@@ -998,10 +998,10 @@
 */
 
 /obj/item/enchantingkit/aisuwand
-    name = "Crystalline Rapier morphing elixir"
-    desc = "A small container of special morphing dust, perfect to make a specifc item. Required: Rapier"
-    target_items = list(/obj/item/rogueweapon/sword/rapier)
-    result_item = /obj/item/rogueweapon/sword/rapier/aisu
+	name = "Crystalline Rapier morphing elixir"
+	desc = "A small container of special morphing dust, perfect to make a specifc item. Required: Rapier"
+	target_items = list(/obj/item/rogueweapon/sword/rapier)
+	result_item = /obj/item/rogueweapon/sword/rapier/aisu
 
 /obj/item/enchantingkit/weapon/regnum
 	name = "'Regnum' morphing elixir"

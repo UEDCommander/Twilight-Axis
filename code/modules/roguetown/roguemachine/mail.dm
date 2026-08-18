@@ -770,7 +770,7 @@
 			var/sentfrom = sanitize(input(user, "Who is this from? (Leave blank to send anonymously)", "ROGUETOWN", null))
 			if(!sentfrom)
 				sentfrom = "Anonymous"
-			 // TA EDIT BEGIN
+			// TA EDIT BEGIN
 			var/free_send = check_free_send(user, send2place)
 
 			if(free_send)
@@ -1002,7 +1002,7 @@
 			STR.remove_from_storage(I, get_turf(src))
 	return ..()
 
- // TA EDIT BEGIN
+// TA EDIT BEGIN
 /obj/structure/roguemachine/mail/proc/any_additional_mail(obj/item/roguemachine/mastermail/M, mob/living/carbon/human/H)
 	if(SSroguemachine.secret_mail?.len)
 		for(var/obj/item/I in SSroguemachine.secret_mail)

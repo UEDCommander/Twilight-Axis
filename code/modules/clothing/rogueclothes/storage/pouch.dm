@@ -104,7 +104,7 @@
 	grid_width = 32
 	component_type = /datum/component/storage/concrete/roguetown/coin_pouch/merchant
 
-/obj/item/storage/belt/rogue/pouch/merchant/coins/Initialize() //TA EDIT - Rockhill currency support
+/obj/item/storage/belt/rogue/pouch/merchant/coins/Initialize(mapload) //TA EDIT - Rockhill currency support
 	. = ..()
 	if(SSmapping.config.map_name == "Rockhill")
 		var/obj/item/roguecoin/goldkrona/mid_pile/H = new(loc)
