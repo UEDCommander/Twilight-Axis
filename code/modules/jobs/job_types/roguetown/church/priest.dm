@@ -120,7 +120,6 @@ GLOBAL_LIST_EMPTY(heretical_players)
 	add_verb(H, /mob/living/carbon/human/proc/churchpriestcurse) //snowflake priests button. Will not sacrifice them
 	add_verb(H, /mob/living/carbon/human/proc/churcheapostasy) //punish the lamb reward the wolf
 	add_verb(H, /mob/living/carbon/human/proc/completesermon)
-	H.mind?.AddSpell(new /obj/effect/proc_holder/spell/invoked/revive)
 	H.mind.special_items["Bishop Cape"] = /obj/item/clothing/cloak/bishop
 	H.mind.special_items["Bishop Hood"] = /obj/item/clothing/head/roguetown/roguehood/bishop
 	H.mind.special_items["Bishop Mask"] = /obj/item/clothing/mask/rogue/ragmask/bishop

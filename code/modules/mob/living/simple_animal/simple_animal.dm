@@ -335,9 +335,6 @@ GLOBAL_VAR_INIT(farm_animals, FALSE)
 		user.visible_message(span_notice("[user] removes the bard from [src]."), span_notice("I remove the bard from [src]."))
 		var/obj/item/clothing/barding/B = bbarding
 		bbarding = null
-		barding_speed_mult = 1
-		updatehealth()
-		update_mount_move_delay()
 		B.forceMove(get_turf(src))
 		user.put_in_hands(B)
 		update_icon()
@@ -1082,15 +1079,6 @@ GLOBAL_VAR_INIT(farm_animals, FALSE)
 		riding_datum = GetComponent(/datum/component/riding)
 	return riding_datum
 
-/mob/living/simple_animal/proc/update_mount_move_delay()
-	var/datum/component/riding/riding_datum = get_riding_datum()
-	if(!riding_datum)
-		return
-	var/mob/living/driver = null
-	if(buckled_mobs && buckled_mobs.len)
-		driver = buckled_mobs[1]
-	riding_datum.vehicle_move_delay = adjust_speed(driver)
-
 /mob/living/simple_animal/proc/adjust_speed(mob/living/driver)
 	var/delay = initial(move_to_delay)
 	if(!isnum(delay))
@@ -1107,11 +1095,6 @@ GLOBAL_VAR_INIT(farm_animals, FALSE)
 			delay -= 5 + amt/6
 		else
 			delay -= 3
-	if(bbarding)
-		barding_speed_mult = max(bbarding.slowdown_factor, 1)
-	else
-		barding_speed_mult = 1
-	delay = max(delay, 1) * barding_speed_mult
 	return max(delay, 1)
 
 /mob/living/simple_animal/user_unbuckle_mob(mob/living/M, mob/user)
