@@ -998,6 +998,12 @@
   - bugfix: Fixed the Face/Simple Veil not concealing its wearer's identity.
   - image: Added sprite and icon updates for the Face/Simple Veil, courtesy of Terracotta,
       the artist of the mask!
+  Antoonij:
+  - balance: "\u0432\u043E\u0437\u0432\u0440\u0430\u0442 \u0431\u043B\u0438\u043D\u043A\
+      \u0430 \u043C\u0430\u0433\u0430\u043C"
+  - balance: "\u043B\u0435\u0433\u0447\u0435 \u043F\u043E\u0441\u0442\u0430\u0432\u0438\
+      \u0442\u044C \u0444\u0430\u0439\u0440\u043A\u0440\u0438\u0442 \u0446\u0435\u043B\
+      \u044F\u043C \u0441 \u043D\u043E\u0443\u043F\u0435\u0439\u043D\u043E\u043C"
   KatTheFox:
   - code_imp: Fixed and enabled the grep linter, added several new lint rules, and
       refactored our codebase to be compliant with it. Should prevent recurrence of
@@ -1011,17 +1017,6 @@
   SneakySlinky:
   - rscadd: Added the Decabun, and its decadently sweet jamtallowed and marmaladed
       variants
-  eirenxiv:
-  - bugfix: fixed lower case ckey
-  - rscadd: Added a new ckey to eirenxiv donor sword
-  mumblemancer:
-  - rscdel: removed doorobrine
-  Antoonij:
-  - balance: "\u0432\u043E\u0437\u0432\u0440\u0430\u0442 \u0431\u043B\u0438\u043D\u043A\
-      \u0430 \u043C\u0430\u0433\u0430\u043C"
-  - balance: "\u043B\u0435\u0433\u0447\u0435 \u043F\u043E\u0441\u0442\u0430\u0432\u0438\
-      \u0442\u044C \u0444\u0430\u0439\u0440\u043A\u0440\u0438\u0442 \u0446\u0435\u043B\
-      \u044F\u043C \u0441 \u043D\u043E\u0443\u043F\u0435\u0439\u043D\u043E\u043C"
   Vladmar11:
   - balance: "\u0418\u0437\u043C\u0435\u043D\u0435\u043D\u043E \u043A\u043E\u043B\u0438\
       \u0447\u0435\u0441\u0442\u0432\u043E \u0431\u0430\u043D\u0434\u0438\u0442\u043E\
@@ -1031,12 +1026,17 @@
       \u0443\u043D\u0434\u0441\u0442\u0430\u0440\u0442 \u0430\u043D\u0442\u0430\u0433\
       \u043E\u0432 \u0438 \u0441\u043B\u043E\u0442\u043E\u0432 \u0431\u0430\u043D\u0434\
       \u0438\u0442\u043E\u0432"
+  eirenxiv:
+  - bugfix: fixed lower case ckey
+  - rscadd: Added a new ckey to eirenxiv donor sword
   emptymarch:
   - rscadd: "\u043A\u043B\u0430\u0441\u0441\u044B Desert Rider \u0438 Forlorn Hope\
       \ Mercenary \u043F\u043E\u043B\u0443\u0447\u0438\u043B\u0438 \u0432\u043E\u0437\
       \u043C\u043E\u0436\u043D\u043E\u0441\u0442\u044C \u0437\u0430\u0445\u043E\u0434\
       \u0438\u0442\u044C \u0441 \u043F\u0440\u043E\u0438\u0441\u0445\u043E\u0436\u0434\
       \u0435\u043D\u0438\u0435\u043C Crimsonlander"
+  mumblemancer:
+  - rscdel: removed doorobrine
 2026-08-17:
   .:
   - rscadd: Redid every simple animals in the game at once with breakable limbs and
@@ -1123,4 +1123,56 @@
       weapon now.
   - bugfix: Psydonic maul can no longer mine (it never could anyway, it'd just spam
       you with a doafter timer because blunt intents can't mine rock)
-
+2026-08-19:
+  Aeiraea:
+  - bugfix: Fixed a few more of the ported RMH clothing items not appearing within
+      the crafting menu, loadout, and merchant's wardrobe.
+  - code_imp: Properly capitalized two clothing items within the loadout and changed
+      the name of the 'whitepsydontabard' to give the new and proper toga its name.
+  G9ose:
+  - qol: arlette deck now 1x1 in inventory
+  KatTheFox:
+  - rscadd: 'The Hand now has files on all Court Agents, including basic information
+      like name/descriptor/race/class but also two new fields using the new role preferences
+      system: an optional codename, and an in-character "file body" to contain notes
+      on shared history, specialty, etc. If stolen, these files are accessible to
+      any role, so they need to be kept safe.'
+  - rscadd: Court agents now spawn with zadcages linked to the Hand's zadcote
+  - rscadd: The Hand is now notified when Court Agents fartravel, and vice versa.
+      Fartravelling now actually updates the "remember spymaster" and "remember agents"
+      verbs.
+  Ketrai:
+  - rscadd: Added the ability to flatten hunting tracks to delete them with a shovel.
+      It has a cooldown, and cannot be spammed.
+  - bugfix: Fixes hunting tracks not disappearing automatically when tracking an animal.
+  - rscadd: Re-enabled dreamwalker on high intensity.
+  - balance: Lowered dreamwalker stats by a cominical amount.
+  - balance: Cut dreamwalker shard repair value in half.
+  - balance: Haphazardly stripped away about half of dreamwalker's traits.
+  - balance: Dreamwalker armor is now as tough as blacksteel instead of avantyne.
+  - bugfix: Stopped the bugged roundstart dreamwalker from possibly rolling.
+  - bugfix: Assured dreamwalkers cannot roll on super lowpop.
+  Lamasmaster:
+  - rscadd: Adds a new Wretch role 'Profane Champion' as a templar equivalent with
+      plate armor, expert-level weapon skill, a heretical weapon, and access to T2
+      miracles. No ritualist, and limited to ascendant worshippers only.
+  Quinalion:
+  - bugfix: "\u041E\u0444\u0444\u043E\u0432\u0441\u043A\u0430\u044F \u0441\u0438\u0441\
+      \u0442\u0435\u043C\u0430 \u043F\u043B\u0430\u0449\u0435\u0439 \u0430\u0434\u0430\
+      \u043F\u0442\u0438\u0440\u043E\u0432\u0430\u043D\u0430 \u043F\u043E\u0434 \u043D\
+      \u0430\u0448\u0438 \u043A\u043B\u0430\u0441\u0441\u044B."
+  - bugfix: "\u041A\u043E\u043D\u0432\u0435\u0440\u0442 ASPERGES \u0434\u043E\u043B\
+      \u0436\u0435\u043D \u0442\u0435\u043F\u0435\u0440\u044C \u043A\u043E\u043D\u0432\
+      \u0435\u0440\u0442\u0438\u0440\u043E\u0432\u0430\u0442\u044C."
+  - bugfix: "\u0421\u043A\u0435\u043B\u0435\u0442\u0430\u043C \u043A\u0443\u043B\u044C\
+      \u0442\u0430 \u0432\u044B\u0434\u0430\u0451\u0442\u0441\u044F \u043D\u043E\u0440\
+      \u043C\u0430\u043B\u044C\u043D\u044B\u0439 \u043C\u0435\u0447."
+  Ryan180602:
+  - rscadd: Noc burgonet.
+  - bugfix: change up snout basc sizes.
+  SomeDeviant:
+  - bugfix: fixed munitioneer wrench and engineering loadout option
+  YakumoChen:
+  - rscdel: Removed chocolate halves we just quarter now
+  zeskorion:
+  - balance: nerfs bogbark club and battle-wrench demolition intent
