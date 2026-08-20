@@ -426,7 +426,15 @@
 		return
 
 	var/found_text = familytree_confirmation_found_text(confirm_type, H, context_person, FALSE, relation_text)
-	var/result = tgui_alert(H, familytree_confirmation_prompt_body(found_text, H, context_person), "Семейная система", list("Да", "Нет"), 60 SECONDS)
+	var/result = tgui_alert(
+		H,
+ 		familytree_confirmation_prompt_body(found_text, H, context_person),
+ 		"Семейная система",
+		list("Да", "Нет"),
+		60 SECONDS,
+		FALSE,
+		FALSE
+	)
 
 	if(!H || QDELETED(H))
 		return
@@ -545,7 +553,15 @@
 	if(!person.client)
 		return
 
-	var/result = tgui_alert(person, body, "Семейная система", list("Да", "Нет"), 60 SECONDS)
+	var/result = tgui_alert(
+		person,
+		body,
+		"Семейная система",
+		list("Да", "Нет"),
+		60 SECONDS,
+		FALSE,
+		FALSE
+)
 
 	if(!person || QDELETED(person))
 		return
