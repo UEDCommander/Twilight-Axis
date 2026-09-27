@@ -9,7 +9,7 @@
 	traits_applied = list(TRAIT_HEAVYARMOR, TRAIT_NOBLE, TRAIT_BOGWALKER)
 	maximum_possible_slots = 2 //Ideal role for fraggers. Better to limit it. Powerful like T4 heretic w/ heretical plate armor in that they're a bog-blessed, plate user, w/ orders, riding and expert in most weaponry.
 
-	cmode_music = 'sound/music/cmode/antag/combat_thewall.ogg' // same as new hedgeknight music
+	cmode_music = sound("sound/music/cmode/antag/combat_thewall.ogg") // same as new hedgeknight music
 	// Deserter are the knight-equivalence. They get a balanced, straightforward 2 2 3 statspread to endure and overcome.
 	subclass_stats = list(
 		STATKEY_WIL = 3,
@@ -206,7 +206,7 @@
 		"Stashed Funds" = /obj/item/roguecoin/silver/pile/wretchpile,
 	)
 
-	cmode_music = 'sound/music/cmode/antag/combat_cutpurse.ogg' // same as regular bandits
+	cmode_music = sound("sound/music/cmode/antag/combat_cutpurse.ogg") // same as regular bandits
 	// Slightly more rounded. These can be nudged as needed.
 	traits_applied = list(TRAIT_MEDIUMARMOR, TRAIT_BOGWALKER)
 	subclass_stats = list(

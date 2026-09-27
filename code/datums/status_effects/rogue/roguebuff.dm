@@ -288,7 +288,7 @@
 	ADD_TRAIT(owner, TRAIT_NOPAIN, id)
 	ADD_TRAIT(owner, TRAIT_IGNOREDAMAGESLOWDOWN, id)
 	originalcmode = owner.cmode_music
-	owner.cmode_music = 'sound/music/combat_ozium.ogg'
+	owner.cmode_music = sound("sound/music/combat_ozium.ogg")
 
 /datum/status_effect/buff/herozium/on_remove()
 	owner.remove_stress(/datum/stressevent/ozium)
@@ -312,7 +312,7 @@
 	if(owner.has_status_effect(/datum/status_effect/debuff/sleepytime))
 		owner.remove_status_effect(/datum/status_effect/debuff/sleepytime)
 	originalcmode = owner.cmode_music
-	owner.cmode_music = 'sound/music/combat_starsugar.ogg'
+	owner.cmode_music = sound("sound/music/combat_starsugar.ogg")
 
 
 /datum/status_effect/buff/starsugar/on_remove()
