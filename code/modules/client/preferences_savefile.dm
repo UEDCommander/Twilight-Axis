@@ -1183,12 +1183,6 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["descriptor_entries"] , descriptor_entries)
 	WRITE_FILE(S["custom_descriptors"] , custom_descriptors)
 
-	//Barks
-	WRITE_FILE(S["bark_id"]					, bark_id)
-	WRITE_FILE(S["bark_speed"]				, bark_speed)
-	WRITE_FILE(S["bark_pitch"]				, bark_pitch)
-	WRITE_FILE(S["bark_variance"]			, bark_variance)
-	WRITE_FILE(S["mute_barks"]				, mute_barks)
 
 	WRITE_FILE(S["char_toggles"] , char_toggles)
 	WRITE_FILE(S["update_mutant_colors"] , update_mutant_colors)

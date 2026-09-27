@@ -53,9 +53,6 @@ export const SubtabIdentity = () => {
             <SubtabIdentityCardVoice />
           </Stack.Item>
           <Stack.Item>
-            <SubtabIdentityCardBark />
-          </Stack.Item>
-          <Stack.Item>
             <SubtabIdentityCardToggles />
           </Stack.Item>
           <SubtabIdentityDownstreamPaneLeft />
@@ -489,117 +486,6 @@ const SubtabIdentityCardVoice = () => {
               />
             </Stack.Item>
           </Stack>
-        </LabeledGridList.Item>
-      </LabeledGridList>
-    </Section>
-  );
-};
-
-const SubtabIdentityCardBark = () => {
-  const [constantData] = useConstantPrefs();
-  const { act, data } = useBackendStrict<IdentityData>();
-  const {
-    bark_name,
-    bark_pitch,
-    min_bark_pitch,
-    max_bark_pitch,
-    bark_speed,
-    min_bark_speed,
-    max_bark_speed,
-    bark_variance,
-    min_bark_variance,
-    max_bark_variance,
-  } = data;
-
-  return (
-    <Section
-      fill
-      mt={1}
-      title={
-        <LabeledListLikeTooltip
-          tooltip="This sound will be repeated an appropriate amount of times to represent your character talking."
-          tooltipPosition="bottom-start"
-        >
-          Vocal Bark
-        </LabeledListLikeTooltip>
-      }
-    >
-      <LabeledGridList>
-        <LabeledGridList.Item label="Type">
-          <Stack>
-            <Stack.Item grow fontSize={1.2}>
-              {constantData ? (
-                <Dropdown
-                  fluid
-                  options={constantData.barksounds.toSorted()}
-                  selected={bark_name}
-                  onSelected={(bs) =>
-                    act('set_barksound', {
-                      barksound: bs,
-                    })
-                  }
-                />
-              ) : (
-                'Loading Bark Sounds...'
-              )}
-            </Stack.Item>
-            <Stack.Item>
-              <Button
-                onClick={() => act('barkpreview')}
-                icon="volume-down"
-                inline
-                tooltip="Preview Bark (Single)"
-              />
-            </Stack.Item>
-          </Stack>
-        </LabeledGridList.Item>
-        <LabeledGridList.Item
-          label="Speed"
-          tooltip="Higher is slower, lower is faster."
-        >
-          <Stack>
-            <Stack.Item grow>
-              <Slider
-                minValue={min_bark_speed}
-                maxValue={max_bark_speed}
-                value={bark_speed}
-                format={(v) => v.toFixed(1)}
-                step={0.1}
-                onChange={(e, speed) => act('set_bark_speed', { speed })}
-              />
-            </Stack.Item>
-            <Stack.Item>
-              <Button
-                inline
-                icon="volume-up"
-                tooltip="Preview Bark (Long)"
-                onClick={() => act('barkpreview_long')}
-              />
-            </Stack.Item>
-          </Stack>
-        </LabeledGridList.Item>
-        <LabeledGridList.Item label="Pitch" tooltip="Lower is deeper.">
-          <Slider
-            minValue={min_bark_pitch}
-            maxValue={max_bark_pitch}
-            value={bark_pitch}
-            format={(v) => v.toFixed(1)}
-            step={0.1}
-            onChange={(e, pitch) => act('set_bark_pitch', { pitch })}
-          />
-        </LabeledGridList.Item>
-        <LabeledGridList.Item
-          label="Vary"
-          tooltip="Lower varies the bark frequency by a smaller amount."
-        >
-          <Slider
-            minValue={min_bark_variance}
-            maxValue={max_bark_variance}
-            value={bark_variance}
-            format={(v) => v.toFixed(1)}
-            step={0.1}
-            onChange={(e, variance) => act('set_bark_variance', { variance })}
-          />
         </LabeledGridList.Item>
       </LabeledGridList>
     </Section>
