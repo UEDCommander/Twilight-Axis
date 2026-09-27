@@ -1442,6 +1442,8 @@
   Lamasmaster:
   - balance: Makes bishop require 50 PQ instead of 5.
   Ollanius:
+  - bugfix: Naman's unique cloak can now be worn by women as well. Note that it's
+      probably bit big for them, however.
   - rscadd: Dwarf sprites for plate arm harnesses.
   - rscadd: Iron, bronze, ancient and decrepit versions of plate arm harnesses, alongside
       the ability to purchase them in the Triumph loadout.
@@ -1451,6 +1453,50 @@
       parentheses. The latter's reserved for reskinned items that are inherently generic,
       can be easily identified, or otherwise don't have an altered name.
   - bugfix: Crusader tabards now have CUSTOM_DESIGN ticked on by default, as intended.
+  OrbisAnima:
+  - balance: Removes Zarum ability to ignore the health potion anti stacking system,
+      It can no longer stack with other zarum types nor with regular reds, and produces
+      odd water as the other health potions do when stacked.
   Ryan180602:
+  - bugfix: small char previews when checking char setup in game.
   - bugfix: bandages no longer work on examine
   - bugfix: adjusts hurt examine thresholds
+  - rscadd: per character toggles
+  - balance: Alt-grips now have a small do_after to swap through.
+  WeNeedMorePhoron:
+  - rscadd: How NPC loadouts are made and composed has been thoroughly overhauled.
+      Expect more diversity and dedicated mediums / heavy showing up for most factions.
+  changelingonberry:
+  - rscadd: two new body hair customization options
+  radarseas:
+  - rscadd: Added a shitload of new style + gear getup for councillors, hands, suits,
+      adv nobles, dukes and princes
+  - rscadd: Added new chaperons for keep nobility, unique to their roles. W/ their
+      own unique flavortexts.
+  - rscadd: Slightly more patron-amulet based variance for adv nobles.
+  - rscdel: Removed redundant Aristocratic attire that was unused.
+  - rscdel: Zerobrine
+  - balance: princes now get decorated daggers, councillors get the special varient
+      w/ more durability, both get sheathes.
+  - balance: more nobles such as councillors and the duke use arming jackets instead
+      of just mere gambesons, which does mean they can take slightly more blows for
+      slightly less coverage on their chest armor.
+  - balance: suitor can pick their weapon starting off.
+  - balance: most keep nobility now spawn with their keys + pouches in their satchel
+      to make space for their belt and such.
+  - balance: princes and nobility now spawn with rings of gold/silver to reflect their
+      status.
+  - balance: steward + consort now gets a halfmask w/ cyclops vice for a massive sovl
+      injection.
+  - balance: Aristocrat has D/E w/ rapier now as a choice.
+  - balance: Aristocrat lost their knife + maile pick, its moved into their spy pick.
+  - balance: duke has a heavy padded arming jacket on spawn, consort as a regular
+      one from padded gambeson. Both still lack armor for their legs/head/neck/etc.
+  - balance: duke now spawns with very rich pouch variant, you're literally the ruler
+      of Azure Peak, why would you not have a ton of coin on yourself turning up without
+      even having to touch a Meister?
+  - bugfix: duke no longer duplicates their loadout twice.
+  - refactor: goldplaque/steward -> goldplaque/noble since its no longer a steward-exclusive
+      belt.
+  saltprjak:
+  - balance: Man at Arms Bailiff is now Thickblooded and Enduring.
