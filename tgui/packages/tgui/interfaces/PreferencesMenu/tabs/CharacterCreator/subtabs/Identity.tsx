@@ -523,7 +523,7 @@ export const VirtueEntry = (props: { entry: VirtueWithMetadata }) => {
       <Stack align="center">
         <Stack.Item>
           {slot_name}{' '}
-          {virtue.tricost > 0 ? (
+          {virtue?.tricost > 0 ? (
             <Box inline textColor="white">
               ({virtue.tricost} TRI)
             </Box>
@@ -542,18 +542,22 @@ export const VirtueEntry = (props: { entry: VirtueWithMetadata }) => {
             }
             onClick={() => setPopupId('Virtue', { id })}
           >
-            {virtue.name}
+            {virtue?.name ?? 'None'}
             {spawn_error ? ' (!)' : null}
           </Button>
         </Stack.Item>
       </Stack>
-      {virtue.picked_choices.map((choice) => (
+      {virtue?.picked_choices.map((choice) => (
         <Button
           key={choice.choice}
           fluid
           ml={2}
           mt={1}
-          tooltip={choice.tooltip}
+          tooltip={
+            choice.tooltip ? (
+              <Box dangerouslySetInnerHTML={{ __html: choice.tooltip }} />
+            ) : null
+          }
           onClick={() =>
             act('subvirtue', {
               id,
@@ -565,7 +569,7 @@ export const VirtueEntry = (props: { entry: VirtueWithMetadata }) => {
           {choice.choice}
         </Button>
       ))}
-      {virtue.picked_choices.length < virtue.max_choices ? (
+      {virtue && virtue.picked_choices.length < virtue.max_choices ? (
         <Button
           fluid
           ml={2}
