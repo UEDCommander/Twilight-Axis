@@ -4515,7 +4515,7 @@ As Excaliber."
 	icon = 'icons/clothing/donor_clothes.dmi'
 	mob_overlay_icon = 'icons/clothing/onmob/donor_clothes.dmi'
 	sleeved = 'icons/clothing/onmob/donor_sleeves_armor.dmi'
-	allowed_sex = list(MALE) //Character-specific.
+	allowed_sex = list(MALE, FEMALE) //Character-specific. Female sprites might not be form-fitting.
 	detail_color = CLOTHING_RED
 	detail_tag = "_detail"
 
@@ -4591,6 +4591,7 @@ As Excaliber."
 	desc = "A beautiful sabre, originally gifted to its wielder - alongside a matching lance - upon their ascendance into knighthood. It, too, has \
 	been designed to better excel at unmounted combat; namely, with a golden knuckleguard that fully defends one's hand. Along the blade's root \
 	is an engraving of silvered elvish runes.. </br>'Sieglinde, the Thunderblade.'"
+	icon_state = "naman_sabre"
 	sheathe_icon = "naman_sabre"
 	icon = 'icons/obj/items/donor_weapons.dmi'
 
