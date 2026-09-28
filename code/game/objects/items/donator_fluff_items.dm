@@ -4591,6 +4591,7 @@ As Excaliber."
 	desc = "A beautiful sabre, originally gifted to its wielder - alongside a matching lance - upon their ascendance into knighthood. It, too, has \
 	been designed to better excel at unmounted combat; namely, with a golden knuckleguard that fully defends one's hand. Along the blade's root \
 	is an engraving of silvered elvish runes.. </br>'Sieglinde, the Thunderblade.'"
+	icon_state = "naman_sabre"
 	sheathe_icon = "naman_sabre"
 	icon = 'icons/obj/items/donor_weapons.dmi'
 
