@@ -500,6 +500,14 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	clean_virtue.on_load()
 	return clean_virtue
 
+/datum/preferences/proc/migrate_forgotten_empires_origin() // TA EDIT START
+	if(!istype(virtue_origin, /datum/virtue/origin/unselectable/skeleton))
+		return FALSE
+
+	qdel(virtue_origin)
+	virtue_origin = new /datum/virtue/origin/unknown
+	return TRUE // TA EDIT END
+
 /datum/preferences/proc/write_clean_virtue_paths(savefile/S, virtue_type = /datum/virtue/none, virtuetwo_type = /datum/virtue/none, origin_type = /datum/virtue/none, list/virtue_choices = null, list/virtuetwo_choices = null)
 	if(!ispath(virtue_type, /datum/virtue))
 		virtue_type = /datum/virtue/none
@@ -529,6 +537,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	virtue = load_clean_virtue(virtue_data[1], virtue_data[2])
 	virtuetwo = load_clean_virtue(virtuetwo_data[1], virtuetwo_data[2])
 	virtue_origin = load_clean_virtue(origin_data[1], origin_data[2])
+	migrate_forgotten_empires_origin() // TA EDIT
 
 	write_clean_virtue_paths(S, virtue.type, virtuetwo.type, virtue_origin.type, virtue.picked_choices, virtuetwo.picked_choices)
 
@@ -1100,6 +1109,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	virtue = load_clean_virtue(virtue_data[1], virtue_data[2])
 	virtuetwo = load_clean_virtue(virtuetwo_data[1], virtuetwo_data[2])
 	virtue_origin = load_clean_virtue(origin_data[1], origin_data[2])
+	migrate_forgotten_empires_origin() // TA EDIT
 
 
 	charflaws = list()
