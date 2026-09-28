@@ -1,4 +1,4 @@
-﻿/datum/advclass/noble
+/datum/advclass/noble
 	name = "Aristocrat"
 	tutorial = "You are a traveling noble visiting the lands of Azure Peak's dutchy. With wealth, come the poor, ready to pilfer you of your hard earned (inherited) coin, so tread lightly unless you want to meet a grizzly end."
 	allowed_sexes = list(MALE, FEMALE)
