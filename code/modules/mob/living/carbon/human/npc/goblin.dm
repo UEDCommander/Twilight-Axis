@@ -300,7 +300,7 @@ GLOBAL_LIST_INIT(goblin_pyromancer_aggro, list(
 	if(eyes)
 		eyes.Remove(src,1)
 		QDEL_NULL(eyes)
-	eyes = new /obj/item/organ/eyes/night_vision/nightmare
+	eyes = new /obj/item/organ/eyes/night_vision/wild_goblin
 	eyes.Insert(src)
 	if(src.underwear) // TA EDIT START
 		var/obj/item/bodypart/underwear_chest = get_bodypart(BODY_ZONE_CHEST)
