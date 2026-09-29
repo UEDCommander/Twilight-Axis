@@ -1,8 +1,8 @@
 /datum/virtue/utility/riding
 	name = "Saddleborn"
-	desc = "I am skilled at riding animals of all kinds, and have an especially strong bond with one, allowing me to call it from afar and send it away as needed. Should my treasured companion ever die, my mood will not recover."
+	desc = "I am skilled at riding animals of all kinds, and have an especially strong bond with one, allowing me to call it from afar and send it away as needed. Should my treasured companion ever die, the loss will weigh heavily on me for a long time."
 	ui_fa_icon = "horse"
-	custom_text = "Provides an ability that allows you to select a type of mount to call to your side, and additionally name. Noble characters are able to choose horses. Gains two abilities to send the mount away and call it back as needed (outdoors only). If the chosen mount dies, -5 to mood for the rest of the round (cannot be recovered from in any circumstance)."
+	custom_text = "Provides an ability that allows you to select a type of mount to call to your side, and additionally name. Noble characters are able to choose horses. Gains two abilities to send the mount away and call it back as needed (outdoors only). If the chosen mount dies, -10 to mood for 60 minutes."
 	added_skills = list(list(/datum/skill/misc/riding, 1, SKILL_LEVEL_EXPERT))
 	added_traits = list(TRAIT_EQUESTRIAN)
 
@@ -29,8 +29,8 @@ GLOBAL_LIST_INIT(virtue_mount_choices_anthrax, (list(
 )))
 
 /datum/stressevent/precious_mob_died
-	timer = INFINITY
-	stressadd = 5
+	timer = 60 MINUTES //TA EDIT
+	stressadd = 10
 	desc = span_red("There will never be another creature like them. They are lost, and so am I.")
 
 /datum/component/precious_creature
@@ -74,7 +74,7 @@ GLOBAL_LIST_INIT(virtue_mount_choices_anthrax, (list(
 	var/list/choices = list()
 
 	var/list/mount_choices = GLOB.virtue_mount_choices
-	if (HAS_TRAIT(user, TRAIT_NOBLE))
+	if (HAS_TRAIT(user, TRAIT_NOBLE) || user.job == "Man at Arms") //TA EDIT
 		to_chat(user, span_info("As an anointed noble, your steed can also come from pedigree stock."))
 		mount_choices += GLOB.virtue_mount_choices_noble
 	if (HAS_TRAIT(user, TRAIT_ANTHRAXI))
@@ -333,4 +333,3 @@ GLOBAL_LIST_INIT(virtue_mount_choices_anthrax, (list(
 		honse.visible_message(span_notice("[honse] trundles back into sight with a confused expression, ears swivelling to catch some manner of sound..."))
 		revert_cast()
 		return FALSE
-

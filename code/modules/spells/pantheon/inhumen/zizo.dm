@@ -400,6 +400,7 @@
 
 	var/mob/living/carbon/human/species/skeleton/conjured/skeleton = new(dest)
 	skeleton.summoner_ref = WEAKREF(user)
+	skeleton.faction |= list(FACTION_CABAL, "[user.real_name]_faction") // TA EDIT
 	skeleton.loadout = modes[current_mode]["loadout"]
 
 	skeleton.add_filter("zizo_conjure_glow", 2, list("outline", "size" = 2, "color" = "#9B59FF"))
