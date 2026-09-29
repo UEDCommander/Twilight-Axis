@@ -7,7 +7,7 @@
 	subclass_languages = list(/datum/language/celestial)
 	class_select_category = CLASS_CAT_NALEDI
 	category_tags = list(CTAG_MERCENARY, CTAG_MERCPARTY_WARMAGE)
-	cmode_music = 'sound/music/warscholar.ogg'
+	cmode_music = sound("sound/music/warscholar.ogg")
 	traits_applied = list(TRAIT_ARCYNE, TRAIT_ALCHEMY_EXPERT, TRAIT_NALEDI)
 	subclass_stats = list(
 		STATKEY_INT = 3,
@@ -97,7 +97,7 @@
 	subclass_languages = list(/datum/language/celestial, /datum/language/thievescant)
 	class_select_category = CLASS_CAT_NALEDI
 	category_tags = list(CTAG_MERCENARY, CTAG_MERCPARTY_WARMAGE)
-	cmode_music = 'sound/music/warscholar.ogg'
+	cmode_music = sound("sound/music/warscholar.ogg")
 	traits_applied = list(TRAIT_CIVILIZEDBARBARIAN, TRAIT_ARCYNE, TRAIT_NALEDI)
 	// Previous budget was kinda lopsided with negative per and con on a melee class (??) to give them a lot of str and speed. I took 6 points off and shifted it to wil and perception instead.
 	subclass_stats = list(
@@ -217,7 +217,7 @@
 	subclass_languages = list(/datum/language/celestial)
 	class_select_category = CLASS_CAT_NALEDI
 	category_tags = list(CTAG_MERCENARY, CTAG_MERCPARTY_WARMAGE)
-	cmode_music = 'sound/music/warscholar.ogg'
+	cmode_music = sound("sound/music/warscholar.ogg")
 	traits_applied = list(TRAIT_ARCYNE, TRAIT_ALCHEMY_EXPERT, TRAIT_MEDICINE_EXPERT, TRAIT_NALEDI)
 	subclass_stats = list(
 		STATKEY_INT = 3,
