@@ -139,7 +139,8 @@ GLOBAL_LIST_EMPTY(respawncounts)
 		var/msg = input(src, "Reply to the admin team:", "Adminhelp reply") as message|null
 		if(!msg)
 			return
-		current_ticket.MessageNoRecipient(msg, FALSE)
+		if(!current_ticket.SendPlayerMessage(msg)) // TA EDIT
+			return
 		return
 
 	if(href_list["playerlistrogue"])
