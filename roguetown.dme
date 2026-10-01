@@ -34,7 +34,6 @@
 #include "code\__DEFINES\balloon_alert.dm"
 #include "code\__DEFINES\banking.dm"
 #include "code\__DEFINES\bard.dm"
-#include "code\__DEFINES\barks.dm"
 #include "code\__DEFINES\blend_modes.dm"
 #include "code\__DEFINES\blood_toll.dm"
 #include "code\__DEFINES\calendar.dm"
