@@ -3,8 +3,8 @@
 	#define MINIMUM_OOC_NOTES 0
 #endif
 #ifndef LOCALTEST
-	#define MINIMUM_FLAVOR_TEXT		200
-	#define MINIMUM_OOC_NOTES		5 //Just put something in there
+	#define MINIMUM_FLAVOR_TEXT		0
+	#define MINIMUM_OOC_NOTES 		0
 #endif
 
 //Preference toggles
@@ -85,6 +85,14 @@
 #define JP_LOW 1
 #define JP_MEDIUM 2
 #define JP_HIGH 3
+#define JP_BOOST 4 // TA EDIT
+
+// TA EDIT START
+#define JOB_PREF_UI_HIGH 1
+#define JOB_PREF_UI_MEDIUM 2
+#define JOB_PREF_UI_LOW 3
+#define JOB_PREF_UI_NEVER 4
+#define JOB_PREF_UI_BOOST 5 // TA EDIT END
 
 #define MAX_ROLL_TOKENS 2
 /// Roll tokens (each token gives 20%). These are counted in ratios instead of flat bonuses.

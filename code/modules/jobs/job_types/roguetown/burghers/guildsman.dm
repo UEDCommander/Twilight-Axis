@@ -19,11 +19,11 @@
 	selection_color = JCOLOR_BURGHER
 	display_order = JDO_GUILDSMAN
 	give_bank_account = TRUE
-	min_pq = 0
+	min_pq = 1
 	max_pq = null
 	round_contrib_points = 3
 	advjob_examine = TRUE // So that everyone know which subjob they have picked
-	cmode_music = 'sound/music/cmode/towner/combat_towner3.ogg'
+	cmode_music = sound("sound/music/cmode/towner/combat_towner3.ogg")
 	job_subclasses = list(
 		/datum/advclass/guildsman/artificer,
 		/datum/advclass/guildsman/blacksmith,
