@@ -75,3 +75,6 @@
   - rscadd: Lampwarden and Lampwicker gear
   - rscadd: New Lamplighter role, meant to be a neutral protector of the roadways
   - rscadd: Lampwarden and Lampwicker abilities
+2026-10-02:
+  zydras:
+  - bugfix: Direvolf will now stop making human pain noises
