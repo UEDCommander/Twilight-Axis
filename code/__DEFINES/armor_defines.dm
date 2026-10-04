@@ -7,7 +7,7 @@
 // If penfactor == armor tier: 20% of damage penetrates armor.
 // If penfactor < armor tier: fully blocked (0 through).
 // Blunt and Fire use DR Absorb — damage multiplied by 1 / (1 + 0.2 * DR tier), all absorbed by armor (none to HP).
-// Bullets use DR Pierce — damage is reduced by tier, but still reaches HP; armor also takes integrity damage.
+// Bullets use DR Pierce — damage is reduced by 20% by tier, but still reaches HP; armor also takes integrity damage.
 
 // Penetration tiers (0-4). Weapon attacks.
 #define PEN_NONE			0	// No penetration. Training weapons, base cuts/chops.
@@ -25,7 +25,7 @@
 
 // Damage reduction tiers (0-5). Used by blunt and fire (DR Absorb) and bullets (DR Pierce).
 // Note that blunt by default have 1.6x Integrity Multiplier.
-// Damage multiplier = 1 / (1 + 0.2 * tier)
+// Damage multiplier = 1 / (1 + 0.2 * tier) for blunt and fire, 1 - (0.2 * tier) for bullets.
 // Blunt and fire: all damage is absorbed by armor. Bullets: reduced damage still reaches HP.
 #define DR_NONE				0	// Nothing. 100% damage. EDPS: 160%
 #define DR_LIGHT			1	// Plate / Metal. 20% EHP increase. EDPS: 133%
