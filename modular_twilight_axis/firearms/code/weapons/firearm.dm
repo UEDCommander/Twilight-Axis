@@ -325,6 +325,7 @@
 	ready_sound = "modular_twilight_axis/firearms/sound/musketcock.ogg"
 	chargedrain = 0
 	hold_grace = RANGED_HOLD_GRACE * 3
+	hold_ramp = 0
 
 /datum/intent/shoot/twilight_firearm/get_chargetime()
 	if(mastermob && chargetime)
@@ -346,6 +347,7 @@
 	chargetime = 1
 	chargedrain = 0
 	hold_grace = RANGED_HOLD_GRACE * 3
+	hold_ramp = 0
 
 /datum/intent/arc/twilight_firearm/get_chargetime()
 	if(mastermob && chargetime)
