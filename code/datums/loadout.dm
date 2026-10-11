@@ -92,7 +92,7 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 /datum/loadout_item/card_deck
 	name = "Card Deck"
 	category = "Разное"
-	path = /obj/item/toy/cards/deck
+	path = /obj/item/deck/playing_cards
 
 /datum/loadout_item/farkle_dice
 	name = "Farkle Dice Container"
@@ -102,7 +102,7 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 /datum/loadout_item/tarot_deck
 	name = "Tarot Deck"
 	category = "Разное"
-	path = /obj/item/toy/cards/deck/tarot
+	path = /obj/item/deck/tarot/includes_minor_arcana
 
 /datum/loadout_item/bibble
 	name = "The Verses and Acts of the Ten"
@@ -3373,7 +3373,7 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 /datum/loadout_item/sanguine_heels
 	name = "Sanguine Heels"
 	category = list("Обувь", "Донат")
-	path = /obj/item/clothing/shoes/courtphysician/female
+	path = /obj/item/clothing/shoes/roguetown/courtphysician/female
 	donatitem = TRUE
 	donat_tier = 2
 
@@ -3436,7 +3436,7 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 /datum/loadout_item/sanguine_shoes
 	name = "Sanguine Shoes"
 	category = list("Обувь", "Донат")
-	path = /obj/item/clothing/shoes/courtphysician
+	path = /obj/item/clothing/shoes/roguetown/courtphysician
 	donatitem = TRUE
 	donat_tier = 2
 
@@ -4114,7 +4114,7 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 /datum/loadout_item/tarot_deck_majorarcana
 	name = "Tarot Deck (Major Arcana)"
 	category = "Разное"
-	path = /obj/item/toy/cards/deck/tarot/majorarcana
+	path = /obj/item/deck/tarot
 	donatitem = TRUE
 	donat_tier = 2
 
