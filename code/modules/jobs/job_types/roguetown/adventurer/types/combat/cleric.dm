@@ -103,7 +103,7 @@
 				l_hand = /obj/item/rogueweapon/scabbard/gwstrap
 				wrists = /obj/item/clothing/wrists/roguetown/bracers/leather/heavy
 				gloves = /obj/item/clothing/gloves/roguetown/bandages
-	H.cmode_music = 'sound/music/combat_holy.ogg' // left in bc i feel like monk players want their darktide TRAIT_DODGEEXPERT
+	H.cmode_music = sound("sound/music/combat_holy.ogg") // left in bc i feel like monk players want their darktide TRAIT_DODGEEXPERT
 	switch(H.patron?.type)
 		if(/datum/patron/old_god)
 			cloak = /obj/item/clothing/cloak/tabard/psydontabard/black
@@ -215,7 +215,7 @@
 		/obj/item/flashlight/flare/torch/metal = 1,
 		/obj/item/storage/belt/rogue/pouch/coins/poor = 1,
 		)
-	H.cmode_music = 'sound/music/cmode/church/combat_reckoning.ogg'
+	H.cmode_music = sound("sound/music/cmode/church/combat_reckoning.ogg")
 
 	//Armor varients here
 	var/armors = list("Hauberk")
@@ -326,23 +326,38 @@
 			if("Axe")
 				H.adjust_skillrank_up_to(/datum/skill/combat/axes, SKILL_LEVEL_JOURNEYMAN, TRUE)
 				r_hand = /obj/item/rogueweapon/stoneaxe/woodcut
-		var/oaths = list("Cleric - Medicine Training + Supplies","Crusader - Unique Longsword + Surcoat","None")
+		var/oaths = list("Cleric - Medicine Training + Supplies","Crusader - Anointed Weapon","None")
 		var/oath_choice = input(H, "Choose your OATH.", "PROFESS YOUR BLESSINGS.") as anything in oaths
 		switch(oath_choice)
 			if("Cleric - Medicine Training + Supplies")
 				H.adjust_skillrank_up_to(/datum/skill/misc/medicine, SKILL_LEVEL_APPRENTICE, TRUE)
 				l_hand = /obj/item/needle/thorn/cleric //Unique to the Cleric. Far worse than a traditional iron needle, but better than a regular thorn needle - with 10 uses, instead of 5 (or 20, in the former's case).
 				beltl = /obj/item/reagent_containers/glass/bottle/rogue/healthpot //No cloth, but a basic potion of lifeblood - similar to the Sorcerer's manna potion. Take the 'Physician's Apprentice' virtue for that, uncapped skills, and more.
-			if("Crusader - Unique Longsword + Surcoat")
-				H.adjust_skillrank_up_to(/datum/skill/combat/swords, SKILL_LEVEL_JOURNEYMAN, TRUE)
-				beltl = /obj/item/rogueweapon/sword/long/cleric //Essentially, a silver longsword without the ability to sunder antagonists. Works like unblessed silver on npcs
-				switch(H.patron?.type)
-					if(/datum/patron/old_god)
-						l_hand = /obj/item/clothing/cloak/tabard/stabard/crusader/t
-					if(/datum/patron/divine/astrata)
-						l_hand = /obj/item/clothing/cloak/tabard/stabard/crusader/t/astrata
-					else
-						l_hand = /obj/item/clothing/cloak/tabard/stabard/crusader/t/undivided
+			if("Crusader - Anointed Weapon")
+				var/silver = list("Anointed Dagger","Anointed Longsword","Anointed Mace","Anointed Morningstar","Anointed Whip","Anointed War Axe","Anointed Spear")
+				var/silver_choice = input(H, "Choose your ARM.", "STAND AGAINST PERDITION.") as anything in silver //Trimmed down from the exorcist's usual list, only one option of each weapon-type.
+				switch(silver_choice)
+					if("Anointed Dagger")
+						H.adjust_skillrank_up_to(/datum/skill/combat/knives, SKILL_LEVEL_JOURNEYMAN, TRUE)
+						l_hand = /obj/item/rogueweapon/huntingknife/idagger/cleric
+					if("Anointed Longsword")
+						H.adjust_skillrank_up_to(/datum/skill/combat/swords, SKILL_LEVEL_JOURNEYMAN, TRUE)
+						l_hand = /obj/item/rogueweapon/sword/long/cleric
+					if("Anointed Mace")
+						H.adjust_skillrank_up_to(/datum/skill/combat/maces, SKILL_LEVEL_JOURNEYMAN, TRUE)
+						l_hand = /obj/item/rogueweapon/mace/cleric
+					if("Anointed Morningstar")
+						H.adjust_skillrank_up_to(/datum/skill/combat/whipsflails, SKILL_LEVEL_JOURNEYMAN, TRUE)
+						l_hand = /obj/item/rogueweapon/flail/cleric
+					if("Anointed Whip")
+						H.adjust_skillrank_up_to(/datum/skill/combat/whipsflails, SKILL_LEVEL_JOURNEYMAN, TRUE)
+						l_hand = /obj/item/rogueweapon/whip/cleric
+					if("Anointed War Axe")
+						H.adjust_skillrank_up_to(/datum/skill/combat/axes, SKILL_LEVEL_JOURNEYMAN, TRUE)
+						l_hand = /obj/item/rogueweapon/stoneaxe/woodcut/cleric
+					if("Anointed Spear")
+						H.adjust_skillrank_up_to(/datum/skill/combat/polearms, SKILL_LEVEL_JOURNEYMAN, TRUE)
+						l_hand = /obj/item/rogueweapon/spear/cleric
 			if("None")
 				id = /obj/item/clothing/ring/silver/cleric //Minor restoration of the old silver ring that Clerics could get. Worth less than the other two alternatives, but offers a choice for those who want to remain unspecialized.
 
@@ -411,7 +426,7 @@
 		/obj/item/flashlight/flare/torch = 1,
 		/obj/item/rogueweapon/scabbard/sheath = 1
 		)
-	H.cmode_music = 'sound/music/cmode/church/combat_reckoning.ogg'
+	H.cmode_music = sound("sound/music/cmode/church/combat_reckoning.ogg")
 	switch(H.patron?.type)
 		if(/datum/patron/old_god)
 			if(H.mind)
@@ -486,7 +501,7 @@
 	name = "Missionary"
 	tutorial = "You are a devout worshipper of the divine with a strong connection to your patron god. You've spent years studying scriptures and serving your deity - now you wander into foreign lands, spreading the word of your faith."
 	outfit = /datum/outfit/job/roguetown/adventurer/missionary
-	traits_applied = list()
+	traits_applied = list(TRAIT_HOMESTEAD_EXPERT)
 	subclass_stats = list(
 		STATKEY_INT = 2,
 		STATKEY_PER = 2,
@@ -505,6 +520,7 @@
 		/datum/skill/misc/reading = SKILL_LEVEL_JOURNEYMAN,
 		/datum/skill/misc/medicine = SKILL_LEVEL_JOURNEYMAN, //always better than cleric oathed paladin
 		/datum/skill/craft/crafting = SKILL_LEVEL_APPRENTICE,
+		/datum/skill/craft/cooking = SKILL_LEVEL_APPRENTICE,
 	)
 	subclass_stashed_items = list(
 		"The Verses and Acts of the Ten" = /obj/item/book/rogue/bibble,
@@ -523,7 +539,7 @@
 		/obj/item/needle/thorn/cleric = 1,
 		/obj/item/reagent_containers/glass/bottle/alchemical/healthpot = 1,
 		)
-	H.cmode_music = 'sound/music/cmode/church/combat_acolyte.ogg' // our cleric pre_equip handles cmode music
+	H.cmode_music = sound("sound/music/cmode/church/combat_acolyte.ogg") // our cleric pre_equip handles cmode music
 	switch(H.patron?.type)
 		if(/datum/patron/old_god)
 			head = /obj/item/clothing/head/roguetown/roguehood/psydon/black
@@ -681,7 +697,7 @@
 			H.adjust_skillrank_up_to(/datum/skill/misc/climbing, SKILL_LEVEL_JOURNEYMAN, TRUE)
 			H.adjust_skillrank(/datum/skill/misc/lockpicking, SKILL_LEVEL_NOVICE, TRUE)
 			H.adjust_skillrank_up_to(/datum/skill/misc/music, SKILL_LEVEL_EXPERT, TRUE)
-			H.cmode_music = 'sound/music/combat_jester.ogg'
+			H.cmode_music = sound("sound/music/combat_jester.ogg")
 			var/datum/inspiration/I = new /datum/inspiration(H)
 			I.grant_inspiration(H, bard_tier = BARD_T2) //(NGL Xylix needs better high-end miracles vs clutching off this system, until then, untouched)
 			if(H.mind)

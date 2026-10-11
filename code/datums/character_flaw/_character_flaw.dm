@@ -40,6 +40,7 @@ GLOBAL_LIST_INIT(averse_factions, list(
 		"desc" = desc,
 		"icon" = ui_fa_icon,
 		"needs_extra_vice" = needs_extra_vice,
+		"requirements_warning" = null, // TA EDIT
 		"restricted_species" = null
 	)
 
@@ -158,6 +159,15 @@ GLOBAL_LIST_INIT(averse_factions, list(
 			if(istype(H.head, /obj/item/clothing/mask/rogue/spectacles))
 				var/obj/item/G = H.head
 				if(!G.obj_broken)
+					return
+			// Naledi masks let us see properly if they have inlaid spectacles and if the mask is not broken
+			if(istype(H.wear_mask, /obj/item/clothing/mask/rogue/lordmask/naledi))
+				var/obj/item/clothing/mask/rogue/lordmask/naledi/M = H.wear_mask
+				if(M.has_inlaid_spectacles && !M.obj_broken)
+					return
+			if(istype(H.head, /obj/item/clothing/mask/rogue/lordmask/naledi))
+				var/obj/item/clothing/mask/rogue/lordmask/naledi/M = H.head
+				if(M.has_inlaid_spectacles && !M.obj_broken)
 					return
 	H.blur_eyes(2)
 	H.apply_status_effect(/datum/status_effect/debuff/badvision)
@@ -876,3 +886,13 @@ GLOBAL_LIST_INIT(averse_factions, list(
 		addtimer(CALLBACK(src, PROC_REF(apply_bounty_when_ready), H), 5 SECONDS)
 		return
 	wretch_select_bounty(H)
+
+/datum/charflaw/dnr
+	name = "Last Legs"
+	desc = "My lux is worn. I am not truly unrevivable, not yet; but the next shall be my last."
+	ui_fa_icon = "skull"
+	needs_extra_vice = TRUE
+
+/datum/charflaw/dnr/on_mob_creation(mob/user)
+	. = ..()
+	ADD_TRAIT(user, TRAIT_LASTLEGS, "[type]")

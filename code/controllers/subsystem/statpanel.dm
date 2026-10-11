@@ -52,6 +52,8 @@ SUBSYSTEM_DEF(statpanels)
 			var/time_left = SSgamemode.round_ends_at - world.time
 			global_data += "Round End: [DisplayTimeText(time_left, 1)]"
 
+		global_data += "Round Type: [SSgamemode.current_storyteller ? SSgamemode.current_storyteller.name : "Unknown"]"
+
 		if(SSticker.ready_for_reboot)
 			global_data += "Reboot: DELAYED"
 
@@ -213,7 +215,8 @@ SUBSYSTEM_DEF(statpanels)
 		return TRUE
 
 	if(target.mob?.listed_turf && target.stat_tab == "[target.mob.listed_turf]")
-		target.send_listed_turf()
+		//TA EDIT - listed-turf tab is dead on the JS side, skip the appearance build entirely
+		//target.send_listed_turf()
 		return TRUE
 
 	var/mob/target_mob = target.mob

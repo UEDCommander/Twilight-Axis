@@ -1571,6 +1571,7 @@ GLOBAL_LIST_INIT(da_bubbles, list('sound/foley/bubb (1).ogg','sound/foley/bubb (
 	var/active_item = FALSE
 	var/swap_type = /obj/item/clothing/neck/roguetown/psicross/inhumen/matthios/gilded/astrata
 	var/swap_message = "The gilded amulet transmutates to a different form. You feel a smile, as you profane Her fyre the same way as He did."
+	is_important = TRUE
 
 /obj/item/clothing/neck/roguetown/psicross/inhumen/matthios/gilded/proc/swap_form(mob/living/carbon/human/user)
 	var/obj/item/clothing/neck/roguetown/psicross/inhumen/matthios/gilded/new_amulet = new swap_type(user.loc)
@@ -1593,8 +1594,13 @@ GLOBAL_LIST_INIT(da_bubbles, list('sound/foley/bubb (1).ogg','sound/foley/bubb (
 		return
 	if(!do_after(user, 1 SECONDS))
 		return
-	to_chat(user, span_warning(swap_message))
 	playsound(user.loc, 'sound/magic/swap.ogg', 25, TRUE, -2)
+	if(findtext(LOWER_TEXT(name), "ruined"))
+		to_chat(user, span_warning("[src] crumbles into ash in your hands."))
+		new /obj/item/ash(get_turf(src))
+		qdel(src)
+		return
+	to_chat(user, span_warning(swap_message))
 	swap_form(user)
 
 /obj/item/clothing/neck/roguetown/psicross/inhumen/matthios/gilded/get_examine_highlight_status()
@@ -1608,6 +1614,7 @@ GLOBAL_LIST_INIT(da_bubbles, list('sound/foley/bubb (1).ogg','sound/foley/bubb (
 	swap_type = /obj/item/clothing/neck/roguetown/psicross/inhumen/matthios/gilded
 	swap_message = "The gilded amulet settles back into familiar weight. You feel a grin, as He commends you for your boldness."
 	stolen_fyre = TRUE
+	is_important = TRUE
 
 /obj/item/clothing/neck/roguetown/psicross/inhumen/matthios/gilded/astrata/get_examine_highlight_status()
 	return null
@@ -1647,6 +1654,7 @@ GLOBAL_LIST_INIT(da_bubbles, list('sound/foley/bubb (1).ogg','sound/foley/bubb (
 	color = "#fce517" // we golden
 	aura_color = "#fff385"
 	var/active_item = FALSE
+	is_important = TRUE
 
 /obj/item/clothing/gloves/roguetown/fingerless_leather/muffle_matthios/equipped(mob/living/carbon/human/user, slot)
 	. = ..()
@@ -1675,6 +1683,8 @@ GLOBAL_LIST_INIT(da_bubbles, list('sound/foley/bubb (1).ogg','sound/foley/bubb (
 	color = "#faf5cb"
 	aura_color = "#fffb00"
 	var/active_item = FALSE
+	is_important = TRUE
+	attachable = FALSE
 
 /obj/item/clothing/mask/rogue/spectacles/matthios/equipped(mob/living/carbon/human/user, slot)
 	. = ..()
@@ -1761,6 +1771,7 @@ GLOBAL_LIST_INIT(da_bubbles, list('sound/foley/bubb (1).ogg','sound/foley/bubb (
 	armor = ARMOR_LEATHER
 	color = "#fff9c0" // we golden
 	aura_color = "#ffe600"
+	is_important = TRUE
 
 /obj/item/clothing/shoes/roguetown/boots/muffle_matthios/equipped(mob/living/carbon/human/user, slot)
 	. = ..()
