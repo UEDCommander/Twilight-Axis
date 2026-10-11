@@ -607,11 +607,13 @@
 	var/list/dna_markings = H.dna.body_markings
 	if(dna_markings)
 		if(dna_markings[body_zone])
-			markings = dna_markings[body_zone].Copy()
+			var/list/body_zone_markings = dna_markings[body_zone]
+			markings = body_zone_markings.Copy()
 		else
 			markings = null
 		if(aux_zone && dna_markings[aux_zone])
-			aux_markings = dna_markings[aux_zone].Copy()
+			var/list/aux_zone_markings = dna_markings[aux_zone]
+			aux_markings = aux_zone_markings.Copy()
 		else
 			aux_markings = null
 
