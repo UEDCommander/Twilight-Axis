@@ -7,7 +7,7 @@
 	class_select_category = CLASS_CAT_RACIAL
 	category_tags = list(CTAG_MERCENARY, CTAG_MERCPARTY_VANGUARD)
 	traits_applied = list(TRAIT_SEEPRICES, TRAIT_MEDIUMARMOR)
-	cmode_music = 'sound/music/combat_matthios.ogg'
+	cmode_music = sound("sound/music/combat_matthios.ogg")
 	maximum_possible_slots = 2
 
 	subclass_stats = list(
@@ -237,6 +237,7 @@ third; SUNSET, little neat ability. it may be buggy. don't quote me on that. it 
 	hitsound = list('sound/combat/hits/bladed/smallslash (1).ogg', 'sound/combat/hits/bladed/smallslash (2).ogg', 'sound/combat/hits/bladed/smallslash (3).ogg')
 	penfactor = PEN_MEDIUM
 	swingdelay = 1 SECONDS
+	clickcd = 1.2 SECONDS
 	swingdelay_type = SWINGDELAY_CANCEL
 	damfactor = 1.5 //bites you bites you bites yo
 	clickcd = CLICK_CD_MASSIVE

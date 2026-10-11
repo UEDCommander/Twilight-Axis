@@ -3,9 +3,6 @@
 	id = "hobgoblin"
 	species_traits = list(NO_UNDERWEAR,NOEYESPRITES)
 	inherent_traits = list(TRAIT_RESISTCOLD,
-		TRAIT_RESISTHIGHPRESSURE,
-		TRAIT_RESISTLOWPRESSURE,
-		TRAIT_RADIMMUNE,
 		TRAIT_NASTY_EATER,
 		TRAIT_LEECHIMMUNE,
 		TRAIT_HEAVYARMOR)
@@ -163,7 +160,7 @@
 	if(eyes)
 		eyes.Remove(src,1)
 		QDEL_NULL(eyes)
-	eyes = new /obj/item/organ/eyes/night_vision/nightmare
+	eyes = new /obj/item/organ/eyes/night_vision/wild_goblin
 	eyes.Insert(src)
 	if(src.underwear) // TA EDIT START
 		var/obj/item/bodypart/underwear_chest = get_bodypart(BODY_ZONE_CHEST)

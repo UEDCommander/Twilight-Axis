@@ -127,6 +127,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["tgui_theme"]			>> tgui_theme
 	S["parchment_skin"]		>> parchment_skin
 	S["statbrowser_theme"]	>> statbrowser_theme
+	S["vv_dark_mode"]		>> vv_dark_mode
 	S["preferred_ui_language"] >> preferred_ui_language
 	S["windowflash"]		>> windowflashing
 	S["be_special"]		>> be_special
@@ -160,7 +161,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["lastclass"]			>> lastclass
 	load_donor_job_boost_prefs(S) // TA EDIT
 	S["compliance_notifs"]	>> compliance_notifs
-
+	S["roll_tokens"]		>> roll_tokens
 
 	S["default_slot"]		>> default_slot
 	S["chat_toggles"]		>> chat_toggles
@@ -243,6 +244,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	no_language_icon	= sanitize_bool(no_language_icon, initial(no_language_icon))
 	no_redflash			= sanitize_bool(no_redflash, initial(no_redflash))
 	top_examine			= sanitize_bool(top_examine, initial(top_examine))
+	vv_dark_mode		= sanitize_bool(vv_dark_mode, initial(vv_dark_mode))
 	crt					= sanitize_bool(crt, initial(crt))
 	grain				= sanitize_bool(grain, initial(grain))
 	qsr_pref			= sanitize_bool(qsr_pref, initial(qsr_pref))
@@ -263,6 +265,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	mastervol			= sanitize_integer(mastervol, 0, 100, initial(mastervol))
 	domhand				= sanitize_integer(domhand, 1, 2, initial(domhand))
 	attack_blip_frequency = sanitize_integer(attack_blip_frequency, 0, 100, ATTACK_BLIP_PREF_DEFAULT)
+	roll_tokens			= sanitize_integer(roll_tokens, 0, MAX_ROLL_TOKENS, 0)
 
 	// lists
 	favorited_slots		= SANITIZE_LIST(favorited_slots)
@@ -371,6 +374,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["tgui_theme"], tgui_theme)
 	WRITE_FILE(S["parchment_skin"], parchment_skin)
 	WRITE_FILE(S["statbrowser_theme"], statbrowser_theme)
+	WRITE_FILE(S["vv_dark_mode"], vv_dark_mode)
 	WRITE_FILE(S["preferred_ui_language"], preferred_ui_language)
 	WRITE_FILE(S["windowflash"], windowflashing)
 	WRITE_FILE(S["be_special"], be_special)
@@ -390,6 +394,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["key_bindings"], key_bindings)
 	WRITE_FILE(S["attack_blip_frequency"] , attack_blip_frequency)
 	WRITE_FILE(S["compliance_notifs"], compliance_notifs)
+	WRITE_FILE(S["roll_tokens"], roll_tokens)
 	WRITE_FILE(S["defiant"], defiant)
 	WRITE_FILE(S["no_runechat_animation"], no_runechat_animation) //TA EDIT
 	// TA Addition start - new ERP SYSTEM
@@ -534,6 +539,15 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	var/list/virtuetwo_data = normalize_saved_virtue(saved_virtuetwo_type, S, "virtuetwo_choices")
 	var/list/origin_data = normalize_saved_virtue(saved_origin_type, S, "virtue_origin_choices")
 
+	// Upstream migration: "Second Voice" was renamed to "Alter Ego".
+	for(var/list/saved_virtue_data in list(virtue_data, virtuetwo_data))
+		var/list/saved_choices = saved_virtue_data[2]
+		if(!islist(saved_choices))
+			continue
+		var/index = saved_choices.Find("Second Voice")
+		if(index)
+			saved_choices[index] = "Alter Ego"
+
 	virtue = load_clean_virtue(virtue_data[1], virtue_data[2])
 	virtuetwo = load_clean_virtue(virtuetwo_data[1], virtuetwo_data[2])
 	virtue_origin = load_clean_virtue(origin_data[1], origin_data[2])
@@ -589,6 +603,29 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	if(!length(ccg_saved_deck_cards) && length(ccg_selected_deck))
 		ccg_saved_deck_cards = ccg_selected_deck.Copy()
 	ccg_load_or_migrate_sql()
+
+/datum/preferences/proc/_load_quirk(S)
+	var/quirklesser_type
+	var/quirkgreater_type
+	S["quirklesser"] >> quirklesser_type
+	S["quirkgreater"] >> quirkgreater_type
+
+	if(!quirklesser_type)
+		quirklesser_type = /datum/quirk/none
+	if(!quirkgreater_type)
+		quirkgreater_type = /datum/quirk/none
+
+	if(ispath(quirklesser_type, /datum/quirk))
+		var/datum/quirk/lesserpath = quirklesser_type
+		QDEL_NULL(quirklesser)
+		if(!lesserpath::greater) // juuuust in case something gets retroactively maid greater, or someone messes with the savefiles
+			quirklesser = new quirklesser_type
+		else
+			quirklesser = new /datum/quirk/none
+
+	if(ispath(quirkgreater_type, /datum/quirk))
+		QDEL_NULL(quirkgreater)
+		quirkgreater = new quirkgreater_type
 
 /datum/preferences/proc/_load_gear_list(savefile/S)
 	var/list/saved_gear_list
@@ -718,6 +755,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	_load_species(S)
 
 	_load_virtue(S)
+	_load_quirk(S)
 	_load_flaw(S)
 
 	_load_culinary_preferences(S)
@@ -768,11 +806,20 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 
 	S["update_mutant_colors"] >> update_mutant_colors
 
-	S["headshot_link"]			>> headshot_link
-	S["vampire_headshot_link"]	>> vampire_headshot_link
-	S["lich_headshot_link"]		>> lich_headshot_link
+	S["headshot_link"]						>> headshot_link
+	S["headshot_artist_credit"]				>> headshot_artist_credit
+	S["headshot_artist_link"]				>> headshot_artist_link
+	S["vampire_headshot_link"]				>> vampire_headshot_link
+	S["vampire_headshot_artist_credit"]		>> vampire_headshot_artist_credit
+	S["vampire_headshot_artist_link"]		>> vampire_headshot_artist_link
+	S["lich_headshot_link"]					>> lich_headshot_link
+	S["lich_headshot_artist_credit"]		>> lich_headshot_artist_credit
+	S["lich_headshot_artist_link"]			>> lich_headshot_artist_link
 	//setting up the hooks for this, but not shown yet
-	S["werewolf_headshot_link"]	>> werewolf_headshot_link
+	S["werewolf_headshot_link"]				>> werewolf_headshot_link
+	S["werewolf_headshot_artist_credit"]	>> werewolf_headshot_artist_credit
+	S["werewolf_headshot_artist_link"]		>> werewolf_headshot_artist_link
+
 
 	S["qsr"]					>> qsr_pref
 	S["flavortext"]				>> flavortext
@@ -1197,9 +1244,17 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["char_toggles"] , char_toggles)
 	WRITE_FILE(S["update_mutant_colors"] , update_mutant_colors)
 	WRITE_FILE(S["headshot_link"] , headshot_link)
+	WRITE_FILE(S["headshot_artist_credit"] , headshot_artist_credit)
+	WRITE_FILE(S["headshot_artist_link"] , headshot_artist_link)
 	WRITE_FILE(S["vampire_headshot_link"] , vampire_headshot_link)
+	WRITE_FILE(S["vampire_headshot_artist_credit"] , vampire_headshot_artist_credit)
+	WRITE_FILE(S["vampire_headshot_artist_link"] , vampire_headshot_artist_link)
 	WRITE_FILE(S["werewolf_headshot_link"] , werewolf_headshot_link)
+	WRITE_FILE(S["werewolf_headshot_artist_credit"] , werewolf_headshot_artist_credit)
+	WRITE_FILE(S["werewolf_headshot_artist_link"] , werewolf_headshot_artist_link)
 	WRITE_FILE(S["lich_headshot_link"] , lich_headshot_link)
+	WRITE_FILE(S["lich_headshot_artist_credit"] , lich_headshot_artist_credit)
+	WRITE_FILE(S["lich_headshot_artist_link"] , lich_headshot_artist_link)
 	WRITE_FILE(S["qsr"] , qsr_pref)
 	WRITE_FILE(S["preset_bounty_enabled"] , preset_bounty_enabled)
 	WRITE_FILE(S["preset_bounty_poster_key"] , preset_bounty_poster_key)
@@ -1226,6 +1281,10 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["statpack"] , statpack.type)
 
 	write_clean_virtue_paths(S, virtue ? virtue.type : /datum/virtue/none, virtuetwo ? virtuetwo.type : /datum/virtue/none, virtue_origin ? virtue_origin.type : /datum/virtue/none, virtue ? virtue.picked_choices : null, virtuetwo ? virtuetwo.picked_choices : null)
+	var/quirklesser_save_type = quirklesser ? quirklesser.type : /datum/quirk/none
+	var/quirkgreater_save_type = quirkgreater ? quirkgreater.type : /datum/quirk/none
+	WRITE_FILE(S["quirklesser"], quirklesser_save_type)
+	WRITE_FILE(S["quirkgreater"], quirkgreater_save_type)
 
 	WRITE_FILE(S["race_bonus"], race_bonus)
 	var/combat_music_save_type = default_cmusic_type // TA EDIT START
