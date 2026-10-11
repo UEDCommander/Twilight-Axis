@@ -1138,7 +1138,7 @@
 		return
 	for(var/slot in list(SLOT_RING, SLOT_NECK, SLOT_WRISTS))
 		var/obj/item/I = get_item_by_slot(slot)
-		if(!I || target.get_item_by_slot(slot))
+		if(!istype(I, /obj/item/clothing/neck/roguetown/psicross/dendor) || target.get_item_by_slot(slot))
 			continue
 		if(!transferItemToLoc(I, target, TRUE))
 			continue
