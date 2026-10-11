@@ -104,6 +104,11 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	category = "Разное"
 	path = /obj/item/deck/tarot/includes_minor_arcana
 
+/datum/loadout_item/tarot_deck_majorarcana
+	name = "Tarot Deck (Major Arcana)"
+	category = "Разное"
+	path = /obj/item/deck/tarot
+
 /datum/loadout_item/bibble
 	name = "The Verses and Acts of the Ten"
 	category = "Разное"
@@ -4110,13 +4115,6 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	category = "Аксессуары"
 	path = /obj/item/clothing/ring/band/paalloy
 	donatitem = TRUE
-
-/datum/loadout_item/tarot_deck_majorarcana
-	name = "Tarot Deck (Major Arcana)"
-	category = "Разное"
-	path = /obj/item/deck/tarot
-	donatitem = TRUE
-	donat_tier = 2
 
 /datum/loadout_item/triumph_satchel
 	name = "Satchel"
