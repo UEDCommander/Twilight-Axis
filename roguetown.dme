@@ -3556,6 +3556,7 @@
 #include "code\modules\surgery\surgeries\bloodletting.dm"
 #include "code\modules\surgery\surgeries\dislocation.dm"
 #include "code\modules\surgery\surgeries\external_organs.dm"
+#include "code\modules\surgery\surgeries\flesh_writing.dm"
 #include "code\modules\surgery\surgeries\fracture.dm"
 #include "code\modules\surgery\surgeries\healing.dm"
 #include "code\modules\surgery\surgeries\limb_replacement.dm"
