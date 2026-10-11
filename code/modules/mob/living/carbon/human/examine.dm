@@ -569,7 +569,7 @@
 				msg += "<span class='warning' style='font-size: 1.15em;'>[m1] branded on [m2] [BP.name]: <b style='font-size: 1.3em; color: #c48e42;'>\"[uppertext(BP.brand_text)]\"</b></span>"
 		if(BP.flesh_written_text)
 			if(observer_privilege || get_location_accessible(src, BP.body_zone))
-				msg += span_cultbigbold("[capitalize(m2)] [BP.name] has half-knit letters, carved into it: [span_red(BP.flesh_written_text)]")
+				msg += span_cultbigbold("[capitalize(m2)] [BP.name] has half-knit letters carved into it: [span_red(BP.flesh_written_text)]")
 
 	//Grabbing
 	if(pulledby && pulledby.grab_state)
