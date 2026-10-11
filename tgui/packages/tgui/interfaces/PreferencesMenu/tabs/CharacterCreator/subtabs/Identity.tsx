@@ -19,6 +19,7 @@ import {
   VOICETYPE_TO_ICON,
 } from 'pm/constants';
 import {
+  SubtabIdentityCardGameplayDownstream,
   SubtabIdentityDownstreamPaneLeft,
   SubtabIdentityDownstreamPaneRight,
 } from 'pm/downstream/tabs/CharacterCreator/subtabs/Identity';
@@ -238,8 +239,10 @@ export const SubtabIdentityCardGameplay = () => {
   const {
     age,
     combat_music,
+    defiant,
     domhand,
     free_language,
+    char_accent,
     loadout_cost,
     loadout_tri_cost,
     selected_faith,
@@ -270,7 +273,7 @@ export const SubtabIdentityCardGameplay = () => {
               </Button>
             </LabeledGridList.Item>
             <LabeledGridList.Item label="Origin">
-              <Button fluid icon="bars" onClick={() => setPopupId('Origin')}>
+              <Button fluid icon="bars" onClick={() => act('open_origin_picker')}>
                 {virtue_origin}
               </Button>
             </LabeledGridList.Item>
@@ -303,6 +306,16 @@ export const SubtabIdentityCardGameplay = () => {
                 {free_language}
               </Button>
             </LabeledGridList.Item>
+            <LabeledGridList.Item label="Accent">
+              <Button fluid onClick={() => act('char_accent')}>
+                {char_accent}
+              </Button>
+            </LabeledGridList.Item>
+            <LabeledGridList.Item label="Defiant">
+              <Button fluid onClick={() => act('defiant')}>
+                {defiant ? 'Yes' : 'No'}
+              </Button>
+            </LabeledGridList.Item>
             <SubtabIdentityCardGameplayCardCulinary />
           </LabeledGridList>
         </Stack.Item>
@@ -316,9 +329,10 @@ export const SubtabIdentityCardGameplay = () => {
             mt={1}
             onClick={() => act('open_loadout')}
           >
-            Change Loadout ({loadout_cost || 0} points, {loadout_tri_cost || 0}{' '}
+            Change Loadout ({loadout_cost || 0} slots, {loadout_tri_cost || 0}{' '}
             TRI)
           </Button>
+          <SubtabIdentityCardGameplayDownstream />
         </Stack.Item>
       </Stack>
     </Section>
@@ -666,7 +680,7 @@ export const VirtueEntry = (props: { entry: VirtueWithMetadata }) => {
       <Stack align="center">
         <Stack.Item>
           {slot_name}{' '}
-          {virtue.tricost > 0 ? (
+          {virtue?.tricost > 0 ? (
             <Box inline textColor="white">
               ({virtue.tricost} TRI)
             </Box>
@@ -685,12 +699,12 @@ export const VirtueEntry = (props: { entry: VirtueWithMetadata }) => {
             }
             onClick={() => setPopupId('Virtue', { id })}
           >
-            {virtue.name}
+            {virtue?.name ?? 'None'}
             {spawn_error ? ' (!)' : null}
           </Button>
         </Stack.Item>
       </Stack>
-      {virtue.picked_choices.map((choice) => (
+      {virtue?.picked_choices.map((choice) => (
         <Button
           key={choice.choice}
           fluid
@@ -712,7 +726,7 @@ export const VirtueEntry = (props: { entry: VirtueWithMetadata }) => {
           {choice.choice}
         </Button>
       ))}
-      {virtue.picked_choices.length < virtue.max_choices ? (
+      {virtue && virtue.picked_choices.length < virtue.max_choices ? (
         <Button
           fluid
           ml={2}

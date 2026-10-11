@@ -53,9 +53,11 @@ GLOBAL_LIST_EMPTY(created_sound_groups)
 	var/frequency
 	var/stopped = TRUE
 	var/persistent_loop = FALSE //we stay in the client's played_loops so we keep updating volume even when out of range
+	var/preload_persistent_to_all_clients = TRUE  // TA EDIT
 	var/cursound
 	var/list/thingshearing = list() // this is a list of WEAKREFS to the mobs that can currently hear us
 	var/ignore_walls = TRUE
+	var/list/blocked_z_levels
 	var/timerid
 	/// Has the looping started yet?
 	var/loop_started = FALSE
@@ -146,6 +148,8 @@ GLOBAL_LIST_EMPTY(created_sound_groups)
 	on_start()
 
 /datum/looping_sound/proc/stop(null_parent)
+	if(stopped) // TA EDIT
+		return // TA EDIT
 	stopped = TRUE
 	if(null_parent)
 		set_parent(null)
@@ -186,7 +190,7 @@ GLOBAL_LIST_EMPTY(created_sound_groups)
 			var/mob/mob = parent
 			mob.playsound_local(mob, soundfile, volume, vary, frequency, falloff, repeat = src, channel = channel)
 		return
-	var/list/R = playsound(parent, soundfile, volume, vary, extra_range, falloff, frequency, channel, ignore_walls = ignore_walls, repeat = src)
+	var/list/R = playsound(parent, soundfile, volume, vary, extra_range, falloff, frequency, channel, ignore_walls = ignore_walls, repeat = src, blocked_z_levels = blocked_z_levels)
 	for(var/datum/weakref/listener_ref in thingshearing)
 		var/mob/M = listener_ref.resolve()
 		if(!M?.client)
@@ -234,7 +238,7 @@ GLOBAL_LIST_EMPTY(created_sound_groups)
 	if(start_sound) //does ANYTHING even use start_sound
 		play(start_sound)
 		start_wait = start_length
-	if(persistent_loop)
+	if(persistent_loop && preload_persistent_to_all_clients) // TA EDIT
 		attach_loop_to_all_clients()
 	addtimer(CALLBACK(src, PROC_REF(begin_loop)), start_wait, TIMER_CLIENT_TIME)
 	if(persistent_loop && !(src in GLOB.persistent_sound_loops))
