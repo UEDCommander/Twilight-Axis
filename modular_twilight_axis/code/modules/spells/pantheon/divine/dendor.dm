@@ -1202,3 +1202,44 @@
 			divine_spell.spell_flags = old_state[1]
 			divine_spell.ignore_can_speak = old_state[2]
 	ta_wildshape_miracle_states = null
+
+
+/obj/effect/proc_holder/spell/targeted/beasttame/cast(list/targets, mob/user = usr)
+	if(!isliving(user))
+		return FALSE
+	var/mob/living/druid = user
+	var/tamed_count = 0
+	for(var/mob/living/simple_animal/hostile/retaliate/animal in get_hearers_in_view(2, druid))
+		if(QDELETED(animal) || animal.stat != CONSCIOUS || animal.client || animal.ckey)
+			continue
+		if((animal.mob_biotypes & MOB_UNDEAD) || !faction_check(animal.faction, beast_tameable_factions))
+			continue
+		if(animal.owner && animal.owner != druid)
+			continue
+		animal.clear_enemies()
+		animal.LoseTarget()
+		if(!animal.tame || animal.owner != druid)
+			animal.tamed(druid)
+		animal.aggressive = FALSE
+		animal.assign_livestock_owner(druid)
+		if(animal.ai_controller)
+			var/datum/ai_controller/controller = animal.ai_controller
+			controller.CancelActions()
+			controller.halt_movement()
+			controller.clear_blackboard_key(BB_BASIC_MOB_CURRENT_TARGET)
+			controller.clear_blackboard_key(BB_BASIC_MOB_RETALIATE_LIST)
+			controller.clear_blackboard_key(BB_CURRENT_PET_TARGET)
+			controller.set_blackboard_key(BB_BASIC_MOB_TAMED, TRUE)
+			controller.set_blackboard_key(BB_TA_LIVESTOCK_AGGRESSIVE, FALSE)
+			if(animal.can_receive_livestock_commands)
+				controller.set_blackboard_key(BB_TA_LIVESTOCK_COMMAND, TA_LIVESTOCK_STAY)
+			if(!istype(controller.blackboard[BB_TARGETTING_DATUM], /datum/targetting_datum/basic/not_friends/ta_livestock))
+				controller.set_blackboard_key(BB_TARGETTING_DATUM, new /datum/targetting_datum/basic/not_friends/ta_livestock())
+		animal.visible_message(span_notice("[animal] calms down and recognizes [druid] as [animal.p_their()] keeper."))
+		tamed_count++
+	if(!tamed_count)
+		to_chat(druid, span_warning("No untamed beasts answer Dendor's call."))
+		revert_cast()
+		return FALSE
+	druid.visible_message(span_green("[druid] soothes the beastblood with Dendor's whisper."))
+	return TRUE
