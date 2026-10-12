@@ -14,10 +14,10 @@
 	tempo_capable = FALSE
 	subclass_stats = list(
 		STATKEY_STR = 1,
-		STATKEY_INT = 2, // Weighted 7 but a nice statblock
+		STATKEY_INT = 1, // Weighted 7 but a nice statblock
 		STATKEY_PER = 1,
 		STATKEY_CON = 1,
-		STATKEY_WIL = 1,
+		STATKEY_WIL = 2,
 	)
 	subclass_mage_aspects = list("mastery" = FALSE, "major" = 0, "minor" = 0, "utilities" = 6)
 	subclass_skills = list(
