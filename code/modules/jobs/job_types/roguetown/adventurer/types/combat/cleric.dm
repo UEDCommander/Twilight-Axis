@@ -644,7 +644,7 @@
 			backpack_contents += list(
 		/obj/item/burial_shroud = 1,
 		)
-			var/list/necra_tools = list("Shovel", "Scythe", "Bronze Shovel")
+			var/list/necra_tools = list("Shovel", "Scythe")
 			var/tool_choice = input(H, "A reaper, or a digger?", "HOW WILL YOU APPEASE THE UNDERMAIDEN?") as anything in necra_tools
 			switch(tool_choice) // choose wisely... larp or effectiveness?
 				if("Shovel")
@@ -652,8 +652,6 @@
 				if("Scythe") // o lawd we farmin
 					backr = /obj/item/rogueweapon/scabbard/gwstrap
 					l_hand = /obj/item/rogueweapon/scythe
-				if("Bronze Shovel")
-					l_hand = /obj/item/rogueweapon/shovel/bronze
 
 		if (/datum/patron/divine/malum)
 			head = /obj/item/clothing/head/roguetown/roguehood //placeholder

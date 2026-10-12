@@ -120,7 +120,7 @@
 			neck = /obj/item/clothing/neck/roguetown/psicross/necra/g
 			armor = /obj/item/clothing/suit/roguetown/shirt/robe/necra
 			cloak = /obj/item/clothing/cloak/templar/necrancleric
-			var/list/necra_tools = list("Silver Shovel", "Silver Scythe")
+			var/list/necra_tools = list("Silver Shovel", "Silver Scythe", "Iron Shovel")
 			var/tool_choice = input(H, "A reaper, or a digger?", "HOW WILL YOU APPEASE THE UNDERMAIDEN?") as anything in necra_tools
 			switch(tool_choice) // choose wisely... larp or effectiveness?
 				if("Silver Shovel")
@@ -128,6 +128,8 @@
 				if("Silver Scythe") // o lawd we farmin
 					backr = /obj/item/rogueweapon/scabbard/gwstrap
 					l_hand = /obj/item/rogueweapon/scythe/silver
+				if("Iron Shovel")
+					backr = /obj/item/rogueweapon/shovel
 		if(/datum/patron/divine/pestra)
 			head = /obj/item/clothing/head/roguetown/roguehood/phys
 			neck = /obj/item/clothing/neck/roguetown/psicross/pestra/g
