@@ -132,7 +132,6 @@ export const RollTooltip = (props: RollTooltipProps) => {
       <div className="RollTooltip__throws">
         {throws.map((roll, i) => (
           // The list never reorders, so the index is the identity.
-          // biome-ignore lint/suspicious/noArrayIndexKey: see above
           <div key={i} className="RollTooltip__throw">
             {roll.label && (
               <div
@@ -144,7 +143,6 @@ export const RollTooltip = (props: RollTooltipProps) => {
             <div className="RollTooltip__dice">
               {roll.faces.map((face, j) => (
                 <Die
-                  // biome-ignore lint/suspicious/noArrayIndexKey: faces repeat
                   key={j}
                   face={face}
                   sides={sideCount}

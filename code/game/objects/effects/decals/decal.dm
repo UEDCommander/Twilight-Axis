@@ -31,6 +31,9 @@
 	var/turf/T = loc
 	if(!isturf(T))
 		return FALSE
+	var/baked_icon = icon || initial(icon)
+	if(!baked_icon || !icon_state)
+		return FALSE
 	// Bake the state the season would show now and leave a swap record - overlays are
 	// invisible to GLOB.seasonal_decal_objs.
 	var/baked_state = icon_state
@@ -38,11 +41,11 @@
 		summer_icon_state = icon_state
 		if(SSseason.should_show_snow_icons() && T.is_seasonally_exposed())
 			baked_state = winter_icon_state
-	T.AddElement(/datum/element/decal, icon, baked_state, dir, FLOAT_PLANE, layer, alpha, color, pixel_x, pixel_y, pixel_w, pixel_z)
+	T.AddElement(/datum/element/decal, baked_icon, baked_state, dir, FLOAT_PLANE, layer, alpha, color, pixel_x, pixel_y, pixel_w, pixel_z)
 	if(winter_icon_state)
 		GLOB.seasonal_baked_decals += list(list(
 			"turf" = T,
-			"icon" = icon,
+			"icon" = baked_icon,
 			"summer" = summer_icon_state,
 			"winter" = winter_icon_state,
 			"state" = baked_state,

@@ -131,7 +131,6 @@
 /turf/closed/mineral/random/rogue,
 /area/rogue/under/cave)
 "qy" = (
-/obj/structure/table/wood/long_table,
 /obj/structure/table/wood/long_table/mid/alt,
 /obj/item/clothing/neck/roguetown/psicross/eora,
 /obj/structure/mirror,
@@ -330,7 +329,6 @@
 /area/rogue/indoors/shelter/town)
 "QA" = (
 /obj/machinery/light/rogue/candle/floorcandle/pink,
-/obj/structure/table/wood/long_table,
 /obj/structure/table/wood/long_table/right,
 /turf/open/floor/rogue/ruinedwood/herringbone_clear,
 /area/rogue/indoors/shelter/town)
