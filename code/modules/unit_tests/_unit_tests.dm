@@ -74,6 +74,7 @@
 #include "reagent_recipe_collisions.dm"
 #include "spawn_humans.dm"
 #include "species_whitelists.dm"
+#include "tile_panel.dm"
 #include "timer_sanity.dm"
 #include "unit_test.dm"
 #include "worn_ac_cache.dm"
