@@ -82,7 +82,7 @@ const importBlueprintFromString = (str: string): { max_floors?: number; grid?: G
     const rawBase64 = cleanStr.startsWith('BP:') ? cleanStr.slice(3) : cleanStr;
     const utf8Bytes = atob(rawBase64);
     const json = decodeURIComponent(
-      utf8Bytes.split('').map((c) => `%${('00' + c.charCodeAt(0).toString(16)).slice(-2)}`).join('')
+      utf8Bytes.split('').map((c) => `%${(`00${c.charCodeAt(0).toString(16)}`).slice(-2)}`).join('')
     );
     return JSON.parse(json);
   } catch {
@@ -181,7 +181,7 @@ const BlueprintPreview = ({
 
     sortedCells.forEach((cell) => {
       const info = buildableTypes[cell.type];
-      if (!info || !info.image) return;
+      if (!info?.image) return;
 
       const px = offsetX + (cell.x - minX) * tileSize;
       const py = offsetY + (maxY - cell.y) * tileSize;
@@ -1307,7 +1307,7 @@ export const BlueprintPlanner = () => {
                                   />
                                 )}
 
-                                {objTile && objTile.dir && (
+                                {objTile?.dir && (
                                   <span
                                     style={{
                                       position: 'absolute',
