@@ -62,6 +62,7 @@
 #define TEST_CREATE_AND_DESTROY 9001
 // BEGIN_INCLUDE
 #include "anchored_mobs.dm"
+#include "bard_music.dm"
 #include "component_tests.dm"
 #include "container_collision.dm"
 #include "craftable_hardset_sellprice.dm"

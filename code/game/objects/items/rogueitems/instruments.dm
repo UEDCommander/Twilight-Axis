@@ -5,7 +5,7 @@
 	blocked_z_levels = list(1)
 	persistent_loop = TRUE
 	var/stress2give = /datum/stressevent/music
-	sound_group = /datum/sound_group/instruments //reserves sound channels for up to 10 instruments at a time
+	sound_group = null // Each instrument owns its channel; simultaneous bands cannot overwrite each other.
 	filter_pref = SOUND_INSTRUMENTS
 
 /obj/item/rogue/instrument
@@ -32,7 +32,7 @@
 /obj/item/rogue/instrument/equipped(mob/living/user, slot)
 	. = ..()
 	//TA edit - Bard chages start
-	if(playing && user.get_active_held_item() != src)
+	if(playing && !(src in user.held_items))
 		stop_music(user)
 	//TA edit - Bard chages end
 
@@ -47,11 +47,18 @@
 
 /obj/item/rogue/instrument/Initialize(mapload)
 	soundloop = new(src, FALSE)
+	SSsounds.free_datum_channels(soundloop)
+	soundloop.channel = null
 	//TA edit - Bard chages
 	ensure_timed_tracks()
 	. = ..()
 
 /obj/item/rogue/instrument/Destroy()
+	stop_music(current_player)
+	if(band_invite_active)
+		cancel_band_invite()
+	for(var/datum/bard_band_member/member as anything in saved_band_members)
+		release_band_member(member)
 	qdel(soundloop)
 	. = ..()
 
