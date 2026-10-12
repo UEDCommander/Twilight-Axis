@@ -652,7 +652,6 @@
 				if("Scythe") // o lawd we farmin
 					backr = /obj/item/rogueweapon/scabbard/gwstrap
 					l_hand = /obj/item/rogueweapon/scythe
-
 		if (/datum/patron/divine/malum)
 			head = /obj/item/clothing/head/roguetown/roguehood //placeholder
 			wrists = /obj/item/clothing/wrists/roguetown/wrappings
