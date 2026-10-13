@@ -957,7 +957,7 @@
 	name = "'Weeper's Lathe' morphing elixir"
 	desc = "A small container of special morphing dust, perfect to make a specifc item. Required: Kriegmesser"
 	target_items = list(/obj/item/rogueweapon/sword/long/kriegmesser,
-						/obj/item/rogueweapon/sword/long/broadsword/silver
+						/obj/item/rogueweapon/sword/long/broadsword/silver,
 						/obj/item/rogueweapon/greatsword)
 	result_item = /obj/item/rogueweapon/example/waffai_broadsword
 
@@ -1019,9 +1019,10 @@
 	desc = "A small container of special morphing dust, perfect to make a specifc item. Required: Psydonic Helmet(Armet,Barbute,Bucket Helmet or Sallet)"
 	target_items = list(
 		/obj/item/clothing/head/roguetown/helmet/heavy/psydonhelm = /obj/item/clothing/head/roguetown/helmet/heavy/psydonhelm/ryan,
-		/obj/item/clothing/head/roguetown/helmet/heavy/psybucket = /obj/item/clothing/head/roguetown/helmet/heavy/psydonhelm/ryan,
-		/obj/item/clothing/head/roguetown/helmet/heavy/psysallet = /obj/item/clothing/head/roguetown/helmet/heavy/psydonhelm/ryan,
-		/obj/item/clothing/head/roguetown/helmet/heavy/psydonbarbute = /obj/item/clothing/head/roguetown/helmet/heavy/psydonhelm/ryan)
+		/obj/item/clothing/head/roguetown/helmet/heavy/ornate = /obj/item/clothing/head/roguetown/helmet/heavy/psydonhelm/ryan,
+		/obj/item/clothing/head/roguetown/helmet/heavy/ornate/bucket = /obj/item/clothing/head/roguetown/helmet/heavy/psydonhelm/ryan,
+		/obj/item/clothing/head/roguetown/helmet/heavy/ornate/sallet = /obj/item/clothing/head/roguetown/helmet/heavy/psydonhelm/ryan,
+		/obj/item/clothing/head/roguetown/helmet/heavy/ornate/barbute = /obj/item/clothing/head/roguetown/helmet/heavy/psydonhelm/ryan)
 	icon_loadout = /obj/item/clothing/head/roguetown/helmet/heavy/psydonhelm/ryan
 
 //Ryan180602 - Naginata
@@ -1350,8 +1351,7 @@
 	target_items = list(
 	/obj/item/rogueweapon/greataxe/steel/knight,
 	/obj/item/rogueweapon/greataxe/steel/knight/silver,
-	/obj/item/rogueweapon/greataxe/steel/knight/silver/psy
-	/obj/item/rogueweapon/greataxe/steel/knight/psy,
+	/obj/item/rogueweapon/greataxe/steel/knight/silver/psy,
 	/obj/item/rogueweapon/greataxe/bronze,
 	/obj/item/rogueweapon/greataxe/
 
