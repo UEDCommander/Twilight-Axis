@@ -442,6 +442,7 @@
 	target_items = list(/obj/item/clothing/head/roguetown/helmet/sallet/visored = /obj/item/clothing/head/roguetown/helmet/sallet/visored/gothic)
 	result_item = null
 	exact_type = TRUE
+	icon_loadout = /obj/item/clothing/head/roguetown/helmet/sallet/visored/gothic
 
 /obj/item/enchantingkit/croppedhaubergeon
 	name = "'Cropped Haubergeon' morphing elixir"
@@ -772,6 +773,7 @@
 		/obj/item/storage/backpack/rogue/satchel			= /obj/item/storage/backpack/rogue/satchel/case
 	)
 	result_item = null
+	icon_loadout = /obj/item/storage/backpack/rogue/backpack/case/donator_thistle
 
 /obj/item/enchantingkit/donator_avantynehelm
 	name = "'Avantyne-Threaded Barbute' morphing elixir"
@@ -791,6 +793,7 @@
 	)
 	result_item = null
 	custom_name = TRUE
+	icon_loadout = /obj/item/clothing/head/roguetown/helmet/heavy/knight/rockhill
 
 /obj/item/enchantingkit/donator_rockhillmaille
 	name = "'Jacketed Plate-And-Maille' morphing elixir"
@@ -802,6 +805,7 @@
 	)
 	result_item = null
 	custom_name = TRUE
+	icon_loadout = /obj/item/clothing/suit/roguetown/armor/chainmail/hauberk/iron/heavy/rockhill
 
 /////////////////////////////
 // ! Player / Donor Kits ! //
@@ -1638,6 +1642,7 @@
 		/obj/item/rogueweapon/woodstaff/implement/grand/blacksteel			= /obj/item/rogueweapon/woodstaff/implement/grand/blacksteel/donator_rhynn/glow
 	)
 	result_item = null
+	icon_loadout = /obj/item/rogueweapon/woodstaff/implement/greater/blacksteel/donator_rhynn/glow
 
 /obj/item/enchantingkit/rhynnrhynn_brigandine
 	name = "'Jacketed Brigandine' morphing elixir"
