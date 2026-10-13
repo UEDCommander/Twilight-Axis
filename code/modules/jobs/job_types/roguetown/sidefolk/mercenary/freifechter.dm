@@ -9,7 +9,7 @@
 	allowed_patrons = list(/datum/patron/old_god)
 	class_select_category = CLASS_CAT_AAVNR
 	category_tags = list(CTAG_MERCENARY, CTAG_MERCPARTY_BRAVO)
-	cmode_music = 'sound/music/frei_fencer.ogg'
+	cmode_music = sound("sound/music/frei_fencer.ogg")
 	traits_applied = list(TRAIT_BADTRAINER, TRAIT_INTELLECTUAL, TRAIT_LONGSWORDSMAN, TRAIT_FENCERDEXTERITY)
 	subclass_stats = list(
 		STATKEY_INT = 3,
@@ -42,7 +42,7 @@
 	shoes = /obj/item/clothing/shoes/roguetown/grenzelhoft/freifechter
 	gloves = /obj/item/clothing/gloves/roguetown/angle/freifechter
 	backr = /obj/item/storage/backpack/rogue/satchel/short
-	neck = /obj/item/clothing/neck/roguetown/psicross/reform
+	//neck = /obj/item/clothing/neck/roguetown/psicross/reform //TA EDIT
 	backpack_contents = list(							//DO NOT GIVE THEM MONEY. THEY ARE NOT SUPPOSED TO START WITH ANY. IT IS INTENDED.
 		/obj/item/roguekey/mercenary = 1,
 		/obj/item/natural/bundle/cloth/bandage/full = 1,
@@ -68,13 +68,13 @@
 	extra_context = "This class is for experienced players who have a solid grasp on footwork and stamina management, master skills alone won't save your lyfe. You make up for your inherent weaknesses and limitations with unique high-durability weapons."
 	allowed_sexes = list(MALE, FEMALE)
 
-	cmode_music = 'sound/music/frei_lancer.ogg'
+	cmode_music = sound("sound/music/frei_lancer.ogg")
 	outfit = /datum/outfit/job/roguetown/mercenary/freelancer_lancer
 	subclass_languages = list(/datum/language/aavnic)//Your character could not have possibly "graduated" without atleast some basic knowledge of Aavnic.
 	allowed_patrons = list(/datum/patron/old_god)
 	class_select_category = CLASS_CAT_AAVNR
 	category_tags = list(CTAG_MERCENARY, CTAG_MERCPARTY_VANGUARD)
-	cmode_music = 'sound/music/frei_fencer.ogg'
+	cmode_music = sound("sound/music/frei_fencer.ogg")
 	traits_applied = list(TRAIT_BADTRAINER, TRAIT_FENCERDEXTERITY, TRAIT_INTELLECTUAL)
 	subclass_stats = list(
 		STATKEY_CON = 2,
@@ -105,8 +105,8 @@
 	shoes = /obj/item/clothing/shoes/roguetown/grenzelhoft/freifechter
 	gloves = /obj/item/clothing/gloves/roguetown/angle/freifechter
 	backr = /obj/item/storage/backpack/rogue/satchel/short
-	neck = /obj/item/clothing/neck/roguetown/psicross/reform
 	id = /obj/item/rogueweapon/katar/punchdagger/frei
+	//neck = /obj/item/clothing/neck/roguetown/psicross/reform //TA EDIT
 	backpack_contents = list(						//DO NOT GIVE THEM MONEY. THEY ARE NOT SUPPOSED TO START WITH ANY. IT IS INTENDED.
 		/obj/item/roguekey/mercenary = 1,
 		/obj/item/natural/bundle/cloth/bandage/full = 1,
@@ -132,7 +132,7 @@
 	allowed_patrons = list(/datum/patron/old_god)
 	class_select_category = CLASS_CAT_AAVNR
 	category_tags = list(CTAG_MERCENARY, CTAG_MERCPARTY_BRAVO)
-	cmode_music = 'sound/music/frei_sabre.ogg'
+	cmode_music = sound("sound/music/frei_sabre.ogg")
 	traits_applied = list(TRAIT_BADTRAINER, TRAIT_INTELLECTUAL, TRAIT_FENCERDEXTERITY, TRAIT_SABRIST)
 	subclass_stats = list(
 		STATKEY_INT = 2,
@@ -165,7 +165,7 @@
 	gloves = /obj/item/clothing/gloves/roguetown/angle/freifechter
 	wrists = /obj/item/clothing/wrists/roguetown/bracers/jackchain	//Obsessed with arms-hands. Keeping them protected on-spawn.
 	backr = /obj/item/storage/backpack/rogue/satchel/short
-	neck = /obj/item/clothing/neck/roguetown/psicross/reform
+	//neck = /obj/item/clothing/neck/roguetown/psicross/reform //TA EDIT
 	backpack_contents = list(
 		/obj/item/roguekey/mercenary = 1,
 		/obj/item/natural/bundle/cloth/bandage/full = 1,						//DO NOT GIVE THEM MONEY. THEY ARE NOT SUPPOSED TO START WITH ANY. IT IS INTENDED.

@@ -8,4 +8,5 @@
 	disconnected_admin_alert_sent = FALSE
 	queue_disconnected_admin_alert()
 	if(!HAS_TRAIT(src, TRAIT_NOSSDINDICATOR))
+		disconnected_at = world.time
 		set_ssd_indicator(TRUE)
