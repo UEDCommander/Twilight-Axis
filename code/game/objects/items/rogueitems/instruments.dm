@@ -5,8 +5,25 @@
 	blocked_z_levels = list(1)
 	persistent_loop = TRUE
 	var/stress2give = /datum/stressevent/music
-	sound_group = null // Each instrument owns its channel; simultaneous bands cannot overwrite each other.
+	sound_group = /datum/sound_group/instruments
+	defer_channel_reservation = TRUE
 	filter_pref = SOUND_INSTRUMENTS
+
+/datum/looping_sound/instrument/proc/acquire_channel()
+	channel = SSsounds.instrument_channels.acquire_channel(src)
+	return channel
+
+/datum/looping_sound/instrument/start(atom/on_behalf_of)
+	if(!acquire_channel())
+		return FALSE
+	if(stopped)
+		..()
+	return TRUE
+
+/datum/looping_sound/instrument/stop(null_parent)
+	. = ..()
+	SSsounds.instrument_channels.release_channel(src)
+	channel = null
 
 /obj/item/rogue/instrument
 	name = ""
@@ -47,8 +64,6 @@
 
 /obj/item/rogue/instrument/Initialize(mapload)
 	soundloop = new(src, FALSE)
-	SSsounds.free_datum_channels(soundloop)
-	soundloop.channel = null
 	//TA edit - Bard chages
 	ensure_timed_tracks()
 	. = ..()

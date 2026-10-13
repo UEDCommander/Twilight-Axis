@@ -314,8 +314,6 @@ SUBSYSTEM_DEF(bard_music)
 	groupplaying = FALSE
 	if(soundloop)
 		soundloop.stop()
-		SSsounds.free_datum_channels(soundloop)
-		soundloop.channel = null
 	var/mob/living/player = current_player || user
 	if(player)
 		player.bard_music_playing = FALSE
@@ -363,9 +361,8 @@ SUBSYSTEM_DEF(bard_music)
 	if(!curfile)
 		stop_music(user)
 		return
-	soundloop.channel = SSsounds.reserve_sound_channel(soundloop)
-	if(!soundloop.channel)
-		to_chat(user, span_warning("No free music channel. Try again after another performance ends."))
+	if(!soundloop.acquire_channel())
+		to_chat(user, span_warning("All 32 music channels are busy. Try again after another performance ends."))
 		return
 	playing = TRUE
 	soundloop.set_mid_sounds(list(curfile))
@@ -424,8 +421,10 @@ SUBSYSTEM_DEF(bard_music)
 /obj/item/rogue/instrument/proc/preload_band_track(mob/living/performer, datum/bard_timed_track/track)
 	if(!track?.file_path || band_preloads["[track.file_path]"])
 		return
-	var/preload_channel = SSsounds.reserve_sound_channel(src)
+	var/datum/preload_owner = new
+	var/preload_channel = SSsounds.instrument_channels.acquire_channel(preload_owner)
 	if(!preload_channel)
+		qdel(preload_owner)
 		return
 	var/list/listeners = list()
 	// Warm the native sound cache during the invitation, only for nearby listeners.
@@ -435,7 +434,7 @@ SUBSYSTEM_DEF(bard_music)
 			continue
 		SEND_SOUND(listener, sound(track.file_path, volume = 0, channel = preload_channel))
 		listeners += WEAKREF(listener)
-	band_preloads["[track.file_path]"] = list("channel" = preload_channel, "listeners" = listeners)
+	band_preloads["[track.file_path]"] = list("channel" = preload_channel, "listeners" = listeners, "owner" = preload_owner)
 
 /obj/item/rogue/instrument/proc/start_band_invite(mob/living/user, repeat_band = FALSE)
 	if(band_invite_active && band_invite_leader == user)
@@ -573,6 +572,8 @@ SUBSYSTEM_DEF(bard_music)
 	preload_band_track(band_invite_leader, get_selected_track())
 	for(var/datum/bard_band_member/member as anything in band_members)
 		names += !QDELETED(member.player) ? member.player.real_name : "Unavailable"
+	// An unanswered confirmation must not keep preparation channels occupied.
+	clear_band_preloads()
 	var/answer = alert(band_invite_leader, "С вами готовы сыграть: [jointext(names, ", ")]. Начать?", "Группа готова", "Да", "Нет")
 	if(QDELETED(src) || !band_invite_active || invite_token != band_invite_token)
 		return
@@ -581,14 +582,19 @@ SUBSYSTEM_DEF(bard_music)
 	else
 		cancel_band_invite()
 
-/obj/item/rogue/instrument/proc/cancel_band_invite()
+/obj/item/rogue/instrument/proc/clear_band_preloads()
 	for(var/file_path in band_preloads)
 		var/list/preload = band_preloads[file_path]
 		for(var/datum/weakref/listener_ref as anything in preload["listeners"])
 			var/mob/listener = listener_ref.resolve()
 			listener?.stop_sound_channel(preload["channel"])
+		var/datum/preload_owner = preload["owner"]
+		SSsounds.instrument_channels.release_channel(preload_owner)
+		qdel(preload_owner)
 	band_preloads = list()
-	SSsounds.free_datum_channels(src)
+
+/obj/item/rogue/instrument/proc/cancel_band_invite()
+	clear_band_preloads()
 	for(var/datum/bard_band_member/member as anything in band_reserved_members)
 		if(!QDELETED(member.player))
 			to_chat(member.player, span_notice("Band invitation finished or cancelled."))
@@ -625,6 +631,8 @@ SUBSYSTEM_DEF(bard_music)
 		cancel_band_invite()
 		return
 	var/datum/bard_timed_track/leader_track = get_selected_track()
+	// Preparation must return its music slots before the actual ensemble takes them.
+	clear_band_preloads()
 	stop_music(user)
 	var/list/started = list()
 	var/shared_start = REALTIMEOFDAY
