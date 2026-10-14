@@ -287,7 +287,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	sanitize_erp_organ_prefs()
 
 	// etc
-	asaycolor			= sanitize_ooccolor(sanitize_hexcolor(asaycolor, 6, TRUE, initial(asaycolor)))
+	asaycolor			= sanitize_hexcolor(asaycolor, 6, TRUE, initial(asaycolor)) // TA EDIT
 	lastchangelog		= sanitize_text(lastchangelog, initial(lastchangelog))
 	preferred_ui_language = sanitize_preferred_ui_language(preferred_ui_language)
 	preferred_map		= sanitize_text(preferred_map, initial(preferred_map))
