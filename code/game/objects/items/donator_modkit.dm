@@ -341,7 +341,7 @@
 	var/datum/component/SFX = I.GetComponent(/datum/component/item_equipped_movement_rustle)
 	if(SFX)
 		SFX.Destroy()
-	I.name += " (Heeled)"
+	I.name += " (heeled)"
 	I.AddComponent(/datum/component/item_equipped_movement_rustle, SFX_HEELS, 2)
 	var/obj/item/clothing/shoes/roguetown/SH = I
 	SH.stepnoise_flag = STEPNOISE_HEELS
@@ -411,11 +411,12 @@
 
 /obj/item/enchantingkit/gothicburgeonet
 	name = "'Gothic Burgeonet' morphing elixir"
-	desc = "A small container of special morphing dust, perfect to make a specific item. It can be used to alter the appearance of a Pigface Bascinet, Hounskull Bascinet, or Roundface Bascinet."
+	desc = "A small container of special morphing dust, perfect to make a specific item. It can be used to alter the appearance of a Pigface Bascinet, Hounskull Bascinet, Roundface Bascinet, or Sallet."
 	target_items = list(
 		/obj/item/clothing/head/roguetown/helmet/bascinet/pigface/roundface		= /obj/item/clothing/head/roguetown/helmet/bascinet/pigface/burgeonet,
 		/obj/item/clothing/head/roguetown/helmet/bascinet/pigface/hounskull		= /obj/item/clothing/head/roguetown/helmet/bascinet/pigface/burgeonet,
-		/obj/item/clothing/head/roguetown/helmet/bascinet/pigface				= /obj/item/clothing/head/roguetown/helmet/bascinet/pigface/burgeonet
+		/obj/item/clothing/head/roguetown/helmet/bascinet/pigface				= /obj/item/clothing/head/roguetown/helmet/bascinet/pigface/burgeonet,
+		/obj/item/clothing/head/roguetown/helmet/sallet							= /obj/item/clothing/head/roguetown/helmet/sallet/burgeonet
 	)
 	result_item = null
 	icon_loadout = /obj/item/clothing/head/roguetown/helmet/bascinet/pigface/burgeonet
@@ -441,6 +442,7 @@
 	target_items = list(/obj/item/clothing/head/roguetown/helmet/sallet/visored = /obj/item/clothing/head/roguetown/helmet/sallet/visored/gothic)
 	result_item = null
 	exact_type = TRUE
+	icon_loadout = /obj/item/clothing/head/roguetown/helmet/sallet/visored/gothic
 
 /obj/item/enchantingkit/croppedhaubergeon
 	name = "'Cropped Haubergeon' morphing elixir"
@@ -653,6 +655,7 @@
 		/obj/item/rogueweapon/halberd										= /obj/item/rogueweapon/halberd/donator_elegant,
 		/obj/item/rogueweapon/eaglebeak										= /obj/item/rogueweapon/eaglebeak/donator_elegant,
 		/obj/item/rogueweapon/estoc											= /obj/item/rogueweapon/estoc/donator_elegant,
+		/obj/item/rogueweapon/contraption/linker/mace/big/steel				= /obj/item/rogueweapon/contraption/linker/mace/big/steel/donator_elegant,
 		/obj/item/rogueweapon/sword											= /obj/item/rogueweapon/sword/donator_elegant
 	)
 	result_item = null
@@ -672,7 +675,7 @@
 		/obj/item/rogueweapon/whip/bronze,
 		/obj/item/rogueweapon/whip/blacksteel,
 		/obj/item/rogueweapon/whip/silver,
-		/obj/item/rogueweapon/whip/psywhip_lesser
+		/obj/item/rogueweapon/whip/silver/psy
 	)
 	result_item = /obj/item/rogueweapon/example/donator_elegant_urumi
 
@@ -694,8 +697,12 @@
 
 /obj/item/enchantingkit/weapon/donator_universal_grenzshortsword
 	name = "'Katzbalger Shortsword' morphing elixir"
-	desc = "A small container of special morphing dust, perfect to make a specific item. It can be used to alter the appearance of a Steel Shortsword."
-	target_items = list(/obj/item/rogueweapon/sword/short)
+	desc = "A small container of special morphing dust, perfect to make a specific item. It can be used to alter the appearance of a Steel Shortsword, Steel Messer, or a Steel Arming Sword."
+	target_items = list(
+		/obj/item/rogueweapon/sword/short/messer,
+		/obj/item/rogueweapon/sword/short,
+		/obj/item/rogueweapon/sword
+	)
 	result_item = /obj/item/rogueweapon/example/donator_grenzshortsword
 
 /obj/item/enchantingkit/donator_universal_grenzrapier
@@ -706,7 +713,7 @@
 
 /obj/item/enchantingkit/donator_universal_armharness
 	name = "'Plate Arm Harness' morphing elixir"
-	desc = "A small container of special morphing dust, perfect to make a specific item. It can be used to alter the appearance of a pair of Bracers."
+	desc = "A small container of special morphing dust, perfect to make a specific item. It can be used to alter the appearance of a pair of Decrepit, Ancient, Bronze, Iron, or Steel Bracers."
 	target_items = list(
 		/obj/item/clothing/wrists/roguetown/bracers/paalloy				= /obj/item/clothing/wrists/roguetown/bracers/paalloy/armharness,
 		/obj/item/clothing/wrists/roguetown/bracers/aalloy				= /obj/item/clothing/wrists/roguetown/bracers/aalloy/armharness,
@@ -716,6 +723,7 @@
 	)
 	result_item = null
 	custom_name = TRUE
+	exact_type = TRUE
 
 /obj/item/enchantingkit/donator_jacketed_gambeson_short
 	name = "'Short Jacketed Gambeson' morphing elixr"
@@ -765,6 +773,7 @@
 		/obj/item/storage/backpack/rogue/satchel			= /obj/item/storage/backpack/rogue/satchel/case
 	)
 	result_item = null
+	icon_loadout = /obj/item/storage/backpack/rogue/backpack/case/donator_thistle
 
 /obj/item/enchantingkit/donator_avantynehelm
 	name = "'Avantyne-Threaded Barbute' morphing elixir"
@@ -784,6 +793,7 @@
 	)
 	result_item = null
 	custom_name = TRUE
+	icon_loadout = /obj/item/clothing/head/roguetown/helmet/heavy/knight/rockhill
 
 /obj/item/enchantingkit/donator_rockhillmaille
 	name = "'Jacketed Plate-And-Maille' morphing elixir"
@@ -795,6 +805,7 @@
 	)
 	result_item = null
 	custom_name = TRUE
+	icon_loadout = /obj/item/clothing/suit/roguetown/armor/chainmail/hauberk/iron/heavy/rockhill
 
 /////////////////////////////
 // ! Player / Donor Kits ! //
@@ -950,6 +961,7 @@
 	name = "'Weeper's Lathe' morphing elixir"
 	desc = "A small container of special morphing dust, perfect to make a specifc item. Required: Kriegmesser"
 	target_items = list(/obj/item/rogueweapon/sword/long/kriegmesser,
+						/obj/item/rogueweapon/sword/long/broadsword/silver,
 						/obj/item/rogueweapon/greatsword)
 	result_item = /obj/item/rogueweapon/example/waffai_broadsword
 
@@ -1011,9 +1023,10 @@
 	desc = "A small container of special morphing dust, perfect to make a specifc item. Required: Psydonic Helmet(Armet,Barbute,Bucket Helmet or Sallet)"
 	target_items = list(
 		/obj/item/clothing/head/roguetown/helmet/heavy/psydonhelm = /obj/item/clothing/head/roguetown/helmet/heavy/psydonhelm/ryan,
-		/obj/item/clothing/head/roguetown/helmet/heavy/psybucket = /obj/item/clothing/head/roguetown/helmet/heavy/psydonhelm/ryan,
-		/obj/item/clothing/head/roguetown/helmet/heavy/psysallet = /obj/item/clothing/head/roguetown/helmet/heavy/psydonhelm/ryan,
-		/obj/item/clothing/head/roguetown/helmet/heavy/psydonbarbute = /obj/item/clothing/head/roguetown/helmet/heavy/psydonhelm/ryan)
+		/obj/item/clothing/head/roguetown/helmet/heavy/ornate = /obj/item/clothing/head/roguetown/helmet/heavy/psydonhelm/ryan,
+		/obj/item/clothing/head/roguetown/helmet/heavy/ornate/bucket = /obj/item/clothing/head/roguetown/helmet/heavy/psydonhelm/ryan,
+		/obj/item/clothing/head/roguetown/helmet/heavy/ornate/sallet = /obj/item/clothing/head/roguetown/helmet/heavy/psydonhelm/ryan,
+		/obj/item/clothing/head/roguetown/helmet/heavy/ornate/barbute = /obj/item/clothing/head/roguetown/helmet/heavy/psydonhelm/ryan)
 	icon_loadout = /obj/item/clothing/head/roguetown/helmet/heavy/psydonhelm/ryan
 
 //Ryan180602 - Naginata
@@ -1251,8 +1264,8 @@
 	name = "'Psydonic Leachwhacker' morphing elixir"
 	desc = "A small container of special morphing dust, perfect to make a specifc item. Required: Dagger"
 	target_items = list(
-		/obj/item/rogueweapon/huntingknife/idagger/silver/psydagger,
-		/obj/item/rogueweapon/huntingknife/idagger/silver
+		/obj/item/rogueweapon/huntingknife/idagger/steel/silver/psy,
+		/obj/item/rogueweapon/huntingknife/idagger/steel/silver
 
 	)
 	result_item = /obj/item/rogueweapon/koruu/kukri/silver
@@ -1342,7 +1355,7 @@
 	target_items = list(
 	/obj/item/rogueweapon/greataxe/steel/knight,
 	/obj/item/rogueweapon/greataxe/steel/knight/silver,
-	/obj/item/rogueweapon/greataxe/steel/knight/psy,
+	/obj/item/rogueweapon/greataxe/steel/knight/silver/psy,
 	/obj/item/rogueweapon/greataxe/bronze,
 	/obj/item/rogueweapon/greataxe/
 
@@ -1629,6 +1642,7 @@
 		/obj/item/rogueweapon/woodstaff/implement/grand/blacksteel			= /obj/item/rogueweapon/woodstaff/implement/grand/blacksteel/donator_rhynn/glow
 	)
 	result_item = null
+	icon_loadout = /obj/item/rogueweapon/woodstaff/implement/greater/blacksteel/donator_rhynn/glow
 
 /obj/item/enchantingkit/rhynnrhynn_brigandine
 	name = "'Jacketed Brigandine' morphing elixir"
@@ -2031,3 +2045,18 @@
 		/obj/item/rogueweapon/sword/sabre/shamshir = /obj/item/rogueweapon/sword/sabre/shamshir/dono_scidragon_sand
 	)
 	icon_loadout = /obj/item/rogueweapon/sword/sabre/shamshir/dono_scidragon_sand
+
+// Cynthia
+/obj/item/enchantingkit/weapon/forgefiend_wrench
+	name = "'Forgefiend Wrench' morphing elixir"
+	desc = "A small container of special morphing dust, perfect to make a specific item. It can be used to alter the appearance of any massive wrench."
+	target_items = list(
+		/obj/item/rogueweapon/contraption/linker/mace/big
+	)
+	result_item = /obj/item/rogueweapon/example/forgefiend_wrench
+/obj/item/enchantingkit/weapon/yoshi_estoc
+	name = "'The Malignant Sabre' morphing elixir"
+	desc = "A small container of special morphing dust, perfect to make a specific item. It can be used to alter the appearance of a Steel Sabre."
+	target_items = list(/obj/item/rogueweapon/sword/long/ap)
+	result_item = /obj/item/rogueweapon/sword/long/ap/yoshi_estoc
+

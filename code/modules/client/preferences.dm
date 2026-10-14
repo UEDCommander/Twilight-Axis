@@ -64,6 +64,8 @@ GLOBAL_LIST_EMPTY(chosen_names)
 	var/datum/virtue/virtue = new /datum/virtue/none // LETHALSTONE EDIT: the virtue we get for not picking a statpack
 	var/datum/virtue/virtuetwo = new /datum/virtue/none
 	var/datum/virtue/virtue_origin = new /datum/virtue/origin/unknown
+	var/datum/quirk/quirklesser = new /datum/quirk/none
+	var/datum/quirk/quirkgreater = new /datum/quirk/none
 	var/age = AGE_ADULT						//age of character
 	var/skin_tone = "caucasian1"		//Skin color
 	var/vampire_skin = null
@@ -98,6 +100,7 @@ GLOBAL_LIST_EMPTY(chosen_names)
 	var/joblessrole = RETURNTOLOBBY  //defaults to 1 for fewer assistants
 
 	var/clientfps = 100//0 is sync
+	var/icon/admin_ghost_icon
 
 	var/ambientocclusion = TRUE
 	var/auto_fit_viewport = FALSE
@@ -124,6 +127,7 @@ GLOBAL_LIST_EMPTY(chosen_names)
 	var/no_redflash = FALSE
 	var/no_storyteller_events = FALSE
 	var/top_examine = FALSE
+	var/show_nsfw_clothed = FALSE
 	var/no_runechat_animation = FALSE //TA EDIT
 
 	var/lastclass
@@ -162,10 +166,22 @@ GLOBAL_LIST_EMPTY(chosen_names)
 	var/list/list/body_markings = list()
 	var/update_mutant_colors = TRUE // if TRUE, resets accessory and marking colors when mutant colors change
 
+	///direct link to a headshot image on a whitelisted site. it would rather these 3 fields be a list, but that's actually less efficient at runtime
 	var/headshot_link
+	///text displayed in a box just below the headshot, i.e. the artist's name (human-readable)
+	var/headshot_artist_credit
+	///if set, clicking the artist credit box will take you here. use this for linking to the artist's portfolio/dono page/etc
+	var/headshot_artist_link
+	// ditto, for lich
 	var/lich_headshot_link
+	var/lich_headshot_artist_credit
+	var/lich_headshot_artist_link
 	var/vampire_headshot_link
+	var/vampire_headshot_artist_credit
+	var/vampire_headshot_artist_link
 	var/werewolf_headshot_link //not used but setting up for the future
+	var/werewolf_headshot_artist_credit
+	var/werewolf_headshot_artist_link
 	var/chatheadshot = TRUE
 	var/list/violated = list() // ТА
 	var/ooc_extra

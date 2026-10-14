@@ -169,6 +169,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["combat_toggles"]		>> combat_toggles
 	S["ghost_toggles"]		>> ghost_toggles
 	S["admin_chat_toggles"]	>> admin_chat_toggles
+	S["admin_ghost_icon"]	>> admin_ghost_icon
 	S["clientfps"]			>> clientfps
 	S["ambientocclusion"]	>> ambientocclusion
 	S["auto_fit_viewport"]	>> auto_fit_viewport
@@ -257,6 +258,8 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	combat_toggles		= sanitize_integer(combat_toggles, 0, INFINITY, initial(combat_toggles))
 	ghost_toggles		= sanitize_integer(ghost_toggles, 0, INFINITY, initial(ghost_toggles))
 	admin_chat_toggles	= sanitize_integer(admin_chat_toggles, 0, INFINITY, initial(admin_chat_toggles))
+	if(admin_ghost_icon && !isicon(admin_ghost_icon))
+		admin_ghost_icon = null
 	chat_toggles		= sanitize_integer(chat_toggles, 0, INFINITY, initial(chat_toggles))
 	clientfps			= sanitize_integer(clientfps, 0, 1000, initial(clientfps))
 	musicvol			= sanitize_integer(musicvol, 0, 100, initial(musicvol))
@@ -386,6 +389,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["combat_toggles"], combat_toggles)
 	WRITE_FILE(S["ghost_toggles"], ghost_toggles)
 	WRITE_FILE(S["admin_chat_toggles"], admin_chat_toggles)
+	WRITE_FILE(S["admin_ghost_icon"], admin_ghost_icon)
 	WRITE_FILE(S["clientfps"], clientfps)
 	WRITE_FILE(S["ambientocclusion"], ambientocclusion)
 	WRITE_FILE(S["auto_fit_viewport"], auto_fit_viewport)
@@ -604,6 +608,29 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		ccg_saved_deck_cards = ccg_selected_deck.Copy()
 	ccg_load_or_migrate_sql()
 
+/datum/preferences/proc/_load_quirk(S)
+	var/quirklesser_type
+	var/quirkgreater_type
+	S["quirklesser"] >> quirklesser_type
+	S["quirkgreater"] >> quirkgreater_type
+
+	if(!quirklesser_type)
+		quirklesser_type = /datum/quirk/none
+	if(!quirkgreater_type)
+		quirkgreater_type = /datum/quirk/none
+
+	if(ispath(quirklesser_type, /datum/quirk))
+		var/datum/quirk/lesserpath = quirklesser_type
+		QDEL_NULL(quirklesser)
+		if(!lesserpath::greater) // juuuust in case something gets retroactively maid greater, or someone messes with the savefiles
+			quirklesser = new quirklesser_type
+		else
+			quirklesser = new /datum/quirk/none
+
+	if(ispath(quirkgreater_type, /datum/quirk))
+		QDEL_NULL(quirkgreater)
+		quirkgreater = new quirkgreater_type
+
 /datum/preferences/proc/_load_gear_list(savefile/S)
 	var/list/saved_gear_list
 	S["gear_list"] >> saved_gear_list
@@ -732,6 +759,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	_load_species(S)
 
 	_load_virtue(S)
+	_load_quirk(S)
 	_load_flaw(S)
 
 	_load_culinary_preferences(S)
@@ -782,11 +810,20 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 
 	S["update_mutant_colors"] >> update_mutant_colors
 
-	S["headshot_link"]			>> headshot_link
-	S["vampire_headshot_link"]	>> vampire_headshot_link
-	S["lich_headshot_link"]		>> lich_headshot_link
+	S["headshot_link"]						>> headshot_link
+	S["headshot_artist_credit"]				>> headshot_artist_credit
+	S["headshot_artist_link"]				>> headshot_artist_link
+	S["vampire_headshot_link"]				>> vampire_headshot_link
+	S["vampire_headshot_artist_credit"]		>> vampire_headshot_artist_credit
+	S["vampire_headshot_artist_link"]		>> vampire_headshot_artist_link
+	S["lich_headshot_link"]					>> lich_headshot_link
+	S["lich_headshot_artist_credit"]		>> lich_headshot_artist_credit
+	S["lich_headshot_artist_link"]			>> lich_headshot_artist_link
 	//setting up the hooks for this, but not shown yet
-	S["werewolf_headshot_link"]	>> werewolf_headshot_link
+	S["werewolf_headshot_link"]				>> werewolf_headshot_link
+	S["werewolf_headshot_artist_credit"]	>> werewolf_headshot_artist_credit
+	S["werewolf_headshot_artist_link"]		>> werewolf_headshot_artist_link
+
 
 	S["qsr"]					>> qsr_pref
 	S["flavortext"]				>> flavortext
@@ -803,6 +840,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["song_artist"]				>> song_artist
 	S["song_title"]				>> song_title
 	S["nsfwflavortext"]			>> nsfwflavortext
+	S["show_nsfw_clothed"]		>> show_nsfw_clothed
 	S["nsfw_ooc_extra_img"]		>> nsfw_ooc_extra_img
 	S["nsfw_ooc_extra_img_link"]	>> nsfw_ooc_extra_img_link
 	if(!valid_headshot_link(null, nsfw_ooc_extra_img_link, FALSE, list("jpg", "jpeg", "png", "gif", "mp4")))
@@ -1211,9 +1249,17 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["char_toggles"] , char_toggles)
 	WRITE_FILE(S["update_mutant_colors"] , update_mutant_colors)
 	WRITE_FILE(S["headshot_link"] , headshot_link)
+	WRITE_FILE(S["headshot_artist_credit"] , headshot_artist_credit)
+	WRITE_FILE(S["headshot_artist_link"] , headshot_artist_link)
 	WRITE_FILE(S["vampire_headshot_link"] , vampire_headshot_link)
+	WRITE_FILE(S["vampire_headshot_artist_credit"] , vampire_headshot_artist_credit)
+	WRITE_FILE(S["vampire_headshot_artist_link"] , vampire_headshot_artist_link)
 	WRITE_FILE(S["werewolf_headshot_link"] , werewolf_headshot_link)
+	WRITE_FILE(S["werewolf_headshot_artist_credit"] , werewolf_headshot_artist_credit)
+	WRITE_FILE(S["werewolf_headshot_artist_link"] , werewolf_headshot_artist_link)
 	WRITE_FILE(S["lich_headshot_link"] , lich_headshot_link)
+	WRITE_FILE(S["lich_headshot_artist_credit"] , lich_headshot_artist_credit)
+	WRITE_FILE(S["lich_headshot_artist_link"] , lich_headshot_artist_link)
 	WRITE_FILE(S["qsr"] , qsr_pref)
 	WRITE_FILE(S["preset_bounty_enabled"] , preset_bounty_enabled)
 	WRITE_FILE(S["preset_bounty_poster_key"] , preset_bounty_poster_key)
@@ -1240,6 +1286,10 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["statpack"] , statpack.type)
 
 	write_clean_virtue_paths(S, virtue ? virtue.type : /datum/virtue/none, virtuetwo ? virtuetwo.type : /datum/virtue/none, virtue_origin ? virtue_origin.type : /datum/virtue/none, virtue ? virtue.picked_choices : null, virtuetwo ? virtuetwo.picked_choices : null)
+	var/quirklesser_save_type = quirklesser ? quirklesser.type : /datum/quirk/none
+	var/quirkgreater_save_type = quirkgreater ? quirkgreater.type : /datum/quirk/none
+	WRITE_FILE(S["quirklesser"], quirklesser_save_type)
+	WRITE_FILE(S["quirkgreater"], quirkgreater_save_type)
 
 	WRITE_FILE(S["race_bonus"], race_bonus)
 	var/combat_music_save_type = default_cmusic_type // TA EDIT START
@@ -1252,6 +1302,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["body_size"] , features["body_size"])
 	WRITE_FILE(S["body_build"] , features["body_build"])
 	WRITE_FILE(S["nsfwflavortext"] , html_decode(nsfwflavortext))
+	WRITE_FILE(S["show_nsfw_clothed"], show_nsfw_clothed)
 	WRITE_FILE(S["nsfw_ooc_extra_img"] , nsfw_ooc_extra_img)
 	WRITE_FILE(S["nsfw_ooc_extra_img_link"] , nsfw_ooc_extra_img_link)
 	WRITE_FILE(S["erpprefs"] , html_decode(erpprefs))
