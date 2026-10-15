@@ -769,6 +769,13 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 
 	_load_loadout(S)
 	_load_gear_list(S)
+	loadout_subscription_tier = 0 // TA EDIT
+	S["loadout_subscription_tier"] >> loadout_subscription_tier // TA EDIT
+	loadout_subscription_tier = sanitize_integer(loadout_subscription_tier, 0, 5, 0) // TA EDIT
+	if(GLOB.PatreonsLoaded && parent?.mob?.ckey) // TA EDIT
+		sanitize_subscription_loadout(parent.mob) // TA EDIT
+		WRITE_FILE(S["gear_list"], gear_list) // TA EDIT
+		WRITE_FILE(S["loadout_subscription_tier"], loadout_subscription_tier) // TA EDIT
 
 	_load_combat_music(S)
 
@@ -1308,7 +1315,9 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["erpprefs"] , html_decode(erpprefs))
 	WRITE_FILE(S["img_gallery"] , img_gallery)
 	WRITE_FILE(S["nsfw_img_gallery"] , nsfw_img_gallery)
+	sanitize_subscription_loadout(parent?.mob, FALSE) // TA EDIT
 	WRITE_FILE(S["gear_list"], gear_list)
+	WRITE_FILE(S["loadout_subscription_tier"], loadout_subscription_tier) // TA EDIT
 
 	//Familiar Files
 	WRITE_FILE(S["familiar_names"] , familiar_prefs.familiar_names)
