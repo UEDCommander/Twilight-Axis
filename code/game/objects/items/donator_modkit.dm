@@ -2066,7 +2066,10 @@
 	result_item = /obj/item/rogueweapon/example/forgefiend_wrench
 /obj/item/enchantingkit/weapon/yoshi_estoc
 	name = "'The Malignant Sabre' morphing elixir"
-	desc = "A small container of special morphing dust, perfect to make a specific item. It can be used to alter the appearance of a Steel Sabre."
-	target_items = list(/obj/item/rogueweapon/sword/long/ap)
+	desc = "A small container of special morphing dust, perfect to make a specific item. It can be used to alter the appearance of a Stecher, or an Estoc."
+	target_items = list(
+		/obj/item/rogueweapon/sword/long/ap						= /obj/item/rogueweapon/sword/long/ap/yoshi_estoc,
+		/obj/item/rogueweapon/estoc							= /obj/item/rogueweapon/sword/long/ap/yoshi_estoc
+		)
 	result_item = /obj/item/rogueweapon/sword/long/ap/yoshi_estoc
 

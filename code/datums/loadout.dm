@@ -5757,7 +5757,7 @@ GLOBAL_LIST_EMPTY(loadout_items_by_category)
 	donat_tier = 2
 
 /datum/loadout_item/donator/yoshi_estoc
-	name = "Donator Kit - Xylixian Estoc - Required: Steel Sabre"
+	name = "Donator Kit - Xylixian Estoc - Required: Estoc or Stecher"
 	category = list("Оружие", "Донат")
 	path = /obj/item/enchantingkit/weapon/yoshi_estoc
 	donatitem = TRUE
