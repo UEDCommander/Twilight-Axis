@@ -88,6 +88,7 @@
 	var/organ_slowdown = 0 // Its here because this is first shared definition between two leg organ paths // NOTE for future: The value starts at 0, example flavor of -10% is 0.1, so on.
 	var/is_prosthetic = FALSE
 	var/brand_text = null
+	var/flesh_written_text = null  //TA EDIT
 
 	/// Visaul markings to be rendered alongside the bodypart
 	var/list/markings
@@ -607,11 +608,13 @@
 	var/list/dna_markings = H.dna.body_markings
 	if(dna_markings)
 		if(dna_markings[body_zone])
-			markings = dna_markings[body_zone].Copy()
+			var/list/body_zone_markings = dna_markings[body_zone]
+			markings = body_zone_markings.Copy()
 		else
 			markings = null
 		if(aux_zone && dna_markings[aux_zone])
-			aux_markings = dna_markings[aux_zone].Copy()
+			var/list/aux_zone_markings = dna_markings[aux_zone]
+			aux_markings = aux_zone_markings.Copy()
 		else
 			aux_markings = null
 
