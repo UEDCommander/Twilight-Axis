@@ -396,7 +396,8 @@
 						else
 							to_chat(user, span_danger("I've failed to craft \the [R.name]... [prob2craft]%"))
 						continue
-
+					if(user.dir != build_dir || !R.TurfCheck(user, T)) // TA EDIT
+						return FALSE // TA EDIT
 					var/list/quality_capture = R.skip_quality ? list() : null
 					var/list/parts = del_reqs(R, user, quality_capture)
 					var/inherited_quality = quality_capture?["min_quality"]
