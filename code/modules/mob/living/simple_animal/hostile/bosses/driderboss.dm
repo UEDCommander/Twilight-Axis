@@ -98,8 +98,8 @@
 	if(target && next_cast < world.time && next_summon < world.time) //Second summon ability. Spawns a mob of small spiders
 		spawn_minions(minions_to_spawn)
 		INVOKE_ASYNC(src, TYPE_PROC_REF(/atom/movable, say), "Придите, дети мои! Пируйте их плотью!", null, list("colossus", "yell"))
-		next_cast = world.time + 20
-		next_summon = world.time + 800
+		next_cast = world.time + 10
+		next_summon = world.time + 600
 		return .
 	if(target && next_cast < world.time)
 		blast()
