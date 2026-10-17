@@ -9,12 +9,13 @@
 	category_tags = list(CTAG_MERCENARY, CTAG_MERCPARTY_VANGUARD)
 	class_select_category = CLASS_CAT_RANESHENI
 	subclass_languages = list(/datum/language/raneshi)
-	traits_applied = list(TRAIT_MEDIUMARMOR, TRAIT_NIGHT_OWL, TRAIT_ARCYNE, TRAIT_NOC_LIGHT_BLESSING)
+	traits_applied = list(TRAIT_MEDIUMARMOR, TRAIT_NIGHT_OWL, TRAIT_ARCYNE)
 	subclass_mage_aspects = list("mastery" = FALSE, "major" = FALSE, "minor" = 2, "utilities" = 6)
 	maximum_possible_slots = 1
 	subclass_stats = list(
-		STATKEY_WIL = 1,
-		STATKEY_INT = 5,
+		STATKEY_CON = 1,
+		STATKEY_WIL = 2,
+		STATKEY_INT = 4,
 	)
 	subclass_skills = list(
 		/datum/skill/misc/climbing = SKILL_LEVEL_JOURNEYMAN,
