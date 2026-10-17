@@ -50,18 +50,41 @@
 
 /mob/living
 	var/list/overlays_standing[TOTAL_LAYERS]
+	var/list/applied_overlays_standing[TOTAL_LAYERS] // TA EDIT
 
 /mob/living/proc/apply_overlay(cache_index)
-	if((. = overlays_standing[cache_index]))
-		add_overlay(.)
+	var/previous = applied_overlays_standing[cache_index] // TA EDIT START
+	if(previous)
+		cut_overlay(previous)
+	applied_overlays_standing[cache_index] = null
+
+	var/current = overlays_standing[cache_index]
+	. = current
+	if(current)
+		var/list/sources = build_appearance_list(current)
+		var/list/snapshots = list()
+		for(var/overlay in sources)
+			if(isimage(overlay))
+				var/image/overlay_image = overlay
+				snapshots += overlay_image.appearance
+			else if(isatom(overlay))
+				var/atom/overlay_atom = overlay
+				snapshots += overlay_atom.appearance
+			else
+				snapshots += overlay
+		add_overlay(snapshots
+		applied_overlays_standing[cache_index] = snapshots // TA EDIT END
 	if(client)
 		update_vision_cone()
 
 /mob/living/proc/remove_overlay(cache_index)
-	var/I = overlays_standing[cache_index]
-	if(I)
-		cut_overlay(I)
-		overlays_standing[cache_index] = null
+	var/previous = applied_overlays_standing[cache_index] // TA EDIT START
+	if(previous)
+		cut_overlay(previous)
+	else if(overlays_standing[cache_index])
+		cut_overlay(overlays_standing[cache_index])
+	applied_overlays_standing[cache_index] = null
+	overlays_standing[cache_index] = null // TA EDIT END
 	if(client)
 		update_vision_cone()
 
