@@ -53,38 +53,38 @@
 	var/list/applied_overlays_standing[TOTAL_LAYERS] // TA EDIT
 
 /mob/living/proc/apply_overlay(cache_index)
-	var/previous = applied_overlays_standing[cache_index] // TA EDIT START
-	if(previous)
-		cut_overlay(previous)
-	applied_overlays_standing[cache_index] = null
+	var/previous = applied_overlays_standing[cache_index] // TA EDIT
+	if(previous) // TA EDIT
+		cut_overlay(previous) // TA EDIT
+	applied_overlays_standing[cache_index] = null // TA EDIT
 
-	var/current = overlays_standing[cache_index]
-	. = current
-	if(current)
-		var/list/sources = build_appearance_list(current)
-		var/list/snapshots = list()
-		for(var/overlay in sources)
-			if(isimage(overlay))
-				var/image/overlay_image = overlay
-				snapshots += overlay_image.appearance
-			else if(isatom(overlay))
-				var/atom/overlay_atom = overlay
-				snapshots += overlay_atom.appearance
-			else
-				snapshots += overlay
-		add_overlay(snapshots
-		applied_overlays_standing[cache_index] = snapshots // TA EDIT END
+	var/current = overlays_standing[cache_index] // TA EDIT
+	. = current // TA EDIT
+	if(current) // TA EDIT
+		var/list/sources = build_appearance_list(current) // TA EDIT
+		var/list/snapshots = list() // TA EDIT
+		for(var/overlay in sources) // TA EDIT
+			if(isimage(overlay)) // TA EDIT
+				var/image/overlay_image = overlay // TA EDIT
+				snapshots += overlay_image.appearance // TA EDIT
+			else if(isatom(overlay)) // TA EDIT
+				var/atom/overlay_atom = overlay // TA EDIT
+				snapshots += overlay_atom.appearance // TA EDIT
+			else // TA EDIT
+				snapshots += overlay // TA EDIT
+		add_overlay(snapshots) // TA EDIT
+		applied_overlays_standing[cache_index] = snapshots // TA EDIT
 	if(client)
 		update_vision_cone()
 
 /mob/living/proc/remove_overlay(cache_index)
-	var/previous = applied_overlays_standing[cache_index] // TA EDIT START
-	if(previous)
-		cut_overlay(previous)
-	else if(overlays_standing[cache_index])
-		cut_overlay(overlays_standing[cache_index])
-	applied_overlays_standing[cache_index] = null
-	overlays_standing[cache_index] = null // TA EDIT END
+	var/previous = applied_overlays_standing[cache_index] // TA EDIT
+	if(previous) // TA EDIT
+		cut_overlay(previous) // TA EDIT
+	else if(overlays_standing[cache_index]) // TA EDIT
+		cut_overlay(overlays_standing[cache_index]) // TA EDIT
+	applied_overlays_standing[cache_index] = null // TA EDIT
+	overlays_standing[cache_index] = null // TA EDIT
 	if(client)
 		update_vision_cone()
 
