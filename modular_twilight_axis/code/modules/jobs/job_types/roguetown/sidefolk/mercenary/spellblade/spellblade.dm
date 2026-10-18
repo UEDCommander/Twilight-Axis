@@ -11,7 +11,7 @@
 	subclass_languages = list(/datum/language/raneshi)
 	traits_applied = list(TRAIT_MEDIUMARMOR, TRAIT_NIGHT_OWL, TRAIT_ARCYNE)
 	subclass_mage_aspects = list("mastery" = FALSE, "major" = FALSE, "minor" = 2, "utilities" = 6)
-	maximum_possible_slots = 1
+	maximum_possible_slots = 2
 	subclass_stats = list(
 		STATKEY_CON = 1,
 		STATKEY_WIL = 2,
