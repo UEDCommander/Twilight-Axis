@@ -298,9 +298,9 @@
 			var/mob/living/T = target
 			if(skill >= 1 && M.mind) //Exp gain from firing a gun
 				if(isanimal(T) && (T.stat != DEAD || (T.stat == DEAD && T.timeofdeath == world.time)))
-					M.mind.add_sleep_experience(/datum/skill/combat/twilight_firearms, M.STAINT / 5)
-				else if(ishuman(T) && (T.stat != DEAD || (T.stat == DEAD && T.timeofdeath == world.time)))
 					M.mind.add_sleep_experience(/datum/skill/combat/twilight_firearms, M.STAINT / 3)
+				else if(ishuman(T) && (T.stat != DEAD || (T.stat == DEAD && T.timeofdeath == world.time)))
+					M.mind.add_sleep_experience(/datum/skill/combat/twilight_firearms, M.STAINT / 2)
 			if(silver && HAS_TRAIT(T, TRAIT_SILVER_WEAK))
 				if(blessed)
 					if(!T.has_status_effect(/datum/status_effect/fire_handler/fire_stacks/sunder))
