@@ -169,7 +169,7 @@
 
 /obj/item/rogueweapon/sword/long/oathbreaker_matthios/Initialize(mapload)
 	. = ..()
-	AddComponent(/datum/component/cursed_item, TRAIT_OATHBREAKER, "FLAIL")
+	AddComponent(/datum/component/cursed_item, TRAIT_OATHBREAKER, "SWORD")
 
 /obj/item/rogueweapon/sword/long/oathbreaker_matthios/get_examine_highlight_status()
 	return list(EXAMINEHIGHLIGHT_HERESYSEVERITY_ALARMING, HERESYDESC_MATTHIOS_WEAPON)
