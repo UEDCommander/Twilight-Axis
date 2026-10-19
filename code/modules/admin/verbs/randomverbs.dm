@@ -843,12 +843,17 @@ Traitors and the like can also be revived with the previous role mostly intact.
 		ADMIN_PUNISHMENT_DIVINE_WRATH,
 		ADMIN_PUNISHMENT_CHANDELIER,
 		ADMIN_PUNISHMENT_ANNOYING_VOICE,
+		"Fear (area)", // TA EDIT
 	)
 
 	var/punishment = input(usr, "Choose a punishment", "DIVINE SMITING") as null|anything in sortList(punishment_list)
 
 	if(QDELETED(target) || !punishment)
 		return
+
+	if(punishment == "Fear (area)") // TA EDIT
+		ta_admin_area_fear(target) // TA EDIT
+		return // TA EDIT
 
 	switch(punishment)
 		if(ADMIN_PUNISHMENT_LIGHTNING)
