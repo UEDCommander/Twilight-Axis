@@ -1,4 +1,4 @@
-/obj/item/clothing/shoes/roguetown/boots/leather/reinforced/aristocratic
+﻿/obj/item/clothing/shoes/roguetown/boots/leather/reinforced/aristocratic
 	name = "aristocratic boots"
 	desc = "A pair of sturdy riding boots with an iron heel and brass spurs."
 	icon_state = "kumieboots"
@@ -899,3 +899,162 @@
 		if(get_altdetail_color())
 			pic2.color = get_altdetail_color()
 		add_overlay(pic2)
+
+/obj/item/clothing/head/roguetown/duelhat/hussar_cap
+	name = "hussar's fur cap"
+	desc = "Теплая шапка элитных войск гусар Грензельзофта."
+	icon = 'modular_twilight_axis/icons/clothing/hussar_set.dmi'
+	icon_state = "hussar_cap"
+	item_state = "hussar_cap"
+	mob_overlay_icon = 'modular_twilight_axis/icons/clothing/onmob/hussar_set.dmi'
+	color = null
+
+/obj/item/clothing/cloak/hussar_riding_jacket
+	name = "hussar riding jacket"
+	desc = "Традиционный китель гусар. Обычно носится на плечах."
+	icon = 'modular_twilight_axis/icons/clothing/hussar_set.dmi'
+	icon_state = "hussar_jacket"
+	item_state = "hussar_jacket"
+	mob_overlay_icon = 'modular_twilight_axis/icons/clothing/onmob/hussar_set.dmi'
+	color = null
+
+/obj/item/clothing/suit/roguetown/armor/leather/heavy/coat/hussar
+	name = "hussar protective coat"
+	desc = "Теплый китель, который отлично защищает от ударов врагов Кайзера!"
+	icon = 'modular_twilight_axis/icons/clothing/hussar_set.dmi'
+	icon_state = "hussar_coat"
+	item_state = "hussar_coat"
+	mob_overlay_icon = 'modular_twilight_axis/icons/clothing/onmob/hussar_set.dmi'
+	sleeved = 'modular_twilight_axis/icons/clothing/onmob/hussar_sleeves.dmi'
+	sleevetype = "hussar_coat"
+	color = null
+
+/obj/item/clothing/suit/roguetown/armor/gambeson/hussar
+	name = "hussar shirt"
+	desc = "Рубашка хорошего качества для офицеров и гусарских полков кайзера."
+	icon = 'modular_twilight_axis/icons/clothing/hussar_set.dmi'
+	icon_state = "hussar_shirt"
+	item_state = "hussar_shirt"
+	mob_overlay_icon = 'modular_twilight_axis/icons/clothing/onmob/hussar_set.dmi'
+	color = null
+
+/obj/item/clothing/suit/roguetown/armor/gambeson/heavy/hussar
+	name = "hussar shirt"
+	desc = "Рубашка хорошего качества для офицеров и гусарских полков кайзера."
+	icon = 'modular_twilight_axis/icons/clothing/hussar_set.dmi'
+	icon_state = "hussar_shirt"
+	item_state = "hussar_shirt"
+	mob_overlay_icon = 'modular_twilight_axis/icons/clothing/onmob/hussar_set.dmi'
+	color = null
+
+/obj/item/storage/belt/rogue/leather/twilight_holsterbelt/hussar
+	name = "hussar sash"
+	desc = "Удобный и узнаваемый красный пояс гусара. По одному виду можно понять, что скоро будет жарко."
+	icon = 'modular_twilight_axis/icons/clothing/hussar_set.dmi'
+	icon_state = "hussar_sash"
+	item_state = "hussar_sash"
+	mob_overlay_icon = 'modular_twilight_axis/icons/clothing/onmob/hussar_set.dmi'
+	color = null
+
+/obj/item/clothing/under/roguetown/trou/leather/hussar
+	name = "hussar breeches"
+	desc = "Узкие брюки гусара. Многие скажут, что они неудобны, но гусар же скажет: люратное!"
+	icon = 'modular_twilight_axis/icons/clothing/hussar_set.dmi'
+	icon_state = "hussar_breeches"
+	item_state = "hussar_breeches"
+	mob_overlay_icon = 'modular_twilight_axis/icons/clothing/onmob/hussar_set.dmi'
+	color = null
+
+/obj/item/clothing/shoes/roguetown/boots/leather/hussar
+	name = "hussar cavalry boots"
+	desc = "Удобные кавалерийские сапоги."
+	icon = 'modular_twilight_axis/icons/clothing/hussar_set.dmi'
+	icon_state = "hussar_boots"
+	item_state = "hussar_boots"
+	mob_overlay_icon = 'modular_twilight_axis/icons/clothing/onmob/hussar_set.dmi'
+	color = null
+
+/obj/item/gun/ballistic/twilight_firearm/arquebus_pistol/hussar
+	name = "hussar pistol"
+	desc = "Украшенный золотом пистоль! Один его вид говорит, что перед тобой офицер гусаров!"
+	icon = 'modular_twilight_axis/icons/clothing/hussar_set.dmi'
+	icon_state = "hussar_pistol"
+	item_state = "hussar_pistol"
+	advanced_icon = 'modular_twilight_axis/icons/clothing/hussar_set.dmi'
+	advanced_icon_r = 'modular_twilight_axis/icons/clothing/hussar_pistol_loaded.dmi'
+	advanced_icon_norod = 'modular_twilight_axis/icons/clothing/hussar_set.dmi'
+	advanced_icon_r_norod = 'modular_twilight_axis/icons/clothing/hussar_pistol_loaded.dmi'
+	lefthand_file = 'modular_twilight_axis/icons/clothing/onmob/hussar_weapons_lefthand.dmi'
+	righthand_file = 'modular_twilight_axis/icons/clothing/onmob/hussar_weapons_righthand.dmi'
+	experimental_inhand = FALSE
+
+/obj/item/rogueweapon/sword/sabre/hussar
+	name = "hussar officer's sabre"
+	desc = "Красивая и надежная сабля офицеров гусарских полков."
+	icon = 'modular_twilight_axis/icons/clothing/hussar_set.dmi'
+	icon_state = "hussar_sabre"
+	item_state = "sword"
+	sheathe_icon = "hussar_sabre"
+	mob_overlay_icon = 'modular_twilight_axis/icons/clothing/onmob/hussar_belt_mounted_weapons.dmi'
+	experimental_inhand = TRUE
+	experimental_onhip = FALSE
+	experimental_onback = TRUE
+	bigboy = FALSE
+	gripsprite = FALSE
+	pixel_x = 0
+	pixel_y = 0
+	dropshrink = null
+
+/obj/item/rogueweapon/sword/sabre/hussar/getonmobprop(tag)
+	. = ..()
+	if(tag == "gen" && islist(.))
+		var/list/props = .
+		props["nturn"] = -90
+		props["sturn"] = 90
+		props["wturn"] = 100
+		props["eturn"] = -99
+
+/obj/item/rogueweapon/scabbard/sword/hussar
+	name = "hussar officer's scabbard"
+	desc = "Изысканно украшенные ножны для достойного оружия."
+	icon = 'modular_twilight_axis/icons/clothing/hussar_set.dmi'
+	icon_state = "hussar_scabbard_empty"
+	mob_overlay_icon = 'modular_twilight_axis/icons/clothing/onmob/hussar_belt_mounted_weapons.dmi'
+	experimental_inhand = TRUE
+	experimental_onhip = TRUE
+	experimental_onback = TRUE
+	bigboy = FALSE
+	pixel_x = 0
+	pixel_y = 0
+	dropshrink = null
+	valid_blade = /obj/item/rogueweapon/sword
+	invalid_blades = list(
+		/obj/item/rogueweapon/sword/long/exe,
+		/obj/item/rogueweapon/sword/long/martyr,
+		/obj/item/rogueweapon/sword/long/exe/berserk)
+
+/obj/item/rogueweapon/scabbard/sword/hussar/Initialize(mapload)
+	. = ..()
+	if(hol_comp)
+		hol_comp.use_icons = FALSE
+
+/obj/item/rogueweapon/scabbard/sword/hussar/getonmobprop(tag)
+	var/new_icon_state = hol_comp?.sheathed ? "hussar_scabbard" : "hussar_scabbard_empty"
+	if(icon_state != new_icon_state)
+		icon_state = new_icon_state
+		if(ishuman(loc))
+			var/mob/living/carbon/human/H = loc
+			H.update_inv_hands()
+			H.update_inv_belt()
+			H.update_inv_back()
+	. = ..()
+	if(tag == "onbelt" && islist(.))
+		var/list/props = .
+		props["sx"] = 0
+		props["sy"] = -1
+		props["nx"] = 2
+		props["ny"] = -1
+		props["wx"] = -2
+		props["wy"] = -1
+		props["ex"] = 0
+		props["ey"] = -1
