@@ -1,4 +1,4 @@
-﻿/obj/item/clothing/shoes/roguetown/boots/leather/reinforced/aristocratic
+/obj/item/clothing/shoes/roguetown/boots/leather/reinforced/aristocratic
 	name = "aristocratic boots"
 	desc = "A pair of sturdy riding boots with an iron heel and brass spurs."
 	icon_state = "kumieboots"
