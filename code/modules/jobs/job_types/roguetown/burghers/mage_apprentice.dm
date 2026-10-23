@@ -211,7 +211,9 @@
 
 	to_chat(H, span_warning("You start with Bind Weapon. Remember to Bind your weapon so you can use your abilities and build up Arcyne Momentum."))
 
-	var/spellblade_chant_selected = prompt_spellblade_choice(H, get_spellblade_chant_html(src, H, "conventional"))
+	var/spellblade_chant_selected = prompt_spellblade_choice(H, get_spellblade_chant_html(src, H, "conventional")) // TA EDIT START
+	if(spellblade_chant_selected)
+		equip_spellblade_chant(H, spellblade_chant_selected) // TA EDIT END
 
 /datum/outfit/job/roguetown/wapprentice/spellblade/equip_spellblade_chant(mob/living/carbon/human/H, spellblade_chant_selected = "blade")
 	H << browse(null, "window=spellblade_chant")

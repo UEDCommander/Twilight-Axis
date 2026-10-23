@@ -32,6 +32,7 @@ This allows the devs to draw whatever shape they want at the cost of it feeling 
 
 	/// The list of turfs the grid will be drawn on and
 	var/list/affected_turfs
+	var/use_doafter = FALSE // TA EDIT
 
 	/// Whether our howner needs to be wielding the weapon. DO NOT USE THIS FOR ESOTERIC SPECIALS WITHOUT A MOB (TRAPS, ETC)
 	var/requires_wielding = FALSE
@@ -197,6 +198,8 @@ This allows the devs to draw whatever shape they want at the cost of it feeling 
 /datum/special_intent/proc/process_attack()
 	SHOULD_CALL_PARENT(TRUE)
 
+	if(!_do_after()) // TA EDIT
+		return // TA EDIT
 	_add_log()
 	_reset()
 	affected_turfs = alist()
@@ -211,6 +214,13 @@ This allows the devs to draw whatever shape they want at the cost of it feeling 
 		howner.log_message(span_danger("Used the Special [name]."), LOG_ATTACK)
 	else
 		log_admin("[name] Special was deployed.")
+
+/datum/special_intent/proc/_do_after() // TA EDIT START
+	if(!use_doafter)
+		return TRUE
+	if(!howner || QDELETED(howner))
+		return FALSE
+	return do_after(howner, use_doafter, TRUE, howner, same_direction = TRUE) // TA EDIT END
 
 /// Checks if the range & z levels are valid, along with other reqs. Best handled by external sources just like the cost.
 /// Really only usable with use_clickloc, as otherwise the Special will be anchored to the source on the same plane anyway.
