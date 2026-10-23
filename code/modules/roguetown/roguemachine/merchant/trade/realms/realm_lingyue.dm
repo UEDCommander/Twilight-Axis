@@ -1,6 +1,6 @@
 /datum/foreign_realm/lingyue
 	id = REALM_LINGYUE
-	name = "Lingyue"
+	name = "Gyedzai" //TA EDIT
 	roll_weight = TRADE_REALM_WEIGHT_DISTANT
 	demanded_categories = list(NAVIGATOR_BUCKET_WEAPONS, NAVIGATOR_BUCKET_ARMOR_LIGHT, NAVIGATOR_BUCKET_GARMENT_FINELUX, NAVIGATOR_BUCKET_POTIONS_REAGENTS, NAVIGATOR_BUCKET_ENCHANTMENTS, NAVIGATOR_BUCKET_INSTRUMENTS, NAVIGATOR_BUCKET_SEAFOOD, NAVIGATOR_BUCKET_VALUABLES_CRAFTED, NAVIGATOR_BUCKET_MISCELLANEOUS)
 	single_word_base = TRUE
@@ -104,12 +104,20 @@
 		/datum/supply_pack/rogue/alcohol/truewhipwine,
 	)
 	hail_lines = list(
-	"We're out of rice",
-	"Can you help me find our lucky tabaxi? Yellow fur, long fluffy tail. I think he went to the market and followed another yellow-tailed tabaxi lady. I will offer thirty zenars for his return before we leave port. It is essential for the journey back home.",
-	"Please keep the Inquisition away from our ship.",
-	"I have a few Shizu, trained Scholar Mages who can help you with your magical needs. Is the University hiring? If not, perhaps one of your band of adventurers?",
-	"I carries four families in the hold who is escaping the Chengtian rebellion. If you would be so kind, show them Eora's compassion and help them find a new home.",
-	"I bring with me a skilled masseur trained in the ancient art of Lingyuese medical massage. He evens know of Pyromantic and Cryomantic magic and can warm and chill your body to help you recover from injuries and illness. If you pay him enough, he will settle here for the next yil or two. Otherwise, I'll bring him over to Grenzelhoft.",
-	"Tis dire, I'm out of rice wine. Do you have any local rice wine to trade?",
-		"Ah! Azurian fishes and crabs! Legendary, I know at least twenty housewives and househusbands who would kill for a taste of them. I have a runic chest from Shenzhou to preserve them for the journey home. Now, excuse me, I would like, uhhh, ...three salmon of twenty catty, and - oh, oh, before I forget - one salmon of forty-five catty, the prettiest one, the one you were saving, yes that one, for Magistrate Chan, who counts cargo with his eyes and his eyes, you understand, can be occupied. And one crab. The biggest crab. Sixty catty, claws bound but not too tightly, Ms. Wen likes a little fight in them, she has prepared a tank. A tank, friend. The woman has prepared a tank. And - wait, wait - six smaller crabs, ten catty each, for the housewives who only think they want the big one, because none of them have a tank, none of them, I have asked. Also ice. Do you have ice? The runic chest is good but ice is better, ice is insurance, and Magistrate Chan's salmon must arrive looking like it leaped fresh out of the river.",
-	)
+		"Write it in your ledgers: I sail under no warlord's banner. My keel is old Gyedzai, my chop is my clan's, and Saon himself can balance the account if any man doubts it.",
+		"You see ten kingdoms squabbling over a corpse; I see ten markets fighting to outpay each other. Speak to me of embargoes when our princes agree on a single calendar.",
+		"These bales crossed three straits and two pirate flags. Once the corsairs read my clan mark, they charged a toll instead of a ransom. That is the difference between a name and a rumor.",
+		"Our astrologer traced this voyage on the night‑sky tables long before your harbor lights appeared. The stars over Gyedzai do not lie – they merely charge a fee in incense and good ink.",
+		"Do not mistake a divided throne for a weak hull. The princes may gnaw each other's borders, but their coins jingle the same when they land in my counting bowl.",
+		"I keep three sets of scrolls – one for the tax‑clerks of the coast, one for the sea‑lords, and one for myself. The first two are for show. The third is the only one Saon will read.",
+		"Your harbor banners change with every new rebellion. My flag has not changed since Yuanzhao's day. When the Schism passes into legend, my house mark will still be painted on hulls.",
+		"In Gyedzai we say: 'A wise man trusts the scales, a fool trusts the oath, and a dead man trusts the prince.' I have brought you scales. Oaths and princes you must provide yourself.",
+		"I have freighted offerings for three different courts that all claim to be the Heart of Gyedzai. Let them argue over whose shrine gets more lacquer. My concern is whose treasurer pays on time.",
+		"These ceramics are from a kiln that changed hands five times in one war. The potters kept working, the generals kept dying, and the clay never once asked whose side it was on.",
+		"Your customs man quotes edicts as if they were tides. Tides I can trust. Edicts wash away with the next failed campaign and the next son who calls himself 'restorer of unity'.",
+		"You ask if my crew are loyal. They have survived blockades in the Inner Sea and famine levies on the mainland. If hunger did not buy them, your coins certainly will not.",
+		"The saost scholars say the world turns on balance: duty against profit, honor against survival. I say a good captain learns which side of the scale he can afford to let touch the water.",
+		"Your duke fancies himself a patron of eastern culture? Then let him patronize my ledger. Gyedzai silk on his shoulders will speak more eloquently than any envoy he can afford.",
+		"I carry letters sealed by three rival courts, each warning me not to trade with the other two. I keep them together in one box – they make a fine cushion for hard coin.",
+		"Do not haggle with a man whose homeland is at war with itself. I have learned every trick of survival from our own princes; your market squabbles are children's play in comparison."
+	) //TA EDIT
