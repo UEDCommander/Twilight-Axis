@@ -917,6 +917,26 @@
 	item_state = "hussar_coat"
 	mob_overlay_icon = 'modular_twilight_axis/icons/clothing/onmob/hussar_set.dmi'
 	color = null
+	adjustable = CAN_CADJUST
+	toggle_icon_state = TRUE
+
+/obj/item/clothing/cloak/hussar_riding_jacket/AdjustClothes(mob/user)
+	if(loc != user)
+		return
+	if(adjustable == CAN_CADJUST)
+		adjustable = CADJUSTED
+		icon_state = "hussar_coat_draped"
+		item_state = "hussar_coat_draped"
+	else
+		ResetAdjust(user)
+	update_icon()
+	if(ishuman(user))
+		var/mob/living/carbon/human/H = user
+		H.update_inv_cloak()
+
+/obj/item/clothing/cloak/hussar_riding_jacket/ResetAdjust(mob/user)
+	. = ..()
+	item_state = initial(item_state)
 
 /obj/item/clothing/suit/roguetown/armor/leather/heavy/coat/hussar
 	name = "hussar protective coat"
@@ -926,7 +946,7 @@
 	item_state = "hussar_jacket"
 	mob_overlay_icon = 'modular_twilight_axis/icons/clothing/onmob/hussar_set.dmi'
 	sleeved = 'modular_twilight_axis/icons/clothing/onmob/hussar_sleeves.dmi'
-	sleevetype = "hussar_coat"
+	sleevetype = "shirt"
 	color = null
 
 /obj/item/clothing/suit/roguetown/armor/gambeson/hussar
@@ -936,6 +956,9 @@
 	icon_state = "hussar_shirt"
 	item_state = "hussar_shirt"
 	mob_overlay_icon = 'modular_twilight_axis/icons/clothing/onmob/hussar_set.dmi'
+	sleeved = 'modular_twilight_axis/icons/clothing/onmob/hussar_sleeves.dmi'
+	sleevetype = "shirt"
+	shiftable = FALSE
 	color = null
 
 /obj/item/clothing/suit/roguetown/armor/gambeson/heavy/hussar
@@ -945,6 +968,9 @@
 	icon_state = "hussar_shirt"
 	item_state = "hussar_shirt"
 	mob_overlay_icon = 'modular_twilight_axis/icons/clothing/onmob/hussar_set.dmi'
+	sleeved = 'modular_twilight_axis/icons/clothing/onmob/hussar_sleeves.dmi'
+	sleevetype = "shirt"
+	shiftable = FALSE
 	color = null
 
 /obj/item/storage/belt/rogue/leather/twilight_holsterbelt/hussar
@@ -1007,12 +1033,19 @@
 
 /obj/item/rogueweapon/sword/sabre/hussar/getonmobprop(tag)
 	. = ..()
-	if(tag == "gen" && islist(.))
+	if((tag == "gen" || tag == "wielded") && islist(.))
 		var/list/props = .
-		props["nturn"] = -90
-		props["sturn"] = 90
-		props["wturn"] = 100
-		props["eturn"] = -99
+		for(var/direction in list("n", "s", "w", "e"))
+			var/rotation = props["[direction]turn"]
+			var/grip_x = 1
+			var/grip_y = 3
+			if(props["[direction]flip"] == EAST || props["[direction]flip"] == WEST)
+				grip_x = -grip_x
+			if(props["[direction]flip"] == NORTH || props["[direction]flip"] == SOUTH)
+				grip_y = -grip_y
+			props["[direction]x"] = round(props["[direction]x"] - props["shrink"] * (grip_x * cos(rotation) + grip_y * sin(rotation)) + 0.5)
+			props["[direction]y"] = round(props["[direction]y"] - props["shrink"] * (-grip_x * sin(rotation) + grip_y * cos(rotation)) + 0.5)
+			props["[direction]turn"] = rotation + 180
 
 /obj/item/rogueweapon/scabbard/sword/hussar
 	name = "hussar officer's scabbard"
@@ -1048,6 +1081,9 @@
 			H.update_inv_belt()
 			H.update_inv_back()
 	. = ..()
+	if((tag == "onbelt" || tag == "onback") && islist(.))
+		var/list/scale_props = .
+		scale_props["shrink"] = 0.75
 	if(tag == "onbelt" && islist(.))
 		var/list/props = .
 		props["sx"] = 0
