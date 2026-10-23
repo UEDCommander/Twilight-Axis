@@ -710,7 +710,11 @@ GLOBAL_VAR_INIT(rpg_loot_items, FALSE)
 		if(istype(src, /obj/item/rogueweapon))
 			var/obj/item/rogueweapon/W = src
 			if(W.special)
-				inspec += "[W.special.get_examine()]"
+				inspec += "[W.get_special().get_examine()]" // TA EDIT
+		else if(istype(src, /obj/item/gun/ballistic/revolver/grenadelauncher/bow)) // TA EDIT
+			var/obj/item/gun/ballistic/revolver/grenadelauncher/bow/B = src
+			if(B.special)
+				inspec += "[B.special.get_examine()]" // TA EDIT
 
 		if(istype(src, /obj/item/rogueweapon/shield))
 			var/obj/item/rogueweapon/shield/S = src
@@ -985,6 +989,7 @@ GLOBAL_VAR_INIT(rpg_loot_items, FALSE)
 				if(user.m_intent != MOVE_INTENT_SNEAK) // Don't play a sound if we're sneaking, for assassination purposes.
 					playsound(src, pickup_sound, PICKUP_SOUND_VOLUME, ignore_walls = FALSE)
 	user.update_equipment_speed_mods()
+	user.check_equipment_mood_penalty()
 
 	if(!user.is_holding(src))
 		if(altgripped || wielded)
@@ -1163,6 +1168,18 @@ GLOBAL_VAR_INIT(rpg_loot_items, FALSE)
 		return FALSE
 	if(SEND_SIGNAL(loc, COMSIG_CONTAINS_STORAGE))
 		return SEND_SIGNAL(loc, COMSIG_TRY_STORAGE_TAKE, src, newLoc, TRUE)
+	return FALSE
+
+/obj/item/proc/held_contents()
+	var/datum/component/storage/STR = GetComponent(/datum/component/storage)
+	if(STR)
+		return STR.contents()
+	return list()
+
+/obj/item/proc/release_held(obj/item/I, atom/dest)
+	var/datum/component/storage/STR = GetComponent(/datum/component/storage)
+	if(STR)
+		return STR.remove_from_storage(I, dest)
 	return FALSE
 
 /obj/item/proc/get_belt_overlay() //Returns the icon used for overlaying the object on a belt

@@ -376,7 +376,6 @@
 	summons_per_cast = 1
 	summon_replace_mode = CONJURE_SUMMON_SINGLES
 
-	recoil_energy_floor = 500
 	recoil_severity = CONJURE_RECOIL_PARTIAL
 	reclaim_recoil = TRUE
 
@@ -576,8 +575,17 @@
 		if("Progress")
 			src.apply_progress_path(user)
 		if("Unlife")
+			// TA EDIT START - ORIGINAL:
+			/*
 			src.apply_unlife_path(user)
-
+			*/
+			// ORIGINAL END
+			switch(alert(user, "You will become a skeleton! Should the head also become skeleton?", "Skeletonize","Yes","No"))
+				if("Yes")
+					src.apply_unlife_path(user, TRUE)
+				else
+					src.apply_unlife_path(user, FALSE)
+			// TA EDIT END
 	user.mind?.RemoveSpell(src)
 	qdel(src)
 	anti_spam = FALSE
@@ -589,7 +597,7 @@
 // Explode your summoned skeletons if you are in combat mode, or absorb them into energy if not.
 /datum/action/cooldown/spell/zizo/bone_cataclysm
 	name = "Bone Cataclysm"
-	desc = "Detonate all of your nearby skeletons in a wave of profane bone shrapnel. You and Gravemarked allies will not be harmed by it.<br><br>If used outside Combat Mode, you will disintegrate them and restore your energy."
+	desc = "Detonate all of your nearby skeletons in a wave of profane bone shrapnel. You and marked allies will not be harmed by it.<br><br>If used outside Combat Mode, you will disintegrate them and restore your energy."
 	fluff_desc = "Zizo taught her faithful that the dead must always serve twice: once in unlife, and once more when their bones are shattered in her name."
 	button_icon_state = "cataclysm"
 	click_to_activate = FALSE

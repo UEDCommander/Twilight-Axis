@@ -21,13 +21,13 @@
 
 	//No nobility for you, being a member of the clergy means you gave UP your nobility. It says this in many of the church tutorial texts.
 	virtue_restrictions = list(/datum/virtue/utility/noble)
+	quirk_restrictions = list(/datum/quirk/noble)
 	job_traits = list(TRAIT_RITUALIST, TRAIT_GRAVEROBBER, TRAIT_HOMESTEAD_EXPERT, TRAIT_CLERGY)
 	advclass_cat_rolls = list(CTAG_ACOLYTE = 2)
 	job_subclasses = list(
 		/datum/advclass/acolyte,
 		/datum/advclass/herald,
 	)
-	has_subprefs = FALSE // only one subclass
 
 /datum/advclass/acolyte
 	name = "Acolyte"
@@ -119,7 +119,7 @@
 			neck = /obj/item/clothing/neck/roguetown/psicross/necra/g
 			armor = /obj/item/clothing/suit/roguetown/shirt/robe/necra
 			cloak = /obj/item/clothing/cloak/templar/necrancleric
-			var/list/necra_tools = list("Silver Shovel", "Silver Scythe")
+			var/list/necra_tools = list("Silver Shovel", "Silver Scythe", "Iron Shovel") //TA EDIT
 			var/tool_choice = input(H, "A reaper, or a digger?", "HOW WILL YOU APPEASE THE UNDERMAIDEN?") as anything in necra_tools
 			switch(tool_choice) // choose wisely... larp or effectiveness?
 				if("Silver Shovel")
@@ -127,6 +127,8 @@
 				if("Silver Scythe") // o lawd we farmin
 					backr = /obj/item/rogueweapon/scabbard/gwstrap
 					l_hand = /obj/item/rogueweapon/scythe/silver
+				if("Iron Shovel") //TA EDIT
+					backr = /obj/item/rogueweapon/shovel //TA EDIT
 		if(/datum/patron/divine/pestra)
 			head = /obj/item/clothing/head/roguetown/roguehood/phys
 			neck = /obj/item/clothing/neck/roguetown/psicross/pestra/g
@@ -135,7 +137,7 @@
 			cloak = /obj/item/clothing/cloak/templar/pestran
 			l_hand = /obj/item/storage/belt/rogue/surgery_bag
 		if(/datum/patron/divine/eora) //Eora content from Stonekeep
-			head = /obj/item/clothing/head/roguetown/eoramask
+			backpack_contents[/obj/item/clothing/head/roguetown/eoramask] = 1
 			neck = /obj/item/clothing/neck/roguetown/psicross/eora/g
 			cloak = /obj/item/clothing/cloak/templar/eoran
 			r_hand = /obj/item/rogueweapon/huntingknife/scissors
