@@ -200,7 +200,7 @@
 		gunpowder = gun.gunpowder
 		if(isliving(firer))
 			var/mob/living/F = firer
-			if(firer.buckled)
+			if(F.buckled)
 				max_range = max(ceil(gun.effective_range / 2), 2)
 			else
 				max_range = gun.effective_range
