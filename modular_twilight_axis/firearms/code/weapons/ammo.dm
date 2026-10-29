@@ -198,7 +198,14 @@
 		critfactor *= gun.critfactor
 		gunpowder_npc_critfactor *= gun.npcdamfactor
 		gunpowder = gun.gunpowder
-		max_range = gun.effective_range
+		if(isliving(firer))
+			var/mob/living/F = firer
+			if(firer.buckled)
+				max_range = max(ceil(gun.effective_range / 2), 2)
+			else
+				max_range = gun.effective_range
+		else
+			max_range = gun.effective_range
 	..()
 
 /obj/projectile/bullet/on_hit(atom/target, blocked = FALSE)

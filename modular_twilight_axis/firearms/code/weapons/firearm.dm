@@ -593,7 +593,9 @@
 
 /obj/item/gun/ballistic/twilight_firearm/get_mechanics_examine(mob/user)
 	. = ..()
+	var/riding_range = max(ceil(effective_range / 2), 2)
 	. += span_info("Прицельная дальность стрельбы этого оружия [effective_range]0 метров.")
+	. += span_small("[riding_range]0 метров при стрельбе верхом.")
 	switch(locktype)
 		if(LOCKTYPE_WHEELLOCK)
 			. += span_info("Колесцовые замки требуют пороховой заряд, пулю и уплотнение заряда шомполом перед стрельбой.")
@@ -696,6 +698,8 @@
 					var/def_zone = "[(user.active_hand_index == 2) ? "r" : "l" ]_arm"
 					var/obj/item/bodypart/BP = user.get_bodypart(def_zone)
 					BP.add_wound(/datum/wound/dislocation)
+		if(user.buckled)
+			user.Immobilize(50 - (firearm_skill * 5))
 	else if(locktype == LOCKTYPE_FUSE)
 		if(advanced_icon_f)
 			icon = advanced_icon_f
@@ -742,6 +746,8 @@
 						var/def_zone = "[(user.active_hand_index == 2) ? "r" : "l" ]_arm"
 						var/obj/item/bodypart/BP = user.get_bodypart(def_zone)
 						BP.add_wound(/datum/wound/dislocation)
+			if(user.buckled)
+				user.Immobilize(50 - (firearm_skill * 5))
 
 /obj/item/gun/ballistic/twilight_firearm/can_shoot()
 	if (!reloaded)
